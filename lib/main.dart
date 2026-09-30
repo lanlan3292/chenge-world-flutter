@@ -201,7 +201,7 @@ class _AppShellState extends State<AppShell> {
                     NavigationRailDestination(
                       icon: Icon(Icons.person_outline_rounded),
                       selectedIcon: Icon(Icons.person_rounded),
-                      label: Text('账户'),
+                      label: Text('我的'),
                     ),
                   ],
                 ),
@@ -241,7 +241,7 @@ class _AppShellState extends State<AppShell> {
                 NavigationDestination(
                   icon: Icon(Icons.person_outline_rounded),
                   selectedIcon: Icon(Icons.person_rounded),
-                  label: '账户',
+                  label: '我的',
                 ),
               ],
             ),
