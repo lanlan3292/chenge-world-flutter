@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 
 import '../models/blog_post.dart';
 import '../services/chenge_api.dart';
+import '../theme/app_theme.dart';
 import '../widgets/post_card.dart';
 import 'post_detail_page.dart';
 
@@ -131,6 +132,12 @@ class _FeedPageState extends State<FeedPage> {
                 floating: true,
                 snap: true,
                 pinned: false,
+                // Keep solid bar — do not inherit transparent immersive AppBarTheme.
+                backgroundColor: AppTheme.mist,
+                surfaceTintColor: Colors.transparent,
+                elevation: 0,
+                scrolledUnderElevation: 0,
+                forceElevated: false,
                 titleSpacing: 20,
                 title: Row(
                   children: [
@@ -199,7 +206,17 @@ class _FeedPageState extends State<FeedPage> {
                 ),
                 SliverToBoxAdapter(child: _buildPagination()),
               ],
-              const SliverToBoxAdapter(child: SizedBox(height: 30)),
+              // Reserve space for bottom nav when visible; release it when chrome hides
+              // so the list can fill the former nav area (works with Scaffold.extendBody).
+              SliverToBoxAdapter(
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 320),
+                  curve: Curves.easeInOutCubic,
+                  height: 24 +
+                      MediaQuery.paddingOf(context).bottom +
+                      (_chromeVisible ? kBottomNavigationBarHeight + 12 : 0),
+                ),
+              ),
             ],
           ),
         ),
