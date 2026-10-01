@@ -260,17 +260,18 @@ class _AppShellState extends State<AppShell> {
 
     // Do not wrap child Scaffolds in SafeArea: each page AppBar already accounts for
     // status-bar MediaQuery padding. Extra SafeArea caused double top/bottom insets.
+    // extendBody lets feed content expand into the nav area as the bar collapses.
     return Scaffold(
+      extendBody: !wide,
       body: Row(
         children: [
           if (wide)
-            AnimatedSlide(
-              duration: const Duration(milliseconds: 220),
-              curve: Curves.easeOutCubic,
-              offset: _chromeVisible ? Offset.zero : const Offset(-1.05, 0),
-              child: AnimatedOpacity(
-                duration: const Duration(milliseconds: 180),
-                opacity: _chromeVisible ? 1 : 0,
+            ClipRect(
+              child: AnimatedAlign(
+                duration: const Duration(milliseconds: 320),
+                curve: Curves.easeInOutCubic,
+                alignment: Alignment.centerRight,
+                widthFactor: _chromeVisible ? 1 : 0,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(12, 16, 8, 16),
                   child: NavigationRail(
@@ -327,41 +328,44 @@ class _AppShellState extends State<AppShell> {
       ),
       bottomNavigationBar: wide
           ? null
-          : AnimatedSlide(
-              duration: const Duration(milliseconds: 220),
-              curve: Curves.easeOutCubic,
-              offset: _chromeVisible ? Offset.zero : const Offset(0, 1.1),
-              child: AnimatedOpacity(
-                duration: const Duration(milliseconds: 180),
-                opacity: _chromeVisible ? 1 : 0,
-                child: NavigationBar(
-                  selectedIndex: _selectedIndex,
-                  onDestinationSelected: (index) => setState(() {
-                    _selectedIndex = index;
-                    _chromeVisible = true;
-                  }),
-                  destinations: const [
-                    NavigationDestination(
-                      icon: Icon(Icons.dynamic_feed_outlined),
-                      selectedIcon: Icon(Icons.dynamic_feed_rounded),
-                      label: '发现',
-                    ),
-                    NavigationDestination(
-                      icon: Icon(Icons.people_outline_rounded),
-                      selectedIcon: Icon(Icons.people_rounded),
-                      label: '社交',
-                    ),
-                    NavigationDestination(
-                      icon: Icon(Icons.storefront_outlined),
-                      selectedIcon: Icon(Icons.storefront_rounded),
-                      label: '商城',
-                    ),
-                    NavigationDestination(
-                      icon: Icon(Icons.person_outline_rounded),
-                      selectedIcon: Icon(Icons.person_rounded),
-                      label: '我的',
-                    ),
-                  ],
+          : ClipRect(
+              child: AnimatedAlign(
+                duration: const Duration(milliseconds: 320),
+                curve: Curves.easeInOutCubic,
+                alignment: Alignment.topCenter,
+                heightFactor: _chromeVisible ? 1 : 0,
+                child: Material(
+                  elevation: _chromeVisible ? 3 : 0,
+                  color: Theme.of(context).navigationBarTheme.backgroundColor ?? Colors.white,
+                  child: NavigationBar(
+                    selectedIndex: _selectedIndex,
+                    onDestinationSelected: (index) => setState(() {
+                      _selectedIndex = index;
+                      _chromeVisible = true;
+                    }),
+                    destinations: const [
+                      NavigationDestination(
+                        icon: Icon(Icons.dynamic_feed_outlined),
+                        selectedIcon: Icon(Icons.dynamic_feed_rounded),
+                        label: '发现',
+                      ),
+                      NavigationDestination(
+                        icon: Icon(Icons.people_outline_rounded),
+                        selectedIcon: Icon(Icons.people_rounded),
+                        label: '社交',
+                      ),
+                      NavigationDestination(
+                        icon: Icon(Icons.storefront_outlined),
+                        selectedIcon: Icon(Icons.storefront_rounded),
+                        label: '商城',
+                      ),
+                      NavigationDestination(
+                        icon: Icon(Icons.person_outline_rounded),
+                        selectedIcon: Icon(Icons.person_rounded),
+                        label: '我的',
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
