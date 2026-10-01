@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/chenge_api.dart';
+import '../services/settings_store.dart';
 import '../theme/app_theme.dart';
 
 class AccountPage extends StatelessWidget {
@@ -12,6 +13,8 @@ class AccountPage extends StatelessWidget {
     required this.onLogin,
     required this.onLogout,
     required this.onOpenTasks,
+    required this.settings,
+    required this.onSettingsChanged,
   });
 
   final ChengeApi api;
@@ -20,6 +23,8 @@ class AccountPage extends StatelessWidget {
   final Future<void> Function(Map<String, dynamic>) onLogin;
   final Future<void> Function() onLogout;
   final VoidCallback onOpenTasks;
+  final SettingsStore settings;
+  final Future<void> Function() onSettingsChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -118,50 +123,13 @@ class AccountPage extends StatelessWidget {
   Future<void> _showSettings(BuildContext context, bool signedIn) async {
     await showModalBottomSheet<void>(
       context: context,
+      isScrollControlled: true,
       showDragHandle: true,
-      builder: (sheetContext) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(18, 4, 18, 18),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Padding(
-                padding: EdgeInsets.only(left: 4, bottom: 8),
-                child: Text('设置', style: TextStyle(fontSize: 19, fontWeight: FontWeight.w900)),
-              ),
-              if (signedIn)
-                ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-                  leading: const Icon(Icons.logout_rounded, color: AppTheme.coral),
-                  title: const Text('退出登录', style: TextStyle(color: AppTheme.coral, fontWeight: FontWeight.w700)),
-                  onTap: () async {
-                    Navigator.pop(sheetContext);
-                    final confirmed = await showDialog<bool>(
-                      context: context,
-                      builder: (dialogContext) => AlertDialog(
-                        title: const Text('退出登录'),
-                        content: const Text('确定退出当前 ChengeWorld 账户？'),
-                        actions: [
-                          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('取消')),
-                          FilledButton.tonal(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('退出')),
-                        ],
-                      ),
-                    );
-                    if (confirmed != true) return;
-                    await onLogout();
-                    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('已退出登录')));
-                  },
-                )
-              else
-                const ListTile(
-                  contentPadding: EdgeInsets.symmetric(horizontal: 4),
-                  leading: Icon(Icons.lock_outline_rounded, color: AppTheme.leaf),
-                  title: Text('登录后可管理账户设置'),
-                ),
-            ],
-          ),
-        ),
+      builder: (sheetContext) => _SettingsSheet(
+        signedIn: signedIn,
+        settings: settings,
+        onSettingsChanged: onSettingsChanged,
+        onLogout: onLogout,
       ),
     );
   }
@@ -174,6 +142,207 @@ class AccountPage extends StatelessWidget {
     if (result == null || !context.mounted) return;
     await onLogin(result);
     if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('登录成功')));
+  }
+}
+
+class _SettingsSheet extends StatefulWidget {
+  const _SettingsSheet({
+    required this.signedIn,
+    required this.settings,
+    required this.onSettingsChanged,
+    required this.onLogout,
+  });
+
+  final bool signedIn;
+  final SettingsStore settings;
+  final Future<void> Function() onSettingsChanged;
+  final Future<void> Function() onLogout;
+
+  @override
+  State<_SettingsSheet> createState() => _SettingsSheetState();
+}
+
+class _SettingsSheetState extends State<_SettingsSheet> {
+  late bool _useDynamic;
+  late Color _seed;
+  late bool _statusImmersive;
+  late bool _navImmersive;
+
+  @override
+  void initState() {
+    super.initState();
+    _useDynamic = widget.settings.useDynamicColor;
+    _seed = widget.settings.seedColor;
+    _statusImmersive = widget.settings.statusBarImmersive;
+    _navImmersive = widget.settings.navigationBarImmersive;
+  }
+
+  Future<void> _apply() => widget.onSettingsChanged();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final bottom = MediaQuery.paddingOf(context).bottom;
+
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: EdgeInsets.fromLTRB(18, 4, 18, 18 + bottom),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.only(left: 4, bottom: 8),
+              child: Text('设置', style: TextStyle(fontSize: 19, fontWeight: FontWeight.w900)),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(left: 4, top: 4, bottom: 6),
+              child: Text('外观', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF70817D))),
+            ),
+            SwitchListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+              secondary: Icon(Icons.wallpaper_rounded, color: theme.colorScheme.primary),
+              title: const Text('动态取色', style: TextStyle(fontWeight: FontWeight.w700)),
+              subtitle: const Text('使用 Android 12+ 壁纸配色（Material You）'),
+              value: _useDynamic,
+              onChanged: (value) async {
+                setState(() => _useDynamic = value);
+                await widget.settings.setUseDynamicColor(value);
+                await _apply();
+              },
+            ),
+            if (!_useDynamic) ...[
+              const Padding(
+                padding: EdgeInsets.only(left: 4, top: 8, bottom: 10),
+                child: Text('主题色', style: TextStyle(fontWeight: FontWeight.w700)),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: [
+                    for (final color in AppTheme.presetSeeds)
+                      _ColorSwatch(
+                        color: color,
+                        selected: _seed.toARGB32() == color.toARGB32(),
+                        onTap: () async {
+                          setState(() => _seed = color);
+                          await widget.settings.setSeedColor(color);
+                          await _apply();
+                        },
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
+            const Padding(
+              padding: EdgeInsets.only(left: 4, top: 12, bottom: 6),
+              child: Text('系统栏', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF70817D))),
+            ),
+            SwitchListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+              secondary: Icon(Icons.vertical_align_top_rounded, color: theme.colorScheme.primary),
+              title: const Text('状态栏沉浸', style: TextStyle(fontWeight: FontWeight.w700)),
+              subtitle: const Text('内容延伸至状态栏下方，状态栏透明'),
+              value: _statusImmersive,
+              onChanged: (value) async {
+                setState(() => _statusImmersive = value);
+                await widget.settings.setStatusBarImmersive(value);
+                await _apply();
+              },
+            ),
+            SwitchListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+              secondary: Icon(Icons.vertical_align_bottom_rounded, color: theme.colorScheme.primary),
+              title: const Text('导航栏沉浸', style: TextStyle(fontWeight: FontWeight.w700)),
+              subtitle: const Text('内容延伸至导航栏下方，导航栏透明'),
+              value: _navImmersive,
+              onChanged: (value) async {
+                setState(() => _navImmersive = value);
+                await widget.settings.setNavigationBarImmersive(value);
+                await _apply();
+              },
+            ),
+            const Divider(height: 28),
+            if (widget.signedIn)
+              ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+                leading: const Icon(Icons.logout_rounded, color: AppTheme.coral),
+                title: const Text('退出登录', style: TextStyle(color: AppTheme.coral, fontWeight: FontWeight.w700)),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final confirmed = await showDialog<bool>(
+                    context: context,
+                    builder: (dialogContext) => AlertDialog(
+                      title: const Text('退出登录'),
+                      content: const Text('确定退出当前 ChengeWorld 账户？'),
+                      actions: [
+                        TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('取消')),
+                        FilledButton.tonal(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('退出')),
+                      ],
+                    ),
+                  );
+                  if (confirmed != true) return;
+                  await widget.onLogout();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('已退出登录')));
+                  }
+                },
+              )
+            else
+              const ListTile(
+                contentPadding: EdgeInsets.symmetric(horizontal: 4),
+                leading: Icon(Icons.lock_outline_rounded, color: AppTheme.leaf),
+                title: Text('登录后可管理账户设置'),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ColorSwatch extends StatelessWidget {
+  const _ColorSwatch({
+    required this.color,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final Color color;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: color,
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: selected ? Colors.black87 : Colors.transparent,
+            width: selected ? 3 : 0,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: color.withValues(alpha: 0.35),
+              blurRadius: selected ? 8 : 3,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: selected
+            ? const Icon(Icons.check_rounded, color: Colors.white, size: 20)
+            : null,
+      ),
+    );
   }
 }
 
