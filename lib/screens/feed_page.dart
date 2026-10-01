@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 import '../models/blog_post.dart';
 import '../services/chenge_api.dart';
-import '../theme/app_theme.dart';
 import '../widgets/post_card.dart';
 import 'post_detail_page.dart';
 
 class FeedPage extends StatefulWidget {
-  const FeedPage({super.key, required this.api, required this.token});
+  const FeedPage({
+    super.key,
+    required this.api,
+    required this.token,
+    this.onChromeVisibilityChanged,
+  });
 
   final ChengeApi api;
   final String? token;
+  /// Called when scrolling should show/hide shell chrome (bottom nav, etc.).
+  final ValueChanged<bool>? onChromeVisibilityChanged;
 
   @override
   State<FeedPage> createState() => _FeedPageState();
@@ -26,10 +33,12 @@ class _FeedPageState extends State<FeedPage> {
   int _total = 0;
   int _requestId = 0;
   bool _loading = false;
+  bool _chromeVisible = true;
 
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
     _loadPage(1);
   }
 
@@ -41,9 +50,31 @@ class _FeedPageState extends State<FeedPage> {
 
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _searchController.dispose();
+    widget.onChromeVisibilityChanged?.call(true);
     super.dispose();
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    if (_scrollController.offset <= 8) {
+      _setChromeVisible(true);
+      return;
+    }
+    final direction = _scrollController.position.userScrollDirection;
+    if (direction == ScrollDirection.reverse) {
+      _setChromeVisible(false);
+    } else if (direction == ScrollDirection.forward) {
+      _setChromeVisible(true);
+    }
+  }
+
+  void _setChromeVisible(bool visible) {
+    if (_chromeVisible == visible) return;
+    setState(() => _chromeVisible = visible);
+    widget.onChromeVisibilityChanged?.call(visible);
   }
 
   Future<void> _loadPage(int page) async {
@@ -76,6 +107,7 @@ class _FeedPageState extends State<FeedPage> {
   }
 
   void _openPost(BlogPost post) {
+    _setChromeVisible(true);
     Navigator.of(context).push(MaterialPageRoute<void>(
       builder: (_) => PostDetailPage(api: widget.api, post: post, token: widget.token),
     ));
@@ -86,46 +118,50 @@ class _FeedPageState extends State<FeedPage> {
     final width = MediaQuery.sizeOf(context).width;
     final maxWidth = width >= 1200 ? 1120.0 : 920.0;
     final columns = width >= 1120 ? 2 : 1;
+    final primary = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
-      appBar: AppBar(
-        titleSpacing: 20,
-        title: Row(
-          children: [
-            Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                color: AppTheme.leaf,
-                borderRadius: BorderRadius.circular(13),
-              ),
-              child: const Icon(Icons.forum_rounded, color: Colors.white, size: 21),
-            ),
-            const SizedBox(width: 11),
-            const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('ChengeWorld', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-                Text('社区广场', style: TextStyle(fontSize: 11, color: Color(0xFF70817D))),
-              ],
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            tooltip: '刷新帖子',
-            onPressed: _loading ? null : () => _loadPage(1),
-            icon: const Icon(Icons.refresh_rounded),
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
       body: Center(
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: maxWidth),
           child: CustomScrollView(
             controller: _scrollController,
             slivers: [
+              SliverAppBar(
+                floating: true,
+                snap: true,
+                pinned: false,
+                titleSpacing: 20,
+                title: Row(
+                  children: [
+                    Container(
+                      width: 38,
+                      height: 38,
+                      decoration: BoxDecoration(
+                        color: primary,
+                        borderRadius: BorderRadius.circular(13),
+                      ),
+                      child: const Icon(Icons.forum_rounded, color: Colors.white, size: 21),
+                    ),
+                    const SizedBox(width: 11),
+                    const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('ChengeWorld', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                        Text('社区广场', style: TextStyle(fontSize: 11, color: Color(0xFF70817D))),
+                      ],
+                    ),
+                  ],
+                ),
+                actions: [
+                  IconButton(
+                    tooltip: '刷新帖子',
+                    onPressed: _loading ? null : () => _loadPage(1),
+                    icon: const Icon(Icons.refresh_rounded),
+                  ),
+                  const SizedBox(width: 8),
+                ],
+              ),
               SliverPadding(
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 14),
                 sliver: SliverToBoxAdapter(child: _buildSearch()),
@@ -250,9 +286,7 @@ class _FeedPageState extends State<FeedPage> {
             IconButton.filledTonal(
               tooltip: '下一页',
               onPressed: _loading || _page >= totalPages ? null : () => _loadPage(_page + 1),
-              icon: _loading
-                  ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Icon(Icons.chevron_right_rounded),
+              icon: const Icon(Icons.chevron_right_rounded),
             ),
           ],
         ),
@@ -262,19 +296,15 @@ class _FeedPageState extends State<FeedPage> {
 
   Widget _buildError() => Center(
         child: Padding(
-          padding: const EdgeInsets.all(28),
+          padding: const EdgeInsets.all(32),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.cloud_off_rounded, size: 42, color: AppTheme.coral),
+              const Icon(Icons.cloud_off_rounded, size: 48, color: Color(0xFF70817D)),
               const SizedBox(height: 12),
-              Text(_error, textAlign: TextAlign.center),
+              Text(_error, textAlign: TextAlign.center, style: const TextStyle(color: Color(0xFF70817D))),
               const SizedBox(height: 16),
-              FilledButton.tonalIcon(
-                onPressed: () => _loadPage(1),
-                icon: const Icon(Icons.refresh_rounded),
-                label: const Text('重试'),
-              ),
+              FilledButton.tonal(onPressed: () => _loadPage(1), child: const Text('重试')),
             ],
           ),
         ),
@@ -285,21 +315,19 @@ class _EmptyFeed extends StatelessWidget {
   const _EmptyFeed();
 
   @override
-  Widget build(BuildContext context) => Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 86,
-              height: 86,
-              decoration: BoxDecoration(color: const Color(0xFFFFE8C5), borderRadius: BorderRadius.circular(28)),
-              child: const Icon(Icons.forum_outlined, size: 38, color: AppTheme.ink),
-            ),
-            const SizedBox(height: 16),
-            const Text('这里暂时很安静', style: TextStyle(fontSize: 19, fontWeight: FontWeight.w800)),
-            const SizedBox(height: 5),
-            const Text('换个关键词试试', style: TextStyle(color: Color(0xFF70817D))),
-          ],
+  Widget build(BuildContext context) => const Center(
+        child: Padding(
+          padding: EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.forum_outlined, size: 48, color: Color(0xFF70817D)),
+              SizedBox(height: 12),
+              Text('暂时没有帖子', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+              SizedBox(height: 6),
+              Text('换个关键词或稍后再来看看', style: TextStyle(color: Color(0xFF70817D))),
+            ],
+          ),
         ),
       );
 }
