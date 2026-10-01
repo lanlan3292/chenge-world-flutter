@@ -108,12 +108,27 @@ class _AppShellState extends State<AppShell> {
     final value = link.toLowerCase();
     final destination = value.contains('shop')
         ? 2
-        : value.contains('task')
-            ? 3
-            : value.contains('friend') || value.contains('chat')
-                ? 1
-                : 0;
+        : value.contains('friend') || value.contains('chat')
+            ? 1
+            : 0;
     setState(() => _selectedIndex = destination);
+  }
+
+  void _openTasks() {
+    Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => TasksPage(
+        api: _api,
+        token: _token,
+        onLoginRequested: () {
+          Navigator.of(context).pop();
+          setState(() => _selectedIndex = 3);
+        },
+        onOpenLink: (link) {
+          Navigator.of(context).pop();
+          _openTaskLink(link);
+        },
+      ),
+    ));
   }
 
   @override
@@ -137,18 +152,13 @@ class _AppShellState extends State<AppShell> {
         userId: _userId,
         onLoginRequested: () => setState(() => _selectedIndex = 4),
       ),
-      TasksPage(
-        api: _api,
-        token: _token,
-        onLoginRequested: () => setState(() => _selectedIndex = 4),
-        onOpenLink: _openTaskLink,
-      ),
       AccountPage(
         api: _api,
         token: _token,
         username: _username,
         onLogin: _onLogin,
         onLogout: _onLogout,
+        onOpenTasks: _openTasks,
       ),
     ];
 
@@ -194,11 +204,6 @@ class _AppShellState extends State<AppShell> {
                       label: Text('商城'),
                     ),
                     NavigationRailDestination(
-                      icon: Icon(Icons.task_alt_outlined),
-                      selectedIcon: Icon(Icons.task_alt_rounded),
-                      label: Text('任务'),
-                    ),
-                    NavigationRailDestination(
                       icon: Icon(Icons.person_outline_rounded),
                       selectedIcon: Icon(Icons.person_rounded),
                       label: Text('我的'),
@@ -232,11 +237,6 @@ class _AppShellState extends State<AppShell> {
                   icon: Icon(Icons.storefront_outlined),
                   selectedIcon: Icon(Icons.storefront_rounded),
                   label: '商城',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.task_alt_outlined),
-                  selectedIcon: Icon(Icons.task_alt_rounded),
-                  label: '任务',
                 ),
                 NavigationDestination(
                   icon: Icon(Icons.person_outline_rounded),

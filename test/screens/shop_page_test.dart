@@ -35,4 +35,41 @@ void main() {
     expect(find.text('社区图标'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('next page button requests the next shop page', (tester) async {
+    final requestedPages = <String>[];
+    final api = ChengeApi(
+      baseUrl: 'http://example.test',
+      client: MockClient((request) async {
+        requestedPages.add(request.url.queryParameters['pageNum']!);
+        final page = int.parse(request.url.queryParameters['pageNum']!);
+        return http.Response(
+          jsonEncode({
+            'code': 200,
+            'data': {
+              'records': [
+                {'id': page, 'title': '商品 $page', 'type': 'file', 'price': 300, 'stock': 4},
+              ],
+              'total': 25,
+            },
+          }),
+          200,
+          headers: {'content-type': 'application/json; charset=utf-8'},
+        );
+      }),
+    );
+    await tester.pumpWidget(MaterialApp(
+      home: ShopPage(api: api, token: null, userId: null, onLoginRequested: () {}),
+    ));
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.byTooltip('下一页'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('下一页'));
+    await tester.pumpAndSettle();
+
+    expect(requestedPages, ['1', '2']);
+    expect(find.text('商品 2'), findsOneWidget);
+    expect(find.text('第 2 / 3 页'), findsOneWidget);
+  });
 }

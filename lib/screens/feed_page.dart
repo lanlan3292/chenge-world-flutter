@@ -46,16 +46,13 @@ class _FeedPageState extends State<FeedPage> {
     super.dispose();
   }
 
-  Future<void> _loadPage(int page, {bool append = false}) async {
-    if (append && _loading) return;
+  Future<void> _loadPage(int page) async {
     final requestId = ++_requestId;
     setState(() {
       _loading = true;
       _error = '';
-      if (!append) {
-        _posts.clear();
-        _page = 0;
-      }
+      _posts.clear();
+      _page = 0;
     });
     try {
       final result = await widget.api.listPosts(
@@ -233,21 +230,31 @@ class _FeedPageState extends State<FeedPage> {
       );
 
   Widget _buildPagination() {
-    if (_page * 12 >= _total && !_loading) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 25),
-        child: Center(child: Text('已经看到这里了', style: TextStyle(color: Color(0xFF70817D)))),
-      );
-    }
+    final totalPages = (_total + 11) ~/ 12;
+    if (totalPages < 2) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 24),
+      padding: const EdgeInsets.symmetric(vertical: 18),
       child: Center(
-        child: FilledButton.tonalIcon(
-          onPressed: _loading ? null : () => _loadPage(_page + 1, append: true),
-          icon: _loading
-              ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
-              : const Icon(Icons.expand_more_rounded),
-          label: Text(_loading ? '正在加载' : '加载更多'),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton.filledTonal(
+              tooltip: '上一页',
+              onPressed: _loading || _page <= 1 ? null : () => _loadPage(_page - 1),
+              icon: const Icon(Icons.chevron_left_rounded),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              child: Text('第 $_page / $totalPages 页', style: const TextStyle(fontWeight: FontWeight.w700)),
+            ),
+            IconButton.filledTonal(
+              tooltip: '下一页',
+              onPressed: _loading || _page >= totalPages ? null : () => _loadPage(_page + 1),
+              icon: _loading
+                  ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                  : const Icon(Icons.chevron_right_rounded),
+            ),
+          ],
         ),
       ),
     );

@@ -11,6 +11,7 @@ class AccountPage extends StatelessWidget {
     required this.username,
     required this.onLogin,
     required this.onLogout,
+    required this.onOpenTasks,
   });
 
   final ChengeApi api;
@@ -18,12 +19,23 @@ class AccountPage extends StatelessWidget {
   final String? username;
   final Future<void> Function(Map<String, dynamic>) onLogin;
   final Future<void> Function() onLogout;
+  final VoidCallback onOpenTasks;
 
   @override
   Widget build(BuildContext context) {
     final signedIn = token != null;
     return Scaffold(
-      appBar: AppBar(title: const Text('账户', style: TextStyle(fontWeight: FontWeight.w800))),
+      appBar: AppBar(
+        title: const Text('我的', style: TextStyle(fontWeight: FontWeight.w800)),
+        actions: [
+          IconButton(
+            tooltip: '设置',
+            onPressed: () => _showSettings(context, signedIn),
+            icon: const Icon(Icons.settings_outlined),
+          ),
+          const SizedBox(width: 6),
+        ],
+      ),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 620),
@@ -61,22 +73,30 @@ class AccountPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 18),
-              if (signedIn)
-                OutlinedButton.icon(
-                  onPressed: () async {
-                    await onLogout();
-                    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('已退出登录')));
-                  },
-                  icon: const Icon(Icons.logout_rounded),
-                  label: const Text('退出登录'),
-                )
-              else
+              Material(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                child: ListTile(
+                  onTap: onOpenTasks,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
+                  leading: Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(color: const Color(0xFFFFE8C5), borderRadius: BorderRadius.circular(14)),
+                    child: const Icon(Icons.task_alt_rounded, color: AppTheme.ink),
+                  ),
+                  title: const Text('任务中心', style: TextStyle(fontWeight: FontWeight.w800)),
+                  subtitle: const Text('签到、完成任务并领取 ChengeCoin'),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                ),
+              ),
+              const SizedBox(height: 24),
+              if (!signedIn)
                 FilledButton.icon(
                   onPressed: () => _showLogin(context),
                   icon: const Icon(Icons.login_rounded),
                   label: const Text('登录账户'),
                 ),
-              const SizedBox(height: 24),
               const Text('连接状态', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
               const SizedBox(height: 10),
               ListTile(
@@ -88,6 +108,57 @@ class AccountPage extends StatelessWidget {
                 subtitle: const Text('8.138.13.61'),
                 trailing: const Icon(Icons.circle, size: 10, color: AppTheme.leaf),
               ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showSettings(BuildContext context, bool signedIn) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 4, 18, 18),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(left: 4, bottom: 8),
+                child: Text('设置', style: TextStyle(fontSize: 19, fontWeight: FontWeight.w900)),
+              ),
+              if (signedIn)
+                ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+                  leading: const Icon(Icons.logout_rounded, color: AppTheme.coral),
+                  title: const Text('退出登录', style: TextStyle(color: AppTheme.coral, fontWeight: FontWeight.w700)),
+                  onTap: () async {
+                    Navigator.pop(sheetContext);
+                    final confirmed = await showDialog<bool>(
+                      context: context,
+                      builder: (dialogContext) => AlertDialog(
+                        title: const Text('退出登录'),
+                        content: const Text('确定退出当前 ChengeWorld 账户？'),
+                        actions: [
+                          TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('取消')),
+                          FilledButton.tonal(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('退出')),
+                        ],
+                      ),
+                    );
+                    if (confirmed != true) return;
+                    await onLogout();
+                    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('已退出登录')));
+                  },
+                )
+              else
+                const ListTile(
+                  contentPadding: EdgeInsets.symmetric(horizontal: 4),
+                  leading: Icon(Icons.lock_outline_rounded, color: AppTheme.leaf),
+                  title: Text('登录后可管理账户设置'),
+                ),
             ],
           ),
         ),

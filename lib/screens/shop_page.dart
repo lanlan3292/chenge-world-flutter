@@ -65,16 +65,13 @@ class _ShopPageState extends State<ShopPage> {
     super.dispose();
   }
 
-  Future<void> _loadItems({int page = 1, bool append = false}) async {
-    if (append && _loading) return;
+  Future<void> _loadItems({int page = 1}) async {
     final requestId = ++_itemRequestId;
     setState(() {
       _loading = true;
       _error = '';
-      if (!append) {
-        _items.clear();
-        _page = 0;
-      }
+      _items.clear();
+      _page = 0;
     });
     try {
       final result = await widget.api.shopItems(
@@ -408,17 +405,31 @@ class _ShopPageState extends State<ShopPage> {
   }
 
   Widget _pagination() {
-    final hasMore = _page * 12 < _total;
-    if (!hasMore && !_loading) return const SliverPadding(padding: EdgeInsets.all(16), sliver: SliverToBoxAdapter(child: Center(child: Text('已显示全部商品', style: TextStyle(color: Color(0xFF70817D))))));
+    final totalPages = (_total + 11) ~/ 12;
+    if (totalPages < 2) return const SliverToBoxAdapter(child: SizedBox(height: 18));
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 18),
-        child: Center(
-          child: OutlinedButton.icon(
-            onPressed: _loading ? null : () => _loadItems(page: _page + 1, append: true),
-            icon: _loading ? const SizedBox.square(dimension: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.expand_more_rounded),
-            label: Text(_loading ? '正在加载' : '加载更多'),
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton.filledTonal(
+              tooltip: '上一页',
+              onPressed: _loading || _page <= 1 ? null : () => _loadItems(page: _page - 1),
+              icon: const Icon(Icons.chevron_left_rounded),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              child: Text('第 $_page / $totalPages 页', style: const TextStyle(fontWeight: FontWeight.w700)),
+            ),
+            IconButton.filledTonal(
+              tooltip: '下一页',
+              onPressed: _loading || _page >= totalPages ? null : () => _loadItems(page: _page + 1),
+              icon: _loading
+                  ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                  : const Icon(Icons.chevron_right_rounded),
+            ),
+          ],
         ),
       ),
     );
