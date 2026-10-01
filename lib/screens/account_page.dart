@@ -103,15 +103,7 @@ class AccountPage extends StatelessWidget {
                   label: const Text('登录账户'),
                 ),
               const Text('连接状态', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
-              const SizedBox(height: 10),
-              ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 14),
-                tileColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                leading: const Icon(Icons.dns_outlined, color: AppTheme.leaf),
-                title: const Text('ChengeWorld 服务'),
-                subtitle: const Text('8.138.13.61'),
-                trailing: const Icon(Icons.circle, size: 10, color: AppTheme.leaf),
+              const SizedBox(height: 10
               ),
             ],
           ),

@@ -1,6 +1,6 @@
 # ChengeWorld Flutter
 
-面向 Android 的 [ChengeWorld](https://gitee.com/lanlan3292/chenge-world) 社区客户端，包含账号密码登录、会话安全保存、帖子浏览、好友管理、私聊和商城。界面使用 Flutter Material 3 组件构建，适配手机和平板屏幕。
+面向 Android 的 [ChengeWorld](https://gitee.com/bfg-as/chenge-world) 社区客户端，包含账号密码登录、会话安全保存、帖子浏览、好友管理、私聊和商城。界面使用 Flutter Material 3 组件构建，适配手机和平板屏幕。
 
 - 帖子：最新/热门/精华、搜索、分页和 Markdown 详情。
 - 社交：好友与聊天共用一个主导航入口，页面内切换；好友支持列表、申请回加/拒绝、用户搜索、备注和解除关系。
