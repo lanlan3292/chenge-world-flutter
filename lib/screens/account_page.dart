@@ -101,9 +101,6 @@ class AccountPage extends StatelessWidget {
                   onPressed: () => _showLogin(context),
                   icon: const Icon(Icons.login_rounded),
                   label: const Text('登录账户'),
-                ),
-              const Text('连接状态', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
-              const SizedBox(height: 10
               ),
             ],
           ),
