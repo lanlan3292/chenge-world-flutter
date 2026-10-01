@@ -26,24 +26,32 @@ class _PostDetailPageState extends State<PostDetailPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          leading: IconButton(tooltip: '返回', onPressed: () => Navigator.pop(context), icon: const Icon(Icons.arrow_back_rounded)),
-          title: const Text('帖子', style: TextStyle(fontWeight: FontWeight.w800)),
+  Widget build(BuildContext context) {
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          tooltip: '返回',
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back_rounded),
         ),
-        body: FutureBuilder<BlogPost>(
-          future: _detail,
-          builder: (context, snapshot) => _body(snapshot.data ?? widget.post),
-        ),
-      );
+        title: const Text('帖子', style: TextStyle(fontWeight: FontWeight.w800)),
+      ),
+      body: FutureBuilder<BlogPost>(
+        future: _detail,
+        builder: (context, snapshot) => _body(snapshot.data ?? widget.post, bottomInset),
+      ),
+    );
+  }
 
-  Widget _body(BlogPost post) {
+  Widget _body(BlogPost post, double bottomInset) {
     final width = MediaQuery.sizeOf(context).width;
     return Center(
       child: ConstrainedBox(
         constraints: BoxConstraints(maxWidth: width > 780 ? 760 : double.infinity),
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(22, 12, 22, 48),
+          // Use system bottom inset so content clears the nav/gesture bar under edge-to-edge.
+          padding: EdgeInsets.fromLTRB(22, 12, 22, 28 + bottomInset),
           children: [
             if (post.categoryName != null)
               Align(
@@ -85,8 +93,11 @@ class _PostDetailPageState extends State<PostDetailPage> {
               const SizedBox(height: 22),
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.network(post.coverImage!, fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => const SizedBox.shrink()),
+                child: Image.network(
+                  post.coverImage!,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                ),
               ),
             ],
             const SizedBox(height: 24),
@@ -94,12 +105,16 @@ class _PostDetailPageState extends State<PostDetailPage> {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: post.tags.map((tag) => Chip(
-                  label: Text('#$tag'),
-                  visualDensity: VisualDensity.compact,
-                  backgroundColor: const Color(0xFFFFE8E1),
-                  side: BorderSide.none,
-                )).toList(),
+                children: post.tags
+                    .map(
+                      (tag) => Chip(
+                        label: Text('#$tag'),
+                        visualDensity: VisualDensity.compact,
+                        backgroundColor: const Color(0xFFFFE8E1),
+                        side: BorderSide.none,
+                      ),
+                    )
+                    .toList(),
               ),
             MarkdownBody(
               data: post.content.isNotEmpty ? post.content : post.summary,
