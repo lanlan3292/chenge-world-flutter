@@ -117,6 +117,8 @@ class _AppShellState extends State<AppShell> {
   String? _username;
   int? _userId;
   bool _restoring = true;
+  /// Bottom nav / rail chrome; hidden while scrolling the feed downward.
+  bool _chromeVisible = true;
 
   @override
   void initState() {
@@ -215,22 +217,34 @@ class _AppShellState extends State<AppShell> {
     }
 
     final wide = MediaQuery.sizeOf(context).width >= 760;
-    final statusImmersive = widget.settings.statusBarImmersive;
-    final navImmersive = widget.settings.navigationBarImmersive;
 
     final pages = <Widget>[
-      FeedPage(api: _api, token: _token),
+      FeedPage(
+        api: _api,
+        token: _token,
+        onChromeVisibilityChanged: (visible) {
+          if (_selectedIndex != 0) return;
+          if (_chromeVisible == visible) return;
+          setState(() => _chromeVisible = visible);
+        },
+      ),
       SocialPage(
         api: _api,
         token: _token,
         userId: _userId,
-        onLoginRequested: () => setState(() => _selectedIndex = 3),
+        onLoginRequested: () => setState(() {
+          _selectedIndex = 3;
+          _chromeVisible = true;
+        }),
       ),
       ShopPage(
         api: _api,
         token: _token,
         userId: _userId,
-        onLoginRequested: () => setState(() => _selectedIndex = 3),
+        onLoginRequested: () => setState(() {
+          _selectedIndex = 3;
+          _chromeVisible = true;
+        }),
       ),
       AccountPage(
         api: _api,
@@ -244,90 +258,112 @@ class _AppShellState extends State<AppShell> {
       ),
     ];
 
+    // Do not wrap child Scaffolds in SafeArea: each page AppBar already accounts for
+    // status-bar MediaQuery padding. Extra SafeArea caused double top/bottom insets.
     return Scaffold(
-      body: SafeArea(
-        top: !statusImmersive,
-        bottom: !navImmersive || wide,
-        child: Row(
-          children: [
-            if (wide)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(12, 16, 8, 16),
-                child: NavigationRail(
-                  selectedIndex: _selectedIndex,
-                  onDestinationSelected: (index) => setState(() => _selectedIndex = index),
-                  labelType: NavigationRailLabelType.all,
-                  leading: Padding(
-                    padding: const EdgeInsets.only(bottom: 28),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary,
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      child: const SizedBox(
-                        width: 48,
-                        height: 48,
-                        child: Icon(Icons.forum_rounded, color: Colors.white),
+      body: Row(
+        children: [
+          if (wide)
+            AnimatedSlide(
+              duration: const Duration(milliseconds: 220),
+              curve: Curves.easeOutCubic,
+              offset: _chromeVisible ? Offset.zero : const Offset(-1.05, 0),
+              child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 180),
+                opacity: _chromeVisible ? 1 : 0,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 16, 8, 16),
+                  child: NavigationRail(
+                    selectedIndex: _selectedIndex,
+                    onDestinationSelected: (index) => setState(() {
+                      _selectedIndex = index;
+                      _chromeVisible = true;
+                    }),
+                    labelType: NavigationRailLabelType.all,
+                    leading: Padding(
+                      padding: const EdgeInsets.only(bottom: 28),
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary,
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        child: const SizedBox(
+                          width: 48,
+                          height: 48,
+                          child: Icon(Icons.forum_rounded, color: Colors.white),
+                        ),
                       ),
                     ),
+                    destinations: const [
+                      NavigationRailDestination(
+                        icon: Icon(Icons.dynamic_feed_outlined),
+                        selectedIcon: Icon(Icons.dynamic_feed_rounded),
+                        label: Text('发现'),
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.people_outline_rounded),
+                        selectedIcon: Icon(Icons.people_rounded),
+                        label: Text('社交'),
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.storefront_outlined),
+                        selectedIcon: Icon(Icons.storefront_rounded),
+                        label: Text('商城'),
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.person_outline_rounded),
+                        selectedIcon: Icon(Icons.person_rounded),
+                        label: Text('我的'),
+                      ),
+                    ],
                   ),
+                ),
+              ),
+            ),
+          Expanded(
+            child: IndexedStack(index: _selectedIndex, children: pages),
+          ),
+        ],
+      ),
+      bottomNavigationBar: wide
+          ? null
+          : AnimatedSlide(
+              duration: const Duration(milliseconds: 220),
+              curve: Curves.easeOutCubic,
+              offset: _chromeVisible ? Offset.zero : const Offset(0, 1.1),
+              child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 180),
+                opacity: _chromeVisible ? 1 : 0,
+                child: NavigationBar(
+                  selectedIndex: _selectedIndex,
+                  onDestinationSelected: (index) => setState(() {
+                    _selectedIndex = index;
+                    _chromeVisible = true;
+                  }),
                   destinations: const [
-                    NavigationRailDestination(
+                    NavigationDestination(
                       icon: Icon(Icons.dynamic_feed_outlined),
                       selectedIcon: Icon(Icons.dynamic_feed_rounded),
-                      label: Text('发现'),
+                      label: '发现',
                     ),
-                    NavigationRailDestination(
+                    NavigationDestination(
                       icon: Icon(Icons.people_outline_rounded),
                       selectedIcon: Icon(Icons.people_rounded),
-                      label: Text('社交'),
+                      label: '社交',
                     ),
-                    NavigationRailDestination(
+                    NavigationDestination(
                       icon: Icon(Icons.storefront_outlined),
                       selectedIcon: Icon(Icons.storefront_rounded),
-                      label: Text('商城'),
+                      label: '商城',
                     ),
-                    NavigationRailDestination(
+                    NavigationDestination(
                       icon: Icon(Icons.person_outline_rounded),
                       selectedIcon: Icon(Icons.person_rounded),
-                      label: Text('我的'),
+                      label: '我的',
                     ),
                   ],
                 ),
               ),
-            Expanded(
-              child: IndexedStack(index: _selectedIndex, children: pages),
-            ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: wide
-          ? null
-          : NavigationBar(
-              selectedIndex: _selectedIndex,
-              onDestinationSelected: (index) => setState(() => _selectedIndex = index),
-              destinations: const [
-                NavigationDestination(
-                  icon: Icon(Icons.dynamic_feed_outlined),
-                  selectedIcon: Icon(Icons.dynamic_feed_rounded),
-                  label: '发现',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.people_outline_rounded),
-                  selectedIcon: Icon(Icons.people_rounded),
-                  label: '社交',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.storefront_outlined),
-                  selectedIcon: Icon(Icons.storefront_rounded),
-                  label: '商城',
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.person_outline_rounded),
-                  selectedIcon: Icon(Icons.person_rounded),
-                  label: '我的',
-                ),
-              ],
             ),
     );
   }
