@@ -14,6 +14,7 @@ class FeedPage extends StatefulWidget {
     required this.token,
     this.autoHideTopBar = true,
     this.autoHideBottomBar = true,
+    this.minColumns = 1,
     this.onChromeVisibilityChanged,
   });
 
@@ -21,6 +22,8 @@ class FeedPage extends StatefulWidget {
   final String? token;
   final bool autoHideTopBar;
   final bool autoHideBottomBar;
+  /// Minimum grid column count (1–3); responsive layout may use more.
+  final int minColumns;
   /// Called when scrolling should show/hide shell chrome (bottom nav, etc.).
   final ValueChanged<bool>? onChromeVisibilityChanged;
 
@@ -128,7 +131,8 @@ class _FeedPageState extends State<FeedPage> {
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
     final maxWidth = width >= 1200 ? 1120.0 : 920.0;
-    final columns = width >= 1120 ? 2 : 1;
+    final responsive = width >= 1120 ? 2 : 1;
+    final columns = responsive < widget.minColumns ? widget.minColumns.clamp(1, 3) : responsive;
     final primary = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
@@ -142,7 +146,6 @@ class _FeedPageState extends State<FeedPage> {
                 floating: widget.autoHideTopBar,
                 snap: widget.autoHideTopBar,
                 pinned: !widget.autoHideTopBar,
-                // Keep solid bar — do not inherit transparent immersive AppBarTheme.
                 backgroundColor: AppTheme.mist,
                 surfaceTintColor: Colors.transparent,
                 elevation: 0,
@@ -216,8 +219,6 @@ class _FeedPageState extends State<FeedPage> {
                 ),
                 SliverToBoxAdapter(child: _buildPagination()),
               ],
-              // Reserve space for bottom nav when visible; release it when chrome hides
-              // so the list can fill the former nav area (works with Scaffold.extendBody).
               SliverToBoxAdapter(
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 320),
