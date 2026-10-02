@@ -31,6 +31,8 @@ class _SettingsPageState extends State<SettingsPage> {
   late bool _predictiveBack;
   late int _feedMinColumns;
   late int _shopMinColumns;
+  late bool _chatShowSelfAvatar;
+  late bool _chatShowPeerAvatar;
 
   @override
   void initState() {
@@ -44,6 +46,8 @@ class _SettingsPageState extends State<SettingsPage> {
     _predictiveBack = widget.settings.predictiveBack;
     _feedMinColumns = widget.settings.feedMinColumns;
     _shopMinColumns = widget.settings.shopMinColumns;
+    _chatShowSelfAvatar = widget.settings.chatShowSelfAvatar;
+    _chatShowPeerAvatar = widget.settings.chatShowPeerAvatar;
   }
 
   Future<void> _updateSetting(Future<void> Function() update) async {
@@ -213,6 +217,23 @@ class _SettingsPageState extends State<SettingsPage> {
                   value: _autoHideBottom,
                   setValue: (value) => _autoHideBottom = value,
                   saveValue: widget.settings.setAutoHideBottomBar,
+                ),
+                _sectionTitle('聊天'),
+                _switchTile(
+                  icon: Icons.account_circle_outlined,
+                  title: '在会话聊天显示自己的头像',
+                  subtitle: '自己发送的消息右侧显示头像（默认关闭）',
+                  value: _chatShowSelfAvatar,
+                  setValue: (value) => _chatShowSelfAvatar = value,
+                  saveValue: widget.settings.setChatShowSelfAvatar,
+                ),
+                _switchTile(
+                  icon: Icons.face_outlined,
+                  title: '在私人会话聊天显示对方的头像',
+                  subtitle: '私聊中对方消息左侧显示头像；群聊始终显示成员头像（默认关闭）',
+                  value: _chatShowPeerAvatar,
+                  setValue: (value) => _chatShowPeerAvatar = value,
+                  saveValue: widget.settings.setChatShowPeerAvatar,
                 ),
                 _sectionTitle('系统手势'),
                 _switchTile(

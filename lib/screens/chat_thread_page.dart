@@ -18,6 +18,8 @@ class ChatThreadPage extends StatefulWidget {
     required this.conversation,
     this.showBackButton = true,
     this.peerOnline,
+    this.showSelfAvatar = false,
+    this.showPeerAvatar = false,
   });
 
   final ChengeApi api;
@@ -26,6 +28,10 @@ class ChatThreadPage extends StatefulWidget {
   final ChatConversation conversation;
   final bool showBackButton;
   final bool? peerOnline;
+  /// 是否在自己的消息旁显示头像（设置项，默认关）
+  final bool showSelfAvatar;
+  /// 是否在私聊中显示对方头像（设置项，默认关）；群聊始终显示成员头像
+  final bool showPeerAvatar;
 
   @override
   State<ChatThreadPage> createState() => _ChatThreadPageState();
@@ -331,21 +337,29 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     final mine = message.senderId == widget.userId;
     final isEmoji = message.type == 'emoji';
     final isShare = message.type == 'post' || message.type == 'order';
+    final isGroup = _conversation.type == 'group';
+    final showOtherAvatar = !mine && (isGroup || widget.showPeerAvatar);
+    final showMineAvatar = mine && widget.showSelfAvatar;
+
+    Widget avatarFor(String name, String? url) => CircleAvatar(
+          radius: 15,
+          backgroundColor: const Color(0xFFFFE8C5),
+          foregroundImage: url == null ? null : NetworkImage(url),
+          onForegroundImageError: url == null ? null : (_, __) {},
+          child: Text(
+            name.isEmpty ? '友' : name.characters.first,
+            style: const TextStyle(color: AppTheme.ink, fontWeight: FontWeight.w700),
+          ),
+        );
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         mainAxisAlignment: mine ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          if (!mine) ...[
-            CircleAvatar(
-              radius: 15,
-              backgroundColor: const Color(0xFFFFE8C5),
-              foregroundImage: message.senderAvatar == null ? null : NetworkImage(message.senderAvatar!),
-              onForegroundImageError: message.senderAvatar == null ? null : (_, __) {},
-              child: Text((message.senderName ?? _conversation.name).characters.first,
-                  style: const TextStyle(color: AppTheme.ink, fontWeight: FontWeight.w700)),
-            ),
+          if (showOtherAvatar) ...[
+            avatarFor(message.senderName ?? _conversation.name, message.senderAvatar),
             const SizedBox(width: 8),
           ],
           Flexible(
@@ -387,6 +401,10 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
               ],
             ),
           ),
+          if (showMineAvatar) ...[
+            const SizedBox(width: 8),
+            avatarFor('我', message.senderAvatar),
+          ],
         ],
       ),
     );

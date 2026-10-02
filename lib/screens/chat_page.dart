@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../models/chat_conversation.dart';
 import '../models/chat_message.dart';
 import '../services/chenge_api.dart';
+import '../services/settings_store.dart';
 import '../theme/app_theme.dart';
 import 'chat_thread_page.dart';
 
@@ -14,6 +15,7 @@ class ChatPage extends StatefulWidget {
     required this.api,
     required this.token,
     required this.userId,
+    required this.settings,
     required this.launchPeerId,
     required this.launchNonce,
     required this.onOpenFriends,
@@ -25,6 +27,7 @@ class ChatPage extends StatefulWidget {
   final ChengeApi api;
   final String? token;
   final int? userId;
+  final SettingsStore settings;
   final int? launchPeerId;
   final int? launchConversationId;
   final int launchNonce;
@@ -103,7 +106,7 @@ class _ChatPageState extends State<ChatPage> {
       setState(() {
         _conversations
           ..clear()
-          ..addAll(conversations); // single + group
+          ..addAll(conversations);
         _error = '';
         final activeId = _active?.id;
         if (activeId != null) {
@@ -203,6 +206,8 @@ class _ChatPageState extends State<ChatPage> {
           peerOnline: conversation.type == 'single' && conversation.peerId != null
               ? _peerOnline[conversation.peerId!]
               : null,
+          showSelfAvatar: widget.settings.chatShowSelfAvatar,
+          showPeerAvatar: widget.settings.chatShowPeerAvatar,
         ),
       ),
     );
@@ -309,6 +314,8 @@ class _ChatPageState extends State<ChatPage> {
                     peerOnline: _active!.type == 'single' && _active!.peerId != null
                         ? _peerOnline[_active!.peerId!]
                         : null,
+                    showSelfAvatar: widget.settings.chatShowSelfAvatar,
+                    showPeerAvatar: widget.settings.chatShowPeerAvatar,
                   ),
           ),
         ],
@@ -373,12 +380,7 @@ class _ChatPageState extends State<ChatPage> {
             children: [
               Stack(
                 children: [
-                  _avatar(
-                    conversation.name,
-                    conversation.avatar,
-                    radius: 22,
-                    isGroup: isGroup,
-                  ),
+                  _avatar(conversation.name, conversation.avatar, radius: 22, isGroup: isGroup),
                   if (!isGroup)
                     Positioned(
                       right: 0,
@@ -436,13 +438,11 @@ class _ChatPageState extends State<ChatPage> {
                           Container(
                             constraints: const BoxConstraints(minWidth: 20),
                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            decoration:
-                                BoxDecoration(color: AppTheme.coral, borderRadius: BorderRadius.circular(10)),
+                            decoration: BoxDecoration(color: AppTheme.coral, borderRadius: BorderRadius.circular(10)),
                             child: Text(
                               '${conversation.unread}',
                               textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                  color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700),
+                              style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700),
                             ),
                           ),
                         ],

@@ -14,6 +14,8 @@ class SettingsStore {
   static const _predictiveBackKey = 'appearance_predictive_back';
   static const _feedMinColumnsKey = 'layout_feed_min_columns';
   static const _shopMinColumnsKey = 'layout_shop_min_columns';
+  static const _chatShowSelfAvatarKey = 'chat_show_self_avatar';
+  static const _chatShowPeerAvatarKey = 'chat_show_peer_avatar';
 
   /// Default brand seed (AppTheme.leaf).
   static const defaultSeed = Color(0xFF006B61);
@@ -33,6 +35,11 @@ class SettingsStore {
   int feedMinColumns = 1;
   /// Minimum grid columns on the shop page (1–3). Default 1.
   int shopMinColumns = 1;
+  /// Show own avatar on the right of sent bubbles. Default off.
+  bool chatShowSelfAvatar = false;
+  /// Show peer avatar on the left in private (single) chats. Default off.
+  /// Group chats always show other members' avatars.
+  bool chatShowPeerAvatar = false;
 
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
@@ -48,6 +55,8 @@ class SettingsStore {
     predictiveBack = prefs.getBool(_predictiveBackKey) ?? false;
     feedMinColumns = (prefs.getInt(_feedMinColumnsKey) ?? 1).clamp(1, 3);
     shopMinColumns = (prefs.getInt(_shopMinColumnsKey) ?? 1).clamp(1, 3);
+    chatShowSelfAvatar = prefs.getBool(_chatShowSelfAvatarKey) ?? false;
+    chatShowPeerAvatar = prefs.getBool(_chatShowPeerAvatarKey) ?? false;
   }
 
   Future<void> setSeedColor(Color color) async {
@@ -102,5 +111,17 @@ class SettingsStore {
     shopMinColumns = value.clamp(1, 3);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_shopMinColumnsKey, shopMinColumns);
+  }
+
+  Future<void> setChatShowSelfAvatar(bool value) async {
+    chatShowSelfAvatar = value;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_chatShowSelfAvatarKey, value);
+  }
+
+  Future<void> setChatShowPeerAvatar(bool value) async {
+    chatShowPeerAvatar = value;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_chatShowPeerAvatarKey, value);
   }
 }

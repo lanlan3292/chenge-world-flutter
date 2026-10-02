@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/chenge_api.dart';
+import '../services/settings_store.dart';
 import 'ai_agent_page.dart';
 import 'chat_page.dart';
 import 'friends_page.dart';
@@ -11,12 +12,14 @@ class SocialPage extends StatefulWidget {
     required this.api,
     required this.token,
     required this.userId,
+    required this.settings,
     required this.onLoginRequested,
   });
 
   final ChengeApi api;
   final String? token;
   final int? userId;
+  final SettingsStore settings;
   final VoidCallback onLoginRequested;
 
   @override
@@ -76,6 +79,7 @@ class _SocialPageState extends State<SocialPage> {
                   api: widget.api,
                   token: widget.token,
                   userId: widget.userId,
+                  settings: widget.settings,
                   launchPeerId: _pendingPeerId,
                   launchConversationId: _pendingConversationId,
                   launchNonce: _launchNonce,

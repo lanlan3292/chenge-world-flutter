@@ -253,6 +253,7 @@ class _AppShellState extends State<AppShell> {
         api: _api,
         token: _token,
         userId: _userId,
+        settings: widget.settings,
         onLoginRequested: () => setState(() {
           _selectedIndex = 3;
           _chromeVisible = true;
@@ -298,7 +299,7 @@ class _AppShellState extends State<AppShell> {
                 }),
                 labelType: NavigationRailLabelType.all,
                 leading: Padding(
-                  padding: const EdgeInsets.only(bottom: 28),
+                  padding: const EdgeInsets.only(bottom: 16),
                   child: DecoratedBox(
                     decoration: BoxDecoration(),
                     child: SizedBox(
