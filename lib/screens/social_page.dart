@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/chenge_api.dart';
+import 'ai_agent_page.dart';
 import 'chat_page.dart';
 import 'friends_page.dart';
 
@@ -47,6 +48,7 @@ class _SocialPageState extends State<SocialPage> {
                 segments: const [
                   ButtonSegment(value: 0, label: Text('好友'), icon: Icon(Icons.people_outline_rounded)),
                   ButtonSegment(value: 1, label: Text('聊天'), icon: Icon(Icons.chat_bubble_outline_rounded)),
+                  ButtonSegment(value: 2, label: Text('AI'), icon: Icon(Icons.smart_toy_outlined)),
                 ],
                 selected: {_section},
                 onSelectionChanged: (selection) => setState(() => _section = selection.first),
@@ -71,6 +73,13 @@ class _SocialPageState extends State<SocialPage> {
                     launchPeerId: _pendingPeerId,
                     launchNonce: _launchNonce,
                     onOpenFriends: () => setState(() => _section = 0),
+                    onLoginRequested: widget.onLoginRequested,
+                    showAppBar: false,
+                  ),
+                  AiAgentPage(
+                    key: const ValueKey('social-ai'),
+                    api: widget.api,
+                    token: widget.token,
                     onLoginRequested: widget.onLoginRequested,
                     showAppBar: false,
                   ),
