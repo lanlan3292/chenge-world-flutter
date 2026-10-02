@@ -218,15 +218,24 @@ class _AppShellState extends State<AppShell> {
 
     final wide = MediaQuery.sizeOf(context).width >= 760;
 
+    void onChromeVisibilityChanged(bool visible) {
+      // Only feed (0) and shop (2) drive auto-hide bottom bar.
+      if (_selectedIndex != 0 && _selectedIndex != 2) return;
+      if (!widget.settings.autoHideBottomBar) {
+        if (!_chromeVisible) setState(() => _chromeVisible = true);
+        return;
+      }
+      if (_chromeVisible == visible) return;
+      setState(() => _chromeVisible = visible);
+    }
+
     final pages = <Widget>[
       FeedPage(
         api: _api,
         token: _token,
-        onChromeVisibilityChanged: (visible) {
-          if (_selectedIndex != 0) return;
-          if (_chromeVisible == visible) return;
-          setState(() => _chromeVisible = visible);
-        },
+        autoHideTopBar: widget.settings.autoHideTopBar,
+        autoHideBottomBar: widget.settings.autoHideBottomBar,
+        onChromeVisibilityChanged: onChromeVisibilityChanged,
       ),
       SocialPage(
         api: _api,
@@ -245,6 +254,9 @@ class _AppShellState extends State<AppShell> {
           _selectedIndex = 3;
           _chromeVisible = true;
         }),
+        autoHideTopBar: widget.settings.autoHideTopBar,
+        autoHideBottomBar: widget.settings.autoHideBottomBar,
+        onChromeVisibilityChanged: onChromeVisibilityChanged,
       ),
       AccountPage(
         api: _api,
@@ -271,7 +283,7 @@ class _AppShellState extends State<AppShell> {
                 duration: const Duration(milliseconds: 320),
                 curve: Curves.easeInOutCubic,
                 alignment: Alignment.centerRight,
-                widthFactor: _chromeVisible ? 1 : 0,
+                widthFactor: (!widget.settings.autoHideBottomBar || _chromeVisible) ? 1 : 0,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(12, 16, 8, 16),
                   child: NavigationRail(
@@ -333,9 +345,9 @@ class _AppShellState extends State<AppShell> {
                 duration: const Duration(milliseconds: 320),
                 curve: Curves.easeInOutCubic,
                 alignment: Alignment.topCenter,
-                heightFactor: _chromeVisible ? 1 : 0,
+                heightFactor: (!widget.settings.autoHideBottomBar || _chromeVisible) ? 1 : 0,
                 child: Material(
-                  elevation: _chromeVisible ? 3 : 0,
+                  elevation: (!widget.settings.autoHideBottomBar || _chromeVisible) ? 3 : 0,
                   color: Theme.of(context).navigationBarTheme.backgroundColor ?? Colors.white,
                   child: NavigationBar(
                     selectedIndex: _selectedIndex,
