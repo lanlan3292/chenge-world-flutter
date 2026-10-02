@@ -7,7 +7,9 @@ import '../models/chat_message.dart';
 import '../services/chenge_api.dart';
 import '../theme/app_theme.dart';
 
-/// 独立会话页：窄屏全屏进入；宽屏也可复用（无返回键时由外层提供导航）。
+/// 独立会话页。
+/// - 窄屏：Navigator.push 进入，带返回键；拉宽到宽屏时自动 pop(true) 交给外层分栏。
+/// - 宽屏嵌入：showBackButton=false。
 class ChatThreadPage extends StatefulWidget {
   const ChatThreadPage({
     super.key,
@@ -38,6 +40,8 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
   bool _sending = false;
   bool _hasMore = false;
   bool _stickToBottom = true;
+  bool _initialScrollDone = false;
+  bool _popScheduled = false;
   late ChatConversation _conversation;
 
   @override
@@ -48,6 +52,24 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     _loadMessages();
     _pollTimer = Timer.periodic(const Duration(seconds: 8), (_) {
       _loadMessages(silent: true);
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _maybePopForWideLayout();
+  }
+
+  void _maybePopForWideLayout() {
+    if (!widget.showBackButton || _popScheduled) return;
+    if (MediaQuery.sizeOf(context).width < 760) return;
+    _popScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop(true);
+      }
     });
   }
 
@@ -80,7 +102,10 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       });
       final lastId = merged.isEmpty ? null : merged.last.id;
       await widget.api.markChatRead(_conversation.id, widget.token, messageId: lastId);
-      if (_stickToBottom) _scrollToBottom();
+      if (_stickToBottom) {
+        _scrollToBottom(animate: _initialScrollDone);
+        if (!_initialScrollDone) _initialScrollDone = true;
+      }
     } on ApiException catch (error) {
       if (mounted && !silent) {
         ScaffoldMessenger.of(context)
@@ -129,7 +154,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
         _messageController.clear();
         _stickToBottom = true;
       });
-      _scrollToBottom();
+      _scrollToBottom(animate: true);
     } on ApiException catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context)
@@ -148,23 +173,45 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     if (position.pixels < 60) _loadOlder();
   }
 
-  void _scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_messageScrollController.hasClients) {
+  void _scrollToBottom({bool animate = true}) {
+    void go() {
+      if (!_messageScrollController.hasClients) return;
+      final max = _messageScrollController.position.maxScrollExtent;
+      if (animate) {
         _messageScrollController.animateTo(
-          _messageScrollController.position.maxScrollExtent,
+          max,
           duration: const Duration(milliseconds: 180),
           curve: Curves.easeOut,
         );
+      } else {
+        _messageScrollController.jumpTo(max);
+      }
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      go();
+      if (!animate) {
+        WidgetsBinding.instance.addPostFrameCallback((_) => go());
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (widget.showBackButton && MediaQuery.sizeOf(context).width >= 760) {
+      _maybePopForWideLayout();
+    }
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: widget.showBackButton,
+        leading: widget.showBackButton
+            ? IconButton(
+                tooltip: '返回会话列表',
+                onPressed: () => Navigator.of(context).pop(false),
+                icon: const Icon(Icons.arrow_back_rounded),
+              )
+            : null,
         title: Text(
           _conversation.name,
           maxLines: 1,
