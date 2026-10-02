@@ -156,6 +156,8 @@ class _SettingsSheetState extends State<_SettingsSheet> {
   late Color _seed;
   late bool _statusImmersive;
   late bool _navImmersive;
+  late bool _autoHideTop;
+  late bool _autoHideBottom;
 
   @override
   void initState() {
@@ -164,6 +166,8 @@ class _SettingsSheetState extends State<_SettingsSheet> {
     _seed = widget.settings.seedColor;
     _statusImmersive = widget.settings.statusBarImmersive;
     _navImmersive = widget.settings.navigationBarImmersive;
+    _autoHideTop = widget.settings.autoHideTopBar;
+    _autoHideBottom = widget.settings.autoHideBottomBar;
   }
 
   Future<void> _apply() => widget.onSettingsChanged();
@@ -251,6 +255,34 @@ class _SettingsSheetState extends State<_SettingsSheet> {
               onChanged: (value) async {
                 setState(() => _navImmersive = value);
                 await widget.settings.setNavigationBarImmersive(value);
+                await _apply();
+              },
+            ),
+            const Padding(
+              padding: EdgeInsets.only(left: 4, top: 12, bottom: 6),
+              child: Text('滚动行为', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF70817D))),
+            ),
+            SwitchListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+              secondary: Icon(Icons.vertical_align_top_rounded, color: theme.colorScheme.primary),
+              title: const Text('自动隐藏顶栏', style: TextStyle(fontWeight: FontWeight.w700)),
+              subtitle: const Text('在发现 / 商城向下滚动时收起页面顶栏（默认开启）'),
+              value: _autoHideTop,
+              onChanged: (value) async {
+                setState(() => _autoHideTop = value);
+                await widget.settings.setAutoHideTopBar(value);
+                await _apply();
+              },
+            ),
+            SwitchListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+              secondary: Icon(Icons.vertical_align_bottom_rounded, color: theme.colorScheme.primary),
+              title: const Text('自动隐藏底栏', style: TextStyle(fontWeight: FontWeight.w700)),
+              subtitle: const Text('在发现 / 商城向下滚动时收起底部导航（默认开启）'),
+              value: _autoHideBottom,
+              onChanged: (value) async {
+                setState(() => _autoHideBottom = value);
+                await widget.settings.setAutoHideBottomBar(value);
                 await _apply();
               },
             ),
