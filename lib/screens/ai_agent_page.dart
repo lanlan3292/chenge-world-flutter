@@ -183,18 +183,20 @@ class _AiAgentPageState extends State<AiAgentPage> {
     final text = _messageController.text.trim();
     if (token == null || text.isEmpty || _sending) return;
 
-    AiSession? pending = _active;
-    if (pending == null) {
+    late final AiSession session;
+    if (_active != null) {
+      session = _active!;
+    } else {
       setState(() => _sending = true);
       try {
-        pending = await widget.api.createAiSession(
+        session = await widget.api.createAiSession(
           token,
           name: text.length > 18 ? '${text.substring(0, 18)}…' : text,
         );
         if (!mounted) return;
         setState(() {
-          _sessions.insert(0, pending!);
-          _active = pending;
+          _sessions.insert(0, session);
+          _active = session;
           _mobileThread = true;
           _messages.clear();
         });
@@ -206,8 +208,6 @@ class _AiAgentPageState extends State<AiAgentPage> {
         return;
       }
     }
-    final session = pending;
-    if (session == null) return;
 
     final turnId = 'flutter-${DateTime.now().microsecondsSinceEpoch}';
     final userBubble = AiChatBubble(role: 'user', content: text);
@@ -286,7 +286,6 @@ class _AiAgentPageState extends State<AiAgentPage> {
               assistantBubble.content = '（无文本回复）';
             }
           });
-          // Best-effort rename on first turn
           if (session.name == '新对话' || session.name.isEmpty) {
             final title = text.length > 18 ? '${text.substring(0, 18)}…' : text;
             try {
