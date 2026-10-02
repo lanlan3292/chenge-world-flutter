@@ -80,8 +80,6 @@ class _ChengeWorldAppState extends State<ChengeWorldApp> {
           statusBarImmersive: _settings.statusBarImmersive,
           navigationBarImmersive: _settings.navigationBarImmersive,
         );
-        // Predictive back transitions (Android 13+); requires enableOnBackInvokedCallback in manifest.
-        // Only override Android — other platforms keep ThemeData defaults.
         theme = theme.copyWith(
           pageTransitionsTheme: PageTransitionsTheme(
             builders: {
@@ -131,6 +129,8 @@ class _AppShellState extends State<AppShell> {
   bool _restoring = true;
   /// Bottom nav / rail chrome; hidden while scrolling the feed downward.
   bool _chromeVisible = true;
+  /// 窄屏私聊会话全屏时强制隐藏底部主导航。
+  bool _chatFullscreen = false;
 
   @override
   void initState() {
@@ -229,11 +229,9 @@ class _AppShellState extends State<AppShell> {
     }
 
     final wide = MediaQuery.sizeOf(context).width >= 760;
-    // Side rail never auto-hides; only the bottom NavigationBar does.
     final hideBottomBar = !wide && widget.settings.autoHideBottomBar;
 
     void onChromeVisibilityChanged(bool visible) {
-      // Only feed (0) and shop (2) drive auto-hide, and only on phone bottom nav.
       if (wide) return;
       if (_selectedIndex != 0 && _selectedIndex != 2) return;
       if (!hideBottomBar) {
@@ -260,7 +258,15 @@ class _AppShellState extends State<AppShell> {
         onLoginRequested: () => setState(() {
           _selectedIndex = 3;
           _chromeVisible = true;
+          _chatFullscreen = false;
         }),
+        onChatFullscreenChanged: (fullscreen) {
+          if (_chatFullscreen == fullscreen) return;
+          setState(() {
+            _chatFullscreen = fullscreen;
+            if (!fullscreen) _chromeVisible = true;
+          });
+        },
       ),
       ShopPage(
         api: _api,
@@ -287,15 +293,11 @@ class _AppShellState extends State<AppShell> {
       ),
     ];
 
-    // Do not wrap child Scaffolds in SafeArea: each page AppBar already accounts for
-    // status-bar MediaQuery padding. Extra SafeArea caused double top/bottom insets.
-    // extendBody lets feed content expand into the nav area as the bar collapses.
     return Scaffold(
       extendBody: !wide,
       body: Row(
         children: [
           if (wide)
-            // Wide layout: side rail is always visible (no auto-hide).
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 16, 8, 16),
               child: NavigationRail(
@@ -303,6 +305,7 @@ class _AppShellState extends State<AppShell> {
                 onDestinationSelected: (index) => setState(() {
                   _selectedIndex = index;
                   _chromeVisible = true;
+                  _chatFullscreen = false;
                 }),
                 labelType: NavigationRailLabelType.all,
                 leading: Padding(
@@ -355,15 +358,16 @@ class _AppShellState extends State<AppShell> {
                 duration: const Duration(milliseconds: 320),
                 curve: Curves.easeInOutCubic,
                 alignment: Alignment.topCenter,
-                heightFactor: (!hideBottomBar || _chromeVisible) ? 1 : 0,
+                heightFactor: _chatFullscreen ? 0 : ((!hideBottomBar || _chromeVisible) ? 1 : 0),
                 child: Material(
-                  elevation: (!hideBottomBar || _chromeVisible) ? 3 : 0,
+                  elevation: _chatFullscreen ? 0 : ((!hideBottomBar || _chromeVisible) ? 3 : 0),
                   color: Theme.of(context).navigationBarTheme.backgroundColor ?? Colors.white,
                   child: NavigationBar(
                     selectedIndex: _selectedIndex,
                     onDestinationSelected: (index) => setState(() {
                       _selectedIndex = index;
                       _chromeVisible = true;
+                      _chatFullscreen = false;
                     }),
                     destinations: const [
                       NavigationDestination(
