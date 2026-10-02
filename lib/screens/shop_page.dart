@@ -15,6 +15,7 @@ class ShopPage extends StatefulWidget {
     required this.onLoginRequested,
     this.autoHideTopBar = true,
     this.autoHideBottomBar = true,
+    this.minColumns = 1,
     this.onChromeVisibilityChanged,
   });
 
@@ -24,6 +25,9 @@ class ShopPage extends StatefulWidget {
   final VoidCallback onLoginRequested;
   final bool autoHideTopBar;
   final bool autoHideBottomBar;
+  /// Minimum grid column count (1–3); responsive layout may use more.
+  final int minColumns;
+  /// Called when scrolling should show/hide shell bottom nav.
   final ValueChanged<bool>? onChromeVisibilityChanged;
 
   @override
@@ -66,7 +70,9 @@ class _ShopPageState extends State<ShopPage> {
       _orders.clear();
       if (widget.token != null && _view != 'mall') _loadPrivate(_view);
     }
-    if (!widget.autoHideBottomBar && !_chromeVisible) _setChromeVisible(true);
+    if (!widget.autoHideBottomBar && !_chromeVisible) {
+      _setChromeVisible(true);
+    }
   }
 
   @override
@@ -96,7 +102,9 @@ class _ShopPageState extends State<ShopPage> {
   void _setChromeVisible(bool visible) {
     if (_chromeVisible == visible) return;
     setState(() => _chromeVisible = visible);
-    if (widget.autoHideBottomBar) widget.onChromeVisibilityChanged?.call(visible);
+    if (widget.autoHideBottomBar) {
+      widget.onChromeVisibilityChanged?.call(visible);
+    }
   }
 
   Future<void> _loadItems({int page = 1}) async {
@@ -114,7 +122,8 @@ class _ShopPageState extends State<ShopPage> {
         type: _type,
         keyword: _searchController.text,
       );
-      if (!mounted || requestId != _itemRequestId) return;
+      if (!mounted) return;
+      if (requestId != _itemRequestId) return;
       setState(() {
         _items.addAll(result.items);
         _total = result.total;
@@ -199,7 +208,8 @@ class _ShopPageState extends State<ShopPage> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
-    final columns = width >= 1180 ? 3 : width >= 760 ? 2 : 1;
+    final responsive = width >= 1180 ? 3 : width >= 760 ? 2 : 1;
+    final columns = responsive < widget.minColumns ? widget.minColumns.clamp(1, 3) : responsive;
     final hideTop = widget.autoHideTopBar;
 
     return Scaffold(
@@ -223,7 +233,8 @@ class _ShopPageState extends State<ShopPage> {
                   forceElevated: false,
                   title: const Text('商城', style: TextStyle(fontWeight: FontWeight.w800)),
                   actions: [
-                    if (_balance != null) Center(child: _coinPill('${_balance!.toStringAsFixed(2)} CC')),
+                    if (_balance != null)
+                      Center(child: _coinPill('${_balance!.toStringAsFixed(2)} CC')),
                     IconButton(
                       tooltip: '刷新',
                       onPressed: _loading ? null : () => _view == 'mall' ? _loadItems() : _loadPrivate(_view),
@@ -276,11 +287,20 @@ class _ShopPageState extends State<ShopPage> {
           sliver: SliverToBoxAdapter(child: _filters()),
         ),
         if (_loading && _items.isEmpty)
-          const SliverFillRemaining(hasScrollBody: false, child: Center(child: CircularProgressIndicator()))
+          const SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(child: CircularProgressIndicator()),
+          )
         else if (_error.isNotEmpty && _items.isEmpty)
-          SliverFillRemaining(hasScrollBody: false, child: _empty('商城暂时不可用', '检查网络后重试'))
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: _empty('商城暂时不可用', '检查网络后重试'),
+          )
         else if (_items.isEmpty)
-          SliverFillRemaining(hasScrollBody: false, child: _empty('暂时没有商品', '试试其他关键词或分类'))
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: _empty('暂时没有商品', '试试其他关键词或分类'),
+          )
         else ...[
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(18, 0, 18, 11),
@@ -316,7 +336,12 @@ class _ShopPageState extends State<ShopPage> {
       return [SliverFillRemaining(hasScrollBody: false, child: _signedOutPrivate())];
     }
     if (_loadingPrivate && !_privateLoaded) {
-      return [const SliverFillRemaining(hasScrollBody: false, child: Center(child: CircularProgressIndicator()))];
+      return [
+        const SliverFillRemaining(
+          hasScrollBody: false,
+          child: Center(child: CircularProgressIndicator()),
+        ),
+      ];
     }
     final rows = _view == 'assets' ? _assets : _orders;
     if (rows.isEmpty) {
@@ -334,7 +359,8 @@ class _ShopPageState extends State<ShopPage> {
           delegate: SliverChildBuilderDelegate(
             (context, index) {
               if (index.isOdd) return const SizedBox(height: 8);
-              return _privateRow(rows[index ~/ 2], isAsset: _view == 'assets');
+              final rowIndex = index ~/ 2;
+              return _privateRow(rows[rowIndex], isAsset: _view == 'assets');
             },
             childCount: rows.isEmpty ? 0 : rows.length * 2 - 1,
           ),
