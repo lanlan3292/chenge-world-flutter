@@ -12,15 +12,12 @@ class SocialPage extends StatefulWidget {
     required this.token,
     required this.userId,
     required this.onLoginRequested,
-    this.onChatFullscreenChanged,
   });
 
   final ChengeApi api;
   final String? token;
   final int? userId;
   final VoidCallback onLoginRequested;
-  /// 窄屏进入私聊会话时通知外壳隐藏底部主导航。
-  final ValueChanged<bool>? onChatFullscreenChanged;
 
   @override
   State<SocialPage> createState() => _SocialPageState();
@@ -31,8 +28,6 @@ class _SocialPageState extends State<SocialPage> {
   int _section = 0;
   int? _pendingPeerId;
   int _launchNonce = 0;
-  /// 窄屏下进入会话线程时隐藏社交顶栏与分段，实现全屏聊天。
-  bool _chatThreadOpen = false;
 
   void _openChat(int peerId) {
     _pendingPeerId = peerId;
@@ -42,54 +37,25 @@ class _SocialPageState extends State<SocialPage> {
     });
   }
 
-  void _setChatThreadOpen(bool open) {
-    if (_chatThreadOpen == open) return;
-    setState(() => _chatThreadOpen = open);
-    widget.onChatFullscreenChanged?.call(open);
-  }
-
-  void _onChatMobileThreadChanged(bool open) {
-    _setChatThreadOpen(open);
-  }
-
-  @override
-  void dispose() {
-    if (_chatThreadOpen) {
-      widget.onChatFullscreenChanged?.call(false);
-    }
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
-    final wide = MediaQuery.sizeOf(context).width >= 760;
-    final hideChrome = !wide && _section == 0 && _chatThreadOpen;
-
     return Scaffold(
-      appBar: hideChrome
-          ? null
-          : AppBar(title: const Text('社交', style: TextStyle(fontWeight: FontWeight.w800))),
+      appBar: AppBar(title: const Text('社交', style: TextStyle(fontWeight: FontWeight.w800))),
       body: Column(
         children: [
-          if (!hideChrome)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
-              child: SegmentedButton<int>(
-                showSelectedIcon: false,
-                segments: const [
-                  ButtonSegment(value: 0, label: Text('聊天'), icon: Icon(Icons.chat_bubble_outline_rounded)),
-                  ButtonSegment(value: 1, label: Text('好友'), icon: Icon(Icons.people_outline_rounded)),
-                  ButtonSegment(value: 2, label: Text('AI'), icon: Icon(Icons.smart_toy_outlined)),
-                ],
-                selected: {_section},
-                onSelectionChanged: (selection) {
-                  setState(() {
-                    _section = selection.first;
-                    if (_section != 0) _setChatThreadOpen(false);
-                  });
-                },
-              ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+            child: SegmentedButton<int>(
+              showSelectedIcon: false,
+              segments: const [
+                ButtonSegment(value: 0, label: Text('聊天'), icon: Icon(Icons.chat_bubble_outline_rounded)),
+                ButtonSegment(value: 1, label: Text('好友'), icon: Icon(Icons.people_outline_rounded)),
+                ButtonSegment(value: 2, label: Text('AI'), icon: Icon(Icons.smart_toy_outlined)),
+              ],
+              selected: {_section},
+              onSelectionChanged: (selection) => setState(() => _section = selection.first),
             ),
+          ),
           Expanded(
             child: IndexedStack(
               index: _section,
@@ -101,13 +67,9 @@ class _SocialPageState extends State<SocialPage> {
                   userId: widget.userId,
                   launchPeerId: _pendingPeerId,
                   launchNonce: _launchNonce,
-                  onOpenFriends: () {
-                    _setChatThreadOpen(false);
-                    setState(() => _section = 1);
-                  },
+                  onOpenFriends: () => setState(() => _section = 1),
                   onLoginRequested: widget.onLoginRequested,
                   showAppBar: false,
-                  onMobileThreadChanged: _onChatMobileThreadChanged,
                 ),
                 FriendsPage(
                   api: widget.api,

@@ -129,8 +129,6 @@ class _AppShellState extends State<AppShell> {
   bool _restoring = true;
   /// Bottom nav / rail chrome; hidden while scrolling the feed downward.
   bool _chromeVisible = true;
-  /// 窄屏私聊会话全屏时强制隐藏底部主导航。
-  bool _chatFullscreen = false;
 
   @override
   void initState() {
@@ -258,15 +256,7 @@ class _AppShellState extends State<AppShell> {
         onLoginRequested: () => setState(() {
           _selectedIndex = 3;
           _chromeVisible = true;
-          _chatFullscreen = false;
         }),
-        onChatFullscreenChanged: (fullscreen) {
-          if (_chatFullscreen == fullscreen) return;
-          setState(() {
-            _chatFullscreen = fullscreen;
-            if (!fullscreen) _chromeVisible = true;
-          });
-        },
       ),
       ShopPage(
         api: _api,
@@ -305,7 +295,6 @@ class _AppShellState extends State<AppShell> {
                 onDestinationSelected: (index) => setState(() {
                   _selectedIndex = index;
                   _chromeVisible = true;
-                  _chatFullscreen = false;
                 }),
                 labelType: NavigationRailLabelType.all,
                 leading: Padding(
@@ -358,16 +347,15 @@ class _AppShellState extends State<AppShell> {
                 duration: const Duration(milliseconds: 320),
                 curve: Curves.easeInOutCubic,
                 alignment: Alignment.topCenter,
-                heightFactor: _chatFullscreen ? 0 : ((!hideBottomBar || _chromeVisible) ? 1 : 0),
+                heightFactor: (!hideBottomBar || _chromeVisible) ? 1 : 0,
                 child: Material(
-                  elevation: _chatFullscreen ? 0 : ((!hideBottomBar || _chromeVisible) ? 3 : 0),
+                  elevation: (!hideBottomBar || _chromeVisible) ? 3 : 0,
                   color: Theme.of(context).navigationBarTheme.backgroundColor ?? Colors.white,
                   child: NavigationBar(
                     selectedIndex: _selectedIndex,
                     onDestinationSelected: (index) => setState(() {
                       _selectedIndex = index;
                       _chromeVisible = true;
-                      _chatFullscreen = false;
                     }),
                     destinations: const [
                       NavigationDestination(
