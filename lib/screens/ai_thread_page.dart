@@ -31,7 +31,6 @@ class _AiThreadPageState extends State<AiThreadPage> {
   final _messages = <AiChatBubble>[];
 
   late AiSession _session;
-  bool _loadingHistory = false;
   bool _contentReady = false;
   bool _sending = false;
   bool _stickToBottom = true;
@@ -84,10 +83,7 @@ class _AiThreadPageState extends State<AiThreadPage> {
   }
 
   Future<void> _loadHistory() async {
-    setState(() {
-      _loadingHistory = true;
-      _contentReady = false;
-    });
+    setState(() => _contentReady = false);
     try {
       final history = await widget.api.aiChatHistory(_session.sessionId, widget.token);
       if (!mounted) return;
@@ -97,19 +93,13 @@ class _AiThreadPageState extends State<AiThreadPage> {
           ..addAll(history.map(AiChatBubble.fromHistory));
       });
       if (_messages.isEmpty) {
-        setState(() {
-          _loadingHistory = false;
-          _contentReady = true;
-        });
+        setState(() => _contentReady = true);
       } else {
         await _scrollToBottomInitial();
       }
     } on ApiException catch (error) {
       if (mounted) {
-        setState(() {
-          _loadingHistory = false;
-          _contentReady = true;
-        });
+        setState(() => _contentReady = true);
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(SnackBar(content: Text(error.message), backgroundColor: AppTheme.coral));
@@ -134,12 +124,7 @@ class _AiThreadPageState extends State<AiThreadPage> {
     if (!mounted) return;
     jump();
 
-    if (mounted) {
-      setState(() {
-        _loadingHistory = false;
-        _contentReady = true;
-      });
-    }
+    if (mounted) setState(() => _contentReady = true);
   }
 
   Future<void> _send() async {

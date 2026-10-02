@@ -4,7 +4,11 @@ import '../services/chenge_api.dart';
 import '../theme/app_theme.dart';
 
 class EmojiPickerSheet extends StatefulWidget {
-  const EmojiPickerSheet({required this.api, required this.token});
+  const EmojiPickerSheet({
+    super.key,
+    required this.api,
+    required this.token,
+  });
 
   final ChengeApi api;
   final String token;
