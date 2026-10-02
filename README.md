@@ -1,18 +1,18 @@
 # ChengeWorld Flutter
 
-ChengeWorld 社区的 Flutter 客户端。项目采用 Flutter + Material 3 构建，当前主要围绕 Android 使用场景开发，同时仓库保留了 iOS、Linux 和 Windows 的 Flutter 工程目录。
-
-> 项目定位：为 ChengeWorld 提供帖子、社交、AI、商城和任务等功能的移动端/桌面端客户端。
+面向于 [ChengeWorld](https://gitee.com/bfg-as/chenge-world) 的 Flutter 客户端。项目采用 Flutter + Material 3 构建。
 
 ## 功能
 
 ### 社区
+
 - 浏览最新、热门、精华帖子
 - 关键词搜索与分页
 - Markdown 帖子详情
 - 游客可浏览公开帖子
 
 ### 社交与聊天
+
 - 好友列表与好友申请
 - 单聊会话与历史消息
 - 文本、表情和图片消息
@@ -20,12 +20,14 @@ ChengeWorld 社区的 Flutter 客户端。项目采用 Flutter + Material 3 构�
 - 聊天消息通过轮询获取更新
 
 ### AI Agent
+
 - 创建、删除、重命名 AI 会话
 - 加载历史对话
 - 支持 `/ai/agent/stream` SSE 流式响应
 - 处理 `status`、`delta`、`done` 等事件
 
 ### 商城
+
 - 商品分类、关键词搜索和排序
 - 商品详情
 - ChengeCoin 余额查询
@@ -35,6 +37,7 @@ ChengeWorld 社区的 Flutter 客户端。项目采用 Flutter + Material 3 构�
 - 商品列表支持分页
 
 ### 任务与个人中心
+
 - 签到
 - 查看任务进度
 - 从个人页进入任务中心
@@ -124,10 +127,12 @@ flutter run --dart-define=CHENGE_API_BASE_URL=http://127.0.0.1:8080
 登录凭据会通过 Android Keystore 对应的安全存储能力保存。
 
 无需登录即可使用的主要功能：
+
 - 公开帖子浏览
 - 公开商品浏览
 
 需要登录的功能包括：
+
 - 好友与好友申请
 - 私聊
 - 钱包与资产
@@ -202,7 +207,3 @@ Android 权限及 Flutter Embedding 配置已经包含在仓库中，正常情�
 ## 相关项目
 
 服务端项目：[ChengeWorld](https://gitee.com/bfg-as/chenge-world)
-
-## License
-
-当前仓库未在根目录声明独立 License。使用或二次分发前，请先确认项目维护者的授权范围。
