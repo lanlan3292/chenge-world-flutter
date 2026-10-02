@@ -18,6 +18,7 @@ class ChatPage extends StatefulWidget {
     required this.launchNonce,
     required this.onOpenFriends,
     required this.onLoginRequested,
+    this.launchConversationId,
     this.showAppBar = true,
   });
 
@@ -25,6 +26,7 @@ class ChatPage extends StatefulWidget {
   final String? token;
   final int? userId;
   final int? launchPeerId;
+  final int? launchConversationId;
   final int launchNonce;
   final VoidCallback onOpenFriends;
   final VoidCallback onLoginRequested;
@@ -37,6 +39,7 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   final _searchController = TextEditingController();
   final _conversations = <ChatConversation>[];
+  final _peerOnline = <int, bool>{};
   ChatConversation? _active;
   Timer? _pollTimer;
   String _error = '';
@@ -57,11 +60,16 @@ class _ChatPageState extends State<ChatPage> {
     if (oldWidget.token != widget.token) {
       _pollTimer?.cancel();
       _conversations.clear();
+      _peerOnline.clear();
       _active = null;
       if (widget.token != null) _startSession();
     }
-    if (oldWidget.launchNonce != widget.launchNonce && widget.launchPeerId != null && widget.token != null) {
-      _openPeer(widget.launchPeerId!);
+    if (oldWidget.launchNonce != widget.launchNonce && widget.token != null) {
+      if (widget.launchConversationId != null) {
+        _openConversationId(widget.launchConversationId!);
+      } else if (widget.launchPeerId != null) {
+        _openPeer(widget.launchPeerId!);
+      }
     }
   }
 
@@ -78,7 +86,11 @@ class _ChatPageState extends State<ChatPage> {
     _pollTimer = Timer.periodic(const Duration(seconds: 8), (_) {
       _loadConversations(silent: true);
     });
-    if (widget.launchPeerId != null) _openPeer(widget.launchPeerId!);
+    if (widget.launchConversationId != null) {
+      _openConversationId(widget.launchConversationId!);
+    } else if (widget.launchPeerId != null) {
+      _openPeer(widget.launchPeerId!);
+    }
   }
 
   Future<void> _loadConversations({bool silent = false}) async {
@@ -91,7 +103,7 @@ class _ChatPageState extends State<ChatPage> {
       setState(() {
         _conversations
           ..clear()
-          ..addAll(conversations.where((item) => item.type == 'single'));
+          ..addAll(conversations); // single + group
         _error = '';
         final activeId = _active?.id;
         if (activeId != null) {
@@ -103,11 +115,34 @@ class _ChatPageState extends State<ChatPage> {
           }
         }
       });
+      _refreshPeerOnline(token);
     } on ApiException catch (error) {
       if (mounted && !silent) setState(() => _error = error.message);
     } finally {
       if (mounted && !silent) setState(() => _loadingList = false);
     }
+  }
+
+  Future<void> _refreshPeerOnline(String token) async {
+    final peerIds = _conversations
+        .where((c) => c.type == 'single' && c.peerId != null && c.peerId! > 0)
+        .map((c) => c.peerId!)
+        .toSet()
+        .toList();
+    if (peerIds.isEmpty) return;
+    final results = await Future.wait(peerIds.map((id) async {
+      try {
+        return MapEntry(id, await widget.api.isUserOnline(id, token));
+      } catch (_) {
+        return MapEntry(id, false);
+      }
+    }));
+    if (!mounted) return;
+    setState(() {
+      for (final e in results) {
+        _peerOnline[e.key] = e.value;
+      }
+    });
   }
 
   Future<void> _openPeer(int peerId) async {
@@ -124,6 +159,25 @@ class _ChatPageState extends State<ChatPage> {
       _selectConversation(conversation);
     } on ApiException catch (error) {
       if (mounted) _showError(error.message);
+    }
+  }
+
+  Future<void> _openConversationId(int conversationId) async {
+    final token = widget.token;
+    if (token == null) return;
+    await _loadConversations();
+    if (!mounted) return;
+    ChatConversation? found;
+    for (final item in _conversations) {
+      if (item.id == conversationId) {
+        found = item;
+        break;
+      }
+    }
+    if (found != null) {
+      _selectConversation(found);
+    } else {
+      _showError('未找到该会话，请刷新后重试');
     }
   }
 
@@ -146,6 +200,9 @@ class _ChatPageState extends State<ChatPage> {
           token: token,
           userId: widget.userId,
           conversation: conversation,
+          peerOnline: conversation.type == 'single' && conversation.peerId != null
+              ? _peerOnline[conversation.peerId!]
+              : null,
         ),
       ),
     );
@@ -191,9 +248,9 @@ class _ChatPageState extends State<ChatPage> {
               title: const Text('聊天', style: TextStyle(fontWeight: FontWeight.w800)),
               actions: [
                 IconButton(
-                    tooltip: '好友',
+                    tooltip: '通讯录',
                     onPressed: widget.onOpenFriends,
-                    icon: const Icon(Icons.people_outline_rounded)),
+                    icon: const Icon(Icons.contacts_outlined)),
                 IconButton(
                     tooltip: '刷新会话',
                     onPressed: _loadConversations,
@@ -249,6 +306,9 @@ class _ChatPageState extends State<ChatPage> {
                     userId: widget.userId,
                     conversation: _active!,
                     showBackButton: false,
+                    peerOnline: _active!.type == 'single' && _active!.peerId != null
+                        ? _peerOnline[_active!.peerId!]
+                        : null,
                   ),
           ),
         ],
@@ -299,6 +359,8 @@ class _ChatPageState extends State<ChatPage> {
 
   Widget _conversationTile(ChatConversation conversation) {
     final active = _active?.id == conversation.id;
+    final isGroup = conversation.type == 'group';
+    final online = !isGroup && conversation.peerId != null && _peerOnline[conversation.peerId!] == true;
     return Material(
       color: active ? AppTheme.leaf.withValues(alpha: 0.1) : Colors.white,
       borderRadius: BorderRadius.circular(8),
@@ -309,7 +371,30 @@ class _ChatPageState extends State<ChatPage> {
           padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 11),
           child: Row(
             children: [
-              _avatar(conversation.name, conversation.avatar, radius: 22),
+              Stack(
+                children: [
+                  _avatar(
+                    conversation.name,
+                    conversation.avatar,
+                    radius: 22,
+                    isGroup: isGroup,
+                  ),
+                  if (!isGroup)
+                    Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: Container(
+                        width: 12,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: online ? const Color(0xFF2ECC71) : const Color(0xFFB0BEC0),
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 2),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
               const SizedBox(width: 11),
               Expanded(
                 child: Column(
@@ -317,6 +402,10 @@ class _ChatPageState extends State<ChatPage> {
                   children: [
                     Row(
                       children: [
+                        if (isGroup) ...[
+                          const Icon(Icons.groups_rounded, size: 14, color: Color(0xFF3D6BAA)),
+                          const SizedBox(width: 4),
+                        ],
                         Expanded(
                           child: Text(
                             conversation.name,
@@ -378,36 +467,38 @@ class _ChatPageState extends State<ChatPage> {
               const Icon(Icons.forum_outlined, size: 48, color: AppTheme.leaf),
               const SizedBox(height: 10),
               Text(
-                _listQuery.isNotEmpty ? '没有匹配的会话' : '还没有私聊',
+                _listQuery.isNotEmpty ? '没有匹配的会话' : '还没有会话',
                 style: const TextStyle(fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 6),
               TextButton.icon(
                 onPressed: widget.onOpenFriends,
-                icon: const Icon(Icons.people_outline_rounded),
-                label: const Text('去好友列表发起聊天'),
+                icon: const Icon(Icons.contacts_outlined),
+                label: const Text('去通讯录发起聊天'),
               ),
             ],
           ),
         ),
       );
 
-  Widget _avatar(String name, String? url, {required double radius}) => CircleAvatar(
+  Widget _avatar(String name, String? url, {required double radius, bool isGroup = false}) => CircleAvatar(
         radius: radius,
-        backgroundColor: const Color(0xFFFFE8C5),
+        backgroundColor: isGroup ? const Color(0xFFE8F0FF) : const Color(0xFFFFE8C5),
         foregroundImage: url == null ? null : NetworkImage(url),
         onForegroundImageError: url == null ? null : (_, __) {},
-        child: Text(
-          name.isEmpty ? '友' : name.characters.first,
-          style: const TextStyle(color: AppTheme.ink, fontWeight: FontWeight.w700),
-        ),
+        child: isGroup
+            ? const Icon(Icons.groups_rounded, color: Color(0xFF3D6BAA), size: 22)
+            : Text(
+                name.isEmpty ? '友' : name.characters.first,
+                style: const TextStyle(color: AppTheme.ink, fontWeight: FontWeight.w700),
+              ),
       );
 
   static String _preview(ChatMessage? message) {
     if (message == null) return '还没有消息';
     if (message.type == 'emoji') return '[表情] ${_emojiKey(message.content)}';
     if (message.type == 'post') return '[分享帖子]';
-    if (message.type == 'order') return '[分享商品]';
+    if (message.type == 'order') return '[商品订单]';
     return message.content;
   }
 
