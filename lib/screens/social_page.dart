@@ -12,12 +12,15 @@ class SocialPage extends StatefulWidget {
     required this.token,
     required this.userId,
     required this.onLoginRequested,
+    this.onChatFullscreenChanged,
   });
 
   final ChengeApi api;
   final String? token;
   final int? userId;
   final VoidCallback onLoginRequested;
+  /// 窄屏进入私聊会话时通知外壳隐藏底部主导航。
+  final ValueChanged<bool>? onChatFullscreenChanged;
 
   @override
   State<SocialPage> createState() => _SocialPageState();
@@ -39,9 +42,22 @@ class _SocialPageState extends State<SocialPage> {
     });
   }
 
-  void _onChatMobileThreadChanged(bool open) {
+  void _setChatThreadOpen(bool open) {
     if (_chatThreadOpen == open) return;
     setState(() => _chatThreadOpen = open);
+    widget.onChatFullscreenChanged?.call(open);
+  }
+
+  void _onChatMobileThreadChanged(bool open) {
+    _setChatThreadOpen(open);
+  }
+
+  @override
+  void dispose() {
+    if (_chatThreadOpen) {
+      widget.onChatFullscreenChanged?.call(false);
+    }
+    super.dispose();
   }
 
   @override
@@ -69,7 +85,7 @@ class _SocialPageState extends State<SocialPage> {
                 onSelectionChanged: (selection) {
                   setState(() {
                     _section = selection.first;
-                    if (_section != 0) _chatThreadOpen = false;
+                    if (_section != 0) _setChatThreadOpen(false);
                   });
                 },
               ),
@@ -85,10 +101,10 @@ class _SocialPageState extends State<SocialPage> {
                   userId: widget.userId,
                   launchPeerId: _pendingPeerId,
                   launchNonce: _launchNonce,
-                  onOpenFriends: () => setState(() {
-                    _section = 1;
-                    _chatThreadOpen = false;
-                  }),
+                  onOpenFriends: () {
+                    _setChatThreadOpen(false);
+                    setState(() => _section = 1);
+                  },
                   onLoginRequested: widget.onLoginRequested,
                   showAppBar: false,
                   onMobileThreadChanged: _onChatMobileThreadChanged,
