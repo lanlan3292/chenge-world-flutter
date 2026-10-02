@@ -160,53 +160,11 @@ class AccountPage extends StatelessWidget {
     );
     if (result == null || !context.mounted) return;
     await onLogin(result);
-    if (context.mounted)
+    if (context.mounted) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(const SnackBar(content: Text('登录成功')));
-  }
-}
-
-class _ColorSwatch extends StatelessWidget {
-  const _ColorSwatch({
-    required this.color,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final Color color;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: color,
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: selected ? Colors.black87 : Colors.transparent,
-            width: selected ? 3 : 0,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: color.withValues(alpha: 0.35),
-              blurRadius: selected ? 8 : 3,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child:
-            selected
-                ? const Icon(Icons.check_rounded, color: Colors.white, size: 20)
-                : null,
-      ),
-    );
+    }
   }
 }
 
