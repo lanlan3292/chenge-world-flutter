@@ -158,6 +158,9 @@ class _SettingsSheetState extends State<_SettingsSheet> {
   late bool _navImmersive;
   late bool _autoHideTop;
   late bool _autoHideBottom;
+  late bool _predictiveBack;
+  late int _feedMinColumns;
+  late int _shopMinColumns;
 
   @override
   void initState() {
@@ -168,6 +171,9 @@ class _SettingsSheetState extends State<_SettingsSheet> {
     _navImmersive = widget.settings.navigationBarImmersive;
     _autoHideTop = widget.settings.autoHideTopBar;
     _autoHideBottom = widget.settings.autoHideBottomBar;
+    _predictiveBack = widget.settings.predictiveBack;
+    _feedMinColumns = widget.settings.feedMinColumns;
+    _shopMinColumns = widget.settings.shopMinColumns;
   }
 
   Future<void> _apply() => widget.onSettingsChanged();
@@ -278,13 +284,87 @@ class _SettingsSheetState extends State<_SettingsSheet> {
               contentPadding: const EdgeInsets.symmetric(horizontal: 4),
               secondary: Icon(Icons.vertical_align_bottom_rounded, color: theme.colorScheme.primary),
               title: const Text('自动隐藏底栏', style: TextStyle(fontWeight: FontWeight.w700)),
-              subtitle: const Text('在发现 / 商城向下滚动时收起底部导航（默认开启）'),
+              subtitle: const Text('在发现 / 商城向下滚动时收起底部导航；宽屏侧边栏不会隐藏'),
               value: _autoHideBottom,
               onChanged: (value) async {
                 setState(() => _autoHideBottom = value);
                 await widget.settings.setAutoHideBottomBar(value);
                 await _apply();
               },
+            ),
+            const Padding(
+              padding: EdgeInsets.only(left: 4, top: 12, bottom: 6),
+              child: Text('系统手势', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF70817D))),
+            ),
+            SwitchListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+              secondary: Icon(Icons.swipe_left_rounded, color: theme.colorScheme.primary),
+              title: const Text('预见式返回', style: TextStyle(fontWeight: FontWeight.w700)),
+              subtitle: const Text('Android 13+ 页面过渡使用预见式返回动画（默认关闭）'),
+              value: _predictiveBack,
+              onChanged: (value) async {
+                setState(() => _predictiveBack = value);
+                await widget.settings.setPredictiveBack(value);
+                await _apply();
+              },
+            ),
+            const Padding(
+              padding: EdgeInsets.only(left: 4, top: 12, bottom: 6),
+              child: Text('布局', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF70817D))),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(4, 4, 4, 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('发现页最小列数', style: TextStyle(fontWeight: FontWeight.w700, color: theme.colorScheme.onSurface)),
+                  const SizedBox(height: 4),
+                  const Text('宽度足够时仍可自动增加列数', style: TextStyle(fontSize: 12, color: Color(0xFF70817D))),
+                  const SizedBox(height: 8),
+                  SegmentedButton<int>(
+                    showSelectedIcon: false,
+                    segments: const [
+                      ButtonSegment(value: 1, label: Text('1')),
+                      ButtonSegment(value: 2, label: Text('2')),
+                      ButtonSegment(value: 3, label: Text('3')),
+                    ],
+                    selected: {_feedMinColumns},
+                    onSelectionChanged: (selection) async {
+                      final value = selection.first;
+                      setState(() => _feedMinColumns = value);
+                      await widget.settings.setFeedMinColumns(value);
+                      await _apply();
+                    },
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('商城页最小列数', style: TextStyle(fontWeight: FontWeight.w700, color: theme.colorScheme.onSurface)),
+                  const SizedBox(height: 4),
+                  const Text('宽度足够时仍可自动增加列数', style: TextStyle(fontSize: 12, color: Color(0xFF70817D))),
+                  const SizedBox(height: 8),
+                  SegmentedButton<int>(
+                    showSelectedIcon: false,
+                    segments: const [
+                      ButtonSegment(value: 1, label: Text('1')),
+                      ButtonSegment(value: 2, label: Text('2')),
+                      ButtonSegment(value: 3, label: Text('3')),
+                    ],
+                    selected: {_shopMinColumns},
+                    onSelectionChanged: (selection) async {
+                      final value = selection.first;
+                      setState(() => _shopMinColumns = value);
+                      await widget.settings.setShopMinColumns(value);
+                      await _apply();
+                    },
+                  ),
+                ],
+              ),
             ),
             const Divider(height: 28),
             if (widget.signedIn)
