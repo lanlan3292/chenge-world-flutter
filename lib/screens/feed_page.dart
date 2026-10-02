@@ -12,11 +12,15 @@ class FeedPage extends StatefulWidget {
     super.key,
     required this.api,
     required this.token,
+    this.autoHideTopBar = true,
+    this.autoHideBottomBar = true,
     this.onChromeVisibilityChanged,
   });
 
   final ChengeApi api;
   final String? token;
+  final bool autoHideTopBar;
+  final bool autoHideBottomBar;
   /// Called when scrolling should show/hide shell chrome (bottom nav, etc.).
   final ValueChanged<bool>? onChromeVisibilityChanged;
 
@@ -47,6 +51,9 @@ class _FeedPageState extends State<FeedPage> {
   void didUpdateWidget(covariant FeedPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.token != widget.token) _loadPage(1);
+    if (!widget.autoHideBottomBar && !_chromeVisible) {
+      _setChromeVisible(true);
+    }
   }
 
   @override
@@ -59,6 +66,7 @@ class _FeedPageState extends State<FeedPage> {
   }
 
   void _onScroll() {
+    if (!widget.autoHideTopBar && !widget.autoHideBottomBar) return;
     if (!_scrollController.hasClients) return;
     if (_scrollController.offset <= 8) {
       _setChromeVisible(true);
@@ -75,7 +83,9 @@ class _FeedPageState extends State<FeedPage> {
   void _setChromeVisible(bool visible) {
     if (_chromeVisible == visible) return;
     setState(() => _chromeVisible = visible);
-    widget.onChromeVisibilityChanged?.call(visible);
+    if (widget.autoHideBottomBar) {
+      widget.onChromeVisibilityChanged?.call(visible);
+    }
   }
 
   Future<void> _loadPage(int page) async {
@@ -129,9 +139,9 @@ class _FeedPageState extends State<FeedPage> {
             controller: _scrollController,
             slivers: [
               SliverAppBar(
-                floating: true,
-                snap: true,
-                pinned: false,
+                floating: widget.autoHideTopBar,
+                snap: widget.autoHideTopBar,
+                pinned: !widget.autoHideTopBar,
                 // Keep solid bar — do not inherit transparent immersive AppBarTheme.
                 backgroundColor: AppTheme.mist,
                 surfaceTintColor: Colors.transparent,
@@ -214,7 +224,9 @@ class _FeedPageState extends State<FeedPage> {
                   curve: Curves.easeInOutCubic,
                   height: 24 +
                       MediaQuery.paddingOf(context).bottom +
-                      (_chromeVisible ? kBottomNavigationBarHeight + 12 : 0),
+                      (widget.autoHideBottomBar
+                          ? (_chromeVisible ? kBottomNavigationBarHeight + 12 : 0)
+                          : kBottomNavigationBarHeight + 12),
                 ),
               ),
             ],
