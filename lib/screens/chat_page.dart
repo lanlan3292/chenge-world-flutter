@@ -29,7 +29,6 @@ class ChatPage extends StatefulWidget {
   final VoidCallback onOpenFriends;
   final VoidCallback onLoginRequested;
   final bool showAppBar;
-  /// 窄屏进入/退出会话线程时通知父级（用于隐藏社交分段等 chrome）。
   final ValueChanged<bool>? onMobileThreadChanged;
 
   @override
@@ -264,7 +263,6 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     final isWide = MediaQuery.sizeOf(context).width >= 760;
-    // 窄屏会话线程：始终显示带返回键与用户名的 AppBar（即使嵌在社交页 showAppBar=false）。
     final showThreadBar = !isWide && _mobileThread;
     final showListBar = widget.showAppBar && !showThreadBar;
 
@@ -645,7 +643,7 @@ class _ChatPageState extends State<ChatPage> {
 
   static String _preview(ChatMessage? message) {
     if (message == null) return '还没有消息';
-    if (message.type == 'emoji') return '[表情]';
+    if (message.type == 'emoji') return '[表情] ${_emojiKey(message.content)}';
     if (message.type == 'post') return '[分享帖子]';
     if (message.type == 'order') return '[分享商品]';
     return message.content;
@@ -658,7 +656,6 @@ class _ChatPageState extends State<ChatPage> {
     return '[${message.type}]';
   }
 
-  /// 只展示表情图片，不展示 key 文本。
   Widget _emojiImage(ChatMessage message) {
     final emoji = message.emoji;
     if (emoji == null) {
@@ -693,6 +690,8 @@ class _ChatPageState extends State<ChatPage> {
         alignment: Alignment.center,
         child: const Text('表情', style: TextStyle(color: AppTheme.ink, fontWeight: FontWeight.w700)),
       );
+
+  static String _emojiKey(String content) => EmojiMessageContent.tryParse(content)?.key ?? '表情消息';
 
   static String _shortTime(DateTime? value) {
     if (value == null) return '';
