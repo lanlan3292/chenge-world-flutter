@@ -6,6 +6,7 @@ import '../models/chat_conversation.dart';
 import '../models/chat_message.dart';
 import '../services/chenge_api.dart';
 import '../theme/app_theme.dart';
+import 'chat_thread_page.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({
@@ -18,7 +19,6 @@ class ChatPage extends StatefulWidget {
     required this.onOpenFriends,
     required this.onLoginRequested,
     this.showAppBar = true,
-    this.onMobileThreadChanged,
   });
 
   final ChengeApi api;
@@ -29,7 +29,6 @@ class ChatPage extends StatefulWidget {
   final VoidCallback onOpenFriends;
   final VoidCallback onLoginRequested;
   final bool showAppBar;
-  final ValueChanged<bool>? onMobileThreadChanged;
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -37,26 +36,16 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final _searchController = TextEditingController();
-  final _messageController = TextEditingController();
-  final _messageScrollController = ScrollController();
   final _conversations = <ChatConversation>[];
-  final _messages = <ChatMessage>[];
   ChatConversation? _active;
   Timer? _pollTimer;
   String _error = '';
   String _listQuery = '';
   bool _loadingList = false;
-  bool _loadingMessages = false;
-  bool _loadingOlder = false;
-  bool _sending = false;
-  bool _hasMore = false;
-  bool _mobileThread = false;
-  bool _stickToBottom = true;
 
   @override
   void initState() {
     super.initState();
-    _messageScrollController.addListener(_onScroll);
     _startSession();
   }
 
@@ -66,9 +55,7 @@ class _ChatPageState extends State<ChatPage> {
     if (oldWidget.token != widget.token) {
       _pollTimer?.cancel();
       _conversations.clear();
-      _messages.clear();
       _active = null;
-      _setMobileThread(false);
       if (widget.token != null) _startSession();
     }
     if (oldWidget.launchNonce != widget.launchNonce && widget.launchPeerId != null && widget.token != null) {
@@ -80,17 +67,7 @@ class _ChatPageState extends State<ChatPage> {
   void dispose() {
     _pollTimer?.cancel();
     _searchController.dispose();
-    _messageController.dispose();
-    _messageScrollController
-      ..removeListener(_onScroll)
-      ..dispose();
     super.dispose();
-  }
-
-  void _setMobileThread(bool open) {
-    if (_mobileThread == open) return;
-    setState(() => _mobileThread = open);
-    widget.onMobileThreadChanged?.call(open);
   }
 
   void _startSession() {
@@ -98,8 +75,6 @@ class _ChatPageState extends State<ChatPage> {
     _loadConversations();
     _pollTimer = Timer.periodic(const Duration(seconds: 8), (_) {
       _loadConversations(silent: true);
-      final conversation = _active;
-      if (conversation != null) _loadMessages(conversation.id, silent: true);
     });
     if (widget.launchPeerId != null) _openPeer(widget.launchPeerId!);
   }
@@ -139,7 +114,6 @@ class _ChatPageState extends State<ChatPage> {
     try {
       final conversation = await widget.api.openSingleChat(peerId, token);
       if (!mounted) return;
-      _setMobileThread(true);
       await _loadConversations();
       if (!mounted) return;
       if (!_conversations.any((item) => item.id == conversation.id)) {
@@ -152,105 +126,27 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void _selectConversation(ChatConversation conversation) {
-    setState(() {
-      _active = conversation;
-      _messages.clear();
-      _loadingMessages = false;
-      _hasMore = false;
-      _stickToBottom = true;
-    });
-    _setMobileThread(true);
-    _loadMessages(conversation.id);
-  }
-
-  Future<void> _loadMessages(int conversationId, {bool silent = false}) async {
-    final token = widget.token;
-    if (token == null || (_loadingMessages && !silent)) return;
-    if (!silent && mounted) setState(() => _loadingMessages = true);
-    try {
-      final messages = await widget.api.chatMessages(conversationId, token);
-      if (!mounted || _active?.id != conversationId) return;
-      final byId = {for (final message in _messages) message.id: message};
-      for (final message in messages) {
-        byId[message.id] = message;
-      }
-      final merged = byId.values.toList()..sort((a, b) => a.id.compareTo(b.id));
-      setState(() {
-        _messages
-          ..clear()
-          ..addAll(merged);
-        _hasMore = messages.length >= 30;
-        _error = '';
-      });
-      final lastId = merged.isEmpty ? null : merged.last.id;
-      await widget.api.markChatRead(conversationId, token, messageId: lastId);
-      if (_stickToBottom) _scrollToBottom();
-    } on ApiException catch (error) {
-      if (mounted && !silent && _active?.id == conversationId) _showError(error.message);
-    } finally {
-      if (mounted && !silent && _active?.id == conversationId) setState(() => _loadingMessages = false);
+    final isWide = MediaQuery.sizeOf(context).width >= 760;
+    setState(() => _active = conversation);
+    if (!isWide) {
+      _pushThread(conversation);
     }
   }
 
-  Future<void> _loadOlder() async {
+  Future<void> _pushThread(ChatConversation conversation) async {
     final token = widget.token;
-    final active = _active;
-    if (token == null || active == null || _loadingOlder || !_hasMore || _messages.isEmpty) return;
-    setState(() => _loadingOlder = true);
-    try {
-      final older = await widget.api.chatMessages(active.id, token, beforeId: _messages.first.id);
-      if (!mounted || _active?.id != active.id) return;
-      setState(() {
-        _messages.insertAll(0, older);
-        _hasMore = older.length >= 30;
-      });
-    } on ApiException catch (error) {
-      if (mounted) _showError(error.message);
-    } finally {
-      if (mounted) setState(() => _loadingOlder = false);
-    }
-  }
-
-  Future<void> _send() async {
-    final token = widget.token;
-    final active = _active;
-    final text = _messageController.text.trim();
-    if (token == null || active == null || text.isEmpty || _sending) return;
-    setState(() => _sending = true);
-    try {
-      final message = await widget.api.sendChatMessage(active.id, text, token);
-      if (!mounted || _active?.id != active.id) return;
-      setState(() {
-        if (!_messages.any((item) => item.id == message.id)) _messages.add(message);
-        _messageController.clear();
-        _stickToBottom = true;
-      });
-      await _loadConversations(silent: true);
-      _scrollToBottom();
-    } on ApiException catch (error) {
-      if (mounted) _showError(error.message);
-    } finally {
-      if (mounted) setState(() => _sending = false);
-    }
-  }
-
-  void _onScroll() {
-    if (!_messageScrollController.hasClients) return;
-    final position = _messageScrollController.position;
-    _stickToBottom = position.maxScrollExtent - position.pixels < 80;
-    if (position.pixels < 60) _loadOlder();
-  }
-
-  void _scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_messageScrollController.hasClients) {
-        _messageScrollController.animateTo(
-          _messageScrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 180),
-          curve: Curves.easeOut,
-        );
-      }
-    });
+    if (token == null) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => ChatThreadPage(
+          api: widget.api,
+          token: token,
+          userId: widget.userId,
+          conversation: conversation,
+        ),
+      ),
+    );
+    if (mounted) _loadConversations(silent: true);
   }
 
   void _showError(String message) {
@@ -263,44 +159,29 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     final isWide = MediaQuery.sizeOf(context).width >= 760;
-    final showThreadBar = !isWide && _mobileThread;
-    final showListBar = widget.showAppBar && !showThreadBar;
-
-    PreferredSizeWidget? appBar;
-    if (showThreadBar) {
-      appBar = AppBar(
-        leading: IconButton(
-          tooltip: '返回会话列表',
-          onPressed: () => _setMobileThread(false),
-          icon: const Icon(Icons.arrow_back_rounded),
-        ),
-        title: Text(
-          _active?.name ?? '聊天',
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontWeight: FontWeight.w800),
-        ),
-      );
-    } else if (showListBar) {
-      appBar = AppBar(
-        title: const Text('聊天', style: TextStyle(fontWeight: FontWeight.w800)),
-        actions: [
-          IconButton(tooltip: '好友', onPressed: widget.onOpenFriends, icon: const Icon(Icons.people_outline_rounded)),
-          IconButton(tooltip: '刷新会话', onPressed: _loadConversations, icon: const Icon(Icons.refresh_rounded)),
-          const SizedBox(width: 4),
-        ],
-      );
-    }
 
     return Scaffold(
-      appBar: appBar,
+      appBar: widget.showAppBar
+          ? AppBar(
+              title: const Text('聊天', style: TextStyle(fontWeight: FontWeight.w800)),
+              actions: [
+                IconButton(
+                    tooltip: '好友',
+                    onPressed: widget.onOpenFriends,
+                    icon: const Icon(Icons.people_outline_rounded)),
+                IconButton(
+                    tooltip: '刷新会话',
+                    onPressed: _loadConversations,
+                    icon: const Icon(Icons.refresh_rounded)),
+                const SizedBox(width: 4),
+              ],
+            )
+          : null,
       body: widget.token == null
           ? _signedOut()
           : isWide
               ? _wideLayout()
-              : _mobileThread
-                  ? _thread()
-                  : _conversationList(),
+              : _conversationList(),
     );
   }
 
@@ -312,7 +193,10 @@ class _ChatPageState extends State<ChatPage> {
             const SizedBox(height: 12),
             const Text('登录后开始聊天', style: TextStyle(fontSize: 19, fontWeight: FontWeight.w800)),
             const SizedBox(height: 16),
-            FilledButton.icon(onPressed: widget.onLoginRequested, icon: const Icon(Icons.login_rounded), label: const Text('前往登录')),
+            FilledButton.icon(
+                onPressed: widget.onLoginRequested,
+                icon: const Icon(Icons.login_rounded),
+                label: const Text('前往登录')),
           ],
         ),
       );
@@ -321,7 +205,27 @@ class _ChatPageState extends State<ChatPage> {
         children: [
           SizedBox(width: 320, child: _conversationList()),
           const VerticalDivider(width: 1),
-          Expanded(child: _thread()),
+          Expanded(
+            child: _active == null
+                ? const Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.chat_bubble_outline_rounded, size: 56, color: Color(0xFF9DB5AB)),
+                        SizedBox(height: 12),
+                        Text('选择一个会话，开始聊天', style: TextStyle(color: Color(0xFF70817D))),
+                      ],
+                    ),
+                  )
+                : ChatThreadPage(
+                    key: ValueKey('wide-thread-${_active!.id}'),
+                    api: widget.api,
+                    token: widget.token!,
+                    userId: widget.userId,
+                    conversation: _active!,
+                    showBackButton: false,
+                  ),
+          ),
         ],
       );
 
@@ -338,7 +242,16 @@ class _ChatPageState extends State<ChatPage> {
             decoration: const InputDecoration(hintText: '搜索会话', prefixIcon: Icon(Icons.search_rounded)),
           ),
         ),
-        if (_error.isNotEmpty) _errorStrip(),
+        if (_error.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+            child: Text(
+              _error,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(color: AppTheme.coral, fontSize: 12),
+            ),
+          ),
         Expanded(
           child: _loadingList && _conversations.isEmpty
               ? const Center(child: CircularProgressIndicator())
@@ -409,11 +322,13 @@ class _ChatPageState extends State<ChatPage> {
                           Container(
                             constraints: const BoxConstraints(minWidth: 20),
                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(color: AppTheme.coral, borderRadius: BorderRadius.circular(10)),
+                            decoration:
+                                BoxDecoration(color: AppTheme.coral, borderRadius: BorderRadius.circular(10)),
                             child: Text(
                               '${conversation.unread}',
                               textAlign: TextAlign.center,
-                              style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700),
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700),
                             ),
                           ),
                         ],
@@ -452,184 +367,6 @@ class _ChatPageState extends State<ChatPage> {
         ),
       );
 
-  Widget _thread() {
-    final active = _active;
-    if (active == null) {
-      return const Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.chat_bubble_outline_rounded, size: 56, color: Color(0xFF9DB5AB)),
-            SizedBox(height: 12),
-            Text('选择一个会话，开始聊天', style: TextStyle(color: Color(0xFF70817D))),
-          ],
-        ),
-      );
-    }
-    return Column(
-      children: [
-        if (MediaQuery.sizeOf(context).width >= 760)
-          Container(
-            height: 56,
-            padding: const EdgeInsets.symmetric(horizontal: 18),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              border: Border(bottom: BorderSide(color: Color(0xFFE2EAE5))),
-            ),
-            child: Row(
-              children: [
-                _avatar(active.name, active.avatar, radius: 17),
-                const SizedBox(width: 10),
-                Text(active.name, style: const TextStyle(fontWeight: FontWeight.w800)),
-              ],
-            ),
-          ),
-        Expanded(
-          child: Stack(
-            children: [
-              ListView.builder(
-                controller: _messageScrollController,
-                padding: const EdgeInsets.fromLTRB(14, 14, 14, 18),
-                itemCount: _messages.length + (_hasMore ? 1 : 0),
-                itemBuilder: (context, index) {
-                  if (_hasMore && index == 0) {
-                    return Center(
-                      child: TextButton.icon(
-                        onPressed: _loadingOlder ? null : _loadOlder,
-                        icon: _loadingOlder
-                            ? const SizedBox.square(dimension: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                            : const Icon(Icons.expand_less_rounded),
-                        label: const Text('加载更早消息'),
-                      ),
-                    );
-                  }
-                  final message = _messages[index - (_hasMore ? 1 : 0)];
-                  return _messageTile(message);
-                },
-              ),
-              if (_loadingMessages && _messages.isEmpty) const Center(child: CircularProgressIndicator()),
-              if (_messages.isEmpty && !_loadingMessages)
-                const Center(child: Text('还没有消息，打个招呼吧', style: TextStyle(color: Color(0xFF70817D)))),
-            ],
-          ),
-        ),
-        _composer(),
-      ],
-    );
-  }
-
-  Widget _messageTile(ChatMessage message) {
-    final mine = message.senderId == widget.userId;
-    final bubbleColor = mine ? AppTheme.leaf : Colors.white;
-    final textColor = mine ? Colors.white : AppTheme.ink;
-    final isEmoji = message.type == 'emoji';
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        mainAxisAlignment: mine ? MainAxisAlignment.end : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          if (!mine) ...[
-            _avatar(message.senderName ?? _active?.name ?? '用户', message.senderAvatar, radius: 15),
-            const SizedBox(width: 8),
-          ],
-          Flexible(
-            child: Column(
-              crossAxisAlignment: mine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-              children: [
-                if (!mine)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 4, bottom: 4),
-                    child: Text(
-                      message.senderName ?? _active?.name ?? '用户',
-                      style: const TextStyle(fontSize: 11, color: Color(0xFF70817D)),
-                    ),
-                  ),
-                if (isEmoji)
-                  _emojiImage(message)
-                else
-                  Container(
-                    constraints: const BoxConstraints(maxWidth: 520),
-                    padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: bubbleColor,
-                      borderRadius: BorderRadius.only(
-                        topLeft: const Radius.circular(16),
-                        topRight: const Radius.circular(16),
-                        bottomLeft: Radius.circular(mine ? 16 : 4),
-                        bottomRight: Radius.circular(mine ? 4 : 16),
-                      ),
-                    ),
-                    child: SelectableText(
-                      message.type == 'text' ? message.content : _specialMessage(message),
-                      style: TextStyle(color: textColor, height: 1.4),
-                    ),
-                  ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 3, left: 4, right: 4),
-                  child: Text(
-                    _shortTime(message.createdAt),
-                    style: const TextStyle(fontSize: 10, color: Color(0xFF83918D)),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          if (mine) const SizedBox(width: 8),
-        ],
-      ),
-    );
-  }
-
-  Widget _composer() => SafeArea(
-        top: false,
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            border: Border(top: BorderSide(color: Color(0xFFE2EAE5))),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _messageController,
-                  minLines: 1,
-                  maxLines: 5,
-                  textInputAction: TextInputAction.newline,
-                  onChanged: (_) => setState(() {}),
-                  decoration: const InputDecoration(
-                    hintText: '输入消息…',
-                    isDense: true,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              IconButton.filled(
-                tooltip: '发送消息',
-                onPressed: _sending || _messageController.text.trim().isEmpty ? null : _send,
-                icon: _sending
-                    ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Icon(Icons.send_rounded),
-              ),
-            ],
-          ),
-        ),
-      );
-
-  Widget _errorStrip() => Padding(
-        padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
-        child: Text(
-          _error,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(color: AppTheme.coral, fontSize: 12),
-        ),
-      );
-
   Widget _avatar(String name, String? url, {required double radius}) => CircleAvatar(
         radius: radius,
         backgroundColor: const Color(0xFFFFE8C5),
@@ -648,48 +385,6 @@ class _ChatPageState extends State<ChatPage> {
     if (message.type == 'order') return '[分享商品]';
     return message.content;
   }
-
-  static String _specialMessage(ChatMessage message) {
-    if (message.type == 'emoji') return '[表情]';
-    if (message.type == 'post') return '[分享帖子]';
-    if (message.type == 'order') return '[商品订单]';
-    return '[${message.type}]';
-  }
-
-  Widget _emojiImage(ChatMessage message) {
-    final emoji = message.emoji;
-    if (emoji == null) {
-      return Container(
-        width: 132,
-        height: 84,
-        decoration: BoxDecoration(color: const Color(0xFFEAF2ED), borderRadius: BorderRadius.circular(9)),
-        alignment: Alignment.center,
-        child: const Text('表情', style: TextStyle(color: AppTheme.ink, fontWeight: FontWeight.w700)),
-      );
-    }
-    if (emoji.url?.isNotEmpty == true) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(9),
-        child: Image.network(
-          emoji.url!,
-          width: 132,
-          height: 132,
-          fit: BoxFit.contain,
-          errorBuilder: (_, __, ___) => _emojiPlaceholder(),
-          loadingBuilder: (context, child, progress) => progress == null ? child : _emojiPlaceholder(),
-        ),
-      );
-    }
-    return _emojiPlaceholder();
-  }
-
-  Widget _emojiPlaceholder() => Container(
-        width: 132,
-        height: 84,
-        decoration: BoxDecoration(color: const Color(0xFFEAF2ED), borderRadius: BorderRadius.circular(9)),
-        alignment: Alignment.center,
-        child: const Text('表情', style: TextStyle(color: AppTheme.ink, fontWeight: FontWeight.w700)),
-      );
 
   static String _emojiKey(String content) => EmojiMessageContent.tryParse(content)?.key ?? '表情消息';
 
