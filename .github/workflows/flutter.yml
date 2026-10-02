@@ -82,7 +82,7 @@ jobs:
 
       - name: Package as zip
         run: |
-          Compress-Archive -Path "build\windows\x64\runner\Debug\*" `
+          Compress-Archive -Path "build\windows\x64\runner\Release\*" `
             -DestinationPath "chenge-world-windows.zip"
 
       - name: Upload Windows zip
