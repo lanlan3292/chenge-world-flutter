@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/ai_session.dart';
 import '../services/chenge_api.dart';
 import '../theme/app_theme.dart';
+import 'ai_thread_page.dart';
 
 class AiAgentPage extends StatefulWidget {
   const AiAgentPage({
@@ -23,23 +24,17 @@ class AiAgentPage extends StatefulWidget {
 }
 
 class _AiAgentPageState extends State<AiAgentPage> {
-  final _messageController = TextEditingController();
-  final _messageScrollController = ScrollController();
   final _sessions = <AiSession>[];
-  final _messages = <AiChatBubble>[];
-
   AiSession? _active;
   String _error = '';
   bool _loadingList = false;
-  bool _loadingHistory = false;
-  bool _sending = false;
-  bool _mobileThread = false;
-  bool _stickToBottom = true;
+  bool _busy = false;
+  bool _routeOpen = false;
+  bool? _lastWide;
 
   @override
   void initState() {
     super.initState();
-    _messageScrollController.addListener(_onScroll);
     if (widget.token != null) _loadSessions();
   }
 
@@ -48,20 +43,9 @@ class _AiAgentPageState extends State<AiAgentPage> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.token != widget.token) {
       _sessions.clear();
-      _messages.clear();
       _active = null;
-      _mobileThread = false;
       if (widget.token != null) _loadSessions();
     }
-  }
-
-  @override
-  void dispose() {
-    _messageController.dispose();
-    _messageScrollController
-      ..removeListener(_onScroll)
-      ..dispose();
-    super.dispose();
   }
 
   Future<void> _loadSessions({bool silent = false}) async {
@@ -95,19 +79,19 @@ class _AiAgentPageState extends State<AiAgentPage> {
 
   Future<void> _createSession() async {
     final token = widget.token;
-    if (token == null || _sending) return;
-    setState(() => _sending = true);
+    if (token == null || _busy) return;
+    setState(() => _busy = true);
     try {
       final session = await widget.api.createAiSession(token, name: '新对话');
       if (!mounted) return;
       setState(() {
         _sessions.insert(0, session);
-        _selectSession(session);
       });
+      _selectSession(session);
     } on ApiException catch (error) {
       if (mounted) _showError(error.message);
     } finally {
-      if (mounted) setState(() => _sending = false);
+      if (mounted) setState(() => _busy = false);
     }
   }
 
@@ -136,8 +120,6 @@ class _AiAgentPageState extends State<AiAgentPage> {
         _sessions.removeWhere((item) => item.sessionId == session.sessionId);
         if (_active?.sessionId == session.sessionId) {
           _active = null;
-          _messages.clear();
-          _mobileThread = false;
         }
       });
     } on ApiException catch (error) {
@@ -146,234 +128,57 @@ class _AiAgentPageState extends State<AiAgentPage> {
   }
 
   void _selectSession(AiSession session) {
-    setState(() {
-      _active = session;
-      _mobileThread = true;
-      _messages.clear();
-      _loadingHistory = true;
-      _stickToBottom = true;
-    });
-    _loadHistory(session.sessionId);
-  }
-
-  Future<void> _loadHistory(String sessionId) async {
-    final token = widget.token;
-    if (token == null) return;
-    try {
-      final history = await widget.api.aiChatHistory(sessionId, token);
-      if (!mounted || _active?.sessionId != sessionId) return;
-      setState(() {
-        _messages
-          ..clear()
-          ..addAll(history.map(AiChatBubble.fromHistory));
-        _loadingHistory = false;
-        _error = '';
-      });
-      _scrollToBottom();
-    } on ApiException catch (error) {
-      if (mounted && _active?.sessionId == sessionId) {
-        setState(() => _loadingHistory = false);
-        _showError(error.message);
-      }
+    final isWide = MediaQuery.sizeOf(context).width >= 760;
+    setState(() => _active = session);
+    if (!isWide) {
+      _pushThread(session);
     }
   }
 
-  Future<void> _send() async {
+  Future<void> _pushThread(AiSession session) async {
     final token = widget.token;
-    final text = _messageController.text.trim();
-    if (token == null || text.isEmpty || _sending) return;
-
-    late final AiSession session;
-    if (_active != null) {
-      session = _active!;
-    } else {
-      setState(() => _sending = true);
-      try {
-        session = await widget.api.createAiSession(
-          token,
-          name: text.length > 18 ? '${text.substring(0, 18)}…' : text,
-        );
-        if (!mounted) return;
-        setState(() {
-          _sessions.insert(0, session);
-          _active = session;
-          _mobileThread = true;
-          _messages.clear();
-        });
-      } on ApiException catch (error) {
-        if (mounted) {
-          setState(() => _sending = false);
-          _showError(error.message);
-        }
-        return;
-      }
-    }
-
-    final turnId = 'flutter-${DateTime.now().microsecondsSinceEpoch}';
-    final userBubble = AiChatBubble(role: 'user', content: text);
-    final assistantBubble = AiChatBubble(
-      role: 'assistant',
-      content: '',
-      streaming: true,
-      status: '思考中…',
+    if (token == null || _routeOpen) return;
+    _routeOpen = true;
+    final keep = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => AiThreadPage(
+          api: widget.api,
+          token: token,
+          session: session,
+          onSessionRenamed: (updated) {
+            final index = _sessions.indexWhere((s) => s.sessionId == updated.sessionId);
+            if (index >= 0) {
+              setState(() {
+                _sessions[index] = updated;
+                if (_active?.sessionId == updated.sessionId) _active = updated;
+              });
+            }
+          },
+        ),
+      ),
     );
-
-    setState(() {
-      _sending = true;
-      _messageController.clear();
-      _messages.addAll([userBubble, assistantBubble]);
-      _stickToBottom = true;
-    });
-    _scrollToBottom();
-
-    try {
-      await for (final event in widget.api.streamAiAgent(
-        token: token,
-        sessionId: session.sessionId,
-        userInput: text,
-        turnId: turnId,
-      )) {
-        if (!mounted || _active?.sessionId != session.sessionId) return;
-        final type = event.type;
-        final data = event.data;
-
-        if (type == 'error') {
-          final message = data is Map
-              ? '${data['message'] ?? data['msg'] ?? 'AI 请求失败'}'
-              : '$data';
-          setState(() {
-            assistantBubble
-              ..streaming = false
-              ..status = null
-              ..content = assistantBubble.content.isEmpty ? message : assistantBubble.content;
-          });
-          _showError(message);
-          break;
-        }
-
-        if (type == 'status') {
-          final status = data is Map
-              ? '${data['message'] ?? data['status'] ?? data['text'] ?? ''}'
-              : '$data';
-          if (status.isNotEmpty) {
-            setState(() => assistantBubble.status = status);
-          }
-          continue;
-        }
-
-        if (type == 'delta') {
-          final delta = _extractDelta(data);
-          if (delta.isNotEmpty) {
-            setState(() {
-              assistantBubble
-                ..status = null
-                ..content = '${assistantBubble.content}$delta';
-            });
-            if (_stickToBottom) _scrollToBottom();
-          }
-          continue;
-        }
-
-        if (type == 'done') {
-          final finalText = _extractFinal(data);
-          setState(() {
-            assistantBubble.streaming = false;
-            assistantBubble.status = null;
-            if (finalText.isNotEmpty && assistantBubble.content.isEmpty) {
-              assistantBubble.content = finalText;
-            }
-            if (assistantBubble.content.isEmpty) {
-              assistantBubble.content = '（无文本回复）';
-            }
-          });
-          if (session.name == '新对话' || session.name.isEmpty) {
-            final title = text.length > 18 ? '${text.substring(0, 18)}…' : text;
-            try {
-              await widget.api.renameAiSession(session.sessionId, title, token);
-              if (mounted) {
-                setState(() {
-                  final index = _sessions.indexWhere((item) => item.sessionId == session.sessionId);
-                  if (index >= 0) {
-                    _sessions[index] = AiSession(
-                      id: session.id,
-                      sessionId: session.sessionId,
-                      name: title,
-                      userId: session.userId,
-                      scene: session.scene,
-                      createTime: session.createTime,
-                    );
-                    _active = _sessions[index];
-                  }
-                });
-              }
-            } on ApiException {
-              // ignore rename failures
-            }
-          }
-          break;
-        }
-
-        if (type == 'pending' || type == 'artifacts' || type == 'sources') {
-          setState(() => assistantBubble.status = type == 'pending' ? '等待确认…' : '收到 $type');
-        }
-      }
-    } on ApiException catch (error) {
-      if (mounted) {
-        setState(() {
-          assistantBubble
-            ..streaming = false
-            ..status = null
-            ..content = assistantBubble.content.isEmpty ? error.message : assistantBubble.content;
-        });
-        _showError(error.message);
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _sending = false;
-          assistantBubble.streaming = false;
-          if (assistantBubble.content.isEmpty && assistantBubble.status != null) {
-            assistantBubble.content = assistantBubble.status!;
-            assistantBubble.status = null;
-          }
-        });
-        _scrollToBottom();
-      }
+    _routeOpen = false;
+    if (!mounted) return;
+    if (keep != true) {
+      setState(() => _active = null);
+    } else {
+      setState(() {});
     }
+    _loadSessions(silent: true);
   }
 
-  String _extractDelta(dynamic data) {
-    if (data is Map) {
-      final delta = data['delta'] ?? data['content'] ?? data['text'] ?? data['message'];
-      return delta?.toString() ?? '';
+  void _handleWidthChange(bool isWide) {
+    if (_lastWide == isWide) return;
+    final wasWide = _lastWide;
+    _lastWide = isWide;
+    if (wasWide == null) return;
+    if (wasWide && !isWide && _active != null && !_routeOpen) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && MediaQuery.sizeOf(context).width < 760 && _active != null) {
+          _pushThread(_active!);
+        }
+      });
     }
-    return data?.toString() ?? '';
-  }
-
-  String _extractFinal(dynamic data) {
-    if (data is Map) {
-      final text = data['content'] ?? data['text'] ?? data['message'] ?? data['answer'];
-      return text?.toString() ?? '';
-    }
-    return data?.toString() ?? '';
-  }
-
-  void _onScroll() {
-    if (!_messageScrollController.hasClients) return;
-    final position = _messageScrollController.position;
-    _stickToBottom = position.maxScrollExtent - position.pixels < 80;
-  }
-
-  void _scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_messageScrollController.hasClients) {
-        _messageScrollController.animateTo(
-          _messageScrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 180),
-          curve: Curves.easeOut,
-        );
-      }
-    });
   }
 
   void _showError(String message) {
@@ -386,26 +191,16 @@ class _AiAgentPageState extends State<AiAgentPage> {
   @override
   Widget build(BuildContext context) {
     final isWide = MediaQuery.sizeOf(context).width >= 760;
+    _handleWidthChange(isWide);
+
     return Scaffold(
       appBar: widget.showAppBar
           ? AppBar(
-              leading: !isWide && _mobileThread
-                  ? IconButton(
-                      tooltip: '返回会话列表',
-                      onPressed: () => setState(() => _mobileThread = false),
-                      icon: const Icon(Icons.arrow_back_rounded),
-                    )
-                  : null,
-              title: Text(
-                !isWide && _mobileThread ? (_active?.name ?? 'AI Agent') : 'AI Agent',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontWeight: FontWeight.w800),
-              ),
+              title: const Text('AI Agent', style: TextStyle(fontWeight: FontWeight.w800)),
               actions: [
                 IconButton(
                   tooltip: '新建对话',
-                  onPressed: widget.token == null || _sending ? null : _createSession,
+                  onPressed: widget.token == null || _busy ? null : _createSession,
                   icon: const Icon(Icons.add_comment_rounded),
                 ),
                 IconButton(
@@ -421,9 +216,7 @@ class _AiAgentPageState extends State<AiAgentPage> {
           ? _signedOut()
           : isWide
               ? _wideLayout()
-              : _mobileThread
-                  ? _thread()
-                  : _sessionList(),
+              : _sessionList(),
     );
   }
 
@@ -450,7 +243,28 @@ class _AiAgentPageState extends State<AiAgentPage> {
         children: [
           SizedBox(width: 300, child: _sessionList()),
           const VerticalDivider(width: 1),
-          Expanded(child: _thread()),
+          Expanded(
+            child: _active == null
+                ? const Center(
+                    child: Text('选择或新建一个 AI 会话', style: TextStyle(color: Color(0xFF70817D))),
+                  )
+                : AiThreadPage(
+                    key: ValueKey('wide-ai-${_active!.sessionId}'),
+                    api: widget.api,
+                    token: widget.token!,
+                    session: _active!,
+                    showBackButton: false,
+                    onSessionRenamed: (updated) {
+                      final index = _sessions.indexWhere((s) => s.sessionId == updated.sessionId);
+                      if (index >= 0) {
+                        setState(() {
+                          _sessions[index] = updated;
+                          _active = updated;
+                        });
+                      }
+                    },
+                  ),
+          ),
         ],
       );
 
@@ -467,7 +281,7 @@ class _AiAgentPageState extends State<AiAgentPage> {
                 ),
                 IconButton(
                   tooltip: '新建对话',
-                  onPressed: _sending ? null : _createSession,
+                  onPressed: _busy ? null : _createSession,
                   icon: const Icon(Icons.add_comment_rounded),
                 ),
                 IconButton(
@@ -511,10 +325,10 @@ class _AiAgentPageState extends State<AiAgentPage> {
             const SizedBox(height: 12),
             const Text('还没有 AI 对话', style: TextStyle(fontWeight: FontWeight.w700)),
             const SizedBox(height: 8),
-            const Text('点下方新建，或直接在输入框发第一句', style: TextStyle(color: Color(0xFF70817D), fontSize: 13)),
+            const Text('点下方新建开始对话', style: TextStyle(color: Color(0xFF70817D), fontSize: 13)),
             const SizedBox(height: 16),
             FilledButton.tonalIcon(
-              onPressed: _sending ? null : _createSession,
+              onPressed: _busy ? null : _createSession,
               icon: const Icon(Icons.add_rounded),
               label: const Text('新建对话'),
             ),
@@ -573,126 +387,6 @@ class _AiAgentPageState extends State<AiAgentPage> {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _thread() {
-    final active = _active;
-    return Column(
-      children: [
-        if (active == null)
-          const Expanded(
-            child: Center(
-              child: Text('选择或新建一个 AI 会话', style: TextStyle(color: Color(0xFF70817D))),
-            ),
-          )
-        else ...[
-          Expanded(
-            child: _loadingHistory && _messages.isEmpty
-                ? const Center(child: CircularProgressIndicator())
-                : _messages.isEmpty
-                    ? const Center(
-                        child: Text('发一条消息开始对话', style: TextStyle(color: Color(0xFF70817D))),
-                      )
-                    : ListView.builder(
-                        controller: _messageScrollController,
-                        padding: const EdgeInsets.fromLTRB(14, 8, 14, 12),
-                        itemCount: _messages.length,
-                        itemBuilder: (context, index) => _bubble(_messages[index]),
-                      ),
-          ),
-          _composer(),
-        ],
-      ],
-    );
-  }
-
-  Widget _bubble(AiChatBubble bubble) {
-    final isUser = bubble.role == 'user';
-    final align = isUser ? Alignment.centerRight : Alignment.centerLeft;
-    final bg = isUser ? AppTheme.leaf : Colors.white;
-    final fg = isUser ? Colors.white : AppTheme.ink;
-    return Align(
-      alignment: align,
-      child: Container(
-        constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.78),
-        margin: const EdgeInsets.symmetric(vertical: 4),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          color: bg,
-          borderRadius: BorderRadius.circular(16),
-          border: isUser ? null : Border.all(color: const Color(0xFFDCE6E1)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (bubble.status != null && bubble.status!.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Text(
-                  bubble.status!,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: isUser ? Colors.white70 : const Color(0xFF70817D),
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ),
-            if (bubble.content.isNotEmpty)
-              SelectableText(
-                bubble.content,
-                style: TextStyle(color: fg, height: 1.4),
-              )
-            else if (bubble.streaming)
-              SizedBox(
-                width: 18,
-                height: 18,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: isUser ? Colors.white : AppTheme.leaf,
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _composer() {
-    return SafeArea(
-      top: false,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(12, 6, 12, 10),
-        child: Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: _messageController,
-                minLines: 1,
-                maxLines: 5,
-                textInputAction: TextInputAction.send,
-                onSubmitted: (_) => _send(),
-                enabled: !_sending,
-                decoration: const InputDecoration(
-                  hintText: '向 AI Agent 提问…',
-                  prefixIcon: Icon(Icons.smart_toy_outlined),
-                ),
-              ),
-            ),
-            const SizedBox(width: 8),
-            IconButton.filled(
-              onPressed: _sending ? null : _send,
-              icon: _sending
-                  ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                    )
-                  : const Icon(Icons.send_rounded),
-            ),
-          ],
         ),
       ),
     );
