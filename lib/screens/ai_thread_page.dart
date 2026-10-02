@@ -34,7 +34,6 @@ class _AiThreadPageState extends State<AiThreadPage> {
   bool _loadingHistory = false;
   bool _sending = false;
   bool _stickToBottom = true;
-  bool _initialScrollDone = false;
   bool _popScheduled = false;
 
   @override
@@ -51,7 +50,6 @@ class _AiThreadPageState extends State<AiThreadPage> {
     if (oldWidget.session.sessionId != widget.session.sessionId) {
       _session = widget.session;
       _messages.clear();
-      _initialScrollDone = false;
       _loadHistory();
     }
   }
@@ -95,7 +93,6 @@ class _AiThreadPageState extends State<AiThreadPage> {
         _loadingHistory = false;
       });
       _scrollToBottom(animate: false);
-      _initialScrollDone = true;
     } on ApiException catch (error) {
       if (mounted) {
         setState(() => _loadingHistory = false);
