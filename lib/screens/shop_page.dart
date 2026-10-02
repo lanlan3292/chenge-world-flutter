@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 import '../models/shop_item.dart';
 import '../services/chenge_api.dart';
@@ -12,18 +13,25 @@ class ShopPage extends StatefulWidget {
     required this.token,
     required this.userId,
     required this.onLoginRequested,
+    this.autoHideTopBar = true,
+    this.autoHideBottomBar = true,
+    this.onChromeVisibilityChanged,
   });
 
   final ChengeApi api;
   final String? token;
   final int? userId;
   final VoidCallback onLoginRequested;
+  final bool autoHideTopBar;
+  final bool autoHideBottomBar;
+  final ValueChanged<bool>? onChromeVisibilityChanged;
 
   @override
   State<ShopPage> createState() => _ShopPageState();
 }
 
 class _ShopPageState extends State<ShopPage> {
+  final _scrollController = ScrollController();
   final _searchController = TextEditingController();
   final _items = <ShopItem>[];
   final _assets = <Map<String, dynamic>>[];
@@ -39,10 +47,12 @@ class _ShopPageState extends State<ShopPage> {
   bool _loading = false;
   bool _loadingPrivate = false;
   bool _privateLoaded = false;
+  bool _chromeVisible = true;
 
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
     _loadItems();
   }
 
@@ -56,12 +66,37 @@ class _ShopPageState extends State<ShopPage> {
       _orders.clear();
       if (widget.token != null && _view != 'mall') _loadPrivate(_view);
     }
+    if (!widget.autoHideBottomBar && !_chromeVisible) _setChromeVisible(true);
   }
 
   @override
   void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
     _searchController.dispose();
+    widget.onChromeVisibilityChanged?.call(true);
     super.dispose();
+  }
+
+  void _onScroll() {
+    if (!widget.autoHideBottomBar && !widget.autoHideTopBar) return;
+    if (!_scrollController.hasClients) return;
+    if (_scrollController.offset <= 8) {
+      _setChromeVisible(true);
+      return;
+    }
+    final direction = _scrollController.position.userScrollDirection;
+    if (direction == ScrollDirection.reverse) {
+      _setChromeVisible(false);
+    } else if (direction == ScrollDirection.forward) {
+      _setChromeVisible(true);
+    }
+  }
+
+  void _setChromeVisible(bool visible) {
+    if (_chromeVisible == visible) return;
+    setState(() => _chromeVisible = visible);
+    if (widget.autoHideBottomBar) widget.onChromeVisibilityChanged?.call(visible);
   }
 
   Future<void> _loadItems({int page = 1}) async {
@@ -79,8 +114,7 @@ class _ShopPageState extends State<ShopPage> {
         type: _type,
         keyword: _searchController.text,
       );
-      if (!mounted) return;
-      if (requestId != _itemRequestId) return;
+      if (!mounted || requestId != _itemRequestId) return;
       setState(() {
         _items.addAll(result.items);
         _total = result.total;
@@ -131,6 +165,7 @@ class _ShopPageState extends State<ShopPage> {
   }
 
   Future<void> _chooseView(String view) async {
+    _setChromeVisible(true);
     setState(() {
       _view = view;
       _error = '';
@@ -143,6 +178,7 @@ class _ShopPageState extends State<ShopPage> {
   }
 
   Future<void> _openItem(ShopItem item) async {
+    _setChromeVisible(true);
     final purchased = await Navigator.of(context).push<bool>(MaterialPageRoute<bool>(
       builder: (_) => ShopDetailPage(
         api: widget.api,
@@ -164,34 +200,147 @@ class _ShopPageState extends State<ShopPage> {
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
     final columns = width >= 1180 ? 3 : width >= 760 ? 2 : 1;
+    final hideTop = widget.autoHideTopBar;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('商城', style: TextStyle(fontWeight: FontWeight.w800)),
-        actions: [
-          if (_balance != null)
-            Center(child: _coinPill('${_balance!.toStringAsFixed(2)} CC')),
-          IconButton(tooltip: '刷新', onPressed: _loading ? null : () => _view == 'mall' ? _loadItems() : _loadPrivate(_view), icon: const Icon(Icons.refresh_rounded)),
-          const SizedBox(width: 5),
-        ],
-      ),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1180),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(18, 4, 18, 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Tab switch stays fixed; search/filters scroll with the mall list.
-                _viewSelector(),
-                if (_error.isNotEmpty) _errorBanner(),
-                Expanded(child: _viewBody(columns)),
+          child: RefreshIndicator(
+            onRefresh: () => _view == 'mall' ? _loadItems() : _loadPrivate(_view),
+            child: CustomScrollView(
+              controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
+                SliverAppBar(
+                  floating: hideTop,
+                  snap: hideTop,
+                  pinned: !hideTop,
+                  backgroundColor: AppTheme.mist,
+                  surfaceTintColor: Colors.transparent,
+                  elevation: 0,
+                  scrolledUnderElevation: 0,
+                  forceElevated: false,
+                  title: const Text('商城', style: TextStyle(fontWeight: FontWeight.w800)),
+                  actions: [
+                    if (_balance != null) Center(child: _coinPill('${_balance!.toStringAsFixed(2)} CC')),
+                    IconButton(
+                      tooltip: '刷新',
+                      onPressed: _loading ? null : () => _view == 'mall' ? _loadItems() : _loadPrivate(_view),
+                      icon: const Icon(Icons.refresh_rounded),
+                    ),
+                    const SizedBox(width: 5),
+                  ],
+                ),
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(18, 4, 18, 0),
+                  sliver: SliverToBoxAdapter(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _viewSelector(),
+                        if (_error.isNotEmpty) _errorBanner(),
+                      ],
+                    ),
+                  ),
+                ),
+                ..._viewSlivers(columns),
+                SliverToBoxAdapter(
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 320),
+                    curve: Curves.easeInOutCubic,
+                    height: 24 +
+                        MediaQuery.paddingOf(context).bottom +
+                        (widget.autoHideBottomBar
+                            ? (_chromeVisible ? kBottomNavigationBarHeight + 12 : 0)
+                            : kBottomNavigationBarHeight + 12),
+                  ),
+                ),
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  List<Widget> _viewSlivers(int columns) {
+    if (_view == 'mall') {
+      return [
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(18, 14, 18, 0),
+          sliver: SliverToBoxAdapter(child: _searchBar()),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(18, 10, 18, 10),
+          sliver: SliverToBoxAdapter(child: _filters()),
+        ),
+        if (_loading && _items.isEmpty)
+          const SliverFillRemaining(hasScrollBody: false, child: Center(child: CircularProgressIndicator()))
+        else if (_error.isNotEmpty && _items.isEmpty)
+          SliverFillRemaining(hasScrollBody: false, child: _empty('商城暂时不可用', '检查网络后重试'))
+        else if (_items.isEmpty)
+          SliverFillRemaining(hasScrollBody: false, child: _empty('暂时没有商品', '试试其他关键词或分类'))
+        else ...[
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(18, 0, 18, 11),
+            sliver: SliverToBoxAdapter(
+              child: Row(
+                children: [
+                  const Text('发现好物', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900)),
+                  const Spacer(),
+                  Text('$_total 件商品', style: const TextStyle(color: Color(0xFF70817D))),
+                ],
+              ),
+            ),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 18),
+            sliver: SliverGrid.builder(
+              itemCount: _items.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: columns,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                mainAxisExtent: 278,
+              ),
+              itemBuilder: (context, index) => _itemCard(_items[index]),
+            ),
+          ),
+          _pagination(),
+        ],
+      ];
+    }
+
+    if (widget.token == null) {
+      return [SliverFillRemaining(hasScrollBody: false, child: _signedOutPrivate())];
+    }
+    if (_loadingPrivate && !_privateLoaded) {
+      return [const SliverFillRemaining(hasScrollBody: false, child: Center(child: CircularProgressIndicator()))];
+    }
+    final rows = _view == 'assets' ? _assets : _orders;
+    if (rows.isEmpty) {
+      return [
+        SliverFillRemaining(
+          hasScrollBody: false,
+          child: _empty(_view == 'assets' ? '还没有资产' : '还没有订单', '在商城购买的内容会显示在这里'),
+        ),
+      ];
+    }
+    return [
+      SliverPadding(
+        padding: const EdgeInsets.fromLTRB(18, 12, 18, 20),
+        sliver: SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              if (index.isOdd) return const SizedBox(height: 8);
+              return _privateRow(rows[index ~/ 2], isAsset: _view == 'assets');
+            },
+            childCount: rows.isEmpty ? 0 : rows.length * 2 - 1,
+          ),
+        ),
+      ),
+    ];
   }
 
   Widget _viewSelector() => SegmentedButton<String>(
@@ -267,85 +416,6 @@ class _ShopPageState extends State<ShopPage> {
         ),
       );
 
-  Widget _viewBody(int columns) {
-    if (_view == 'mall') {
-      return RefreshIndicator(
-        onRefresh: _loadItems,
-        child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 14, bottom: 10),
-                child: _searchBar(),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: _filters(),
-              ),
-            ),
-            if (_loading && _items.isEmpty)
-              const SliverFillRemaining(
-                hasScrollBody: false,
-                child: Center(child: CircularProgressIndicator()),
-              )
-            else if (_error.isNotEmpty && _items.isEmpty)
-              SliverFillRemaining(
-                hasScrollBody: false,
-                child: _empty('商城暂时不可用', '检查网络后重试'),
-              )
-            else if (_items.isEmpty)
-              SliverFillRemaining(
-                hasScrollBody: false,
-                child: _empty('暂时没有商品', '试试其他关键词或分类'),
-              )
-            else ...[
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 11),
-                  child: Row(
-                    children: [
-                      const Text('发现好物', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900)),
-                      const Spacer(),
-                      Text('$_total 件商品', style: const TextStyle(color: Color(0xFF70817D))),
-                    ],
-                  ),
-                ),
-              ),
-              SliverGrid.builder(
-                itemCount: _items.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: columns,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                  mainAxisExtent: 278,
-                ),
-                itemBuilder: (context, index) => _itemCard(_items[index]),
-              ),
-              _pagination(),
-            ],
-          ],
-        ),
-      );
-    }
-    if (widget.token == null) return _signedOutPrivate();
-    if (_loadingPrivate && !_privateLoaded) return const Center(child: CircularProgressIndicator());
-    final rows = _view == 'assets' ? _assets : _orders;
-    if (rows.isEmpty) return _empty(_view == 'assets' ? '还没有资产' : '还没有订单', '在商城购买的内容会显示在这里');
-    return RefreshIndicator(
-      onRefresh: () => _loadPrivate(_view),
-      child: ListView.separated(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.only(top: 12, bottom: 20),
-        itemCount: rows.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 8),
-        itemBuilder: (context, index) => _privateRow(rows[index], isAsset: _view == 'assets'),
-      ),
-    );
-  }
-
   Widget _itemCard(ShopItem item) => Card(
         clipBehavior: Clip.antiAlias,
         child: InkWell(
@@ -362,16 +432,24 @@ class _ShopPageState extends State<ShopPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(item.title, maxLines: 1, overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
+                          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
                       const SizedBox(height: 4),
-                      Expanded(child: Text(item.summary ?? _typeLabel(item.type), maxLines: 2, overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(color: Color(0xFF70817D), fontSize: 12, height: 1.35))),
+                      Expanded(
+                        child: Text(item.summary ?? _typeLabel(item.type),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(color: Color(0xFF70817D), fontSize: 12, height: 1.35)),
+                      ),
                       Row(
                         children: [
-                          Expanded(child: Text(item.sellerName ?? '社区商家', maxLines: 1, overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(color: Color(0xFF70817D), fontSize: 11))),
+                          Expanded(
+                            child: Text(item.sellerName ?? '社区商家',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(color: Color(0xFF70817D), fontSize: 11)),
+                          ),
                           Text('${item.priceCoins.toStringAsFixed(2)} CC',
-                            style: const TextStyle(color: AppTheme.coral, fontWeight: FontWeight.w900)),
+                              style: const TextStyle(color: AppTheme.coral, fontWeight: FontWeight.w900)),
                         ],
                       ),
                     ],
@@ -393,13 +471,23 @@ class _ShopPageState extends State<ShopPage> {
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
         onTap: isAsset && row['itemId'] is num
-            ? () => _openItem(ShopItem(id: (row['itemId'] as num).toInt(), title: title, type: row['type']?.toString() ?? 'file', price: (row['price'] as num?)?.toInt() ?? 0, stock: 0))
+            ? () => _openItem(ShopItem(
+                  id: (row['itemId'] as num).toInt(),
+                  title: title,
+                  type: row['type']?.toString() ?? 'file',
+                  price: (row['price'] as num?)?.toInt() ?? 0,
+                  stock: 0,
+                ))
             : null,
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Row(
             children: [
-              SizedBox(width: 70, height: 70, child: ClipRRect(borderRadius: BorderRadius.circular(6), child: _image(cover, title))),
+              SizedBox(
+                width: 70,
+                height: 70,
+                child: ClipRRect(borderRadius: BorderRadius.circular(6), child: _image(cover, title)),
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -407,12 +495,15 @@ class _ShopPageState extends State<ShopPage> {
                   children: [
                     Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w800)),
                     const SizedBox(height: 5),
-                    Text(isAsset
-                        ? '持有 ${row['quantity'] ?? 0} 件 · ${_typeLabel(row['type']?.toString() ?? '')}'
-                        : '${price.toStringAsFixed(2)} CC × ${row['quantity'] ?? 1} · ${_orderStatus(row['status']?.toString())}',
-                      style: const TextStyle(fontSize: 12, color: Color(0xFF70817D))),
+                    Text(
+                      isAsset
+                          ? '持有 ${row['quantity'] ?? 0} 件 · ${_typeLabel(row['type']?.toString() ?? '')}'
+                          : '${price.toStringAsFixed(2)} CC × ${row['quantity'] ?? 1} · ${_orderStatus(row['status']?.toString())}',
+                      style: const TextStyle(fontSize: 12, color: Color(0xFF70817D)),
+                    ),
                     if (!isAsset && row['createdAt'] != null)
-                      Text(row['createdAt'].toString().replaceFirst('T', ' '), style: const TextStyle(fontSize: 11, color: Color(0xFF83918D))),
+                      Text(row['createdAt'].toString().replaceFirst('T', ' '),
+                          style: const TextStyle(fontSize: 11, color: Color(0xFF83918D))),
                   ],
                 ),
               ),
@@ -496,7 +587,11 @@ class _ShopPageState extends State<ShopPage> {
               const Icon(Icons.info_outline_rounded, color: AppTheme.coral, size: 18),
               const SizedBox(width: 8),
               Expanded(child: Text(_error, maxLines: 2, overflow: TextOverflow.ellipsis)),
-              IconButton(tooltip: '重试', onPressed: () => _view == 'mall' ? _loadItems() : _loadPrivate(_view), icon: const Icon(Icons.refresh_rounded)),
+              IconButton(
+                tooltip: '重试',
+                onPressed: () => _view == 'mall' ? _loadItems() : _loadPrivate(_view),
+                icon: const Icon(Icons.refresh_rounded),
+              ),
             ]),
           ),
         ),
@@ -519,15 +614,15 @@ class _ShopPageState extends State<ShopPage> {
         color: const Color(0xFFDDECE5),
         child: Center(
           child: Text(title.isEmpty ? '商' : title.characters.first,
-            style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w900, color: AppTheme.ink)),
+              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: AppTheme.ink)),
         ),
       );
 
-  Widget _coinPill(String value) => Container(
+  Widget _coinPill(String label) => Container(
         margin: const EdgeInsets.only(right: 6),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(color: const Color(0xFFFFE8C5), borderRadius: BorderRadius.circular(20)),
-        child: Text(value, style: const TextStyle(color: AppTheme.coral, fontWeight: FontWeight.w900, fontSize: 12)),
+        child: Text(label, style: const TextStyle(color: AppTheme.coral, fontWeight: FontWeight.w900, fontSize: 12)),
       );
 
   static String _typeLabel(String? type) => switch (type) {
