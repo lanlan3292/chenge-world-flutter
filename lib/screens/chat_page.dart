@@ -42,6 +42,8 @@ class _ChatPageState extends State<ChatPage> {
   String _error = '';
   String _listQuery = '';
   bool _loadingList = false;
+  bool _routeOpen = false;
+  bool? _lastWide;
 
   @override
   void initState() {
@@ -135,9 +137,10 @@ class _ChatPageState extends State<ChatPage> {
 
   Future<void> _pushThread(ChatConversation conversation) async {
     final token = widget.token;
-    if (token == null) return;
-    await Navigator.of(context).push(
-      MaterialPageRoute<void>(
+    if (token == null || _routeOpen) return;
+    _routeOpen = true;
+    final keep = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
         builder: (_) => ChatThreadPage(
           api: widget.api,
           token: token,
@@ -146,7 +149,28 @@ class _ChatPageState extends State<ChatPage> {
         ),
       ),
     );
-    if (mounted) _loadConversations(silent: true);
+    _routeOpen = false;
+    if (!mounted) return;
+    if (keep != true) {
+      setState(() => _active = null);
+    } else {
+      setState(() {});
+    }
+    _loadConversations(silent: true);
+  }
+
+  void _handleWidthChange(bool isWide) {
+    if (_lastWide == isWide) return;
+    final wasWide = _lastWide;
+    _lastWide = isWide;
+    if (wasWide == null) return;
+    if (wasWide && !isWide && _active != null && !_routeOpen) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && MediaQuery.sizeOf(context).width < 760 && _active != null) {
+          _pushThread(_active!);
+        }
+      });
+    }
   }
 
   void _showError(String message) {
@@ -159,6 +183,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     final isWide = MediaQuery.sizeOf(context).width >= 760;
+    _handleWidthChange(isWide);
 
     return Scaffold(
       appBar: widget.showAppBar
