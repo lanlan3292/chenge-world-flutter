@@ -183,15 +183,18 @@ class _AiAgentPageState extends State<AiAgentPage> {
     final text = _messageController.text.trim();
     if (token == null || text.isEmpty || _sending) return;
 
-    var session = _active;
-    if (session == null) {
+    AiSession? pending = _active;
+    if (pending == null) {
       setState(() => _sending = true);
       try {
-        session = await widget.api.createAiSession(token, name: text.length > 18 ? '${text.substring(0, 18)}…' : text);
+        pending = await widget.api.createAiSession(
+          token,
+          name: text.length > 18 ? '${text.substring(0, 18)}…' : text,
+        );
         if (!mounted) return;
         setState(() {
-          _sessions.insert(0, session!);
-          _active = session;
+          _sessions.insert(0, pending!);
+          _active = pending;
           _mobileThread = true;
           _messages.clear();
         });
@@ -203,10 +206,17 @@ class _AiAgentPageState extends State<AiAgentPage> {
         return;
       }
     }
+    final session = pending;
+    if (session == null) return;
 
     final turnId = 'flutter-${DateTime.now().microsecondsSinceEpoch}';
     final userBubble = AiChatBubble(role: 'user', content: text);
-    final assistantBubble = AiChatBubble(role: 'assistant', content: '', streaming: true, status: '思考中…');
+    final assistantBubble = AiChatBubble(
+      role: 'assistant',
+      content: '',
+      streaming: true,
+      status: '思考中…',
+    );
 
     setState(() {
       _sending = true;
@@ -228,7 +238,9 @@ class _AiAgentPageState extends State<AiAgentPage> {
         final data = event.data;
 
         if (type == 'error') {
-          final message = data is Map ? '${data['message'] ?? data['msg'] ?? 'AI 请求失败'}' : '$data';
+          final message = data is Map
+              ? '${data['message'] ?? data['msg'] ?? 'AI 请求失败'}'
+              : '$data';
           setState(() {
             assistantBubble
               ..streaming = false
@@ -281,7 +293,7 @@ class _AiAgentPageState extends State<AiAgentPage> {
               await widget.api.renameAiSession(session.sessionId, title, token);
               if (mounted) {
                 setState(() {
-                  final index = _sessions.indexWhere((item) => item.sessionId == session!.sessionId);
+                  final index = _sessions.indexWhere((item) => item.sessionId == session.sessionId);
                   if (index >= 0) {
                     _sessions[index] = AiSession(
                       id: session.id,
@@ -302,7 +314,6 @@ class _AiAgentPageState extends State<AiAgentPage> {
           break;
         }
 
-        // pending / artifacts / sources — show as status for now
         if (type == 'pending' || type == 'artifacts' || type == 'sources') {
           setState(() => assistantBubble.status = type == 'pending' ? '等待确认…' : '收到 $type');
         }
