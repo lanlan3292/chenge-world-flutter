@@ -32,6 +32,7 @@ class _AiThreadPageState extends State<AiThreadPage> {
 
   late AiSession _session;
   bool _loadingHistory = false;
+  bool _contentReady = false;
   bool _sending = false;
   bool _stickToBottom = true;
   bool _popScheduled = false;
@@ -50,6 +51,7 @@ class _AiThreadPageState extends State<AiThreadPage> {
     if (oldWidget.session.sessionId != widget.session.sessionId) {
       _session = widget.session;
       _messages.clear();
+      _contentReady = false;
       _loadHistory();
     }
   }
@@ -82,7 +84,10 @@ class _AiThreadPageState extends State<AiThreadPage> {
   }
 
   Future<void> _loadHistory() async {
-    setState(() => _loadingHistory = true);
+    setState(() {
+      _loadingHistory = true;
+      _contentReady = false;
+    });
     try {
       final history = await widget.api.aiChatHistory(_session.sessionId, widget.token);
       if (!mounted) return;
@@ -90,16 +95,50 @@ class _AiThreadPageState extends State<AiThreadPage> {
         _messages
           ..clear()
           ..addAll(history.map(AiChatBubble.fromHistory));
-        _loadingHistory = false;
       });
-      _scrollToBottom(animate: false);
+      if (_messages.isEmpty) {
+        setState(() {
+          _loadingHistory = false;
+          _contentReady = true;
+        });
+      } else {
+        await _scrollToBottomInitial();
+      }
     } on ApiException catch (error) {
       if (mounted) {
-        setState(() => _loadingHistory = false);
+        setState(() {
+          _loadingHistory = false;
+          _contentReady = true;
+        });
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(SnackBar(content: Text(error.message), backgroundColor: AppTheme.coral));
       }
+    }
+  }
+
+  Future<void> _scrollToBottomInitial() async {
+    await Future<void>.delayed(Duration.zero);
+    if (!mounted) return;
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+
+    void jump() {
+      if (!_messageScrollController.hasClients) return;
+      final max = _messageScrollController.position.maxScrollExtent;
+      _messageScrollController.jumpTo(max);
+    }
+
+    jump();
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+    jump();
+
+    if (mounted) {
+      setState(() {
+        _loadingHistory = false;
+        _contentReady = true;
+      });
     }
   }
 
@@ -311,18 +350,28 @@ class _AiThreadPageState extends State<AiThreadPage> {
       body: Column(
         children: [
           Expanded(
-            child: _loadingHistory && _messages.isEmpty
-                ? const Center(child: CircularProgressIndicator())
-                : _messages.isEmpty
-                    ? const Center(
-                        child: Text('发一条消息开始对话', style: TextStyle(color: Color(0xFF70817D))),
-                      )
-                    : ListView.builder(
-                        controller: _messageScrollController,
-                        padding: const EdgeInsets.fromLTRB(14, 8, 14, 12),
-                        itemCount: _messages.length,
-                        itemBuilder: (context, index) => _bubble(_messages[index]),
-                      ),
+            child: Stack(
+              children: [
+                Opacity(
+                  opacity: _contentReady ? 1 : 0,
+                  child: ListView.builder(
+                    controller: _messageScrollController,
+                    padding: const EdgeInsets.fromLTRB(14, 8, 14, 12),
+                    itemCount: _messages.length,
+                    itemBuilder: (context, index) => _bubble(_messages[index]),
+                  ),
+                ),
+                if (!_contentReady)
+                  const ColoredBox(
+                    color: Color(0xFFF7F9F8),
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                else if (_messages.isEmpty)
+                  const Center(
+                    child: Text('发一条消息开始对话', style: TextStyle(color: Color(0xFF70817D))),
+                  ),
+              ],
+            ),
           ),
           _composer(),
         ],
