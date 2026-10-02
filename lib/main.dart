@@ -81,17 +81,14 @@ class _ChengeWorldAppState extends State<ChengeWorldApp> {
           navigationBarImmersive: _settings.navigationBarImmersive,
         );
         // Predictive back transitions (Android 13+); requires enableOnBackInvokedCallback in manifest.
+        // Only override Android — other platforms keep ThemeData defaults.
         theme = theme.copyWith(
           pageTransitionsTheme: PageTransitionsTheme(
             builders: {
+              ...theme.pageTransitionsTheme.builders,
               TargetPlatform.android: _settings.predictiveBack
                   ? const PredictiveBackPageTransitionsBuilder()
                   : const ZoomPageTransitionsBuilder(),
-              TargetPlatform.iOS: const CupertinoPageTransitionsBuilder(),
-              TargetPlatform.macOS: const CupertinoPageTransitionsBuilder(),
-              TargetPlatform.linux: const ZoomPageTransitionsBuilder(),
-              TargetPlatform.windows: const ZoomPageTransitionsBuilder(),
-              TargetPlatform.fuchsia: const ZoomPageTransitionsBuilder(),
             },
           ),
         );
