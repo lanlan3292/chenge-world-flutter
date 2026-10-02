@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
+import '../models/ai_session.dart';
 import '../models/blog_post.dart';
 import '../models/blog_comment.dart';
 import '../models/chat_conversation.dart';
@@ -37,6 +39,14 @@ class ShopItemPage {
   final int total;
 }
 
+/// One SSE event from `/ai/agent/stream` (status / delta / done / error / …).
+class AiStreamEvent {
+  const AiStreamEvent({required this.type, this.data});
+
+  final String type;
+  final dynamic data;
+}
+
 class ChengeApi {
   ChengeApi({http.Client? client, String? baseUrl})
       : _client = client ?? http.Client(),
@@ -48,6 +58,7 @@ class ChengeApi {
   final http.Client _client;
   final String _baseUrl;
   static const _timeout = Duration(seconds: 25);
+  static const _streamTimeout = Duration(minutes: 3);
 
   Future<Map<String, dynamic>> login(String username, String password) async {
     final data = await _request(
@@ -270,6 +281,137 @@ class ChengeApi {
     final data = await _request('POST', '/task/claim', body: {'code': code}, token: token);
     if (data is! Map<String, dynamic>) throw const ApiException('任务领取响应格式不正确');
     return data;
+  }
+
+  // ——— AI Agent / chatSession ———
+
+  Future<List<AiSession>> aiSessions(String token) async {
+    final data = await _request('GET', '/chatSession/list/my', token: token);
+    if (data is! List) throw const ApiException('AI 会话列表格式不正确');
+    return data.whereType<Map<String, dynamic>>().map(AiSession.fromJson).toList();
+  }
+
+  Future<AiSession> createAiSession(String token, {String name = '新对话'}) async {
+    final data = await _request(
+      'POST',
+      '/chatSession/create',
+      body: {'name': name},
+      token: token,
+    );
+    if (data is! Map<String, dynamic>) throw const ApiException('创建 AI 会话响应格式不正确');
+    return AiSession.fromJson(data);
+  }
+
+  Future<void> deleteAiSession(String sessionId, String token) async {
+    await _request('DELETE', '/chatSession/delete/$sessionId', token: token);
+  }
+
+  Future<void> renameAiSession(String sessionId, String name, String token) async {
+    await _request(
+      'POST',
+      '/chatSession/rename',
+      body: {'sessionId': sessionId, 'name': name},
+      token: token,
+    );
+  }
+
+  Future<List<dynamic>> aiChatHistory(String sessionId, String token) async {
+    final data = await _request(
+      'POST',
+      '/chatSession/getchat',
+      body: {'sessionId': sessionId},
+      token: token,
+    );
+    if (data is! List) throw const ApiException('AI 聊天历史格式不正确');
+    return data;
+  }
+
+  /// Stream AI agent reply via SSE (`event: status|delta|done|error|…`).
+  Stream<AiStreamEvent> streamAiAgent({
+    required String token,
+    required String sessionId,
+    required String userInput,
+    String? turnId,
+  }) async* {
+    final uri = Uri.parse('$_baseUrl/ai/agent/stream');
+    final request = http.Request('POST', uri)
+      ..headers.addAll({
+        'Accept': 'text/event-stream',
+        'Content-Type': 'application/json; charset=utf-8',
+        'Authorization': 'Bearer $token',
+      })
+      ..body = jsonEncode({
+        'session_id': sessionId,
+        'user_input': userInput,
+        if (turnId != null && turnId.isNotEmpty) 'turn_id': turnId,
+      });
+
+    late http.StreamedResponse response;
+    try {
+      response = await _client.send(request).timeout(_streamTimeout);
+    } on Exception catch (error) {
+      throw ApiException('连接 AI 服务失败：$error');
+    }
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      final body = await response.stream.bytesToString();
+      throw ApiException('AI 流式请求失败（${response.statusCode}）$body', statusCode: response.statusCode);
+    }
+
+    var buffer = '';
+    String? eventType;
+    final dataLines = <String>[];
+
+    await for (final chunk in response.stream.transform(utf8.decoder).timeout(_streamTimeout)) {
+      buffer += chunk;
+      while (true) {
+        final sep = buffer.indexOf('\n');
+        if (sep < 0) break;
+        var line = buffer.substring(0, sep);
+        buffer = buffer.substring(sep + 1);
+        if (line.endsWith('\r')) line = line.substring(0, line.length - 1);
+
+        if (line.isEmpty) {
+          if (eventType != null || dataLines.isNotEmpty) {
+            final raw = dataLines.join('\n');
+            dynamic parsed = raw;
+            if (raw.isNotEmpty) {
+              try {
+                parsed = jsonDecode(raw);
+              } on FormatException {
+                parsed = raw;
+              }
+            }
+            yield AiStreamEvent(type: eventType ?? 'message', data: parsed);
+            if ((eventType ?? '') == 'done' || (eventType ?? '') == 'error') return;
+          }
+          eventType = null;
+          dataLines.clear();
+          continue;
+        }
+
+        if (line.startsWith('event:')) {
+          eventType = line.substring(6).trim();
+        } else if (line.startsWith('data:')) {
+          dataLines.add(line.substring(5).trimLeft());
+        }
+        // ignore id: / retry:
+      }
+    }
+
+    // flush trailing event without blank line
+    if (eventType != null || dataLines.isNotEmpty) {
+      final raw = dataLines.join('\n');
+      dynamic parsed = raw;
+      if (raw.isNotEmpty) {
+        try {
+          parsed = jsonDecode(raw);
+        } on FormatException {
+          parsed = raw;
+        }
+      }
+      yield AiStreamEvent(type: eventType ?? 'message', data: parsed);
+    }
   }
 
   Future<List<Map<String, dynamic>>> _mapList(String path, String token) async {
