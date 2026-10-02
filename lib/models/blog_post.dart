@@ -12,6 +12,7 @@ class BlogPost {
     this.coverImage,
     this.authorAvatar,
     this.categoryName,
+    this.liked = false,
     this.tags = const [],
   });
 
@@ -27,6 +28,7 @@ class BlogPost {
   final String? coverImage;
   final String? authorAvatar;
   final String? categoryName;
+  final bool liked;
   final List<String> tags;
 
   factory BlogPost.fromJson(Map<String, dynamic> json) {
@@ -47,6 +49,7 @@ class BlogPost {
       coverImage: _nullableText(json['coverImage']),
       authorAvatar: _nullableText(json['authorAvatar']),
       categoryName: _nullableText(json['categoryName']),
+      liked: json['liked'] == true,
       tags: tags is List ? tags.map((tag) => _text(tag)).where((tag) => tag.isNotEmpty).toList() : const [],
     );
   }

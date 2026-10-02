@@ -223,6 +223,70 @@ void main() {
     expect(message.id, 27);
   });
 
+  test('loads nested comments and posts a reply', () async {
+    final requests = <http.Request>[];
+    final client = MockClient((request) async {
+      requests.add(request);
+      if (request.method == 'GET') {
+        return http.Response(
+          jsonEncode({
+            'code': 200,
+            'data': [
+              {
+                'id': 10,
+                'blogId': 56,
+                'userId': 7,
+                'authorName': '作者',
+                'content': '第一条评论',
+                'likeCount': 2,
+                'createdAt': '2026-10-02T10:00:00',
+                'children': [
+                  {'id': 11, 'blogId': 56, 'userId': 8, 'content': '回复内容', 'parentId': 10, 'likeCount': 0},
+                ],
+              },
+            ],
+          }),
+          200,
+          headers: {'content-type': 'application/json; charset=utf-8'},
+        );
+      }
+      return http.Response(jsonEncode({'code': 200, 'data': 12}), 200);
+    });
+    final api = ChengeApi(client: client, baseUrl: 'http://example.test');
+
+    final comments = await api.postComments(56);
+    final newId = await api.addPostComment(
+      blogId: 56,
+      content: '继续讨论',
+      parentId: 10,
+      token: 'session-token',
+    );
+
+    expect(requests[0].url.path, '/blog/comment/list');
+    expect(requests[0].url.queryParameters, {'blogId': '56'});
+    expect(comments.single.children.single.content, '回复内容');
+    expect(requests[1].url.path, '/blog/comment');
+    expect(requests[1].headers['Authorization'], 'Bearer session-token');
+    expect(jsonDecode(requests[1].body), {'blogId': 56, 'content': '继续讨论', 'parentId': 10});
+    expect(newId, 12);
+  });
+
+  test('toggles the post like with target type and id', () async {
+    http.Request? captured;
+    final client = MockClient((request) async {
+      captured = request;
+      return http.Response(jsonEncode({'code': 200, 'data': {'liked': true}}), 200);
+    });
+    final api = ChengeApi(client: client, baseUrl: 'http://example.test');
+
+    final liked = await api.togglePostLike(56, 'session-token');
+
+    expect(captured!.url.path, '/blog/like/toggle');
+    expect(captured!.url.queryParameters, {'targetType': 'POST', 'targetId': '56'});
+    expect(captured!.headers['Authorization'], 'Bearer session-token');
+    expect(liked, isTrue);
+  });
+
   test('loads task progress and claims a task with the session token', () async {
     final requests = <http.Request>[];
     final client = MockClient((request) async {

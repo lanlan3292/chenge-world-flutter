@@ -4,6 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/blog_post.dart';
+import '../models/blog_comment.dart';
 import '../models/chat_conversation.dart';
 import '../models/chat_message.dart';
 import '../models/friend_user.dart';
@@ -99,6 +100,40 @@ class ChengeApi {
     final data = await _request('GET', '/blog/post/$id', token: token);
     if (data is! Map<String, dynamic>) throw const ApiException('帖子内容格式不正确');
     return BlogPost.fromJson(data);
+  }
+
+  Future<List<BlogComment>> postComments(int blogId) async {
+    final data = await _request('GET', '/blog/comment/list', query: {'blogId': '$blogId'});
+    if (data is! List) throw const ApiException('评论列表格式不正确');
+    return data.whereType<Map<String, dynamic>>().map(BlogComment.fromJson).toList();
+  }
+
+  Future<int> addPostComment({
+    required int blogId,
+    required String content,
+    required String token,
+    int parentId = 0,
+  }) async {
+    final data = await _request(
+      'POST',
+      '/blog/comment',
+      body: {'blogId': blogId, 'content': content, 'parentId': parentId},
+      token: token,
+    );
+    return _integer(data);
+  }
+
+  Future<bool> togglePostLike(int blogId, String token) async {
+    final data = await _request(
+      'POST',
+      '/blog/like/toggle',
+      query: {'targetType': 'POST', 'targetId': '$blogId'},
+      token: token,
+    );
+    if (data is! Map<String, dynamic> || data['liked'] is! bool) {
+      throw const ApiException('点赞响应格式不正确');
+    }
+    return data['liked'] as bool;
   }
 
   Future<List<FriendUser>> friends(String token) => _friendList('/friend/list', token: token);

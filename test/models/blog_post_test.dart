@@ -12,6 +12,7 @@ void main() {
       'viewCount': 12,
       'likeCount': 3,
       'commentCount': 2,
+      'liked': true,
       'tags': ['交流'],
     });
 
@@ -19,6 +20,7 @@ void main() {
     expect(post.summary, '欢迎 这是 一篇帖子，欢迎 阅读。');
     expect(post.tags, ['交流']);
     expect(post.viewCount, 12);
+    expect(post.liked, isTrue);
   });
 
   test('uses safe defaults for optional fields', () {
@@ -28,5 +30,6 @@ void main() {
     expect(post.authorName, 'Chenge 用户');
     expect(post.createdAt, isNull);
     expect(post.tags, isEmpty);
+    expect(post.liked, isFalse);
   });
 }
