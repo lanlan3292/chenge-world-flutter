@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
@@ -18,6 +19,7 @@ class ChatThreadPage extends StatefulWidget {
     required this.userId,
     required this.conversation,
     this.showBackButton = true,
+    this.peerOnline,
   });
 
   final ChengeApi api;
@@ -25,6 +27,7 @@ class ChatThreadPage extends StatefulWidget {
   final int? userId;
   final ChatConversation conversation;
   final bool showBackButton;
+  final bool? peerOnline;
 
   @override
   State<ChatThreadPage> createState() => _ChatThreadPageState();
@@ -166,6 +169,49 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     }
   }
 
+  Future<void> _sendEmoji(EmojiAsset asset) async {
+    if (_sending) return;
+    setState(() => _sending = true);
+    try {
+      final content = jsonEncode(asset.toSendJson());
+      final message = await widget.api.sendChatMessage(
+        _conversation.id,
+        content,
+        widget.token,
+        type: 'emoji',
+      );
+      if (!mounted) return;
+      setState(() {
+        if (!_messages.any((m) => m.id == message.id)) _messages.add(message);
+        _stickToBottom = true;
+      });
+      _scrollToBottom(animate: true);
+    } on ApiException catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(SnackBar(content: Text(error.message), backgroundColor: AppTheme.coral));
+      }
+    } finally {
+      if (mounted) setState(() => _sending = false);
+    }
+  }
+
+  Future<void> _openEmojiPicker() async {
+    final assets = await showModalBottomSheet<EmojiAsset>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => _EmojiPickerSheet(api: widget.api, token: widget.token),
+    );
+    if (assets != null && mounted) {
+      await _sendEmoji(assets);
+    }
+  }
+
   void _onScroll() {
     if (!_messageScrollController.hasClients) return;
     final position = _messageScrollController.position;
@@ -202,6 +248,11 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       _maybePopForWideLayout();
     }
 
+    final isGroup = _conversation.type == 'group';
+    final onlineLabel = !isGroup && widget.peerOnline != null
+        ? (widget.peerOnline! ? ' · 在线' : ' · 离线')
+        : '';
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: widget.showBackButton,
@@ -212,11 +263,27 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                 icon: const Icon(Icons.arrow_back_rounded),
               )
             : null,
-        title: Text(
-          _conversation.name,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontWeight: FontWeight.w800),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              _conversation.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 17),
+            ),
+            if (onlineLabel.isNotEmpty || isGroup)
+              Text(
+                isGroup ? '群聊' : onlineLabel.replaceFirst(' · ', ''),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: !isGroup && widget.peerOnline == true
+                      ? const Color(0xFF2ECC71)
+                      : const Color(0xFF70817D),
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+          ],
         ),
       ),
       body: Column(
@@ -262,6 +329,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     final bubbleColor = mine ? AppTheme.leaf : Colors.white;
     final textColor = mine ? Colors.white : AppTheme.ink;
     final isEmoji = message.type == 'emoji';
+    final isShare = message.type == 'post' || message.type == 'order';
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -287,6 +355,8 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                   ),
                 if (isEmoji)
                   _emojiImage(message)
+                else if (isShare)
+                  _shareCard(message)
                 else
                   Container(
                     constraints: const BoxConstraints(maxWidth: 520),
@@ -321,10 +391,76 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     );
   }
 
+  Widget _shareCard(ChatMessage message) {
+    final isPost = message.type == 'post';
+    Map<String, dynamic> payload = {};
+    try {
+      final decoded = jsonDecode(message.content);
+      if (decoded is Map<String, dynamic>) payload = decoded;
+    } catch (_) {}
+    final title = (payload['title'] ?? (isPost ? '帖子' : '商品')).toString();
+    final subtitle = isPost ? '点击查看该帖子 ›' : '点击查看该商品的订单 ›';
+
+    return Material(
+      color: Colors.white,
+      elevation: 0.5,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () {
+          // Navigation to post/shop can be wired later; show snack for now.
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(SnackBar(content: Text(isPost ? '帖子：$title' : '订单：$title')));
+        },
+        child: Container(
+          constraints: const BoxConstraints(maxWidth: 280, minWidth: 180),
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0xFFE2EAE5)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: isPost ? const Color(0xFFE8F0FF) : const Color(0xFFFFF0E0),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  isPost ? '分享帖子' : '商品订单',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: isPost ? const Color(0xFF3D6BAA) : const Color(0xFFB86B1A),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                style: const TextStyle(fontSize: 12, color: Color(0xFF70817D)),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _composer() => SafeArea(
         top: false,
         child: Container(
-          padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+          padding: const EdgeInsets.fromLTRB(8, 10, 12, 10),
           decoration: const BoxDecoration(
             color: Colors.white,
             border: Border(top: BorderSide(color: Color(0xFFE2EAE5))),
@@ -332,6 +468,11 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
+              IconButton(
+                tooltip: '表情包',
+                onPressed: _sending ? null : _openEmojiPicker,
+                icon: const Icon(Icons.emoji_emotions_outlined),
+              ),
               Expanded(
                 child: TextField(
                   controller: _messageController,
@@ -412,5 +553,148 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
     }
     return '${date.month}/${date.day}';
+  }
+}
+
+class _EmojiPickerSheet extends StatefulWidget {
+  const _EmojiPickerSheet({required this.api, required this.token});
+
+  final ChengeApi api;
+  final String token;
+
+  @override
+  State<_EmojiPickerSheet> createState() => _EmojiPickerSheetState();
+}
+
+class _EmojiPickerSheetState extends State<_EmojiPickerSheet> {
+  List<EmojiAsset> _assets = const [];
+  bool _loading = true;
+  String _error = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    setState(() {
+      _loading = true;
+      _error = '';
+    });
+    try {
+      final list = await widget.api.myEmojiAssets(widget.token);
+      if (!mounted) return;
+      setState(() {
+        _assets = list;
+        _loading = false;
+      });
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = e.message;
+        _loading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final height = MediaQuery.sizeOf(context).height * 0.55;
+    return SafeArea(
+      child: SizedBox(
+        height: height,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 8, 8),
+              child: Row(
+                children: [
+                  const Expanded(
+                    child: Text('表情包', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+                  ),
+                  IconButton(
+                    tooltip: '关闭',
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close_rounded),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 1),
+            Expanded(
+              child: _loading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _error.isNotEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(_error, style: const TextStyle(color: AppTheme.coral)),
+                              TextButton(onPressed: _load, child: const Text('重试')),
+                            ],
+                          ),
+                        )
+                      : _assets.isEmpty
+                          ? const Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(24),
+                                child: Text(
+                                  '还没有表情包\n去商店购买表情包后再来发送',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(color: Color(0xFF70817D)),
+                                ),
+                              ),
+                            )
+                          : GridView.builder(
+                              padding: const EdgeInsets.all(12),
+                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 4,
+                                mainAxisSpacing: 10,
+                                crossAxisSpacing: 10,
+                                childAspectRatio: 1,
+                              ),
+                              itemCount: _assets.length,
+                              itemBuilder: (context, index) {
+                                final asset = _assets[index];
+                                return InkWell(
+                                  borderRadius: BorderRadius.circular(10),
+                                  onTap: () => Navigator.pop(context, asset),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFF4F8F5),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    padding: const EdgeInsets.all(8),
+                                    child: asset.url?.isNotEmpty == true
+                                        ? Image.network(
+                                            asset.url!,
+                                            fit: BoxFit.contain,
+                                            errorBuilder: (_, __, ___) => Center(
+                                              child: Text(
+                                                asset.displayName.characters.first,
+                                                style: const TextStyle(fontWeight: FontWeight.w700),
+                                              ),
+                                            ),
+                                          )
+                                        : Center(
+                                            child: Text(
+                                              asset.displayName,
+                                              maxLines: 2,
+                                              textAlign: TextAlign.center,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+                                            ),
+                                          ),
+                                  ),
+                                );
+                              },
+                            ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
