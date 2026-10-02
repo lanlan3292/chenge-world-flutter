@@ -31,6 +31,24 @@ jobs:
       - name: Run tests
         run: flutter test
 
+  build-android:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+    
       - name: Build APK
         run: flutter build apk --debug
 
@@ -40,3 +58,36 @@ jobs:
           name: chenge-world-apk
           path: build/app/outputs/apk/debug/app-debug.apk
           retention-days: 3
+
+  build-windows:
+    needs: test
+    runs-on: windows-latest
+
+    steps:
+
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Windows executable
+        run: flutter build windows --debug
+
+      - name: Package as zip
+        run: |
+          Compress-Archive -Path "build\windows\x64\runner\Debug\*" `
+            -DestinationPath "chenge-world-windows.zip"
+
+      - name: Upload Windows zip
+        uses: actions/upload-artifact@v7
+        with:
+          name: chenge-world-windows-zip
+          path: chenge-world-windows.zip
+          retention-days: 2
