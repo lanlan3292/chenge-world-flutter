@@ -74,11 +74,26 @@ class _ChengeWorldAppState extends State<ChengeWorldApp> {
     return DynamicColorBuilder(
       builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
         final useDynamic = _settings.useDynamicColor && lightDynamic != null;
-        final theme = AppTheme.build(
+        var theme = AppTheme.build(
           dynamicScheme: useDynamic ? lightDynamic : null,
           seedColor: _settings.seedColor,
           statusBarImmersive: _settings.statusBarImmersive,
           navigationBarImmersive: _settings.navigationBarImmersive,
+        );
+        // Predictive back transitions (Android 13+); requires enableOnBackInvokedCallback in manifest.
+        theme = theme.copyWith(
+          pageTransitionsTheme: PageTransitionsTheme(
+            builders: {
+              TargetPlatform.android: _settings.predictiveBack
+                  ? const PredictiveBackPageTransitionsBuilder()
+                  : const ZoomPageTransitionsBuilder(),
+              TargetPlatform.iOS: const CupertinoPageTransitionsBuilder(),
+              TargetPlatform.macOS: const CupertinoPageTransitionsBuilder(),
+              TargetPlatform.linux: const ZoomPageTransitionsBuilder(),
+              TargetPlatform.windows: const ZoomPageTransitionsBuilder(),
+              TargetPlatform.fuchsia: const ZoomPageTransitionsBuilder(),
+            },
+          ),
         );
 
         return MaterialApp(
@@ -217,11 +232,14 @@ class _AppShellState extends State<AppShell> {
     }
 
     final wide = MediaQuery.sizeOf(context).width >= 760;
+    // Side rail never auto-hides; only the bottom NavigationBar does.
+    final hideBottomBar = !wide && widget.settings.autoHideBottomBar;
 
     void onChromeVisibilityChanged(bool visible) {
-      // Only feed (0) and shop (2) drive auto-hide bottom bar.
+      // Only feed (0) and shop (2) drive auto-hide, and only on phone bottom nav.
+      if (wide) return;
       if (_selectedIndex != 0 && _selectedIndex != 2) return;
-      if (!widget.settings.autoHideBottomBar) {
+      if (!hideBottomBar) {
         if (!_chromeVisible) setState(() => _chromeVisible = true);
         return;
       }
@@ -234,7 +252,8 @@ class _AppShellState extends State<AppShell> {
         api: _api,
         token: _token,
         autoHideTopBar: widget.settings.autoHideTopBar,
-        autoHideBottomBar: widget.settings.autoHideBottomBar,
+        autoHideBottomBar: hideBottomBar,
+        minColumns: widget.settings.feedMinColumns,
         onChromeVisibilityChanged: onChromeVisibilityChanged,
       ),
       SocialPage(
@@ -255,7 +274,8 @@ class _AppShellState extends State<AppShell> {
           _chromeVisible = true;
         }),
         autoHideTopBar: widget.settings.autoHideTopBar,
-        autoHideBottomBar: widget.settings.autoHideBottomBar,
+        autoHideBottomBar: hideBottomBar,
+        minColumns: widget.settings.shopMinColumns,
         onChromeVisibilityChanged: onChromeVisibilityChanged,
       ),
       AccountPage(
@@ -278,59 +298,52 @@ class _AppShellState extends State<AppShell> {
       body: Row(
         children: [
           if (wide)
-            ClipRect(
-              child: AnimatedAlign(
-                duration: const Duration(milliseconds: 320),
-                curve: Curves.easeInOutCubic,
-                alignment: Alignment.centerRight,
-                widthFactor: (!widget.settings.autoHideBottomBar || _chromeVisible) ? 1 : 0,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 16, 8, 16),
-                  child: NavigationRail(
-                    selectedIndex: _selectedIndex,
-                    onDestinationSelected: (index) => setState(() {
-                      _selectedIndex = index;
-                      _chromeVisible = true;
-                    }),
-                    labelType: NavigationRailLabelType.all,
-                    leading: Padding(
-                      padding: const EdgeInsets.only(bottom: 28),
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                        child: const SizedBox(
-                          width: 48,
-                          height: 48,
-                          child: Icon(Icons.forum_rounded, color: Colors.white),
-                        ),
-                      ),
+            // Wide layout: side rail is always visible (no auto-hide).
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 16, 8, 16),
+              child: NavigationRail(
+                selectedIndex: _selectedIndex,
+                onDestinationSelected: (index) => setState(() {
+                  _selectedIndex = index;
+                  _chromeVisible = true;
+                }),
+                labelType: NavigationRailLabelType.all,
+                leading: Padding(
+                  padding: const EdgeInsets.only(bottom: 28),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary,
+                      borderRadius: BorderRadius.circular(18),
                     ),
-                    destinations: const [
-                      NavigationRailDestination(
-                        icon: Icon(Icons.dynamic_feed_outlined),
-                        selectedIcon: Icon(Icons.dynamic_feed_rounded),
-                        label: Text('发现'),
-                      ),
-                      NavigationRailDestination(
-                        icon: Icon(Icons.people_outline_rounded),
-                        selectedIcon: Icon(Icons.people_rounded),
-                        label: Text('社交'),
-                      ),
-                      NavigationRailDestination(
-                        icon: Icon(Icons.storefront_outlined),
-                        selectedIcon: Icon(Icons.storefront_rounded),
-                        label: Text('商城'),
-                      ),
-                      NavigationRailDestination(
-                        icon: Icon(Icons.person_outline_rounded),
-                        selectedIcon: Icon(Icons.person_rounded),
-                        label: Text('我的'),
-                      ),
-                    ],
+                    child: const SizedBox(
+                      width: 48,
+                      height: 48,
+                      child: Icon(Icons.forum_rounded, color: Colors.white),
+                    ),
                   ),
                 ),
+                destinations: const [
+                  NavigationRailDestination(
+                    icon: Icon(Icons.dynamic_feed_outlined),
+                    selectedIcon: Icon(Icons.dynamic_feed_rounded),
+                    label: Text('发现'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.people_outline_rounded),
+                    selectedIcon: Icon(Icons.people_rounded),
+                    label: Text('社交'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.storefront_outlined),
+                    selectedIcon: Icon(Icons.storefront_rounded),
+                    label: Text('商城'),
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.person_outline_rounded),
+                    selectedIcon: Icon(Icons.person_rounded),
+                    label: Text('我的'),
+                  ),
+                ],
               ),
             ),
           Expanded(
@@ -345,9 +358,9 @@ class _AppShellState extends State<AppShell> {
                 duration: const Duration(milliseconds: 320),
                 curve: Curves.easeInOutCubic,
                 alignment: Alignment.topCenter,
-                heightFactor: (!widget.settings.autoHideBottomBar || _chromeVisible) ? 1 : 0,
+                heightFactor: (!hideBottomBar || _chromeVisible) ? 1 : 0,
                 child: Material(
-                  elevation: (!widget.settings.autoHideBottomBar || _chromeVisible) ? 3 : 0,
+                  elevation: (!hideBottomBar || _chromeVisible) ? 3 : 0,
                   color: Theme.of(context).navigationBarTheme.backgroundColor ?? Colors.white,
                   child: NavigationBar(
                     selectedIndex: _selectedIndex,
