@@ -47,6 +47,49 @@ class AiStreamEvent {
   final dynamic data;
 }
 
+/// Owned emoji asset for the picker (from shop assets / my items).
+class EmojiAsset {
+  const EmojiAsset({
+    required this.itemId,
+    this.key,
+    this.url,
+    this.fileId,
+    this.title,
+  });
+
+  final int itemId;
+  final String? key;
+  final String? url;
+  final int? fileId;
+  final String? title;
+
+  String get displayName => (title ?? key ?? '表情').trim();
+
+  Map<String, dynamic> toSendJson() => {
+        'itemId': itemId,
+        if (key != null && key!.isNotEmpty) 'key': key,
+        if (fileId != null) 'fileId': fileId,
+        if (url != null && url!.isNotEmpty) 'url': url,
+      };
+
+  factory EmojiAsset.fromMap(Map<String, dynamic> json) {
+    final itemId = _integer(json['itemId'] ?? json['id']);
+    return EmojiAsset(
+      itemId: itemId,
+      key: _nullableText(json['key'] ?? json['content']),
+      url: _nullableText(json['url'] ?? json['fileUrl'] ?? json['cover']),
+      fileId: json['fileId'] == null ? null : _integer(json['fileId']),
+      title: _nullableText(json['title'] ?? json['name']),
+    );
+  }
+
+  static int _integer(Object? value) => value is num ? value.toInt() : int.tryParse('$value') ?? 0;
+  static String? _nullableText(Object? value) {
+    final text = value?.toString().trim() ?? '';
+    return text.isEmpty || text == 'null' ? null : text;
+  }
+}
+
 class ChengeApi {
   ChengeApi({http.Client? client, String? baseUrl})
       : _client = client ?? http.Client(),
@@ -171,6 +214,18 @@ class ChengeApi {
     await _request('POST', '/friend/remark', query: query, token: token);
   }
 
+  /// Whether the given user is currently online.
+  Future<bool> isUserOnline(int userId, String token) async {
+    try {
+      final data = await _request('GET', '/home/online/$userId', token: token);
+      if (data is bool) return data;
+      if (data is Map) return data['online'] == true || data['v'] == true;
+      return data == true || data == 1 || '$data' == 'true';
+    } on ApiException {
+      return false;
+    }
+  }
+
   Future<List<FriendUser>> _friendList(
     String path, {
     Map<String, String>? query,
@@ -193,6 +248,36 @@ class ChengeApi {
     return ChatConversation.fromJson(data, fallbackPeerId: peerId);
   }
 
+  Future<ChatConversation> createGroupChat({
+    required String name,
+    required List<int> memberIds,
+    required String token,
+  }) async {
+    final data = await _request(
+      'POST',
+      '/chat/group',
+      body: {'name': name.trim(), 'memberIds': memberIds},
+      token: token,
+    );
+    if (data is! Map<String, dynamic>) throw const ApiException('创建群聊响应格式不正确');
+    return ChatConversation.fromJson(data);
+  }
+
+  Future<List<ChatConversation>> searchGroups(String keyword, String token) async {
+    final data = await _request(
+      'GET',
+      '/chat/search',
+      query: {'keyword': keyword.trim()},
+      token: token,
+    );
+    if (data is! List) throw const ApiException('群聊搜索结果格式不正确');
+    return data.whereType<Map<String, dynamic>>().map(ChatConversation.fromJson).toList();
+  }
+
+  Future<void> joinGroup(int conversationId, String token) async {
+    await _request('POST', '/chat/$conversationId/join', token: token);
+  }
+
   Future<List<ChatMessage>> chatMessages(int conversationId, String token, {int? beforeId, int size = 30}) async {
     final query = <String, String>{'size': '$size'};
     if (beforeId != null) query['beforeId'] = '$beforeId';
@@ -201,12 +286,17 @@ class ChengeApi {
     return data.whereType<Map<String, dynamic>>().map(ChatMessage.fromJson).toList();
   }
 
-  Future<ChatMessage> sendChatMessage(int conversationId, String content, String token) async {
+  Future<ChatMessage> sendChatMessage(
+    int conversationId,
+    String content,
+    String token, {
+    String type = 'text',
+  }) async {
     final data = await _request(
       'POST',
       '/chat/$conversationId/send',
       body: {
-        'type': 'text',
+        'type': type,
         'content': content,
         'clientMsgId': 'android-${DateTime.now().microsecondsSinceEpoch}',
       },
@@ -223,6 +313,74 @@ class ChengeApi {
       body: messageId == null ? const {} : {'messageId': messageId},
       token: token,
     );
+  }
+
+  /// Load owned emoji packs from shop assets + my items (type == emoji).
+  Future<List<EmojiAsset>> myEmojiAssets(String token) async {
+    final byId = <int, EmojiAsset>{};
+
+    void absorb(Map<String, dynamic> raw) {
+      final type = (raw['type'] ?? raw['itemType'] ?? '').toString().toLowerCase();
+      if (type.isNotEmpty && type != 'emoji') return;
+      final asset = EmojiAsset.fromMap(raw);
+      if (asset.itemId <= 0) return;
+      // Prefer entries that already have a url.
+      final existing = byId[asset.itemId];
+      if (existing == null || (existing.url == null && asset.url != null)) {
+        byId[asset.itemId] = asset;
+      }
+    }
+
+    try {
+      final assets = await shopAssets(token);
+      for (final row in assets) {
+        absorb(row);
+      }
+    } on ApiException {
+      // optional source
+    }
+
+    try {
+      var page = 1;
+      var total = 1 << 30;
+      final collected = <Map<String, dynamic>>[];
+      while (collected.length < total && page <= 10) {
+        final data = await _request(
+          'GET',
+          '/shop/my/items',
+          query: {'pageNum': '$page', 'pageSize': '60'},
+          token: token,
+        );
+        if (data is! Map<String, dynamic>) break;
+        total = _integer(data['total']);
+        final records = data['records'];
+        if (records is! List || records.isEmpty) break;
+        for (final row in records.whereType<Map<String, dynamic>>()) {
+          collected.add(row);
+          absorb({...row, if (row['itemId'] == null) 'itemId': row['id']});
+        }
+        if (records.length < 60) break;
+        page++;
+      }
+    } on ApiException {
+      // optional source
+    }
+
+    // If type filter was too strict (assets without type), keep all that look like emoji urls.
+    if (byId.isEmpty) {
+      try {
+        for (final row in await shopAssets(token)) {
+          final asset = EmojiAsset.fromMap(row);
+          if (asset.itemId > 0) byId[asset.itemId] = asset;
+        }
+      } on ApiException {
+        // ignore
+      }
+    }
+
+    final list = byId.values.toList()
+      ..sort((a, b) => a.itemId.compareTo(b.itemId));
+    return list;
   }
 
   Future<ShopItemPage> shopItems({
