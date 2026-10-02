@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../services/chenge_api.dart';
 import '../services/settings_store.dart';
+import 'settings_page.dart';
 import '../theme/app_theme.dart';
 
 class AccountPage extends StatelessWidget {
@@ -35,7 +36,7 @@ class AccountPage extends StatelessWidget {
         actions: [
           IconButton(
             tooltip: '设置',
-            onPressed: () => _showSettings(context, signedIn),
+            onPressed: () => _openSettings(context, signedIn),
             icon: const Icon(Icons.settings_outlined),
           ),
           const SizedBox(width: 6),
@@ -58,19 +59,36 @@ class AccountPage extends StatelessWidget {
                     Container(
                       width: 60,
                       height: 60,
-                      decoration: BoxDecoration(color: AppTheme.citrus, borderRadius: BorderRadius.circular(20)),
-                      child: Icon(signedIn ? Icons.person_rounded : Icons.lock_open_rounded, color: AppTheme.ink, size: 30),
+                      decoration: BoxDecoration(
+                        color: AppTheme.citrus,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Icon(
+                        signedIn
+                            ? Icons.person_rounded
+                            : Icons.lock_open_rounded,
+                        color: AppTheme.ink,
+                        size: 30,
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(signedIn ? (username ?? '已登录') : '欢迎来到社区',
-                            style: const TextStyle(color: Colors.white, fontSize: 21, fontWeight: FontWeight.w800)),
+                          Text(
+                            signedIn ? (username ?? '已登录') : '欢迎来到社区',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 21,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
                           const SizedBox(height: 4),
-                          Text(signedIn ? '账户已连接到 ChengeWorld' : '登录后浏览个性化内容',
-                            style: const TextStyle(color: Color(0xFFC4D8D0))),
+                          Text(
+                            signedIn ? '账户已连接到 ChengeWorld' : '登录后浏览个性化内容',
+                            style: const TextStyle(color: Color(0xFFC4D8D0)),
+                          ),
                         ],
                       ),
                     ),
@@ -83,14 +101,26 @@ class AccountPage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
                 child: ListTile(
                   onTap: onOpenTasks,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 15,
+                    vertical: 3,
+                  ),
                   leading: Container(
                     width: 42,
                     height: 42,
-                    decoration: BoxDecoration(color: const Color(0xFFFFE8C5), borderRadius: BorderRadius.circular(14)),
-                    child: const Icon(Icons.task_alt_rounded, color: AppTheme.ink),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFE8C5),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Icon(
+                      Icons.task_alt_rounded,
+                      color: AppTheme.ink,
+                    ),
                   ),
-                  title: const Text('任务中心', style: TextStyle(fontWeight: FontWeight.w800)),
+                  title: const Text(
+                    '任务中心',
+                    style: TextStyle(fontWeight: FontWeight.w800),
+                  ),
                   subtitle: const Text('签到、完成任务并领取 ChengeCoin'),
                   trailing: const Icon(Icons.chevron_right_rounded),
                 ),
@@ -101,7 +131,7 @@ class AccountPage extends StatelessWidget {
                   onPressed: () => _showLogin(context),
                   icon: const Icon(Icons.login_rounded),
                   label: const Text('登录账户'),
-              ),
+                ),
             ],
           ),
         ),
@@ -109,16 +139,16 @@ class AccountPage extends StatelessWidget {
     );
   }
 
-  Future<void> _showSettings(BuildContext context, bool signedIn) async {
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      builder: (sheetContext) => _SettingsSheet(
-        signedIn: signedIn,
-        settings: settings,
-        onSettingsChanged: onSettingsChanged,
-        onLogout: onLogout,
+  Future<void> _openSettings(BuildContext context, bool signedIn) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder:
+            (_) => SettingsPage(
+              signedIn: signedIn,
+              settings: settings,
+              onSettingsChanged: onSettingsChanged,
+              onLogout: onLogout,
+            ),
       ),
     );
   }
@@ -130,278 +160,10 @@ class AccountPage extends StatelessWidget {
     );
     if (result == null || !context.mounted) return;
     await onLogin(result);
-    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('登录成功')));
-  }
-}
-
-class _SettingsSheet extends StatefulWidget {
-  const _SettingsSheet({
-    required this.signedIn,
-    required this.settings,
-    required this.onSettingsChanged,
-    required this.onLogout,
-  });
-
-  final bool signedIn;
-  final SettingsStore settings;
-  final Future<void> Function() onSettingsChanged;
-  final Future<void> Function() onLogout;
-
-  @override
-  State<_SettingsSheet> createState() => _SettingsSheetState();
-}
-
-class _SettingsSheetState extends State<_SettingsSheet> {
-  late bool _useDynamic;
-  late Color _seed;
-  late bool _statusImmersive;
-  late bool _navImmersive;
-  late bool _autoHideTop;
-  late bool _autoHideBottom;
-  late bool _predictiveBack;
-  late int _feedMinColumns;
-  late int _shopMinColumns;
-
-  @override
-  void initState() {
-    super.initState();
-    _useDynamic = widget.settings.useDynamicColor;
-    _seed = widget.settings.seedColor;
-    _statusImmersive = widget.settings.statusBarImmersive;
-    _navImmersive = widget.settings.navigationBarImmersive;
-    _autoHideTop = widget.settings.autoHideTopBar;
-    _autoHideBottom = widget.settings.autoHideBottomBar;
-    _predictiveBack = widget.settings.predictiveBack;
-    _feedMinColumns = widget.settings.feedMinColumns;
-    _shopMinColumns = widget.settings.shopMinColumns;
-  }
-
-  Future<void> _apply() => widget.onSettingsChanged();
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final bottom = MediaQuery.paddingOf(context).bottom;
-
-    return SafeArea(
-      child: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(18, 4, 18, 18 + bottom),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(left: 4, bottom: 8),
-              child: Text('设置', style: TextStyle(fontSize: 19, fontWeight: FontWeight.w900)),
-            ),
-            const Padding(
-              padding: EdgeInsets.only(left: 4, top: 4, bottom: 6),
-              child: Text('外观', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF70817D))),
-            ),
-            SwitchListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-              secondary: Icon(Icons.wallpaper_rounded, color: theme.colorScheme.primary),
-              title: const Text('动态取色', style: TextStyle(fontWeight: FontWeight.w700)),
-              subtitle: const Text('使用 Android 12+ 壁纸配色（Material You）'),
-              value: _useDynamic,
-              onChanged: (value) async {
-                setState(() => _useDynamic = value);
-                await widget.settings.setUseDynamicColor(value);
-                await _apply();
-              },
-            ),
-            if (!_useDynamic) ...[
-              const Padding(
-                padding: EdgeInsets.only(left: 4, top: 8, bottom: 10),
-                child: Text('主题色', style: TextStyle(fontWeight: FontWeight.w700)),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
-                  children: [
-                    for (final color in AppTheme.presetSeeds)
-                      _ColorSwatch(
-                        color: color,
-                        selected: _seed.toARGB32() == color.toARGB32(),
-                        onTap: () async {
-                          setState(() => _seed = color);
-                          await widget.settings.setSeedColor(color);
-                          await _apply();
-                        },
-                      ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 8),
-            ],
-            const Padding(
-              padding: EdgeInsets.only(left: 4, top: 12, bottom: 6),
-              child: Text('系统栏', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF70817D))),
-            ),
-            SwitchListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-              secondary: Icon(Icons.vertical_align_top_rounded, color: theme.colorScheme.primary),
-              title: const Text('状态栏沉浸', style: TextStyle(fontWeight: FontWeight.w700)),
-              subtitle: const Text('内容延伸至状态栏下方，状态栏透明'),
-              value: _statusImmersive,
-              onChanged: (value) async {
-                setState(() => _statusImmersive = value);
-                await widget.settings.setStatusBarImmersive(value);
-                await _apply();
-              },
-            ),
-            SwitchListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-              secondary: Icon(Icons.vertical_align_bottom_rounded, color: theme.colorScheme.primary),
-              title: const Text('导航栏沉浸', style: TextStyle(fontWeight: FontWeight.w700)),
-              subtitle: const Text('内容延伸至导航栏下方，导航栏透明'),
-              value: _navImmersive,
-              onChanged: (value) async {
-                setState(() => _navImmersive = value);
-                await widget.settings.setNavigationBarImmersive(value);
-                await _apply();
-              },
-            ),
-            const Padding(
-              padding: EdgeInsets.only(left: 4, top: 12, bottom: 6),
-              child: Text('滚动行为', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF70817D))),
-            ),
-            SwitchListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-              secondary: Icon(Icons.vertical_align_top_rounded, color: theme.colorScheme.primary),
-              title: const Text('自动隐藏顶栏', style: TextStyle(fontWeight: FontWeight.w700)),
-              subtitle: const Text('在发现 / 商城向下滚动时收起页面顶栏（默认开启）'),
-              value: _autoHideTop,
-              onChanged: (value) async {
-                setState(() => _autoHideTop = value);
-                await widget.settings.setAutoHideTopBar(value);
-                await _apply();
-              },
-            ),
-            SwitchListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-              secondary: Icon(Icons.vertical_align_bottom_rounded, color: theme.colorScheme.primary),
-              title: const Text('自动隐藏底栏', style: TextStyle(fontWeight: FontWeight.w700)),
-              subtitle: const Text('在发现 / 商城向下滚动时收起底部导航；宽屏侧边栏不会隐藏'),
-              value: _autoHideBottom,
-              onChanged: (value) async {
-                setState(() => _autoHideBottom = value);
-                await widget.settings.setAutoHideBottomBar(value);
-                await _apply();
-              },
-            ),
-            const Padding(
-              padding: EdgeInsets.only(left: 4, top: 12, bottom: 6),
-              child: Text('系统手势', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF70817D))),
-            ),
-            SwitchListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-              secondary: Icon(Icons.swipe_left_rounded, color: theme.colorScheme.primary),
-              title: const Text('预见式返回', style: TextStyle(fontWeight: FontWeight.w700)),
-              subtitle: const Text('Android 13+ 页面过渡使用预见式返回动画（默认关闭）'),
-              value: _predictiveBack,
-              onChanged: (value) async {
-                setState(() => _predictiveBack = value);
-                await widget.settings.setPredictiveBack(value);
-                await _apply();
-              },
-            ),
-            const Padding(
-              padding: EdgeInsets.only(left: 4, top: 12, bottom: 6),
-              child: Text('布局', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Color(0xFF70817D))),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(4, 4, 4, 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('发现页最小列数', style: TextStyle(fontWeight: FontWeight.w700, color: theme.colorScheme.onSurface)),
-                  const SizedBox(height: 4),
-                  const Text('宽度足够时仍可自动增加列数', style: TextStyle(fontSize: 12, color: Color(0xFF70817D))),
-                  const SizedBox(height: 8),
-                  SegmentedButton<int>(
-                    showSelectedIcon: false,
-                    segments: const [
-                      ButtonSegment(value: 1, label: Text('1')),
-                      ButtonSegment(value: 2, label: Text('2')),
-                      ButtonSegment(value: 3, label: Text('3')),
-                    ],
-                    selected: {_feedMinColumns},
-                    onSelectionChanged: (selection) async {
-                      final value = selection.first;
-                      setState(() => _feedMinColumns = value);
-                      await widget.settings.setFeedMinColumns(value);
-                      await _apply();
-                    },
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('商城页最小列数', style: TextStyle(fontWeight: FontWeight.w700, color: theme.colorScheme.onSurface)),
-                  const SizedBox(height: 4),
-                  const Text('宽度足够时仍可自动增加列数', style: TextStyle(fontSize: 12, color: Color(0xFF70817D))),
-                  const SizedBox(height: 8),
-                  SegmentedButton<int>(
-                    showSelectedIcon: false,
-                    segments: const [
-                      ButtonSegment(value: 1, label: Text('1')),
-                      ButtonSegment(value: 2, label: Text('2')),
-                      ButtonSegment(value: 3, label: Text('3')),
-                    ],
-                    selected: {_shopMinColumns},
-                    onSelectionChanged: (selection) async {
-                      final value = selection.first;
-                      setState(() => _shopMinColumns = value);
-                      await widget.settings.setShopMinColumns(value);
-                      await _apply();
-                    },
-                  ),
-                ],
-              ),
-            ),
-            const Divider(height: 28),
-            if (widget.signedIn)
-              ListTile(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-                leading: const Icon(Icons.logout_rounded, color: AppTheme.coral),
-                title: const Text('退出登录', style: TextStyle(color: AppTheme.coral, fontWeight: FontWeight.w700)),
-                onTap: () async {
-                  Navigator.pop(context);
-                  final confirmed = await showDialog<bool>(
-                    context: context,
-                    builder: (dialogContext) => AlertDialog(
-                      title: const Text('退出登录'),
-                      content: const Text('确定退出当前 ChengeWorld 账户？'),
-                      actions: [
-                        TextButton(onPressed: () => Navigator.pop(dialogContext, false), child: const Text('取消')),
-                        FilledButton.tonal(onPressed: () => Navigator.pop(dialogContext, true), child: const Text('退出')),
-                      ],
-                    ),
-                  );
-                  if (confirmed != true) return;
-                  await widget.onLogout();
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('已退出登录')));
-                  }
-                },
-              )
-            else
-              const ListTile(
-                contentPadding: EdgeInsets.symmetric(horizontal: 4),
-                leading: Icon(Icons.lock_outline_rounded, color: AppTheme.leaf),
-                title: Text('登录后可管理账户设置'),
-              ),
-          ],
-        ),
-      ),
-    );
+    if (context.mounted)
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('登录成功')));
   }
 }
 
@@ -439,9 +201,10 @@ class _ColorSwatch extends StatelessWidget {
             ),
           ],
         ),
-        child: selected
-            ? const Icon(Icons.check_rounded, color: Colors.white, size: 20)
-            : null,
+        child:
+            selected
+                ? const Icon(Icons.check_rounded, color: Colors.white, size: 20)
+                : null,
       ),
     );
   }
@@ -478,7 +241,10 @@ class _LoginDialogState extends State<_LoginDialog> {
       _error = null;
     });
     try {
-      final result = await widget.api.login(_username.text.trim(), _password.text);
+      final result = await widget.api.login(
+        _username.text.trim(),
+        _password.text,
+      );
       if (mounted) Navigator.pop(context, result);
     } on ApiException catch (error) {
       if (mounted) setState(() => _error = error.message);
@@ -489,67 +255,96 @@ class _LoginDialogState extends State<_LoginDialog> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-        icon: Container(
-          width: 54,
-          height: 54,
-          decoration: BoxDecoration(color: const Color(0xFFE0F0E8), borderRadius: BorderRadius.circular(18)),
-          child: const Icon(Icons.waving_hand_rounded, color: AppTheme.leaf),
-        ),
-        title: const Text('登录 ChengeWorld', textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 21, fontWeight: FontWeight.w800)),
-        content: SizedBox(
-          width: 390,
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextFormField(
-                  controller: _username,
-                  autofocus: true,
-                  enabled: !_loading,
-                  textInputAction: TextInputAction.next,
-                  autofillHints: const [AutofillHints.username],
-                  decoration: const InputDecoration(labelText: '用户名', prefixIcon: Icon(Icons.person_outline_rounded)),
-                  validator: (value) => value == null || value.trim().isEmpty ? '请输入用户名' : null,
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _password,
-                  enabled: !_loading,
-                  obscureText: _obscurePassword,
-                  textInputAction: TextInputAction.done,
-                  autofillHints: const [AutofillHints.password],
-                  onFieldSubmitted: (_) => _submit(),
-                  decoration: InputDecoration(
-                    labelText: '密码',
-                    prefixIcon: const Icon(Icons.lock_outline_rounded),
-                    suffixIcon: IconButton(
-                      tooltip: _obscurePassword ? '显示密码' : '隐藏密码',
-                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                      icon: Icon(_obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined),
-                    ),
-                  ),
-                  validator: (value) => value == null || value.isEmpty ? '请输入密码' : null,
-                ),
-                if (_error != null) ...[
-                  const SizedBox(height: 12),
-                  Text(_error!, style: const TextStyle(color: AppTheme.coral), textAlign: TextAlign.center),
-                ],
-              ],
+    icon: Container(
+      width: 54,
+      height: 54,
+      decoration: BoxDecoration(
+        color: const Color(0xFFE0F0E8),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: const Icon(Icons.waving_hand_rounded, color: AppTheme.leaf),
+    ),
+    title: const Text(
+      '登录 ChengeWorld',
+      textAlign: TextAlign.center,
+      style: TextStyle(fontSize: 21, fontWeight: FontWeight.w800),
+    ),
+    content: SizedBox(
+      width: 390,
+      child: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextFormField(
+              controller: _username,
+              autofocus: true,
+              enabled: !_loading,
+              textInputAction: TextInputAction.next,
+              autofillHints: const [AutofillHints.username],
+              decoration: const InputDecoration(
+                labelText: '用户名',
+                prefixIcon: Icon(Icons.person_outline_rounded),
+              ),
+              validator:
+                  (value) =>
+                      value == null || value.trim().isEmpty ? '请输入用户名' : null,
             ),
-          ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _password,
+              enabled: !_loading,
+              obscureText: _obscurePassword,
+              textInputAction: TextInputAction.done,
+              autofillHints: const [AutofillHints.password],
+              onFieldSubmitted: (_) => _submit(),
+              decoration: InputDecoration(
+                labelText: '密码',
+                prefixIcon: const Icon(Icons.lock_outline_rounded),
+                suffixIcon: IconButton(
+                  tooltip: _obscurePassword ? '显示密码' : '隐藏密码',
+                  onPressed:
+                      () =>
+                          setState(() => _obscurePassword = !_obscurePassword),
+                  icon: Icon(
+                    _obscurePassword
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
+                  ),
+                ),
+              ),
+              validator:
+                  (value) => value == null || value.isEmpty ? '请输入密码' : null,
+            ),
+            if (_error != null) ...[
+              const SizedBox(height: 12),
+              Text(
+                _error!,
+                style: const TextStyle(color: AppTheme.coral),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ],
         ),
-        actionsAlignment: MainAxisAlignment.center,
-        actions: [
-          TextButton(onPressed: _loading ? null : () => Navigator.pop(context), child: const Text('取消')),
-          FilledButton.icon(
-            onPressed: _loading ? null : _submit,
-            icon: _loading
-                ? const SizedBox.square(dimension: 17, child: CircularProgressIndicator(strokeWidth: 2))
+      ),
+    ),
+    actionsAlignment: MainAxisAlignment.center,
+    actions: [
+      TextButton(
+        onPressed: _loading ? null : () => Navigator.pop(context),
+        child: const Text('取消'),
+      ),
+      FilledButton.icon(
+        onPressed: _loading ? null : _submit,
+        icon:
+            _loading
+                ? const SizedBox.square(
+                  dimension: 17,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
                 : const Icon(Icons.login_rounded),
-            label: Text(_loading ? '正在登录' : '登录'),
-          ),
-        ],
-      );
+        label: Text(_loading ? '正在登录' : '登录'),
+      ),
+    ],
+  );
 }
