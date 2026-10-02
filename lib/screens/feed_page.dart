@@ -133,8 +133,7 @@ class _FeedPageState extends State<FeedPage> {
     final maxWidth = width >= 1200 ? 1120.0 : 920.0;
     final responsive = width >= 1120 ? 2 : 1;
     final columns = responsive < widget.minColumns ? widget.minColumns.clamp(1, 3) : responsive;
-    final primary = Theme.of(context).colorScheme.primary;
-
+    final isWide = MediaQuery.sizeOf(context).width >= 760;
     return Scaffold(
       body: Center(
         child: ConstrainedBox(
@@ -154,16 +153,19 @@ class _FeedPageState extends State<FeedPage> {
                 titleSpacing: 20,
                 title: Row(
                   children: [
-                    Container(
-                      width: 38,
-                      height: 38,
-                      decoration: BoxDecoration(
-                        color: primary,
+                    if (!isWide) ...[
+                      ClipRRect(
                         borderRadius: BorderRadius.circular(13),
+                        child: Image.asset(
+                          'assets/images/logo.png',
+                          width: 38,
+                          height: 38,
+                          cacheWidth: 114,
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                      child: const Icon(Icons.forum_rounded, color: Colors.white, size: 21),
-                    ),
-                    const SizedBox(width: 11),
+                      const SizedBox(width: 11),
+                    ],
                     const Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

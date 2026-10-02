@@ -177,7 +177,7 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
                 padding: const EdgeInsets.only(bottom: 10),
                 child: Text('余额 ${_balance!.toStringAsFixed(2)} CC', style: const TextStyle(color: Color(0xFF70817D))),
               ),
-            if (canBuy && !_owned) ...[
+            if (canBuy) ...[
               Row(
                 children: [
                   IconButton.filledTonal(
@@ -202,8 +202,7 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
                   ),
                 ],
               ),
-            ] else if (_owned)
-              const Text('已拥有该商品', style: TextStyle(fontWeight: FontWeight.w700, color: AppTheme.leaf))
+            ]
             else if (isSeller)
               const Text('这是你上架的商品', style: TextStyle(color: Color(0xFF70817D))),
           ],

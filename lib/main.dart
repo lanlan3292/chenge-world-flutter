@@ -300,14 +300,14 @@ class _AppShellState extends State<AppShell> {
                 leading: Padding(
                   padding: const EdgeInsets.only(bottom: 28),
                   child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary,
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: const SizedBox(
+                    decoration: BoxDecoration(),
+                    child: SizedBox(
                       width: 48,
                       height: 48,
-                      child: Icon(Icons.forum_rounded, color: Colors.white),
+                      child: Image.asset(
+                        'assets/images/logo.png',
+                        fit: BoxFit.contain,
+                      ),
                     ),
                   ),
                 ),
