@@ -304,12 +304,11 @@ class _FeedPageState extends State<FeedPage> {
                   SliverToBoxAdapter(child: _buildPagination()),
                 ],
                 SliverToBoxAdapter(
-                  // Clear bottom nav + system inset without oversized fixed extras.
+                  // Only clear the system gesture inset (+ a small gap).
+                  // Scaffold already reserves bottomNavigationBar layout space;
+                  // stacking kBottomNavigationBarHeight here made the tail too tall.
                   child: SizedBox(
-                    height:
-                        MediaQuery.paddingOf(context).bottom +
-                        kBottomNavigationBarHeight +
-                        8,
+                    height: MediaQuery.paddingOf(context).bottom + 12,
                   ),
                 ),
               ],
