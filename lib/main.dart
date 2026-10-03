@@ -255,6 +255,7 @@ class _AppShellState extends State<AppShell> {
         token: _token,
         userId: _userId,
         settings: widget.settings,
+        isActive: _selectedIndex == 1,
         onLoginRequested: () => setState(() {
           _selectedIndex = 3;
           _chromeVisible = true;

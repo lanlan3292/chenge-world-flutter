@@ -46,6 +46,50 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('closes picker when resizing from wide to narrow', (tester) async {
+    tester.view.physicalSize = const Size(1000, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final api = _api();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Builder(
+          builder: (context) => Scaffold(
+            body: Column(
+              children: [
+                const Text('主页'),
+                TextButton(
+                  onPressed: () => showModalBottomSheet<void>(
+                    context: context,
+                    builder: (_) => EmojiPickerSheet(api: api, token: 'token'),
+                  ),
+                  child: const Text('打开'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('打开'));
+    await tester.pumpAndSettle();
+    final closeButton = find.ancestor(
+      of: find.byIcon(Icons.close_rounded),
+      matching: find.byType(IconButton),
+    );
+    expect(tester.widget<IconButton>(closeButton).onPressed, isNotNull);
+
+    tester.view.physicalSize = const Size(400, 800);
+    await tester.pumpAndSettle();
+
+    expect(find.text('主页'), findsOneWidget);
+    expect(find.byIcon(Icons.close_rounded), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('closes picker on narrow-to-wide change without popping main', (
     tester,
   ) async {
@@ -98,8 +142,8 @@ void main() {
 
     tester.view.physicalSize = const Size(1000, 800);
     await tester.pump();
-    final closeButton = find.descendant(
-      of: find.byTooltip('关闭'),
+    final closeButton = find.ancestor(
+      of: find.byIcon(Icons.close_rounded),
       matching: find.byType(IconButton),
     );
     if (closeButton.evaluate().isNotEmpty) {
@@ -111,7 +155,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('主页'), findsOneWidget);
-    expect(find.byTooltip('关闭'), findsNothing);
+    expect(find.byIcon(Icons.close_rounded), findsNothing);
     expect(tester.takeException(), isNull);
   });
 }

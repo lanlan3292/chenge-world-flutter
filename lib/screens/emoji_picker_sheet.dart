@@ -17,7 +17,7 @@ class _EmojiPickerSheetState extends State<EmojiPickerSheet> {
   final _assets = <EmojiAsset>[];
   bool _loading = true;
   bool? _isWide;
-  bool _closingForWide = false;
+  bool _closingForResize = false;
   int? _selectedItemId;
   String _error = '';
 
@@ -27,16 +27,14 @@ class _EmojiPickerSheetState extends State<EmojiPickerSheet> {
     final isWide = MediaQuery.sizeOf(context).width >= 760;
     if (_isWide == null) {
       _isWide = isWide;
-    } else if (isWide && !_isWide!) {
-      _isWide = true;
-      _closingForWide = true;
+    } else if (isWide != _isWide) {
+      _isWide = isWide;
+      _closingForResize = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && Navigator.of(context).canPop()) {
           Navigator.of(context).pop();
         }
       });
-    } else {
-      _isWide = isWide;
     }
   }
 
@@ -115,10 +113,9 @@ class _EmojiPickerSheetState extends State<EmojiPickerSheet> {
                   ),
                   IconButton(
                     tooltip: '关闭',
-                    onPressed:
-                        _isWide == true || _closingForWide
-                            ? null
-                            : () => Navigator.pop(context),
+                    onPressed: _closingForResize
+                        ? null
+                        : () => Navigator.pop(context),
                     icon: const Icon(Icons.close_rounded),
                   ),
                 ],

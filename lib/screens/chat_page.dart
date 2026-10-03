@@ -20,6 +20,7 @@ class ChatPage extends StatefulWidget {
     required this.launchNonce,
     required this.onOpenFriends,
     required this.onLoginRequested,
+    this.isActive = true,
     this.launchConversationId,
     this.showAppBar = true,
   });
@@ -28,6 +29,7 @@ class ChatPage extends StatefulWidget {
   final String? token;
   final int? userId;
   final SettingsStore settings;
+  final bool isActive;
   final int? launchPeerId;
   final int? launchConversationId;
   final int launchNonce;
@@ -226,9 +228,12 @@ class _ChatPageState extends State<ChatPage> {
     final wasWide = _lastWide;
     _lastWide = isWide;
     if (wasWide == null) return;
-    if (wasWide && !isWide && _active != null && !_routeOpen) {
+    if (wasWide && !isWide && widget.isActive && _active != null && !_routeOpen) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && MediaQuery.sizeOf(context).width < 760 && _active != null) {
+        if (mounted &&
+            widget.isActive &&
+            MediaQuery.sizeOf(context).width < 760 &&
+            _active != null) {
           _pushThread(_active!);
         }
       });

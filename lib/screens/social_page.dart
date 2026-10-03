@@ -14,6 +14,7 @@ class SocialPage extends StatefulWidget {
     required this.userId,
     required this.settings,
     required this.onLoginRequested,
+    this.isActive = true,
   });
 
   final ChengeApi api;
@@ -21,6 +22,7 @@ class SocialPage extends StatefulWidget {
   final int? userId;
   final SettingsStore settings;
   final VoidCallback onLoginRequested;
+  final bool isActive;
 
   @override
   State<SocialPage> createState() => _SocialPageState();
@@ -80,6 +82,7 @@ class _SocialPageState extends State<SocialPage> {
                   token: widget.token,
                   userId: widget.userId,
                   settings: widget.settings,
+                  isActive: widget.isActive && _section == 0,
                   launchPeerId: _pendingPeerId,
                   launchConversationId: _pendingConversationId,
                   launchNonce: _launchNonce,
