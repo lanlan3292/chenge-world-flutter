@@ -196,13 +196,19 @@ class _AppShellState extends State<AppShell> {
   int? _userId;
   bool _restoring = true;
 
-  /// Bottom nav / rail chrome; hidden while scrolling the feed downward.
-  bool _chromeVisible = true;
+  /// Bottom nav chrome visibility; driven by feed/shop scroll without full rebuilds.
+  final ValueNotifier<bool> _chromeVisible = ValueNotifier<bool>(true);
 
   @override
   void initState() {
     super.initState();
     _restoreSession();
+  }
+
+  @override
+  void dispose() {
+    _chromeVisible.dispose();
+    super.dispose();
   }
 
   Future<void> _restoreSession() async {
@@ -310,11 +316,12 @@ class _AppShellState extends State<AppShell> {
       if (wide) return;
       if (_selectedIndex != 0 && _selectedIndex != 2) return;
       if (!hideBottomBar) {
-        if (!_chromeVisible) setState(() => _chromeVisible = true);
+        if (!_chromeVisible.value) _chromeVisible.value = true;
         return;
       }
-      if (_chromeVisible == visible) return;
-      setState(() => _chromeVisible = visible);
+      if (_chromeVisible.value == visible) return;
+      // ValueNotifier: only the bottom bar ListenableBuilder rebuilds.
+      _chromeVisible.value = visible;
     }
 
     final pages = <Widget>[
@@ -336,7 +343,7 @@ class _AppShellState extends State<AppShell> {
         onLoginRequested:
             () => setState(() {
               _selectedIndex = 3;
-              _chromeVisible = true;
+              _chromeVisible.value = true;
             }),
       ),
       ShopPage(
@@ -346,7 +353,7 @@ class _AppShellState extends State<AppShell> {
         onLoginRequested:
             () => setState(() {
               _selectedIndex = 3;
-              _chromeVisible = true;
+              _chromeVisible.value = true;
             }),
         autoHideTopBar: widget.settings.autoHideTopBar,
         autoHideBottomBar: hideBottomBar,
@@ -378,7 +385,7 @@ class _AppShellState extends State<AppShell> {
                 onDestinationSelected:
                     (index) => setState(() {
                       _selectedIndex = index;
-                      _chromeVisible = true;
+                      _chromeVisible.value = true;
                     }),
                 labelType: NavigationRailLabelType.all,
                 leading: Padding(
@@ -425,49 +432,52 @@ class _AppShellState extends State<AppShell> {
       bottomNavigationBar:
           wide
               ? null
-              : ClipRect(
-                child: AnimatedAlign(
-                  duration: const Duration(milliseconds: 320),
-                  curve: Curves.easeInOutCubic,
-                  alignment: Alignment.topCenter,
-                  heightFactor: (!hideBottomBar || _chromeVisible) ? 1 : 0,
-                  child: Material(
-                    elevation: (!hideBottomBar || _chromeVisible) ? 3 : 0,
-                    color:
-                        Theme.of(context).navigationBarTheme.backgroundColor ??
-                        Colors.white,
-                    child: NavigationBar(
-                      selectedIndex: _selectedIndex,
-                      onDestinationSelected:
-                          (index) => setState(() {
-                            _selectedIndex = index;
-                            _chromeVisible = true;
-                          }),
-                      destinations: [
-                        NavigationDestination(
-                          icon: Icon(Icons.dynamic_feed_outlined),
-                          selectedIcon: Icon(Icons.dynamic_feed_rounded),
-                          label: AppLocalizations.of(context).text('发现'),
-                        ),
-                        NavigationDestination(
-                          icon: Icon(Icons.people_outline_rounded),
-                          selectedIcon: Icon(Icons.people_rounded),
-                          label: AppLocalizations.of(context).text('社交'),
-                        ),
-                        NavigationDestination(
-                          icon: Icon(Icons.storefront_outlined),
-                          selectedIcon: Icon(Icons.storefront_rounded),
-                          label: AppLocalizations.of(context).text('商城'),
-                        ),
-                        NavigationDestination(
-                          icon: Icon(Icons.person_outline_rounded),
-                          selectedIcon: Icon(Icons.person_rounded),
-                          label: AppLocalizations.of(context).text('我的'),
-                        ),
-                      ],
+              : ListenableBuilder(
+                listenable: _chromeVisible,
+                builder: (context, _) {
+                  final shown = !hideBottomBar || _chromeVisible.value;
+                  return AnimatedSlide(
+                    duration: const Duration(milliseconds: 280),
+                    curve: Curves.easeOutCubic,
+                    offset: shown ? Offset.zero : const Offset(0, 1),
+                    child: Material(
+                      elevation: shown ? 3 : 0,
+                      color:
+                          Theme.of(context).navigationBarTheme.backgroundColor ??
+                          Colors.white,
+                      child: NavigationBar(
+                        selectedIndex: _selectedIndex,
+                        onDestinationSelected:
+                            (index) => setState(() {
+                              _selectedIndex = index;
+                              _chromeVisible.value = true;
+                            }),
+                        destinations: [
+                          NavigationDestination(
+                            icon: Icon(Icons.dynamic_feed_outlined),
+                            selectedIcon: Icon(Icons.dynamic_feed_rounded),
+                            label: AppLocalizations.of(context).text('发现'),
+                          ),
+                          NavigationDestination(
+                            icon: Icon(Icons.people_outline_rounded),
+                            selectedIcon: Icon(Icons.people_rounded),
+                            label: AppLocalizations.of(context).text('社交'),
+                          ),
+                          NavigationDestination(
+                            icon: Icon(Icons.storefront_outlined),
+                            selectedIcon: Icon(Icons.storefront_rounded),
+                            label: AppLocalizations.of(context).text('商城'),
+                          ),
+                          NavigationDestination(
+                            icon: Icon(Icons.person_outline_rounded),
+                            selectedIcon: Icon(Icons.person_rounded),
+                            label: AppLocalizations.of(context).text('我的'),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
     );
   }

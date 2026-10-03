@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 import '../l10n/app_localizations_text.dart';
 import '../models/blog_post.dart';
@@ -74,24 +73,52 @@ class _FeedPageState extends State<FeedPage> {
     super.dispose();
   }
 
+  /// Minimum scroll distance before toggling chrome (avoids jank from rapid flips).
+  static const double _chromeScrollThreshold = 28;
+
+  double _lastScrollPixels = 0;
+  double _chromeScrollAccum = 0;
+
   void _onScroll() {
     if (!widget.autoHideTopBar && !widget.autoHideBottomBar) return;
     if (!_scrollController.hasClients) return;
-    if (_scrollController.offset <= 8) {
+    final position = _scrollController.position;
+    final offset = position.pixels;
+
+    if (offset <= 8) {
+      _chromeScrollAccum = 0;
+      _lastScrollPixels = offset;
       _setChromeVisible(true);
       return;
     }
-    final direction = _scrollController.position.userScrollDirection;
-    if (direction == ScrollDirection.reverse) {
+
+    final delta = offset - _lastScrollPixels;
+    _lastScrollPixels = offset;
+    if (delta == 0) return;
+
+    // Same direction as current intent: accumulate; reverse direction: reset and accumulate opposite.
+    if ((_chromeScrollAccum > 0 && delta < 0) ||
+        (_chromeScrollAccum < 0 && delta > 0)) {
+      _chromeScrollAccum = 0;
+    }
+    _chromeScrollAccum += delta;
+
+    if (_chromeScrollAccum > _chromeScrollThreshold) {
+      // Scrolling down
+      _chromeScrollAccum = 0;
       _setChromeVisible(false);
-    } else if (direction == ScrollDirection.forward) {
+    } else if (_chromeScrollAccum < -_chromeScrollThreshold) {
+      // Scrolling up
+      _chromeScrollAccum = 0;
       _setChromeVisible(true);
     }
   }
 
   void _setChromeVisible(bool visible) {
     if (_chromeVisible == visible) return;
-    setState(() => _chromeVisible = visible);
+    _chromeVisible = visible;
+    // Do not setState: bottom padding stays fixed so the list does not reflow.
+    // Shell animates the bottom bar with a transform only.
     if (widget.autoHideBottomBar) {
       widget.onChromeVisibilityChanged?.call(visible);
     }
@@ -277,17 +304,14 @@ class _FeedPageState extends State<FeedPage> {
                   SliverToBoxAdapter(child: _buildPagination()),
                 ],
                 SliverToBoxAdapter(
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 320),
-                    curve: Curves.easeInOutCubic,
+                  // Keep inset stable while auto-hide slides the bar with a
+                  // transform in the shell — changing height here caused scroll jank.
+                  child: SizedBox(
                     height:
                         24 +
                         MediaQuery.paddingOf(context).bottom +
-                        (widget.autoHideBottomBar
-                            ? (_chromeVisible
-                                ? kBottomNavigationBarHeight + 12
-                                : 0)
-                            : kBottomNavigationBarHeight + 12),
+                        kBottomNavigationBarHeight +
+                        12,
                   ),
                 ),
               ],
