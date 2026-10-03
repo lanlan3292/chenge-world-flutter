@@ -50,7 +50,7 @@ void main() {
     await tester.scrollUntilVisible(
       find.byTooltip('下一页'),
       300,
-      scrollable: find.byType(Scrollable),
+      scrollable: find.byType(Scrollable).first,
     );
     await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('下一页'));
