@@ -171,3 +171,35 @@ jobs:
           name: chenge-world-ios-debug
           path: ios-build
           retention-days: 2
+
+  build-macos:
+    needs: test
+    runs-on: macos-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build macOS
+        run: flutter build macos --debug
+
+      - name: Package macOS app
+        run: |
+          mkdir -p macos-build
+          cp -R build/macos/Build/Products/Debug/ChengeWorld.app macos-build/
+
+      - name: Upload macOS
+        uses: actions/upload-artifact@v7
+        with:
+          name: chenge-world-macos-debug
+          path: macos-build
+          retention-days: 2

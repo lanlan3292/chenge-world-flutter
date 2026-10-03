@@ -18,7 +18,7 @@ class PostCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return AspectRatio(
-      aspectRatio: 4 / 6,
+      aspectRatio: 4 / 5,
       child: Card(
         clipBehavior: Clip.antiAlias,
         child: InkWell(
