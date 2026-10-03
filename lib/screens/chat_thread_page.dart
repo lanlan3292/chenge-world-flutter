@@ -714,60 +714,69 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     return text.isEmpty || text == 'null' ? fallback : text;
   }
 
-  Widget _composer() => SafeArea(
-    top: false,
-    child: Container(
-      padding: const EdgeInsets.fromLTRB(8, 10, 12, 10),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerLow,
-        border: Border(
-          top: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
-        ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          IconButton(
-            tooltip: '表情包',
-            onPressed: _sending ? null : _openEmojiPicker,
-            icon: const Icon(Icons.emoji_emotions_outlined),
-          ),
-          Expanded(
-            child: TextField(
-              controller: _messageController,
-              minLines: 1,
-              maxLines: 5,
-              textInputAction: TextInputAction.newline,
-              onChanged: (_) => setState(() {}),
-              decoration: const InputDecoration(
-                hintText: '输入消息…',
-                isDense: true,
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 12,
-                ),
+  Widget _composer() {
+    final panelColor = Theme.of(context).colorScheme.surfaceContainerLow;
+    // ColoredBox 铺满底部安全区，避免系统手势条区域颜色与输入面板不一致。
+    return ColoredBox(
+      color: panelColor,
+      child: SafeArea(
+        top: false,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(8, 10, 12, 10),
+          decoration: BoxDecoration(
+            color: panelColor,
+            border: Border(
+              top: BorderSide(
+                color: Theme.of(context).colorScheme.outlineVariant,
               ),
             ),
           ),
-          const SizedBox(width: 8),
-          IconButton.filled(
-            tooltip: '发送消息',
-            onPressed:
-                _sending || _messageController.text.trim().isEmpty
-                    ? null
-                    : _send,
-            icon:
-                _sending
-                    ? const SizedBox.square(
-                      dimension: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                    : const Icon(Icons.send_rounded),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              IconButton(
+                tooltip: '表情包',
+                onPressed: _sending ? null : _openEmojiPicker,
+                icon: const Icon(Icons.emoji_emotions_outlined),
+              ),
+              Expanded(
+                child: TextField(
+                  controller: _messageController,
+                  minLines: 1,
+                  maxLines: 5,
+                  textInputAction: TextInputAction.newline,
+                  onChanged: (_) => setState(() {}),
+                  decoration: const InputDecoration(
+                    hintText: '输入消息…',
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 12,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              IconButton.filled(
+                tooltip: '发送消息',
+                onPressed:
+                    _sending || _messageController.text.trim().isEmpty
+                        ? null
+                        : _send,
+                icon:
+                    _sending
+                        ? const SizedBox.square(
+                          dimension: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                        : const Icon(Icons.send_rounded),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 
   Widget _emojiImage(ChatMessage message) {
     final url = message.emoji?.url;

@@ -18,6 +18,7 @@ dependencies:
   url_launcher: ^6.3.2
   shared_preferences: ^2.5.3
   dynamic_color: ^1.7.0
+  webview_flutter: ^4.10.0
 
 dev_dependencies:
   flutter_test:

@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations_text.dart';
 import '../services/chenge_api.dart';
 import '../services/settings_store.dart';
+import 'chenge_core_page.dart';
 import 'settings_page.dart';
 import '../theme/app_theme.dart';
 
-class AccountPage extends StatelessWidget {
+class AccountPage extends StatefulWidget {
   const AccountPage({
     super.key,
     required this.api,
@@ -29,8 +30,132 @@ class AccountPage extends StatelessWidget {
   final Future<void> Function() onSettingsChanged;
 
   @override
+  State<AccountPage> createState() => _AccountPageState();
+}
+
+class _AccountPageState extends State<AccountPage> {
+  String? _avatarUrl;
+  bool _avatarLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAvatar();
+  }
+
+  @override
+  void didUpdateWidget(covariant AccountPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.token != widget.token) {
+      _avatarUrl = null;
+      _loadAvatar();
+    }
+  }
+
+  Future<void> _loadAvatar() async {
+    final token = widget.token;
+    if (token == null) {
+      if (mounted) setState(() => _avatarUrl = null);
+      return;
+    }
+    setState(() => _avatarLoading = true);
+    try {
+      final current = await widget.api.currentUser(token);
+      final user = current['user'];
+      String? avatar;
+      if (user is Map) {
+        avatar = user['avatar']?.toString();
+        if (avatar == null || avatar.isEmpty || avatar == 'null') {
+          avatar = user['avatarUrl']?.toString();
+        }
+      }
+      if (avatar != null &&
+          (avatar.isEmpty || avatar == 'null' || avatar == 'undefined')) {
+        avatar = null;
+      }
+      if (mounted) setState(() => _avatarUrl = avatar);
+    } on ApiException {
+      // 保持占位头像
+    } finally {
+      if (mounted) setState(() => _avatarLoading = false);
+    }
+  }
+
+  Widget _profileAvatar(BuildContext context, bool signedIn) {
+    final scheme = Theme.of(context).colorScheme;
+    final hasAvatar =
+        signedIn && _avatarUrl != null && _avatarUrl!.trim().isNotEmpty;
+    return Container(
+      width: 60,
+      height: 60,
+      decoration: BoxDecoration(
+        color: scheme.tertiaryContainer,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child:
+          hasAvatar
+              ? Image.network(
+                _avatarUrl!,
+                fit: BoxFit.cover,
+                width: 60,
+                height: 60,
+                errorBuilder:
+                    (_, __, ___) => Icon(
+                      Icons.person_rounded,
+                      color: scheme.onTertiaryContainer,
+                      size: 30,
+                    ),
+                loadingBuilder: (context, child, progress) {
+                  if (progress == null) return child;
+                  return Center(
+                    child: SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: scheme.onTertiaryContainer,
+                      ),
+                    ),
+                  );
+                },
+              )
+              : Icon(
+                signedIn
+                    ? (_avatarLoading
+                        ? Icons.person_outline_rounded
+                        : Icons.person_rounded)
+                    : Icons.lock_open_rounded,
+                color: scheme.onTertiaryContainer,
+                size: 30,
+              ),
+    );
+  }
+
+  void _openChengeCore(BuildContext context) {
+    final token = widget.token;
+    if (token == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context).text('请先登录后再使用 ChengeCore')),
+        ),
+      );
+      return;
+    }
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder:
+            (_) => ChengeCorePage(
+              baseUrl: widget.api.baseUrl,
+              token: token,
+            ),
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final signedIn = token != null;
+    final signedIn = widget.token != null;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -60,22 +185,7 @@ class AccountPage extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.tertiaryContainer,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Icon(
-                        signedIn
-                            ? Icons.person_rounded
-                            : Icons.lock_open_rounded,
-                        color:
-                            Theme.of(context).colorScheme.onTertiaryContainer,
-                        size: 30,
-                      ),
-                    ),
+                    _profileAvatar(context, signedIn),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(
@@ -83,7 +193,7 @@ class AccountPage extends StatelessWidget {
                         children: [
                           Text(
                             signedIn
-                                ? (username ??
+                                ? (widget.username ??
                                     AppLocalizations.of(context).text('已登录'))
                                 : AppLocalizations.of(context).text('欢迎来到社区'),
                             style: TextStyle(
@@ -118,7 +228,7 @@ class AccountPage extends StatelessWidget {
                 color: Theme.of(context).colorScheme.surfaceContainerLow,
                 borderRadius: BorderRadius.circular(8),
                 child: ListTile(
-                  onTap: onOpenTasks,
+                  onTap: widget.onOpenTasks,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 15,
                     vertical: 3,
@@ -145,6 +255,38 @@ class AccountPage extends StatelessWidget {
                   trailing: const Icon(Icons.chevron_right_rounded),
                 ),
               ),
+              const SizedBox(height: 12),
+              Material(
+                color: Theme.of(context).colorScheme.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(8),
+                child: ListTile(
+                  onTap: () => _openChengeCore(context),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 15,
+                    vertical: 3,
+                  ),
+                  leading: Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.secondaryContainer,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Icon(
+                      Icons.hub_rounded,
+                      color: Theme.of(context).colorScheme.onSecondaryContainer,
+                    ),
+                  ),
+                  title: Text(
+                    AppLocalizations.of(context).text('ChengeCore'),
+                    style: const TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  subtitle: Text(
+                    AppLocalizations.of(context).text('打开核心生态'),
+                  ),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                ),
+              ),
               const SizedBox(height: 24),
               if (!signedIn)
                 FilledButton.icon(
@@ -165,9 +307,9 @@ class AccountPage extends StatelessWidget {
         builder:
             (_) => SettingsPage(
               signedIn: signedIn,
-              settings: settings,
-              onSettingsChanged: onSettingsChanged,
-              onLogout: onLogout,
+              settings: widget.settings,
+              onSettingsChanged: widget.onSettingsChanged,
+              onLogout: widget.onLogout,
             ),
       ),
     );
@@ -176,15 +318,16 @@ class AccountPage extends StatelessWidget {
   Future<void> _showLogin(BuildContext context) async {
     final result = await showDialog<Map<String, dynamic>>(
       context: context,
-      builder: (_) => _LoginDialog(api: api),
+      builder: (_) => _LoginDialog(api: widget.api),
     );
     if (result == null || !context.mounted) return;
-    await onLogin(result);
+    await widget.onLogin(result);
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context).text('登录成功'))),
       );
     }
+    await _loadAvatar();
   }
 }
 

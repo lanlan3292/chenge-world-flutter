@@ -103,6 +103,9 @@ class ChengeApi {
   static const _timeout = Duration(seconds: 25);
   static const _streamTimeout = Duration(minutes: 3);
 
+  /// 当前 API 根地址（无尾部斜杠），用于拼前端 / Web 页面。
+  String get baseUrl => _baseUrl;
+
   Future<Map<String, dynamic>> login(String username, String password) async {
     final data = await _request(
       'POST',

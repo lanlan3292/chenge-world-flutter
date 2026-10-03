@@ -29,6 +29,7 @@ class _SettingsPageState extends State<SettingsPage> {
   late bool _navImmersive;
   late bool _autoHideTop;
   late bool _autoHideBottom;
+  late bool _statusBarTopHideMask;
   late bool _predictiveBack;
   late int _feedMinColumns;
   late int _feedMaxColumns;
@@ -50,6 +51,7 @@ class _SettingsPageState extends State<SettingsPage> {
     _navImmersive = widget.settings.navigationBarImmersive;
     _autoHideTop = widget.settings.autoHideTopBar;
     _autoHideBottom = widget.settings.autoHideBottomBar;
+    _statusBarTopHideMask = widget.settings.statusBarTopHideMask;
     _predictiveBack = widget.settings.predictiveBack;
     _feedMinColumns = widget.settings.feedMinColumns;
     _feedMaxColumns = widget.settings.feedMaxColumns;
@@ -315,6 +317,14 @@ class _SettingsPageState extends State<SettingsPage> {
                   value: _autoHideTop,
                   setValue: (value) => _autoHideTop = value,
                   saveValue: widget.settings.setAutoHideTopBar,
+                ),
+                _switchTile(
+                  icon: Icons.blur_on_rounded,
+                  title: '顶栏隐藏时状态栏遮罩',
+                  subtitle: '顶栏可自动隐藏时，状态栏使用半透明主题背景，避免内容顶到状态栏（默认开启）',
+                  value: _statusBarTopHideMask,
+                  setValue: (value) => _statusBarTopHideMask = value,
+                  saveValue: widget.settings.setStatusBarTopHideMask,
                 ),
                 _switchTile(
                   icon: Icons.vertical_align_bottom_rounded,

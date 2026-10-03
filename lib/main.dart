@@ -71,10 +71,21 @@ class _ChengeWorldAppState extends State<ChengeWorldApp>
         overlays: SystemUiOverlay.values,
       );
     }
+    // 顶栏可自动隐藏时，可选半透明主题色状态栏遮罩，避免内容顶穿状态栏。
+    final useTopHideMask =
+        _settings.statusBarImmersive &&
+        _settings.statusBarTopHideMask &&
+        _settings.autoHideTopBar;
+    final statusBarColor =
+        !_settings.statusBarImmersive
+            ? background
+            : useTopHideMask
+            ? background.withValues(alpha: 0.72)
+            : Colors.transparent;
+
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
-        statusBarColor:
-            _settings.statusBarImmersive ? Colors.transparent : background,
+        statusBarColor: statusBarColor,
         statusBarIconBrightness:
             brightness == Brightness.dark ? Brightness.light : Brightness.dark,
         statusBarBrightness:

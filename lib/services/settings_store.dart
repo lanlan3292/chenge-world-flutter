@@ -13,6 +13,8 @@ class SettingsStore {
   static const _navImmersiveKey = 'appearance_nav_bar_immersive';
   static const _autoHideTopKey = 'appearance_auto_hide_top_bar';
   static const _autoHideBottomKey = 'appearance_auto_hide_bottom_bar';
+  static const _statusBarTopHideMaskKey =
+      'appearance_status_bar_top_hide_mask';
   static const _predictiveBackKey = 'appearance_predictive_back';
   static const _feedMinColumnsKey = 'layout_feed_min_columns';
   static const _feedMaxColumnsKey = 'layout_feed_max_columns';
@@ -37,6 +39,11 @@ class SettingsStore {
   /// Scroll down to hide the shell bottom navigation bar. Default on.
   /// Not applied when the shell uses a side NavigationRail (wide layout).
   bool autoHideBottomBar = true;
+
+  /// When the top app bar can auto-hide, paint a semi-transparent theme
+  /// background on the status bar so content under the status area stays readable.
+  /// Default on.
+  bool statusBarTopHideMask = true;
 
   /// Android predictive back page transitions. Default off.
   bool predictiveBack = false;
@@ -81,6 +88,7 @@ class SettingsStore {
     navigationBarImmersive = prefs.getBool(_navImmersiveKey) ?? true;
     autoHideTopBar = prefs.getBool(_autoHideTopKey) ?? true;
     autoHideBottomBar = prefs.getBool(_autoHideBottomKey) ?? true;
+    statusBarTopHideMask = prefs.getBool(_statusBarTopHideMaskKey) ?? true;
     predictiveBack = prefs.getBool(_predictiveBackKey) ?? false;
 
     var feedMin = (prefs.getInt(_feedMinColumnsKey) ?? 1).clamp(1, 3);
@@ -150,6 +158,12 @@ class SettingsStore {
     autoHideBottomBar = value;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_autoHideBottomKey, value);
+  }
+
+  Future<void> setStatusBarTopHideMask(bool value) async {
+    statusBarTopHideMask = value;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_statusBarTopHideMaskKey, value);
   }
 
   Future<void> setPredictiveBack(bool value) async {
