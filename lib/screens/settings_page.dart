@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations_text.dart';
+import 'package:flutter/services.dart';
+
+import '../services/chenge_api.dart';
 import '../services/settings_store.dart';
+import 'chenge_core_page.dart';
 import '../theme/app_theme.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -11,12 +15,16 @@ class SettingsPage extends StatefulWidget {
     required this.settings,
     required this.onSettingsChanged,
     required this.onLogout,
+    this.token,
+    this.api,
   });
 
   final bool signedIn;
   final SettingsStore settings;
   final Future<void> Function() onSettingsChanged;
   final Future<void> Function() onLogout;
+  final String? token;
+  final ChengeApi? api;
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -381,6 +389,38 @@ class _SettingsPageState extends State<SettingsPage> {
                   },
                   saveRange: widget.settings.setShopColumnRange,
                 ),
+                _sectionTitle('站点与令牌'),
+                ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+                  leading: Icon(
+                    Icons.language_rounded,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  title: Text(
+                    AppLocalizations.of(context).text('使用 WebView 打开官网'),
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  subtitle: Text(
+                    AppLocalizations.of(context).text('自动写入登录状态与 aqua 主题'),
+                  ),
+                  onTap: _openOfficialSite,
+                ),
+                if (widget.signedIn && widget.token != null)
+                  ListTile(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+                    leading: Icon(
+                      Icons.key_rounded,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    title: Text(
+                      AppLocalizations.of(context).text('显示 Token'),
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                    subtitle: Text(
+                      AppLocalizations.of(context).text('查看并复制当前登录令牌'),
+                    ),
+                    onTap: _showTokenDialog,
+                  ),
                 const Divider(height: 28),
                 if (widget.signedIn)
                   ListTile(
@@ -414,6 +454,79 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
         ),
       ),
+    );
+  }
+
+  void _openOfficialSite() {
+    final api = widget.api;
+    if (api == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context).text('无法打开官网：缺少服务配置')),
+        ),
+      );
+      return;
+    }
+    final token = widget.token ?? '';
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder:
+            (_) => ChengeCorePage(
+              baseUrl: api.baseUrl,
+              token: token,
+              title: '官网',
+              hashRoute: '',
+              themeSkin: 'aqua',
+            ),
+      ),
+    );
+  }
+
+  Future<void> _showTokenDialog() async {
+    final token = widget.token;
+    if (token == null || token.isEmpty) return;
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(
+            AppLocalizations.of(context).text('当前 Token'),
+            style: const TextStyle(fontWeight: FontWeight.w800),
+          ),
+          content: SizedBox(
+            width: 420,
+            child: SelectableText(
+              token,
+              style: const TextStyle(fontSize: 13, height: 1.4),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(AppLocalizations.of(context).text('关闭')),
+            ),
+            FilledButton.icon(
+              onPressed: () async {
+                await Clipboard.setData(ClipboardData(text: token));
+                if (dialogContext.mounted) {
+                  Navigator.pop(dialogContext);
+                }
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        AppLocalizations.of(context).text('Token 已复制'),
+                      ),
+                    ),
+                  );
+                }
+              },
+              icon: const Icon(Icons.copy_rounded),
+              label: Text(AppLocalizations.of(context).text('复制')),
+            ),
+          ],
+        );
+      },
     );
   }
 

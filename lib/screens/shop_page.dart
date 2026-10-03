@@ -132,7 +132,8 @@ class _ShopPageState extends State<ShopPage> {
     if (_chromeVisible == visible) return;
     _chromeVisible = visible;
     // Do not setState: bottom padding stays fixed so the list does not reflow.
-    if (widget.autoHideBottomBar) {
+    // 顶栏隐藏也需要通知外壳，用于状态栏遮罩。
+    if (widget.autoHideBottomBar || widget.autoHideTopBar) {
       widget.onChromeVisibilityChanged?.call(visible);
     }
   }

@@ -71,21 +71,11 @@ class _ChengeWorldAppState extends State<ChengeWorldApp>
         overlays: SystemUiOverlay.values,
       );
     }
-    // 顶栏可自动隐藏时，可选半透明主题色状态栏遮罩，避免内容顶穿状态栏。
-    final useTopHideMask =
-        _settings.statusBarImmersive &&
-        _settings.statusBarTopHideMask &&
-        _settings.autoHideTopBar;
-    final statusBarColor =
-        !_settings.statusBarImmersive
-            ? background
-            : useTopHideMask
-            ? background.withValues(alpha: 0.72)
-            : Colors.transparent;
-
+    // 状态栏遮罩仅在顶栏实际隐藏时由 AppShell 叠加，这里保持透明/不沉浸色。
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
-        statusBarColor: statusBarColor,
+        statusBarColor:
+            _settings.statusBarImmersive ? Colors.transparent : background,
         statusBarIconBrightness:
             brightness == Brightness.dark ? Brightness.light : Brightness.dark,
         statusBarBrightness:
@@ -120,25 +110,6 @@ class _ChengeWorldAppState extends State<ChengeWorldApp>
     return DynamicColorBuilder(
       builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
         final useDynamic = _settings.useDynamicColor && lightDynamic != null;
-        final useStatusMask =
-            _settings.statusBarImmersive &&
-            _settings.statusBarTopHideMask &&
-            _settings.autoHideTopBar;
-        // 半透明主题背景，覆盖在状态栏区域（AppBar 也会带上同一 systemOverlayStyle）。
-        final lightMask =
-            useStatusMask
-                ? (useDynamic
-                        ? lightDynamic.surface
-                        : AppTheme.mist)
-                    .withValues(alpha: 0.78)
-                : null;
-        final darkMask =
-            useStatusMask
-                ? (useDynamic && darkDynamic != null
-                        ? darkDynamic.surface
-                        : const Color(0xFF141D1B))
-                    .withValues(alpha: 0.78)
-                : null;
 
         var theme = AppTheme.build(
           dynamicScheme: useDynamic ? lightDynamic : null,
@@ -146,7 +117,6 @@ class _ChengeWorldAppState extends State<ChengeWorldApp>
           brightness: Brightness.light,
           statusBarImmersive: _settings.statusBarImmersive,
           navigationBarImmersive: _settings.navigationBarImmersive,
-          statusBarMaskColor: lightMask,
         );
         var darkTheme = AppTheme.build(
           dynamicScheme: useDynamic ? darkDynamic : null,
@@ -154,7 +124,6 @@ class _ChengeWorldAppState extends State<ChengeWorldApp>
           brightness: Brightness.dark,
           statusBarImmersive: _settings.statusBarImmersive,
           navigationBarImmersive: _settings.navigationBarImmersive,
-          statusBarMaskColor: darkMask,
         );
         final transitions = PageTransitionsTheme(
           builders: {
@@ -196,34 +165,6 @@ class _ChengeWorldAppState extends State<ChengeWorldApp>
             Locale('en', 'US'),
           ],
           localizationsDelegates: AppLocalizations.localizationsDelegates,
-          // 物理层遮罩：部分机型上 statusBarColor 会被忽略，用一层半透明色盖住状态栏区域。
-          builder: (context, child) {
-            final showMask =
-                _settings.statusBarImmersive &&
-                _settings.statusBarTopHideMask &&
-                _settings.autoHideTopBar;
-            if (!showMask || child == null) return child ?? const SizedBox.shrink();
-            final top = MediaQuery.paddingOf(context).top;
-            if (top <= 0) return child;
-            final maskColor = Theme.of(
-              context,
-            ).colorScheme.surface.withValues(alpha: 0.78);
-            return Stack(
-              fit: StackFit.expand,
-              children: [
-                child,
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: top,
-                  child: IgnorePointer(
-                    child: ColoredBox(color: maskColor),
-                  ),
-                ),
-              ],
-            );
-          },
           home: AppShell(
             settings: _settings,
             onSettingsChanged: _onSettingsChanged,
@@ -376,12 +317,14 @@ class _AppShellState extends State<AppShell> {
     void onChromeVisibilityChanged(bool visible) {
       if (wide) return;
       if (_selectedIndex != 0 && _selectedIndex != 2) return;
-      if (!hideBottomBar) {
+      final trackTop = widget.settings.autoHideTopBar;
+      final trackBottom = hideBottomBar;
+      // 顶栏或底栏任一需要跟随时都更新，供状态栏遮罩与底栏动画使用。
+      if (!trackTop && !trackBottom) {
         if (!_chromeVisible.value) _chromeVisible.value = true;
         return;
       }
       if (_chromeVisible.value == visible) return;
-      // ValueNotifier: only the bottom bar ListenableBuilder rebuilds.
       _chromeVisible.value = visible;
     }
 
@@ -436,8 +379,11 @@ class _AppShellState extends State<AppShell> {
 
     return Scaffold(
       extendBody: !wide,
-      body: Row(
+      body: Stack(
+        fit: StackFit.expand,
         children: [
+          Row(
+            children: [
           if (wide)
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 16, 8, 16),
@@ -488,6 +434,35 @@ class _AppShellState extends State<AppShell> {
               ),
             ),
           Expanded(child: IndexedStack(index: _selectedIndex, children: pages)),
+            ],
+          ),
+          ListenableBuilder(
+            listenable: _chromeVisible,
+            builder: (context, _) {
+              final allowMask =
+                  widget.settings.statusBarImmersive &&
+                  widget.settings.statusBarTopHideMask &&
+                  widget.settings.autoHideTopBar &&
+                  !wide &&
+                  (_selectedIndex == 0 || _selectedIndex == 2);
+              final topHidden = !_chromeVisible.value;
+              if (!allowMask || !topHidden) {
+                return const SizedBox.shrink();
+              }
+              final top = MediaQuery.paddingOf(context).top;
+              if (top <= 0) return const SizedBox.shrink();
+              final maskColor = Theme.of(
+                context,
+              ).colorScheme.surface.withValues(alpha: 0.78);
+              return Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                height: top,
+                child: IgnorePointer(child: ColoredBox(color: maskColor)),
+              );
+            },
+          ),
         ],
       ),
       bottomNavigationBar:

@@ -122,12 +122,18 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
-  void _openChengeCore(BuildContext context) {
+  void _openWebEmbed(
+    BuildContext context, {
+    required String title,
+    required String hashRoute,
+    required String themeSkin,
+    required String needLoginMessage,
+  }) {
     final token = widget.token;
     if (token == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context).text('请先登录后再使用 ChengeCore')),
+          content: Text(AppLocalizations.of(context).text(needLoginMessage)),
         ),
       );
       return;
@@ -138,8 +144,31 @@ class _AccountPageState extends State<AccountPage> {
             (_) => ChengeCorePage(
               baseUrl: widget.api.baseUrl,
               token: token,
+              title: title,
+              hashRoute: hashRoute,
+              themeSkin: themeSkin,
             ),
       ),
+    );
+  }
+
+  void _openChengeCore(BuildContext context) {
+    _openWebEmbed(
+      context,
+      title: 'ChengeCore',
+      hashRoute: '#/chengecore',
+      themeSkin: 'aqua',
+      needLoginMessage: '请先登录后再使用 ChengeCore',
+    );
+  }
+
+  void _openNurture(BuildContext context) {
+    _openWebEmbed(
+      context,
+      title: '养成',
+      hashRoute: '#/intelligence?mode=nurture',
+      themeSkin: 'cute',
+      needLoginMessage: '请先登录后再使用养成',
     );
   }
 
@@ -277,6 +306,38 @@ class _AccountPageState extends State<AccountPage> {
                   trailing: const Icon(Icons.chevron_right_rounded),
                 ),
               ),
+              const SizedBox(height: 12),
+              Material(
+                color: Theme.of(context).colorScheme.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(8),
+                child: ListTile(
+                  onTap: () => _openNurture(context),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 15,
+                    vertical: 3,
+                  ),
+                  leading: Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.tertiaryContainer,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Icon(
+                      Icons.pets_rounded,
+                      color: Theme.of(context).colorScheme.onTertiaryContainer,
+                    ),
+                  ),
+                  title: Text(
+                    AppLocalizations.of(context).text('养成'),
+                    style: const TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  subtitle: Text(
+                    AppLocalizations.of(context).text('打开站娘养成系统'),
+                  ),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                ),
+              ),
               const SizedBox(height: 24),
               if (!signedIn)
                 FilledButton.icon(
@@ -300,6 +361,8 @@ class _AccountPageState extends State<AccountPage> {
               settings: widget.settings,
               onSettingsChanged: widget.onSettingsChanged,
               onLogout: widget.onLogout,
+              token: widget.token,
+              api: widget.api,
             ),
       ),
     );
@@ -381,6 +444,36 @@ class _LoginDialogState extends State<_LoginDialog> {
         _username.text.trim(),
         _password.text,
       );
+      if (mounted) Navigator.pop(context, result);
+    } on ApiException catch (error) {
+      if (mounted) setState(() => _error = error.message);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _openTokenLogin() async {
+    if (_loading) return;
+    final token = await showDialog<String>(
+      context: context,
+      builder: (_) => const _TokenLoginDialog(),
+    );
+    if (token == null || token.isEmpty || !mounted) return;
+
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final current = await widget.api.currentUser(token);
+      // 构造成与密码登录相近的结构，供 onLogin / 头像解析使用
+      final result = <String, dynamic>{
+        'token': token,
+        if (current is Map<String, dynamic>) ...current,
+      };
+      if (result['user'] == null && current is Map) {
+        result['user'] = current['user'] ?? current;
+      }
       if (mounted) Navigator.pop(context, result);
     } on ApiException catch (error) {
       if (mounted) setState(() => _error = error.message);
@@ -480,6 +573,10 @@ class _LoginDialogState extends State<_LoginDialog> {
         onPressed: _loading ? null : () => Navigator.pop(context),
         child: Text(AppLocalizations.of(context).text('取消')),
       ),
+      TextButton(
+        onPressed: _loading ? null : _openTokenLogin,
+        child: Text(AppLocalizations.of(context).text('使用 Token 登录')),
+      ),
       FilledButton.icon(
         onPressed: _loading ? null : _submit,
         icon:
@@ -495,4 +592,70 @@ class _LoginDialogState extends State<_LoginDialog> {
       ),
     ],
   );
+}
+
+class _TokenLoginDialog extends StatefulWidget {
+  const _TokenLoginDialog();
+
+  @override
+  State<_TokenLoginDialog> createState() => _TokenLoginDialogState();
+}
+
+class _TokenLoginDialogState extends State<_TokenLoginDialog> {
+  final _controller = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _confirm() {
+    if (!_formKey.currentState!.validate()) return;
+    Navigator.pop(context, _controller.text.trim());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(
+        AppLocalizations.of(context).text('使用 Token 登录'),
+        style: const TextStyle(fontWeight: FontWeight.w800),
+      ),
+      content: SizedBox(
+        width: 390,
+        child: Form(
+          key: _formKey,
+          child: TextFormField(
+            controller: _controller,
+            autofocus: true,
+            maxLines: 4,
+            minLines: 2,
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context).text('访问令牌'),
+              hintText: AppLocalizations.of(context).text('粘贴 JWT Token'),
+              alignLabelWithHint: true,
+            ),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return AppLocalizations.of(context).text('请输入 Token');
+              }
+              return null;
+            },
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(AppLocalizations.of(context).text('取消')),
+        ),
+        FilledButton(
+          onPressed: _confirm,
+          child: Text(AppLocalizations.of(context).text('确认登录')),
+        ),
+      ],
+    );
+  }
 }

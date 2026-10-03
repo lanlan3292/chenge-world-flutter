@@ -294,12 +294,16 @@ class _ChatPageState extends State<ChatPage> {
                 ],
               )
               : null,
-      body:
-          widget.token == null
-              ? _signedOut()
-              : isWide
-              ? _wideLayout()
-              : _conversationList(),
+      body: SafeArea(
+        // 顶部由 AppBar 处理；底部避开系统导航条 / 手势区
+        top: false,
+        child:
+            widget.token == null
+                ? _signedOut()
+                : isWide
+                ? _wideLayout()
+                : _conversationList(),
+      ),
     );
   }
 

@@ -119,7 +119,8 @@ class _FeedPageState extends State<FeedPage> {
     _chromeVisible = visible;
     // Do not setState: bottom padding stays fixed so the list does not reflow.
     // Shell animates the bottom bar with a transform only.
-    if (widget.autoHideBottomBar) {
+    // 顶栏隐藏也需要通知外壳，用于状态栏遮罩。
+    if (widget.autoHideBottomBar || widget.autoHideTopBar) {
       widget.onChromeVisibilityChanged?.call(visible);
     }
   }
