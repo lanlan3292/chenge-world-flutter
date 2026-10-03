@@ -235,37 +235,12 @@ class _FriendsPageState extends State<FriendsPage> {
   }
 
   Future<void> _editRemark(FriendUser user) async {
-    final controller = TextEditingController(text: user.remark ?? '');
     final remark = await showDialog<String>(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('设置好友备注'),
-            content: TextField(
-              controller: controller,
-              autofocus: true,
-              maxLength: 40,
-              textInputAction: TextInputAction.done,
-              onSubmitted:
-                  (_) => Navigator.pop(context, controller.text.trim()),
-              decoration: const InputDecoration(
-                labelText: '备注名称',
-                hintText: '留空以清除备注',
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('取消'),
-              ),
-              FilledButton(
-                onPressed: () => Navigator.pop(context, controller.text.trim()),
-                child: const Text('保存'),
-              ),
-            ],
-          ),
+      builder: (dialogContext) => _EditRemarkDialog(
+        initialRemark: user.remark ?? '',
+      ),
     );
-    controller.dispose();
     if (remark == null || !mounted) return;
     await _runAction(
       user,
@@ -295,120 +270,21 @@ class _FriendsPageState extends State<FriendsPage> {
   Future<void> _createGroup() async {
     final token = widget.token;
     if (token == null) return;
-    final nameController = TextEditingController();
-    final selected = <int>{};
 
-    final created = await showDialog<bool>(
+    final result = await showDialog<_CreateGroupResult>(
       context: context,
-      builder:
-          (context) => StatefulBuilder(
-            builder:
-                (context, setLocal) => AlertDialog(
-                  title: const Text('创建群聊'),
-                  content: SizedBox(
-                    width: 360,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        TextField(
-                          controller: nameController,
-                          autofocus: true,
-                          maxLength: 40,
-                          decoration: const InputDecoration(
-                            labelText: '群名称',
-                            hintText: '给群聊起个名字',
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            '选择成员（可选）',
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Theme.of(context).colorScheme.onSurface,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        ConstrainedBox(
-                          constraints: const BoxConstraints(maxHeight: 220),
-                          child:
-                              _friends.isEmpty
-                                  ? Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 16,
-                                    ),
-                                    child: Text(
-                                      AppLocalizations.of(
-                                        context,
-                                      ).text('暂无好友可邀请'),
-                                      style: TextStyle(
-                                        color:
-                                            Theme.of(
-                                              context,
-                                            ).colorScheme.onSurfaceVariant,
-                                      ),
-                                    ),
-                                  )
-                                  : ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: _friends.length,
-                                    itemBuilder: (context, index) {
-                                      final user = _friends[index];
-                                      final checked = selected.contains(
-                                        user.userId,
-                                      );
-                                      return CheckboxListTile(
-                                        dense: true,
-                                        value: checked,
-                                        title: Text(user.displayName),
-                                        subtitle: Text(
-                                          '@${user.username}',
-                                          style: const TextStyle(fontSize: 12),
-                                        ),
-                                        onChanged:
-                                            (v) => setLocal(() {
-                                              if (v == true) {
-                                                selected.add(user.userId);
-                                              } else {
-                                                selected.remove(user.userId);
-                                              }
-                                            }),
-                                      );
-                                    },
-                                  ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, false),
-                      child: const Text('取消'),
-                    ),
-                    FilledButton(
-                      onPressed: () => Navigator.pop(context, true),
-                      child: const Text('创建'),
-                    ),
-                  ],
-                ),
-          ),
+      builder: (dialogContext) => _CreateGroupDialog(friends: _friends),
     );
-
-    final name = nameController.text.trim();
-    nameController.dispose();
-    if (created != true || !mounted) return;
-    if (name.isEmpty) {
+    if (result == null || !mounted) return;
+    if (result.name.isEmpty) {
       _showMessage('请输入群名称', isError: true);
       return;
     }
 
     try {
       final conversation = await widget.api.createGroupChat(
-        name: name,
-        memberIds: selected.toList(),
+        name: result.name,
+        memberIds: result.memberIds,
         token: token,
       );
       if (!mounted) return;
@@ -1039,3 +915,193 @@ class _FriendsPageState extends State<FriendsPage> {
 }
 
 enum _FriendListKind { friend, request, search }
+
+
+/// 修改备注弹窗：由 StatefulWidget 持有 TextEditingController，
+/// 避免在 Dialog 路由退场动画期间 dispose controller 触发
+/// `_dependents.isEmpty` assertion（Android 上常见）。
+class _EditRemarkDialog extends StatefulWidget {
+  const _EditRemarkDialog({required this.initialRemark});
+
+  final String initialRemark;
+
+  @override
+  State<_EditRemarkDialog> createState() => _EditRemarkDialogState();
+}
+
+class _EditRemarkDialogState extends State<_EditRemarkDialog> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialRemark);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() => Navigator.of(context).pop(_controller.text.trim());
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('设置好友备注'),
+      content: TextField(
+        controller: _controller,
+        autofocus: true,
+        maxLength: 40,
+        textInputAction: TextInputAction.done,
+        onSubmitted: (_) => _submit(),
+        decoration: const InputDecoration(
+          labelText: '备注名称',
+          hintText: '留空以清除备注',
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('取消'),
+        ),
+        FilledButton(
+          onPressed: _submit,
+          child: const Text('保存'),
+        ),
+      ],
+    );
+  }
+}
+
+class _CreateGroupResult {
+  const _CreateGroupResult({required this.name, required this.memberIds});
+
+  final String name;
+  final List<int> memberIds;
+}
+
+/// 创建群聊弹窗：controller 与选中状态由本 State 持有，
+/// 确保 Dialog 关闭动画期间依赖关系正确清理。
+class _CreateGroupDialog extends StatefulWidget {
+  const _CreateGroupDialog({required this.friends});
+
+  final List<FriendUser> friends;
+
+  @override
+  State<_CreateGroupDialog> createState() => _CreateGroupDialogState();
+}
+
+class _CreateGroupDialogState extends State<_CreateGroupDialog> {
+  late final TextEditingController _nameController;
+  final Set<int> _selected = <int>{};
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  void _cancel() => Navigator.of(context).pop();
+
+  void _confirm() {
+    Navigator.of(context).pop(
+      _CreateGroupResult(
+        name: _nameController.text.trim(),
+        memberIds: _selected.toList(),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return AlertDialog(
+      title: const Text('创建群聊'),
+      content: SizedBox(
+        width: 360,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _nameController,
+              autofocus: true,
+              maxLength: 40,
+              decoration: const InputDecoration(
+                labelText: '群名称',
+                hintText: '给群聊起个名字',
+              ),
+            ),
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                '选择成员（可选）',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: scheme.onSurface,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            const SizedBox(height: 6),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 220),
+              child: widget.friends.isEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Text(
+                        AppLocalizations.of(context).text('暂无好友可邀请'),
+                        style: TextStyle(color: scheme.onSurfaceVariant),
+                      ),
+                    )
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: widget.friends.length,
+                      itemBuilder: (context, index) {
+                        final user = widget.friends[index];
+                        final checked = _selected.contains(user.userId);
+                        return CheckboxListTile(
+                          dense: true,
+                          value: checked,
+                          title: Text(user.displayName),
+                          subtitle: Text(
+                            '@${user.username}',
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                          onChanged: (v) {
+                            setState(() {
+                              if (v == true) {
+                                _selected.add(user.userId);
+                              } else {
+                                _selected.remove(user.userId);
+                              }
+                            });
+                          },
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: _cancel,
+          child: const Text('取消'),
+        ),
+        FilledButton(
+          onPressed: _confirm,
+          child: const Text('创建'),
+        ),
+      ],
+    );
+  }
+}
