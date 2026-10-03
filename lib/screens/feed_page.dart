@@ -120,8 +120,9 @@ class _FeedPageState extends State<FeedPage> {
         _page = page;
       });
     } on ApiException catch (error) {
-      if (mounted && requestId == _requestId)
+      if (mounted && requestId == _requestId) {
         setState(() => _error = error.message);
+      }
     } finally {
       if (mounted && requestId == _requestId) setState(() => _loading = false);
     }
