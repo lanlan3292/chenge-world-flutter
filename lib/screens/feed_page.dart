@@ -252,12 +252,20 @@ class _FeedPageState extends State<FeedPage> {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     sliver: SliverGrid.builder(
                       itemCount: _posts.length,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate: (() {
+                      // 1 列偏「扁」避免卡片过高；3 列偏「高」给窄卡片留正文高度
+                      final ratio = switch (columns) {
+                        1 => 1.28,
+                        2 => 0.92,
+                        _ => 0.78,
+                      };
+                      return SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: columns,
                         crossAxisSpacing: 14,
                         mainAxisSpacing: 14,
-                        childAspectRatio: 5 / 4,
-                      ),
+                        childAspectRatio: ratio,
+                      );
+                    })(),
                       itemBuilder:
                           (context, index) => PostCard(
                             post: _posts[index],
