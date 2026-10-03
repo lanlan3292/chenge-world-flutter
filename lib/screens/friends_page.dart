@@ -701,32 +701,40 @@ class _FriendsPageState extends State<FriendsPage> {
     );
   }
 
-  Widget _userList(List<FriendUser> users, {required _FriendListKind kind}) =>
-      RefreshIndicator(
-        onRefresh: _refreshLists,
-        child: ListView.separated(
-          physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.only(bottom: 12),
-          itemCount: users.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 8),
-          itemBuilder: (context, index) => _userTile(users[index], kind),
-        ),
-      );
+  Widget _userList(List<FriendUser> users, {required _FriendListKind kind}) {
+    final bottomClearance =
+        MediaQuery.paddingOf(context).bottom + kBottomNavigationBarHeight + 12;
+    return RefreshIndicator(
+      onRefresh: _refreshLists,
+      child: ListView.separated(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: EdgeInsets.only(bottom: bottomClearance),
+        itemCount: users.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 8),
+        itemBuilder: (context, index) => _userTile(users[index], kind),
+      ),
+    );
+  }
 
   Widget _groupList(
     List<ChatConversation> groups, {
     required bool searchable,
-  }) => RefreshIndicator(
-    onRefresh: _refreshLists,
-    child: ListView.separated(
-      physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.only(bottom: 12),
-      itemCount: groups.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
-      itemBuilder:
-          (context, index) => _groupTile(groups[index], searchable: searchable),
-    ),
-  );
+  }) {
+    final bottomClearance =
+        MediaQuery.paddingOf(context).bottom + kBottomNavigationBarHeight + 12;
+    return RefreshIndicator(
+      onRefresh: _refreshLists,
+      child: ListView.separated(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: EdgeInsets.only(bottom: bottomClearance),
+        itemCount: groups.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 8),
+        itemBuilder:
+            (context, index) =>
+                _groupTile(groups[index], searchable: searchable),
+      ),
+    );
+  }
 
   Widget _userTile(FriendUser user, _FriendListKind kind) {
     final busy = _busyIds.contains(user.userId);

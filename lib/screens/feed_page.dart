@@ -304,14 +304,12 @@ class _FeedPageState extends State<FeedPage> {
                   SliverToBoxAdapter(child: _buildPagination()),
                 ],
                 SliverToBoxAdapter(
-                  // Keep inset stable while auto-hide slides the bar with a
-                  // transform in the shell — changing height here caused scroll jank.
+                  // Clear bottom nav + system inset without oversized fixed extras.
                   child: SizedBox(
                     height:
-                        24 +
                         MediaQuery.paddingOf(context).bottom +
                         kBottomNavigationBarHeight +
-                        12,
+                        8,
                   ),
                 ),
               ],

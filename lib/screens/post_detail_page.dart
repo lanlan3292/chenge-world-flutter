@@ -136,10 +136,15 @@ class _PostDetailPageState extends State<PostDetailPage> {
       _commentError = null;
     });
     try {
+      // Nested reply: attach under the root parent so the UI (2-level) can show it.
+      final replyTarget = _replyTo;
+      final parentId = replyTarget == null
+          ? 0
+          : (replyTarget.parentId != 0 ? replyTarget.parentId : replyTarget.id);
       await widget.api.addPostComment(
         blogId: widget.post.id,
         content: content,
-        parentId: _replyTo?.id ?? 0,
+        parentId: parentId,
         token: token,
       );
       if (!mounted) return;
@@ -434,8 +439,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
                   Expanded(
                     child: Text(
                       '回复 @${_replyTo!.authorName ?? '用户'}',
-                      style: const TextStyle(
-                        color: AppTheme.leaf,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
                       ),
@@ -594,26 +599,31 @@ class _PostDetailPageState extends State<PostDetailPage> {
                   const SizedBox(height: 3),
                   Text(
                     '回复 @${comment.replyToName}',
-                    style: const TextStyle(color: AppTheme.leaf, fontSize: 11),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontSize: 11,
+                    ),
                   ),
                 ],
                 const SizedBox(height: 5),
                 SelectableText(
                   comment.content,
-                  style: const TextStyle(height: 1.45, color: AppTheme.ink),
+                  style: TextStyle(
+                    height: 1.45,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
-                if (!isReply)
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton.icon(
-                      onPressed: () => _replyToComment(comment),
-                      icon: const Icon(Icons.reply_rounded, size: 16),
-                      label: const Text('回复'),
-                      style: TextButton.styleFrom(
-                        visualDensity: VisualDensity.compact,
-                      ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton.icon(
+                    onPressed: () => _replyToComment(comment),
+                    icon: const Icon(Icons.reply_rounded, size: 16),
+                    label: const Text('回复'),
+                    style: TextButton.styleFrom(
+                      visualDensity: VisualDensity.compact,
                     ),
                   ),
+                ),
                 if (!isReply && comment.children.isNotEmpty) ...[
                   const SizedBox(height: 3),
                   ...comment.children.map(
