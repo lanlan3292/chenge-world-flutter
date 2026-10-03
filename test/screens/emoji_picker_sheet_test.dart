@@ -10,6 +10,48 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
 void main() {
+  testWidgets('uses three quarters of the screen height', (tester) async {
+    tester.view.physicalSize = const Size(400, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final api = _api();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Builder(
+          builder:
+              (context) => Scaffold(
+                body: TextButton(
+                  onPressed:
+                      () => showModalBottomSheet<void>(
+                        context: context,
+                        isScrollControlled: true,
+                        builder:
+                            (_) => EmojiPickerSheet(api: api, token: 'token'),
+                      ),
+                  child: const Text('打开'),
+                ),
+              ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('打开'));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.descendant(
+        of: find.byType(EmojiPickerSheet),
+        matching: find.byWidgetPredicate(
+          (widget) => widget is SizedBox && widget.height == 600,
+        ),
+      ),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('filters emoji by pack category', (tester) async {
     final api = _api();
     await tester.pumpWidget(

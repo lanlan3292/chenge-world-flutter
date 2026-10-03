@@ -70,7 +70,7 @@ class _EmojiPickerSheetState extends State<EmojiPickerSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.sizeOf(context).height * 0.45;
+    final height = MediaQuery.sizeOf(context).height * 0.75;
     final categories = <int, String>{};
     for (final asset in _assets) {
       categories.putIfAbsent(
