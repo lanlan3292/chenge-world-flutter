@@ -47,7 +47,11 @@ void main() {
     ));
     await tester.pumpAndSettle();
 
-    await tester.ensureVisible(find.byTooltip('下一页'));
+    await tester.scrollUntilVisible(
+      find.byTooltip('下一页'),
+      300,
+      scrollable: find.byType(Scrollable),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('下一页'));
     await tester.pumpAndSettle();
