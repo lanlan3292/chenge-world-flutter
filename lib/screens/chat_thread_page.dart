@@ -84,8 +84,9 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     if (_emojiPickerOpen) return;
     _popScheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && Navigator.of(context).canPop())
+      if (mounted && Navigator.of(context).canPop()) {
         Navigator.of(context).pop(true);
+      }
     });
   }
 
@@ -157,8 +158,9 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
           );
       }
     } finally {
-      if (mounted && !silent && _initialScrollDone && _loading)
+      if (mounted && !silent && _initialScrollDone && _loading) {
         setState(() => _loading = false);
+      }
     }
   }
 
@@ -335,8 +337,9 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.showBackButton && MediaQuery.sizeOf(context).width >= 760)
+    if (widget.showBackButton && MediaQuery.sizeOf(context).width >= 760) {
       _maybePopForWideLayout();
+    }
     final isGroup = _conversation.type == 'group';
     final localizations = AppLocalizations.of(context);
     final onlineLabel =

@@ -162,11 +162,13 @@ class _FriendsPageState extends State<FriendsPage> {
         });
       }
     } on ApiException catch (error) {
-      if (mounted && generation == _searchGeneration)
+      if (mounted && generation == _searchGeneration) {
         setState(() => _error = error.message);
+      }
     } finally {
-      if (mounted && generation == _searchGeneration)
+      if (mounted && generation == _searchGeneration) {
         setState(() => _searching = false);
+      }
     }
   }
 
@@ -183,8 +185,9 @@ class _FriendsPageState extends State<FriendsPage> {
       if (!mounted) return;
       _showMessage(successMessage);
       await _refreshLists();
-      if (updateSearch && _searchController.text.trim().isNotEmpty)
+      if (updateSearch && _searchController.text.trim().isNotEmpty) {
         await _search();
+      }
     } on ApiException catch (error) {
       if (mounted) _showMessage(error.message, isError: true);
     } finally {
@@ -649,8 +652,9 @@ class _FriendsPageState extends State<FriendsPage> {
 
   Widget _content() {
     if (_section == 'search') {
-      if (_searching && !_searched)
+      if (_searching && !_searched) {
         return const Center(child: CircularProgressIndicator());
+      }
       if (!_searched) {
         return _empty(
           _searchMode == 'group' ? '搜索公开群聊' : '搜索 ChengeWorld 用户',
@@ -658,27 +662,31 @@ class _FriendsPageState extends State<FriendsPage> {
         );
       }
       if (_searchMode == 'group') {
-        if (_searching && _groupResults.isEmpty)
+        if (_searching && _groupResults.isEmpty) {
           return const Center(child: CircularProgressIndicator());
+        }
         if (_groupResults.isEmpty) return _empty('没有找到匹配的群', '试试其他关键词');
         return _groupList(_groupResults, searchable: true);
       }
-      if (_searching && _results.isEmpty)
+      if (_searching && _results.isEmpty) {
         return const Center(child: CircularProgressIndicator());
+      }
       if (_results.isEmpty) return _empty('没有找到匹配的人', '试试其他关键词');
       return _userList(_results, kind: _FriendListKind.search);
     }
 
     if (_section == 'groups') {
-      if (_loading && _groups.isEmpty)
+      if (_loading && _groups.isEmpty) {
         return const Center(child: CircularProgressIndicator());
+      }
       if (_groups.isEmpty) return _empty('还没有群聊', '创建群聊，或在搜索里加入公开群');
       return _groupList(_groups, searchable: false);
     }
 
     final users = _section == 'friends' ? _friends : _requests;
-    if (_loading && users.isEmpty)
+    if (_loading && users.isEmpty) {
       return const Center(child: CircularProgressIndicator());
+    }
     if (users.isEmpty) {
       return _section == 'friends'
           ? _empty('还没有好友', '搜索用户名或昵称，认识新朋友')
@@ -899,8 +907,9 @@ class _FriendsPageState extends State<FriendsPage> {
     if (kind == _FriendListKind.friend) {
       final online = _online[user.userId] == true;
       final status = online ? '在线' : '离线';
-      if (user.remark?.isNotEmpty == true)
+      if (user.remark?.isNotEmpty == true) {
         return '$status · 备注：${user.remark} · @${user.username}';
+      }
       return '$status · @${user.username}';
     }
     return '@${user.username}';

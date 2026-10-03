@@ -117,8 +117,9 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
       future: _detail,
       builder: (context, snapshot) {
         final item = snapshot.data ?? widget.item;
-        if (snapshot.hasError && snapshot.data == null)
+        if (snapshot.hasError && snapshot.data == null) {
           return Center(child: Text('${snapshot.error}'));
+        }
         return _detailBody(item);
       },
     ),

@@ -137,11 +137,13 @@ class _ShopPageState extends State<ShopPage> {
         _page = page;
       });
     } on ApiException catch (error) {
-      if (mounted && requestId == _itemRequestId)
+      if (mounted && requestId == _itemRequestId) {
         setState(() => _error = error.message);
+      }
     } finally {
-      if (mounted && requestId == _itemRequestId)
+      if (mounted && requestId == _itemRequestId) {
         setState(() => _loading = false);
+      }
     }
   }
 
@@ -678,8 +680,9 @@ class _ShopPageState extends State<ShopPage> {
 
   Widget _pagination() {
     final totalPages = (_total + 11) ~/ 12;
-    if (totalPages < 2)
+    if (totalPages < 2) {
       return const SliverToBoxAdapter(child: SizedBox(height: 18));
+    }
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 18),

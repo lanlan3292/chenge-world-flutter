@@ -111,8 +111,9 @@ class _PostDetailPageState extends State<PostDetailPage> {
       final liked = await widget.api.togglePostLike(widget.post.id, token);
       if (!mounted) return;
       setState(() {
-        if (_liked != liked)
+        if (_liked != liked) {
           _likeCount = (_likeCount + (liked ? 1 : -1)).clamp(0, 1 << 30);
+        }
         _liked = liked;
       });
     } on ApiException catch (error) {
@@ -167,11 +168,12 @@ class _PostDetailPageState extends State<PostDetailPage> {
 
   Future<void> _scrollToComments() async {
     final target = _commentSectionKey.currentContext;
-    if (target != null)
+    if (target != null) {
       await Scrollable.ensureVisible(
         target,
         duration: const Duration(milliseconds: 240),
       );
+    }
   }
 
   void _showMessage(String message, {bool isError = false}) {
