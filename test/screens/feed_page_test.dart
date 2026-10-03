@@ -54,7 +54,6 @@ void main() {
         of: find.byType(CustomScrollView),
         matching: find.byType(Scrollable),
       ).first,
-      ),
     );
     await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('下一页'));
