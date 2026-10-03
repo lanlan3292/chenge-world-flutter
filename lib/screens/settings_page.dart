@@ -30,7 +30,9 @@ class _SettingsPageState extends State<SettingsPage> {
   late bool _autoHideBottom;
   late bool _predictiveBack;
   late int _feedMinColumns;
+  late int _feedMaxColumns;
   late int _shopMinColumns;
+  late int _shopMaxColumns;
   late bool _chatShowSelfAvatar;
   late bool _chatShowPeerAvatar;
 
@@ -45,7 +47,9 @@ class _SettingsPageState extends State<SettingsPage> {
     _autoHideBottom = widget.settings.autoHideBottomBar;
     _predictiveBack = widget.settings.predictiveBack;
     _feedMinColumns = widget.settings.feedMinColumns;
+    _feedMaxColumns = widget.settings.feedMaxColumns;
     _shopMinColumns = widget.settings.shopMinColumns;
+    _shopMaxColumns = widget.settings.shopMaxColumns;
     _chatShowSelfAvatar = widget.settings.chatShowSelfAvatar;
     _chatShowPeerAvatar = widget.settings.chatShowPeerAvatar;
   }
@@ -77,24 +81,28 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _sectionTitle(String title) => Padding(
-    padding: const EdgeInsets.only(left: 4, top: 12, bottom: 6),
-    child: Text(
-      title,
-      style: const TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w800,
-        color: Color(0xFF70817D),
-      ),
-    ),
-  );
+        padding: const EdgeInsets.only(left: 4, top: 12, bottom: 6),
+        child: Text(
+          title,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w800,
+            color: Color(0xFF70817D),
+          ),
+        ),
+      );
 
-  Widget _columnSelector({
+  /// Discrete range slider for min…max columns (1–3). Min never exceeds max.
+  Widget _columnRangeSlider({
     required String title,
-    required int value,
-    required ValueChanged<int> setValue,
-    required Future<void> Function(int) saveValue,
+    required int minValue,
+    required int maxValue,
+    required void Function(int min, int max) setLocal,
+    required Future<void> Function(int min, int max) saveRange,
   }) {
     final theme = Theme.of(context);
+    final lo = minValue.clamp(1, 3);
+    final hi = maxValue.clamp(lo, 3);
     return Padding(
       padding: const EdgeInsets.fromLTRB(4, 8, 4, 8),
       child: Column(
@@ -108,24 +116,51 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
           ),
           const SizedBox(height: 4),
-          const Text(
-            '宽度足够时仍可自动增加列数',
-            style: TextStyle(fontSize: 12, color: Color(0xFF70817D)),
+          Text(
+            '当前：$lo – $hi 列（宽度足够时在此范围内自适应）',
+            style: const TextStyle(fontSize: 12, color: Color(0xFF70817D)),
           ),
-          const SizedBox(height: 8),
-          SegmentedButton<int>(
-            showSelectedIcon: false,
-            segments: const [
-              ButtonSegment(value: 1, label: Text('1')),
-              ButtonSegment(value: 2, label: Text('2')),
-              ButtonSegment(value: 3, label: Text('3')),
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              const Text('1', style: TextStyle(fontSize: 12, color: Color(0xFF70817D))),
+              Expanded(
+                child: RangeSlider(
+                  values: RangeValues(lo.toDouble(), hi.toDouble()),
+                  min: 1,
+                  max: 3,
+                  divisions: 2,
+                  labels: RangeLabels('$lo', '$hi'),
+                  onChanged: (values) {
+                    final nextMin = values.start.round().clamp(1, 3);
+                    final nextMax = values.end.round().clamp(1, 3);
+                    setState(() => setLocal(
+                          nextMin <= nextMax ? nextMin : nextMax,
+                          nextMin <= nextMax ? nextMax : nextMin,
+                        ));
+                  },
+                  onChangeEnd: (values) async {
+                    final nextMin = values.start.round().clamp(1, 3);
+                    final nextMax = values.end.round().clamp(1, 3);
+                    final a = nextMin <= nextMax ? nextMin : nextMax;
+                    final b = nextMin <= nextMax ? nextMax : nextMin;
+                    setState(() => setLocal(a, b));
+                    await _updateSetting(() => saveRange(a, b));
+                  },
+                ),
+              ),
+              const Text('3', style: TextStyle(fontSize: 12, color: Color(0xFF70817D))),
             ],
-            selected: {value},
-            onSelectionChanged: (selection) async {
-              final nextValue = selection.first;
-              setState(() => setValue(nextValue));
-              await _updateSetting(() => saveValue(nextValue));
-            },
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('最小 $lo', style: const TextStyle(fontSize: 11, color: Color(0xFF70817D))),
+                Text('最大 $hi', style: const TextStyle(fontSize: 11, color: Color(0xFF70817D))),
+              ],
+            ),
           ),
         ],
       ),
@@ -245,17 +280,25 @@ class _SettingsPageState extends State<SettingsPage> {
                   saveValue: widget.settings.setPredictiveBack,
                 ),
                 _sectionTitle('布局'),
-                _columnSelector(
-                  title: '发现页最小列数',
-                  value: _feedMinColumns,
-                  setValue: (value) => _feedMinColumns = value,
-                  saveValue: widget.settings.setFeedMinColumns,
+                _columnRangeSlider(
+                  title: '发现页列数范围',
+                  minValue: _feedMinColumns,
+                  maxValue: _feedMaxColumns,
+                  setLocal: (min, max) {
+                    _feedMinColumns = min;
+                    _feedMaxColumns = max;
+                  },
+                  saveRange: widget.settings.setFeedColumnRange,
                 ),
-                _columnSelector(
-                  title: '商城页最小列数',
-                  value: _shopMinColumns,
-                  setValue: (value) => _shopMinColumns = value,
-                  saveValue: widget.settings.setShopMinColumns,
+                _columnRangeSlider(
+                  title: '商店页列数范围',
+                  minValue: _shopMinColumns,
+                  maxValue: _shopMaxColumns,
+                  setLocal: (min, max) {
+                    _shopMinColumns = min;
+                    _shopMaxColumns = max;
+                  },
+                  saveRange: widget.settings.setShopColumnRange,
                 ),
                 const Divider(height: 28),
                 if (widget.signedIn)

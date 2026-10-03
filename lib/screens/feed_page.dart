@@ -15,6 +15,7 @@ class FeedPage extends StatefulWidget {
     this.autoHideTopBar = true,
     this.autoHideBottomBar = true,
     this.minColumns = 1,
+    this.maxColumns = 3,
     this.onChromeVisibilityChanged,
   });
 
@@ -22,8 +23,10 @@ class FeedPage extends StatefulWidget {
   final String? token;
   final bool autoHideTopBar;
   final bool autoHideBottomBar;
-  /// Minimum grid column count (1–3); responsive layout may use more.
+  /// Minimum grid column count (1–3).
   final int minColumns;
+  /// Maximum grid column count (1–3). Always ≥ [minColumns].
+  final int maxColumns;
   /// Called when scrolling should show/hide shell chrome (bottom nav, etc.).
   final ValueChanged<bool>? onChromeVisibilityChanged;
 
@@ -131,8 +134,11 @@ class _FeedPageState extends State<FeedPage> {
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
     final maxWidth = width >= 1200 ? 1120.0 : 920.0;
-    final responsive = width >= 1120 ? 2 : 1;
-    final columns = responsive < widget.minColumns ? widget.minColumns.clamp(1, 3) : responsive;
+    final minCols = widget.minColumns.clamp(1, 3);
+    final maxCols = widget.maxColumns.clamp(minCols, 3);
+    // Breakpoints: narrow 1 / medium 2 / wide 3, then clamp to user range.
+    final responsive = width >= 1120 ? 3 : width >= 760 ? 2 : 1;
+    final columns = responsive.clamp(minCols, maxCols);
     final isWide = MediaQuery.sizeOf(context).width >= 760;
     return Scaffold(
       body: Center(

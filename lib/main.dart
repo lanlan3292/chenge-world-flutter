@@ -247,6 +247,7 @@ class _AppShellState extends State<AppShell> {
         autoHideTopBar: widget.settings.autoHideTopBar,
         autoHideBottomBar: hideBottomBar,
         minColumns: widget.settings.feedMinColumns,
+        maxColumns: widget.settings.feedMaxColumns,
         onChromeVisibilityChanged: onChromeVisibilityChanged,
       ),
       SocialPage(
@@ -270,6 +271,7 @@ class _AppShellState extends State<AppShell> {
         autoHideTopBar: widget.settings.autoHideTopBar,
         autoHideBottomBar: hideBottomBar,
         minColumns: widget.settings.shopMinColumns,
+        maxColumns: widget.settings.shopMaxColumns,
         onChromeVisibilityChanged: onChromeVisibilityChanged,
       ),
       AccountPage(

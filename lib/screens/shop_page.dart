@@ -16,6 +16,7 @@ class ShopPage extends StatefulWidget {
     this.autoHideTopBar = true,
     this.autoHideBottomBar = true,
     this.minColumns = 1,
+    this.maxColumns = 3,
     this.onChromeVisibilityChanged,
   });
 
@@ -25,8 +26,10 @@ class ShopPage extends StatefulWidget {
   final VoidCallback onLoginRequested;
   final bool autoHideTopBar;
   final bool autoHideBottomBar;
-  /// Minimum grid column count (1–3); responsive layout may use more.
+  /// Minimum grid column count (1–3).
   final int minColumns;
+  /// Maximum grid column count (1–3). Always ≥ [minColumns].
+  final int maxColumns;
   /// Called when scrolling should show/hide shell bottom nav.
   final ValueChanged<bool>? onChromeVisibilityChanged;
 
@@ -208,8 +211,10 @@ class _ShopPageState extends State<ShopPage> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
+    final minCols = widget.minColumns.clamp(1, 3);
+    final maxCols = widget.maxColumns.clamp(minCols, 3);
     final responsive = width >= 1180 ? 3 : width >= 760 ? 2 : 1;
-    final columns = responsive < widget.minColumns ? widget.minColumns.clamp(1, 3) : responsive;
+    final columns = responsive.clamp(minCols, maxCols);
     final hideTop = widget.autoHideTopBar;
 
     return Scaffold(
