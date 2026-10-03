@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../models/blog_post.dart';
 
-/// Feed grid card. Fills the grid cell (no outer AspectRatio) so narrow cells
-/// keep readable text and wide cells do not grow excessively tall.
+/// Feed grid card. Fills the grid cell (no outer AspectRatio).
+/// Adapts density by available width/height so narrow cells never overflow.
 class PostCard extends StatelessWidget {
   const PostCard({
     super.key,
@@ -27,14 +27,32 @@ class PostCard extends StatelessWidget {
           builder: (context, constraints) {
             final w = constraints.maxWidth;
             final h = constraints.maxHeight;
-            final narrow = w < 220;
-            // Cover: prefer 16:9, but never more than ~52% of cell height so text fits.
+            final narrow = w < 200;
+            final veryNarrow = w < 150;
+
+            // Cover: 16:9 preferred, but leave enough room for text block.
             final coverIdeal = w * 9 / 16;
-            final coverH = coverIdeal.clamp(48.0, h * 0.52);
-            final padH = narrow ? 10.0 : 14.0;
-            final padV = narrow ? 8.0 : 11.0;
-            final titleLines = h - coverH < 120 ? 1 : 2;
-            final summaryLines = h - coverH < 150 ? 1 : 2;
+            final coverMaxFrac = narrow ? 0.46 : 0.52;
+            final coverH = coverIdeal.clamp(40.0, h * coverMaxFrac);
+
+            final contentH = h - coverH;
+            // Budget fixed chrome so we know whether summary can show.
+            final padV = narrow ? 6.0 : 10.0;
+            final padH = narrow ? 8.0 : 14.0;
+            final hasTag = post.categoryName != null || post.tags.isNotEmpty;
+            final tagH = hasTag ? (narrow ? 18.0 : 22.0) : 0.0;
+            final tagGap = hasTag ? (narrow ? 4.0 : 6.0) : 0.0;
+            final titleLineH = narrow ? 17.0 : 20.0;
+            final titleLines = contentH < 110 ? 1 : 2;
+            final titleH = titleLineH * titleLines;
+            final titleGap = narrow ? 2.0 : 4.0;
+            final footerH = narrow ? 18.0 : 24.0;
+            final footerGap = 2.0;
+            final fixed =
+                padV * 2 + tagH + tagGap + titleH + titleGap + footerGap + footerH;
+            final freeForSummary = contentH - fixed;
+            final showSummary = freeForSummary >= (narrow ? 14.0 : 18.0);
+            final summaryLines = freeForSummary >= 32 ? 2 : 1;
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,7 +68,7 @@ class PostCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (post.categoryName != null || post.tags.isNotEmpty)
+                        if (hasTag)
                           Row(
                             children: [
                               if (post.categoryName != null)
@@ -59,68 +77,56 @@ class PostCard extends StatelessWidget {
                                     post.categoryName!,
                                     theme.colorScheme.primaryContainer,
                                     theme.colorScheme.onPrimaryContainer,
-                                    maxWidth: narrow ? 90 : 140,
+                                    maxWidth: veryNarrow ? 72 : (narrow ? 96 : 140),
+                                    compact: narrow,
                                   ),
                                 ),
                               if (post.tags.isNotEmpty) ...[
-                                if (post.categoryName != null) const SizedBox(width: 6),
+                                if (post.categoryName != null)
+                                  const SizedBox(width: 4),
                                 Flexible(
                                   child: _label(
                                     '#${post.tags.first}',
                                     theme.colorScheme.secondaryContainer,
                                     theme.colorScheme.onSecondaryContainer,
-                                    maxWidth: narrow ? 90 : 140,
+                                    maxWidth: veryNarrow ? 72 : (narrow ? 96 : 140),
+                                    compact: narrow,
                                   ),
                                 ),
                               ],
                             ],
                           ),
-                        if (post.categoryName != null || post.tags.isNotEmpty)
-                          SizedBox(height: narrow ? 5 : 7),
+                        if (hasTag) SizedBox(height: tagGap),
                         Text(
                           post.title,
                           maxLines: titleLines,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w800,
-                            height: 1.2,
-                            fontSize: narrow ? 14 : null,
+                            height: 1.15,
+                            fontSize: veryNarrow
+                                ? 12.5
+                                : (narrow ? 13.5 : null),
                           ),
                         ),
-                        SizedBox(height: narrow ? 3 : 5),
-                        Expanded(
-                          child: Text(
-                            post.summary,
-                            maxLines: summaryLines,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                              height: 1.35,
-                              fontSize: narrow ? 11.5 : null,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            _avatar(context, radius: narrow ? 10 : 12),
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child: Text(
-                                '${post.authorName} · ${_dateLabel(post.createdAt)}',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: narrow ? 10 : 11,
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
+                        if (showSummary) ...[
+                          SizedBox(height: titleGap),
+                          Expanded(
+                            child: Text(
+                              post.summary,
+                              maxLines: summaryLines,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                                height: 1.3,
+                                fontSize: narrow ? 11.0 : null,
                               ),
                             ),
-                            _metric(context, Icons.visibility_outlined, post.viewCount),
-                            const SizedBox(width: 6),
-                            _metric(context, Icons.chat_bubble_outline_rounded, post.commentCount),
-                          ],
-                        ),
+                          ),
+                        ] else
+                          const Spacer(),
+                        SizedBox(height: footerGap),
+                        _footer(context, theme, narrow: narrow, veryNarrow: veryNarrow),
                       ],
                     ),
                   ),
@@ -129,6 +135,46 @@ class PostCard extends StatelessWidget {
             );
           },
         ),
+      ),
+    );
+  }
+
+  Widget _footer(
+    BuildContext context,
+    ThemeData theme, {
+    required bool narrow,
+    required bool veryNarrow,
+  }) {
+    final radius = veryNarrow ? 8.0 : (narrow ? 9.0 : 12.0);
+    return SizedBox(
+      height: narrow ? 18 : 24,
+      child: Row(
+        children: [
+          _avatar(context, radius: radius),
+          SizedBox(width: narrow ? 4 : 6),
+          Expanded(
+            child: Text(
+              veryNarrow
+                  ? post.authorName
+                  : '${post.authorName} · ${_dateLabel(post.createdAt)}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: veryNarrow ? 9.5 : (narrow ? 10 : 11),
+                color: theme.colorScheme.onSurfaceVariant,
+                height: 1.1,
+              ),
+            ),
+          ),
+          _metric(context, Icons.visibility_outlined, post.viewCount, compact: narrow),
+          SizedBox(width: narrow ? 4 : 6),
+          _metric(
+            context,
+            Icons.chat_bubble_outline_rounded,
+            post.commentCount,
+            compact: narrow,
+          ),
+        ],
       ),
     );
   }
@@ -152,7 +198,8 @@ class PostCard extends StatelessWidget {
                   child: CircularProgressIndicator(
                     value: progress.expectedTotalBytes == null
                         ? null
-                        : progress.cumulativeBytesLoaded / progress.expectedTotalBytes!,
+                        : progress.cumulativeBytesLoaded /
+                            progress.expectedTotalBytes!,
                     strokeWidth: 2,
                   ),
                 ),
@@ -197,10 +244,19 @@ class PostCard extends StatelessWidget {
         ),
       );
 
-  Widget _label(String label, Color color, Color foreground, {double maxWidth = 150}) =>
+  Widget _label(
+    String label,
+    Color color,
+    Color foreground, {
+    double maxWidth = 150,
+    bool compact = false,
+  }) =>
       Container(
         constraints: BoxConstraints(maxWidth: maxWidth),
-        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+        padding: EdgeInsets.symmetric(
+          horizontal: compact ? 5 : 7,
+          vertical: compact ? 2 : 3,
+        ),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(20),
@@ -211,8 +267,9 @@ class PostCard extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
             color: foreground,
-            fontSize: 10,
+            fontSize: compact ? 9 : 10,
             fontWeight: FontWeight.w700,
+            height: 1.1,
           ),
         ),
       );
@@ -226,23 +283,34 @@ class PostCard extends StatelessWidget {
       child: avatar == null
           ? Icon(
               Icons.person_rounded,
-              size: radius + 3,
+              size: radius + 2,
               color: Theme.of(context).colorScheme.onTertiaryContainer,
             )
           : null,
     );
   }
 
-  Widget _metric(BuildContext context, IconData icon, int value) => Row(
+  Widget _metric(
+    BuildContext context,
+    IconData icon,
+    int value, {
+    bool compact = false,
+  }) =>
+      Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
+          Icon(
+            icon,
+            size: compact ? 11 : 13,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
           const SizedBox(width: 2),
           Text(
             '$value',
             style: TextStyle(
-              fontSize: 10,
+              fontSize: compact ? 9 : 10,
               color: Theme.of(context).colorScheme.onSurfaceVariant,
+              height: 1.1,
             ),
           ),
         ],

@@ -257,7 +257,7 @@ class _FeedPageState extends State<FeedPage> {
                       final ratio = switch (columns) {
                         1 => 1.28,
                         2 => 0.92,
-                        _ => 0.78,
+                        _ => 0.72,
                       };
                       return SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: columns,

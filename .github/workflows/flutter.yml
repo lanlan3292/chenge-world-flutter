@@ -61,7 +61,7 @@ jobs:
         with:
           name: chenge-world-apk
           path: build/app/outputs/apk/debug/app-debug.apk
-          retention-days: 3
+          retention-days: 2
 
   build-windows:
     needs: test
@@ -197,4 +197,4 @@ jobs:
         with:
           name: chenge-world-macos-debug
           path: build/macos/Build/Products/Debug/chenge_world_app.app
-          retention-days: 2
+          retention-days: 1
