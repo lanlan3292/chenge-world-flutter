@@ -3,11 +3,15 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
+import '../models/blog_post.dart';
 import '../models/chat_conversation.dart';
 import '../models/chat_message.dart';
+import '../models/shop_item.dart';
 import '../services/chenge_api.dart';
 import '../theme/app_theme.dart';
 import 'emoji_picker_sheet.dart';
+import 'post_detail_page.dart';
+import 'shop_detail_page.dart';
 
 class ChatThreadPage extends StatefulWidget {
   const ChatThreadPage({
@@ -316,7 +320,11 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                           ),
                         );
                       }
-                      return _messageTile(_messages[index - (_hasMore ? 1 : 0)]);
+                      final messageIndex = index - (_hasMore ? 1 : 0);
+                      return _messageTile(
+                        _messages[messageIndex],
+                        showTime: _shouldShowTime(messageIndex),
+                      );
                     },
                   ),
                 ),
@@ -333,7 +341,17 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     );
   }
 
-  Widget _messageTile(ChatMessage message) {
+  bool _shouldShowTime(int messageIndex) {
+    if (messageIndex == 0) return true;
+    final previousTime = _messages[messageIndex - 1].createdAt;
+    final currentTime = _messages[messageIndex].createdAt;
+    if (previousTime == null || currentTime == null) return true;
+    final difference = currentTime.difference(previousTime);
+    const threshold = Duration(minutes: 5);
+    return difference <= -threshold || difference >= threshold;
+  }
+
+  Widget _messageTile(ChatMessage message, {required bool showTime}) {
     final mine = message.senderId == widget.userId;
     final isEmoji = message.type == 'emoji';
     final isShare = message.type == 'post' || message.type == 'order';
@@ -394,10 +412,11 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                       style: TextStyle(color: mine ? Colors.white : AppTheme.ink, height: 1.4),
                     ),
                   ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 3, left: 4, right: 4),
-                  child: Text(_shortTime(message.createdAt), style: const TextStyle(fontSize: 10, color: Color(0xFF83918D))),
-                ),
+                if (showTime)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 3, left: 4, right: 4),
+                    child: Text(_shortTime(message.createdAt), style: const TextStyle(fontSize: 10, color: Color(0xFF83918D))),
+                  ),
               ],
             ),
           ),
@@ -412,23 +431,16 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
 
   Widget _shareCard(ChatMessage message) {
     final isPost = message.type == 'post';
-    Map<String, dynamic> payload = {};
-    try {
-      final decoded = jsonDecode(message.content);
-      if (decoded is Map<String, dynamic>) payload = decoded;
-    } catch (_) {}
+    final payload = _sharePayload(message.content);
     final title = (payload['title'] ?? (isPost ? '帖子' : '商品')).toString();
     final tag = isPost ? '分享帖子' : '商品订单';
+
     return Material(
       color: Colors.white,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onTap: () {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(SnackBar(content: Text('$tag：$title')));
-        },
+        onTap: () => _openSharedContent(message, payload),
         child: Container(
           constraints: const BoxConstraints(maxWidth: 280, minWidth: 180),
           padding: const EdgeInsets.all(12),
@@ -449,6 +461,95 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
         ),
       ),
     );
+  }
+
+  Map<String, dynamic> _sharePayload(String content) {
+    try {
+      final decoded = jsonDecode(content);
+      return decoded is Map<String, dynamic> ? decoded : {};
+    } on FormatException {
+      return {};
+    }
+  }
+
+  Future<void> _openSharedContent(
+    ChatMessage message,
+    Map<String, dynamic> payload,
+  ) async {
+    final isPost = message.type == 'post';
+    final nested = isPost ? payload['post'] : payload['item'] ?? payload['product'];
+    final nestedPayload = nested is Map<String, dynamic> ? nested : payload;
+    final id = _shareId(
+      nestedPayload[isPost ? 'postId' : 'itemId'] ??
+          nestedPayload[isPost ? 'blogId' : 'productId'] ??
+          nestedPayload['id'] ??
+          payload[isPost ? 'postId' : 'itemId'] ??
+          payload[isPost ? 'blogId' : 'productId'] ??
+          payload['id'],
+    );
+    if (id == null || id <= 0) {
+      _showShareError(isPost ? '无法打开帖子：分享内容缺少帖子编号' : '无法打开商品：分享内容缺少商品编号');
+      return;
+    }
+
+    if (isPost) {
+      final title = _shareText(nestedPayload['title'], fallback: '帖子');
+      final post = BlogPost(
+        id: id,
+        title: title,
+        summary: _shareText(nestedPayload['summary']),
+        content: _shareText(nestedPayload['content']),
+        authorName: _shareText(nestedPayload['authorName'], fallback: 'Chenge 用户'),
+        createdAt: DateTime.tryParse(_shareText(nestedPayload['createdAt'])),
+        viewCount: 0,
+        likeCount: 0,
+        commentCount: 0,
+      );
+      await Navigator.of(context).push<bool>(
+        MaterialPageRoute<bool>(
+          builder: (_) => PostDetailPage(api: widget.api, post: post, token: widget.token),
+        ),
+      );
+      return;
+    }
+
+    final item = ShopItem(
+      id: id,
+      title: _shareText(nestedPayload['title'], fallback: '商品'),
+      type: _shareText(nestedPayload['type'], fallback: 'file'),
+      price: _shareInt(nestedPayload['price']),
+      stock: _shareInt(nestedPayload['stock']),
+    );
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => ShopDetailPage(
+          api: widget.api,
+          item: item,
+          token: widget.token,
+          userId: widget.userId,
+          onLoginRequested: () => _showShareError('登录后才能购买'),
+        ),
+      ),
+    );
+  }
+
+  void _showShareError(String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  static int? _shareId(Object? value) {
+    if (value is int) return value;
+    if (value is num && value == value.toInt()) return value.toInt();
+    return int.tryParse(value?.toString() ?? '');
+  }
+
+  static int _shareInt(Object? value) => _shareId(value) ?? 0;
+
+  static String _shareText(Object? value, {String fallback = ''}) {
+    final text = value?.toString().trim() ?? '';
+    return text.isEmpty || text == 'null' ? fallback : text;
   }
 
   Widget _composer() => SafeArea(
