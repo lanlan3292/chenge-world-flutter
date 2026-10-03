@@ -278,6 +278,16 @@ class _ShopPageState extends State<ShopPage> {
                   elevation: 0,
                   scrolledUnderElevation: 0,
                   forceElevated: false,
+                  bottom: PreferredSize(
+                    preferredSize: const Size.fromHeight(60),
+                    child: ColoredBox(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(18, 4, 18, 8),
+                        child: _viewSelector(),
+                      ),
+                    ),
+                  ),
                   title: Text(
                     AppLocalizations.of(context).text('商城'),
                     style: const TextStyle(fontWeight: FontWeight.w800),
@@ -301,18 +311,11 @@ class _ShopPageState extends State<ShopPage> {
                     const SizedBox(width: 5),
                   ],
                 ),
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(18, 4, 18, 0),
-                  sliver: SliverToBoxAdapter(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        _viewSelector(),
-                        if (_error.isNotEmpty) _errorBanner(),
-                      ],
-                    ),
+                if (_error.isNotEmpty)
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 18),
+                    sliver: SliverToBoxAdapter(child: _errorBanner()),
                   ),
-                ),
                 ..._viewSlivers(columns),
                 SliverToBoxAdapter(
                   // Only clear the system gesture inset (+ a small gap).
