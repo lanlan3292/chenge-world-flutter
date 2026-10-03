@@ -301,20 +301,18 @@ class _ShopPageState extends State<ShopPage> {
                     const SizedBox(width: 5),
                   ],
                 ),
-                SliverPersistentHeader(
-                  pinned: true,
-                  delegate: _ShopViewSelectorHeader(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(18, 4, 18, 8),
-                      child: _viewSelector(),
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(18, 4, 18, 0),
+                  sliver: SliverToBoxAdapter(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _viewSelector(),
+                        if (_error.isNotEmpty) _errorBanner(),
+                      ],
                     ),
                   ),
                 ),
-                if (_error.isNotEmpty)
-                  SliverPadding(
-                    padding: const EdgeInsets.symmetric(horizontal: 18),
-                    sliver: SliverToBoxAdapter(child: _errorBanner()),
-                  ),
                 ..._viewSlivers(columns),
                 SliverToBoxAdapter(
                   // Only clear the system gesture inset (+ a small gap).
@@ -883,30 +881,4 @@ class _ShopPageState extends State<ShopPage> {
     'refunded' => '已退款',
     _ => status ?? '状态未知',
   };
-}
-
-class _ShopViewSelectorHeader extends SliverPersistentHeaderDelegate {
-  const _ShopViewSelectorHeader({required this.child});
-
-  final Widget child;
-
-  @override
-  double get minExtent => 60;
-
-  @override
-  double get maxExtent => 60;
-
-  @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) => ColoredBox(
-    color: Theme.of(context).scaffoldBackgroundColor,
-    child: child,
-  );
-
-  @override
-  bool shouldRebuild(covariant _ShopViewSelectorHeader oldDelegate) =>
-      child != oldDelegate.child;
 }
