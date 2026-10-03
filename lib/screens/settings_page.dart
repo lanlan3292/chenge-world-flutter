@@ -474,12 +474,9 @@ class _SettingsPageState extends State<SettingsPage> {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder:
-            (_) => ChengeCorePage(
+            (_) => OfficialSitePage(
               baseUrl: api.baseUrl,
               token: token,
-              title: '官网',
-              hashRoute: '',
-              themeSkin: 'aqua',
             ),
       ),
     );

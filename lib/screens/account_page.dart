@@ -122,18 +122,14 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
-  void _openWebEmbed(
-    BuildContext context, {
-    required String title,
-    required String hashRoute,
-    required String themeSkin,
-    required String needLoginMessage,
-  }) {
+  void _openChengeCore(BuildContext context) {
     final token = widget.token;
     if (token == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context).text(needLoginMessage)),
+          content: Text(
+            AppLocalizations.of(context).text('请先登录后再使用 ChengeCore'),
+          ),
         ),
       );
       return;
@@ -144,31 +140,31 @@ class _AccountPageState extends State<AccountPage> {
             (_) => ChengeCorePage(
               baseUrl: widget.api.baseUrl,
               token: token,
-              title: title,
-              hashRoute: hashRoute,
-              themeSkin: themeSkin,
             ),
       ),
     );
   }
 
-  void _openChengeCore(BuildContext context) {
-    _openWebEmbed(
-      context,
-      title: 'ChengeCore',
-      hashRoute: '#/chengecore',
-      themeSkin: 'aqua',
-      needLoginMessage: '请先登录后再使用 ChengeCore',
-    );
-  }
-
   void _openNurture(BuildContext context) {
-    _openWebEmbed(
-      context,
-      title: '养成',
-      hashRoute: '#/intelligence?mode=nurture',
-      themeSkin: 'cute',
-      needLoginMessage: '请先登录后再使用养成',
+    final token = widget.token;
+    if (token == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context).text('请先登录后再使用养成'),
+          ),
+        ),
+      );
+      return;
+    }
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder:
+            (_) => NurturePage(
+              baseUrl: widget.api.baseUrl,
+              token: token,
+            ),
+      ),
     );
   }
 
