@@ -18,7 +18,7 @@ class PostCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return AspectRatio(
-      aspectRatio: 4 / 5,
+      aspectRatio: 4 / 3,
       child: Card(
         clipBehavior: Clip.antiAlias,
         child: InkWell(
@@ -26,7 +26,7 @@ class PostCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AspectRatio(aspectRatio: 4 / 3, child: _cover(context)),
+              AspectRatio(aspectRatio: 16 / 9, child: _cover(context)),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 13, 16, 13),

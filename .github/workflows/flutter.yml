@@ -195,7 +195,8 @@ jobs:
       - name: Package macOS app
         run: |
           mkdir -p macos-build
-          cp -R build/macos/Build/Products/Debug/ChengeWorld.app macos-build/
+          find build/macos/Build/Products/Debug/ -print
+          cp -R build/macos/Build/Products/Debug/
 
       - name: Upload macOS
         uses: actions/upload-artifact@v7
