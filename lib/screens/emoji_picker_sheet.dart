@@ -4,11 +4,7 @@ import '../services/chenge_api.dart';
 import '../theme/app_theme.dart';
 
 class EmojiPickerSheet extends StatefulWidget {
-  const EmojiPickerSheet({
-    super.key,
-    required this.api,
-    required this.token,
-  });
+  const EmojiPickerSheet({super.key, required this.api, required this.token});
 
   final ChengeApi api;
   final String token;
@@ -20,7 +16,29 @@ class EmojiPickerSheet extends StatefulWidget {
 class _EmojiPickerSheetState extends State<EmojiPickerSheet> {
   final _assets = <EmojiAsset>[];
   bool _loading = true;
+  bool? _isWide;
+  bool _closingForWide = false;
+  int? _selectedItemId;
   String _error = '';
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final isWide = MediaQuery.sizeOf(context).width >= 760;
+    if (_isWide == null) {
+      _isWide = isWide;
+    } else if (isWide && !_isWide!) {
+      _isWide = true;
+      _closingForWide = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && Navigator.of(context).canPop()) {
+          Navigator.of(context).pop();
+        }
+      });
+    } else {
+      _isWide = isWide;
+    }
+  }
 
   @override
   void initState() {
@@ -55,6 +73,19 @@ class _EmojiPickerSheetState extends State<EmojiPickerSheet> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.sizeOf(context).height * 0.45;
+    final categories = <int, String>{};
+    for (final asset in _assets) {
+      categories.putIfAbsent(
+        asset.itemId,
+        () => asset.title ?? '表情包 ${asset.itemId}',
+      );
+    }
+    final visibleAssets =
+        _selectedItemId == null
+            ? _assets
+            : _assets
+                .where((asset) => asset.itemId == _selectedItemId)
+                .toList();
     return SafeArea(
       child: SizedBox(
         height: height,
@@ -74,72 +105,128 @@ class _EmojiPickerSheetState extends State<EmojiPickerSheet> {
               child: Row(
                 children: [
                   const Expanded(
-                    child: Text('表情包', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+                    child: Text(
+                      '表情包',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 16,
+                      ),
+                    ),
                   ),
                   IconButton(
                     tooltip: '关闭',
-                    onPressed: () => Navigator.pop(context),
+                    onPressed:
+                        _isWide == true || _closingForWide
+                            ? null
+                            : () => Navigator.pop(context),
                     icon: const Icon(Icons.close_rounded),
                   ),
                 ],
               ),
             ),
+            if (categories.length > 1)
+              SizedBox(
+                height: 42,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: ChoiceChip(
+                        label: const Text('全部'),
+                        selected: _selectedItemId == null,
+                        onSelected:
+                            (_) => setState(() => _selectedItemId = null),
+                      ),
+                    ),
+                    for (final entry in categories.entries)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: ChoiceChip(
+                          label: Text(entry.value),
+                          selected: _selectedItemId == entry.key,
+                          onSelected:
+                              (_) =>
+                                  setState(() => _selectedItemId = entry.key),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
             if (_error.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Text(_error, style: const TextStyle(color: AppTheme.coral)),
+                child: Text(
+                  _error,
+                  style: const TextStyle(color: AppTheme.coral),
+                ),
               ),
             Expanded(
-              child: _loading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _assets.isEmpty
+              child:
+                  _loading
+                      ? const Center(child: CircularProgressIndicator())
+                      : visibleAssets.isEmpty
                       ? const Center(
-                          child: Text('暂无表情包，可在商店购买', style: TextStyle(color: Color(0xFF70817D))),
-                        )
+                        child: Text(
+                          '暂无表情包，可在商店购买',
+                          style: TextStyle(color: Color(0xFF70817D)),
+                        ),
+                      )
                       : GridView.builder(
-                          padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 4,
-                            mainAxisSpacing: 10,
-                            crossAxisSpacing: 10,
-                            childAspectRatio: 1,
-                          ),
-                          itemCount: _assets.length,
-                          itemBuilder: (context, index) {
-                            final asset = _assets[index];
-                            return InkWell(
-                              borderRadius: BorderRadius.circular(10),
-                              onTap: () => Navigator.pop(context, asset),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFF4F8F5),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                padding: const EdgeInsets.all(8),
-                                child: asset.url?.isNotEmpty == true
-                                    ? Image.network(
+                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 4,
+                              mainAxisSpacing: 10,
+                              crossAxisSpacing: 10,
+                              childAspectRatio: 1,
+                            ),
+                        itemCount: visibleAssets.length,
+                        itemBuilder: (context, index) {
+                          final asset = visibleAssets[index];
+                          return InkWell(
+                            borderRadius: BorderRadius.circular(10),
+                            onTap: () => Navigator.pop(context, asset),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF4F8F5),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              padding: const EdgeInsets.all(8),
+                              child:
+                                  asset.url?.isNotEmpty == true
+                                      ? Image.network(
                                         asset.url!,
                                         fit: BoxFit.contain,
-                                        errorBuilder: (_, __, ___) => Center(
-                                          child: Text(
-                                            asset.displayName.characters.first,
-                                            style: const TextStyle(fontWeight: FontWeight.w700),
-                                          ),
-                                        ),
+                                        errorBuilder:
+                                            (_, __, ___) => Center(
+                                              child: Text(
+                                                (asset.key ?? asset.displayName)
+                                                    .characters
+                                                    .first,
+                                                style: const TextStyle(
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                            ),
                                       )
-                                    : Center(
+                                      : Center(
                                         child: Text(
-                                          asset.displayName,
+                                          asset.key ?? asset.displayName,
                                           maxLines: 2,
                                           textAlign: TextAlign.center,
                                           overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+                                          style: const TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         ),
                                       ),
-                              ),
-                            );
-                          },
-                        ),
+                            ),
+                          );
+                        },
+                      ),
             ),
           ],
         ),

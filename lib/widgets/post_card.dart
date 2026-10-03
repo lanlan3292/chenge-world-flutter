@@ -4,7 +4,12 @@ import '../models/blog_post.dart';
 import '../theme/app_theme.dart';
 
 class PostCard extends StatelessWidget {
-  const PostCard({super.key, required this.post, required this.onTap, this.featured = false});
+  const PostCard({
+    super.key,
+    required this.post,
+    required this.onTap,
+    this.featured = false,
+  });
 
   final BlogPost post;
   final VoidCallback onTap;
@@ -13,68 +18,89 @@ class PostCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(flex: featured ? 6 : 5, child: _cover()),
-            Expanded(
-              flex: 6,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 13, 16, 13),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        if (post.categoryName != null) _label(post.categoryName!, AppTheme.leaf),
-                        if (post.tags.isNotEmpty) ...[
-                          if (post.categoryName != null) const SizedBox(width: 7),
-                          Flexible(child: _label('#${post.tags.first}', AppTheme.coral)),
+    return AspectRatio(
+      aspectRatio: 4 / 5,
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AspectRatio(aspectRatio: 4 / 3, child: _cover()),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 13, 16, 13),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          if (post.categoryName != null)
+                            _label(post.categoryName!, AppTheme.leaf),
+                          if (post.tags.isNotEmpty) ...[
+                            if (post.categoryName != null)
+                              const SizedBox(width: 7),
+                            Flexible(
+                              child: _label(
+                                '#${post.tags.first}',
+                                AppTheme.coral,
+                              ),
+                            ),
+                          ],
                         ],
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      post.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800, height: 1.2),
-                    ),
-                    const SizedBox(height: 6),
-                    Expanded(
-                      child: Text(
-                        post.summary,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        post.title,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall?.copyWith(color: const Color(0xFF667975), height: 1.4),
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                          height: 1.2,
+                        ),
                       ),
-                    ),
-                    Row(
-                      children: [
-                        _avatar(),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            '${post.authorName} · ${_dateLabel(post.createdAt)}',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontSize: 11, color: Color(0xFF70817D)),
+                      const SizedBox(height: 6),
+                      Expanded(
+                        child: Text(
+                          post.summary,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: const Color(0xFF667975),
+                            height: 1.4,
                           ),
                         ),
-                        _metric(Icons.visibility_outlined, post.viewCount),
-                        const SizedBox(width: 9),
-                        _metric(Icons.chat_bubble_outline_rounded, post.commentCount),
-                      ],
-                    ),
-                  ],
+                      ),
+                      Row(
+                        children: [
+                          _avatar(),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              '${post.authorName} · ${_dateLabel(post.createdAt)}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: Color(0xFF70817D),
+                              ),
+                            ),
+                          ),
+                          _metric(Icons.visibility_outlined, post.viewCount),
+                          const SizedBox(width: 9),
+                          _metric(
+                            Icons.chat_bubble_outline_rounded,
+                            post.commentCount,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -88,50 +114,78 @@ class PostCard extends StatelessWidget {
       width: double.infinity,
       fit: BoxFit.cover,
       errorBuilder: (_, __, ___) => _coverPlaceholder(),
-      loadingBuilder: (context, child, progress) => progress == null
-          ? child
-          : Stack(
-              fit: StackFit.expand,
-              children: [
-                _coverPlaceholder(),
-                Center(
-                  child: CircularProgressIndicator(
-                    value: progress.expectedTotalBytes == null
-                        ? null
-                        : progress.cumulativeBytesLoaded / progress.expectedTotalBytes!,
-                    strokeWidth: 2,
+      loadingBuilder:
+          (context, child, progress) =>
+              progress == null
+                  ? child
+                  : Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      _coverPlaceholder(),
+                      Center(
+                        child: CircularProgressIndicator(
+                          value:
+                              progress.expectedTotalBytes == null
+                                  ? null
+                                  : progress.cumulativeBytesLoaded /
+                                      progress.expectedTotalBytes!,
+                          strokeWidth: 2,
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
     );
   }
 
   Widget _coverPlaceholder() => Container(
-        width: double.infinity,
-        color: const Color(0xFFDDECE5),
-        child: Stack(
-          children: [
-            Positioned(right: -18, top: -34, child: _shape(125, const Color(0xFFB8D8CB))),
-            Positioned(left: 24, bottom: -45, child: _shape(110, const Color(0xFFF4D792))),
-            Center(child: Icon(Icons.article_rounded, size: 34, color: AppTheme.ink.withValues(alpha: 0.75))),
-          ],
+    width: double.infinity,
+    color: const Color(0xFFDDECE5),
+    child: Stack(
+      children: [
+        Positioned(
+          right: -18,
+          top: -34,
+          child: _shape(125, const Color(0xFFB8D8CB)),
         ),
-      );
+        Positioned(
+          left: 24,
+          bottom: -45,
+          child: _shape(110, const Color(0xFFF4D792)),
+        ),
+        Center(
+          child: Icon(
+            Icons.article_rounded,
+            size: 34,
+            color: AppTheme.ink.withValues(alpha: 0.75),
+          ),
+        ),
+      ],
+    ),
+  );
 
   Widget _shape(double size, Color color) => Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(size * 0.34)),
-      );
+    width: size,
+    height: size,
+    decoration: BoxDecoration(
+      color: color,
+      borderRadius: BorderRadius.circular(size * 0.34),
+    ),
+  );
 
   Widget _label(String label, Color color) => Container(
-        constraints: const BoxConstraints(maxWidth: 150),
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(20)),
-        child: Text(label, maxLines: 1, overflow: TextOverflow.ellipsis,
-          style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.w700)),
-      );
+    constraints: const BoxConstraints(maxWidth: 150),
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+    decoration: BoxDecoration(
+      color: color.withValues(alpha: 0.1),
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: Text(
+      label,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.w700),
+    ),
+  );
 
   Widget _avatar() {
     final avatar = post.authorAvatar;
@@ -139,25 +193,39 @@ class PostCard extends StatelessWidget {
       radius: 12,
       backgroundColor: const Color(0xFFFFE8C5),
       foregroundImage: avatar == null ? null : NetworkImage(avatar),
-      child: avatar == null ? const Icon(Icons.person_rounded, size: 15, color: AppTheme.ink) : null,
+      child:
+          avatar == null
+              ? const Icon(Icons.person_rounded, size: 15, color: AppTheme.ink)
+              : null,
     );
   }
 
   Widget _metric(IconData icon, int value) => Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 13, color: const Color(0xFF70817D)),
-          const SizedBox(width: 3),
-          Text('$value', style: const TextStyle(fontSize: 10, color: Color(0xFF70817D))),
-        ],
-      );
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Icon(icon, size: 13, color: const Color(0xFF70817D)),
+      const SizedBox(width: 3),
+      Text(
+        '$value',
+        style: const TextStyle(fontSize: 10, color: Color(0xFF70817D)),
+      ),
+    ],
+  );
 
   static String _dateLabel(DateTime? date) {
-    if (date == null) return '刚刚';
+    if (date == null) {
+      return '刚刚';
+    }
     final difference = DateTime.now().difference(date);
-    if (difference.inMinutes < 60) return '${difference.inMinutes.clamp(1, 59)} 分钟前';
-    if (difference.inHours < 24) return '${difference.inHours} 小时前';
-    if (difference.inDays < 7) return '${difference.inDays} 天前';
+    if (difference.inMinutes < 60) {
+      return '${difference.inMinutes.clamp(1, 59)} 分钟前';
+    }
+    if (difference.inHours < 24) {
+      return '${difference.inHours} 小时前';
+    }
+    if (difference.inDays < 7) {
+      return '${difference.inDays} 天前';
+    }
     return '${date.month}月${date.day}日';
   }
 }

@@ -354,12 +354,20 @@ class ChengeApi {
           final decoded = jsonDecode(content);
           if (decoded is List) {
             for (final entry in decoded.whereType<Map<String, dynamic>>()) {
-              addEmoji({...entry, 'itemId': itemId});
+              addEmoji({
+                ...entry,
+                'itemId': itemId,
+                if (raw['title'] != null) 'title': raw['title'],
+              });
             }
             return;
           }
           if (decoded is Map<String, dynamic>) {
-            addEmoji({...decoded, 'itemId': itemId});
+            addEmoji({
+              ...decoded,
+              'itemId': itemId,
+              if (raw['title'] != null) 'title': raw['title'],
+            });
             return;
           }
         } on FormatException {

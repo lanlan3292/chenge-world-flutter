@@ -54,6 +54,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
   bool _initialScrollDone = false;
   bool _contentReady = false;
   bool _popScheduled = false;
+  bool _emojiPickerOpen = false;
   late ChatConversation _conversation;
 
   @override
@@ -74,6 +75,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
   void _maybePopForWideLayout() {
     if (!widget.showBackButton || _popScheduled) return;
     if (MediaQuery.sizeOf(context).width < 760) return;
+    if (_emojiPickerOpen) return;
     _popScheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && Navigator.of(context).canPop()) Navigator.of(context).pop(true);
@@ -231,13 +233,22 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
   }
 
   Future<void> _openEmojiPicker() async {
-    final asset = await showModalBottomSheet<EmojiAsset>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
-      builder: (context) => EmojiPickerSheet(api: widget.api, token: widget.token),
-    );
+    if (_emojiPickerOpen) return;
+    _emojiPickerOpen = true;
+    EmojiAsset? asset;
+    try {
+      asset = await showModalBottomSheet<EmojiAsset>(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.white,
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+        builder: (context) => EmojiPickerSheet(api: widget.api, token: widget.token),
+      );
+    } finally {
+      _emojiPickerOpen = false;
+    }
+    if (!mounted) return;
+    if (MediaQuery.sizeOf(context).width >= 760) _maybePopForWideLayout();
     if (asset != null && mounted) await _sendEmoji(asset);
   }
 
