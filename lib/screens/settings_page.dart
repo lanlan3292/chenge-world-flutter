@@ -502,7 +502,7 @@ class _SettingsPageState extends State<SettingsPage> {
           builder: (dialogContext, setDialogState) {
             return AlertDialog(
               title: Text(
-                AppLocalizations.of(context).text('修改 Token'),
+                AppLocalizations.of(dialogContext).text('修改 Token'),
                 style: const TextStyle(fontWeight: FontWeight.w800),
               ),
               content: SizedBox(
@@ -519,20 +519,26 @@ class _SettingsPageState extends State<SettingsPage> {
                         minLines: 3,
                         enabled: !saving,
                         decoration: InputDecoration(
-                          labelText: AppLocalizations.of(context).text('访问令牌'),
+                          labelText: AppLocalizations.of(
+                            dialogContext,
+                          ).text('访问令牌'),
                           alignLabelWithHint: true,
                           suffixIcon: IconButton(
-                            tooltip: AppLocalizations.of(context).text('复制'),
+                            tooltip: AppLocalizations.of(
+                              dialogContext,
+                            ).text('复制'),
                             onPressed: () async {
                               await Clipboard.setData(
                                 ClipboardData(text: controller.text),
                               );
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
+                              if (dialogContext.mounted) {
+                                ScaffoldMessenger.of(
+                                  dialogContext,
+                                ).showSnackBar(
                                   SnackBar(
                                     content: Text(
                                       AppLocalizations.of(
-                                        context,
+                                        dialogContext,
                                       ).text('Token 已复制'),
                                     ),
                                   ),
@@ -544,7 +550,9 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return AppLocalizations.of(context).text('请输入 Token');
+                            return AppLocalizations.of(
+                              dialogContext,
+                            ).text('请输入 Token');
                           }
                           return null;
                         },
@@ -554,7 +562,8 @@ class _SettingsPageState extends State<SettingsPage> {
                         Text(
                           errorText!,
                           style: TextStyle(
-                            color: Theme.of(context).colorScheme.error,
+                            color:
+                                Theme.of(dialogContext).colorScheme.error,
                           ),
                         ),
                       ],
@@ -566,7 +575,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 TextButton(
                   onPressed:
                       saving ? null : () => Navigator.pop(dialogContext),
-                  child: Text(AppLocalizations.of(context).text('取消')),
+                  child: Text(AppLocalizations.of(dialogContext).text('取消')),
                 ),
                 FilledButton(
                   onPressed:

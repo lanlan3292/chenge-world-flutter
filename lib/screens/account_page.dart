@@ -358,9 +358,9 @@ class _AccountPageState extends State<AccountPage> {
       final current = await widget.api.currentUser(token);
       final result = <String, dynamic>{
         'token': token,
-        if (current is Map<String, dynamic>) ...current,
+        ...current,
       };
-      if (result['user'] == null && current is Map) {
+      if (result['user'] == null) {
         result['user'] = current['user'] ?? current;
       }
       await widget.onLogin(result);
@@ -489,9 +489,9 @@ class _LoginDialogState extends State<_LoginDialog> {
       // 构造成与密码登录相近的结构，供 onLogin / 头像解析使用
       final result = <String, dynamic>{
         'token': token,
-        if (current is Map<String, dynamic>) ...current,
+        ...current,
       };
-      if (result['user'] == null && current is Map) {
+      if (result['user'] == null) {
         result['user'] = current['user'] ?? current;
       }
       if (mounted) Navigator.pop(context, result);

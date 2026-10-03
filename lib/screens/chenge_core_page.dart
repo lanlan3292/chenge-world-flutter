@@ -62,6 +62,7 @@ class _ChengeCorePageState extends State<ChengeCorePage> {
     // 分步初始化，避免级联调用在桌面端插件未就绪时触发 Null check。
     try {
       final controller = WebViewController();
+      final backgroundColor = Theme.of(context).colorScheme.surface;
 
       try {
         await controller.setJavaScriptMode(JavaScriptMode.unrestricted);
@@ -70,9 +71,7 @@ class _ChengeCorePageState extends State<ChengeCorePage> {
       }
 
       try {
-        await controller.setBackgroundColor(
-          Theme.of(context).colorScheme.surface,
-        );
+        await controller.setBackgroundColor(backgroundColor);
       } catch (_) {
         try {
           await controller.setBackgroundColor(const Color(0xFFF3F7F3));
