@@ -95,7 +95,7 @@ void main() {
     await tester.pumpAndSettle();
 
     final cardSize = tester.getSize(find.byType(PostCard).first);
-    expect(cardSize.width / cardSize.height, closeTo(4 / 3, 0.01));
+    expect(cardSize.width / cardSize.height, closeTo(5 / 4, 0.01));
 
     await tester.scrollUntilVisible(
       find.byTooltip('下一页'),

@@ -256,7 +256,7 @@ class _FeedPageState extends State<FeedPage> {
                         crossAxisCount: columns,
                         crossAxisSpacing: 14,
                         mainAxisSpacing: 14,
-                        childAspectRatio: 4 / 3,
+                        childAspectRatio: 5 / 4,
                       ),
                       itemBuilder:
                           (context, index) => PostCard(
