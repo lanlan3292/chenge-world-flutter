@@ -127,7 +127,7 @@ class _ChengeWorldAppState extends State<ChengeWorldApp>
         // 半透明主题背景，覆盖在状态栏区域（AppBar 也会带上同一 systemOverlayStyle）。
         final lightMask =
             useStatusMask
-                ? (useDynamic && lightDynamic != null
+                ? (useDynamic
                         ? lightDynamic.surface
                         : AppTheme.mist)
                     .withValues(alpha: 0.78)

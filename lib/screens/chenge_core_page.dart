@@ -27,7 +27,6 @@ class ChengeCorePage extends StatefulWidget {
 class _ChengeCorePageState extends State<ChengeCorePage> {
   late final WebViewController _controller;
   var _loading = true;
-  var _tokenInjected = false;
   String? _error;
 
   Uri get _coreUri {
@@ -78,7 +77,6 @@ class _ChengeCorePageState extends State<ChengeCorePage> {
         "  localStorage.setItem('chengehr-theme', '{\"skin\":\"aqua\"}');"
         "} catch (e) {}",
       );
-      _tokenInjected = true;
 
       // 若当前还不在 ChengeCore 路由，则跳转
       final target = _coreUri.toString();
@@ -99,7 +97,6 @@ class _ChengeCorePageState extends State<ChengeCorePage> {
     setState(() {
       _error = null;
       _loading = true;
-      _tokenInjected = false;
     });
     await _controller.loadRequest(_originUri);
   }
