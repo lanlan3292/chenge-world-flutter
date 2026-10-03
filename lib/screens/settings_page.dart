@@ -489,159 +489,42 @@ class _SettingsPageState extends State<SettingsPage> {
     final current = widget.token;
     if (current == null || current.isEmpty) return;
 
-    final controller = TextEditingController(text: current);
-    final formKey = GlobalKey<FormState>();
-    var saving = false;
-    String? errorText;
-
-    await showDialog<void>(
+    final result = await showDialog<String>(
       context: context,
       barrierDismissible: false,
-      builder: (dialogContext) {
-        return StatefulBuilder(
-          builder: (dialogContext, setDialogState) {
-            return AlertDialog(
-              title: Text(
-                AppLocalizations.of(dialogContext).text('修改 Token'),
-                style: const TextStyle(fontWeight: FontWeight.w800),
-              ),
-              content: SizedBox(
-                width: 420,
-                child: Form(
-                  key: formKey,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      TextFormField(
-                        controller: controller,
-                        maxLines: 5,
-                        minLines: 3,
-                        enabled: !saving,
-                        decoration: InputDecoration(
-                          labelText: AppLocalizations.of(
-                            dialogContext,
-                          ).text('访问令牌'),
-                          alignLabelWithHint: true,
-                          suffixIcon: IconButton(
-                            tooltip: AppLocalizations.of(
-                              dialogContext,
-                            ).text('复制'),
-                            onPressed: () async {
-                              await Clipboard.setData(
-                                ClipboardData(text: controller.text),
-                              );
-                              if (dialogContext.mounted) {
-                                ScaffoldMessenger.of(
-                                  dialogContext,
-                                ).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      AppLocalizations.of(
-                                        dialogContext,
-                                      ).text('Token 已复制'),
-                                    ),
-                                  ),
-                                );
-                              }
-                            },
-                            icon: const Icon(Icons.copy_rounded),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return AppLocalizations.of(
-                              dialogContext,
-                            ).text('请输入 Token');
-                          }
-                          return null;
-                        },
-                      ),
-                      if (errorText != null) ...[
-                        const SizedBox(height: 10),
-                        Text(
-                          errorText!,
-                          style: TextStyle(
-                            color:
-                                Theme.of(dialogContext).colorScheme.error,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed:
-                      saving ? null : () => Navigator.pop(dialogContext),
-                  child: Text(AppLocalizations.of(dialogContext).text('取消')),
-                ),
-                FilledButton(
-                  onPressed:
-                      saving
-                          ? null
-                          : () async {
-                            if (!formKey.currentState!.validate()) return;
-                            final next = controller.text.trim();
-                            if (next == current) {
-                              Navigator.pop(dialogContext);
-                              return;
-                            }
-                            setDialogState(() {
-                              saving = true;
-                              errorText = null;
-                            });
-                            try {
-                              final api = widget.api;
-                              if (api != null) {
-                                await api.currentUser(next);
-                              }
-                              final cb = widget.onTokenChanged;
-                              if (cb != null) {
-                                await cb(next);
-                              }
-                              if (dialogContext.mounted) {
-                                Navigator.pop(dialogContext);
-                              }
-                              if (mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      AppLocalizations.of(
-                                        context,
-                                      ).text('Token 已更新'),
-                                    ),
-                                  ),
-                                );
-                              }
-                            } on ApiException catch (e) {
-                              setDialogState(() {
-                                saving = false;
-                                errorText = e.message;
-                              });
-                            } catch (e) {
-                              setDialogState(() {
-                                saving = false;
-                                errorText = e.toString();
-                              });
-                            }
-                          },
-                  child:
-                      saving
-                          ? const SizedBox.square(
-                            dimension: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                          : Text(AppLocalizations.of(context).text('确定')),
-                ),
-              ],
-            );
-          },
-        );
-      },
+      builder:
+          (dialogContext) => _EditTokenDialog(
+            initialToken: current,
+            api: widget.api,
+          ),
     );
-    controller.dispose();
+    if (result == null || !mounted) return;
+
+    try {
+      final cb = widget.onTokenChanged;
+      if (cb != null) {
+        await cb(result);
+      }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context).text('Token 已更新')),
+          ),
+        );
+      }
+    } on ApiException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
+      }
+    }
   }
 
   Future<void> _confirmLogout() async {
@@ -745,6 +628,152 @@ class _ColorSwatch extends StatelessWidget {
                 ? const Icon(Icons.check_rounded, color: Colors.white, size: 20)
                 : null,
       ),
+    );
+  }
+}
+
+class _EditTokenDialog extends StatefulWidget {
+  const _EditTokenDialog({
+    required this.initialToken,
+    this.api,
+  });
+
+  final String initialToken;
+  final ChengeApi? api;
+
+  @override
+  State<_EditTokenDialog> createState() => _EditTokenDialogState();
+}
+
+class _EditTokenDialogState extends State<_EditTokenDialog> {
+  late final TextEditingController _controller;
+  final _formKey = GlobalKey<FormState>();
+  var _saving = false;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialToken);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _confirm() async {
+    if (!_formKey.currentState!.validate() || _saving) return;
+    final next = _controller.text.trim();
+    if (next == widget.initialToken) {
+      Navigator.of(context).pop(); // 无变化，直接关闭
+      return;
+    }
+
+    setState(() {
+      _saving = true;
+      _error = null;
+    });
+
+    try {
+      final api = widget.api;
+      if (api != null) {
+        await api.currentUser(next);
+      }
+      if (!mounted) return;
+      // 先 pop 再让外层回调，避免父组件 setState 时 dialog 仍在树中
+      Navigator.of(context).pop(next);
+    } on ApiException catch (e) {
+      if (mounted) {
+        setState(() {
+          _saving = false;
+          _error = e.message;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _saving = false;
+          _error = e.toString();
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return AlertDialog(
+      title: Text(
+        l10n.text('修改 Token'),
+        style: const TextStyle(fontWeight: FontWeight.w800),
+      ),
+      content: SizedBox(
+        width: 420,
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextFormField(
+                controller: _controller,
+                maxLines: 5,
+                minLines: 3,
+                enabled: !_saving,
+                decoration: InputDecoration(
+                  labelText: l10n.text('访问令牌'),
+                  alignLabelWithHint: true,
+                  suffixIcon: IconButton(
+                    tooltip: l10n.text('复制'),
+                    onPressed: () async {
+                      await Clipboard.setData(
+                        ClipboardData(text: _controller.text),
+                      );
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(l10n.text('Token 已复制'))),
+                        );
+                      }
+                    },
+                    icon: const Icon(Icons.copy_rounded),
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return l10n.text('请输入 Token');
+                  }
+                  return null;
+                },
+              ),
+              if (_error != null) ...[
+                const SizedBox(height: 10),
+                Text(
+                  _error!,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: _saving ? null : () => Navigator.of(context).pop(),
+          child: Text(l10n.text('取消')),
+        ),
+        FilledButton(
+          onPressed: _saving ? null : _confirm,
+          child:
+              _saving
+                  ? const SizedBox.square(
+                    dimension: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                  : Text(l10n.text('确定')),
+        ),
+      ],
     );
   }
 }

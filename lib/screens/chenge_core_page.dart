@@ -5,12 +5,13 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 import '../l10n/app_localizations_text.dart';
 
-/// 在应用内 WebView 打开站点页面，写入 localStorage：
-/// - `chengehr-token`：保持登录
-/// - `chengehr-theme`：主题皮肤 JSON 字符串，如 `{"skin":"aqua"}`
+/// 在应用内 WebView 打开站点页面。
 ///
-/// 先加载同源根路径再注入并跳转到 [hashRoute]，避免跨页丢 token。
-/// 系统返回键 / 顶栏返回：优先 WebView 历史后退，没有历史再关闭页面。
+/// 通过 `loadHtmlString` + 同源 [baseUrl] 先写入 localStorage，再 `location.replace`
+/// 进入目标页，保证 SPA 启动时就能读到正确的 token / theme（避免皮肤串页）。
+///
+/// - **关闭**：顶栏关闭按钮 → 退出 WebView 页面
+/// - **返回**：顶栏返回 / 系统返回 → 仅 WebView 历史后退；无历史时系统返回才退出
 class ChengeCorePage extends StatefulWidget {
   const ChengeCorePage({
     super.key,
@@ -21,19 +22,14 @@ class ChengeCorePage extends StatefulWidget {
     this.themeSkin = 'aqua',
   });
 
-  /// API / 前端同源根地址，例如 `http://8.138.13.61`
   final String baseUrl;
-
-  /// 当前登录 JWT；可为空（仅浏览）
   final String token;
-
-  /// 顶栏标题
   final String title;
 
-  /// 目标路由，如 `#/chengecore`、`#/intelligence?mode=nurture`；空字符串表示停留在首页
+  /// 如 `#/chengecore`、`#/intelligence?mode=nurture`；空表示站点首页
   final String hashRoute;
 
-  /// 写入 `chengehr-theme` 的 skin 值，如 `aqua` / `cute`
+  /// 写入 `chengehr-theme` 的 skin，如 `aqua` / `cute`
   final String themeSkin;
 
   @override
@@ -44,39 +40,83 @@ class _ChengeCorePageState extends State<ChengeCorePage> {
   WebViewController? _controller;
   var _loading = true;
   var _canGoBack = false;
+  var _bootstrapped = false;
   String? _error;
   var _unsupported = false;
 
   String get _root => widget.baseUrl.replaceFirst(RegExp(r'/+$'), '');
 
-  Uri get _originUri => Uri.parse('$_root/');
+  /// 实际给浏览器的目标 URL（hash 路由必须挂在 origin 后）
+  String get _resolvedTarget {
+    final hash = widget.hashRoute.trim();
+    if (hash.isEmpty) return '$_root/';
+    final fragment = hash.startsWith('#') ? hash.substring(1) : hash;
+    // 标准 hash 路由：http://host/#/path
+    return '$_root/#$fragment';
+  }
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _initWebView());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _initWebView();
+    });
+  }
+
+  String _bootstrapHtml() {
+    final tokenLiteral = jsonEncode(widget.token);
+    // 双重 encode → JS 字符串字面量，setItem 得到 {"skin":"aqua"}
+    final themeLiteral = jsonEncode(jsonEncode({'skin': widget.themeSkin}));
+    final targetLiteral = jsonEncode(_resolvedTarget);
+    return '''
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;background:#f3f7f3;font-family:sans-serif;color:#173c3a;display:flex;align-items:center;justify-content:center;height:100vh;">
+<div>Loading…</div>
+<script>
+(function () {
+  try {
+    localStorage.setItem('chengehr-token', $tokenLiteral);
+    localStorage.setItem('chengehr-theme', $themeLiteral);
+  } catch (e) {}
+  try {
+    location.replace($targetLiteral);
+  } catch (e) {
+    location.href = $targetLiteral;
+  }
+})();
+</script>
+</body>
+</html>
+''';
   }
 
   Future<void> _initWebView() async {
-    // Windows 上透明背景会导致整窗发灰；统一不透明。
-    // 分步初始化，避免级联调用在桌面端插件未就绪时触发 Null check。
+    if (!mounted) return;
+    setState(() {
+      _loading = true;
+      _error = null;
+      _unsupported = false;
+      _bootstrapped = false;
+      _canGoBack = false;
+    });
+
+    // 捕获 Error（含 Null check operator），桌面端常因缺少平台实现抛出
     try {
       final controller = WebViewController();
-      final backgroundColor = Theme.of(context).colorScheme.surface;
+      Color bg = const Color(0xFFF3F7F3);
+      try {
+        if (mounted) bg = Theme.of(context).colorScheme.surface;
+      } catch (_) {}
 
       try {
         await controller.setJavaScriptMode(JavaScriptMode.unrestricted);
-      } catch (_) {
-        // 部分平台可能不支持，继续
-      }
+      } catch (_) {}
 
       try {
-        await controller.setBackgroundColor(backgroundColor);
-      } catch (_) {
-        try {
-          await controller.setBackgroundColor(const Color(0xFFF3F7F3));
-        } catch (_) {}
-      }
+        await controller.setBackgroundColor(bg);
+      } catch (_) {}
 
       try {
         await controller.setNavigationDelegate(
@@ -85,22 +125,25 @@ class _ChengeCorePageState extends State<ChengeCorePage> {
               if (mounted) setState(() => _loading = true);
             },
             onPageFinished: (url) async {
-              await _injectAndNavigate(url);
+              // bootstrap 页已写入 localStorage；目标页再补写一次防丢
+              if (_bootstrapped) {
+                await _injectStorageOnly();
+              }
               await _refreshCanGoBack();
               if (mounted) setState(() => _loading = false);
             },
-            onNavigationRequest: (request) {
-              return NavigationDecision.navigate;
-            },
+            onNavigationRequest: (request) => NavigationDecision.navigate,
             onWebResourceError: (error) {
-              // isForMainFrame 在部分桌面实现上可能为 null
               final isMain = error.isForMainFrame;
               if (isMain == false) return;
               if (!mounted) return;
               final desc = error.description;
+              if (desc.isEmpty) return;
+              // bootstrap 跳转过程中的瞬时错误忽略
+              if (!_bootstrapped) return;
               setState(() {
                 _loading = false;
-                if (desc.isNotEmpty) _error = desc;
+                _error = desc;
               });
             },
             onUrlChange: (_) {
@@ -120,31 +163,58 @@ class _ChengeCorePageState extends State<ChengeCorePage> {
       }
 
       try {
-        await controller.loadRequest(_originUri);
+        // 同源 baseUrl，使 localStorage 作用于真实站点
+        await controller.loadHtmlString(
+          _bootstrapHtml(),
+          baseUrl: '$_root/',
+        );
+        _bootstrapped = true;
       } catch (e) {
-        if (mounted) {
-          setState(() {
-            _loading = false;
-            _error = e.toString();
-          });
+        // 部分平台不支持 loadHtmlString，回退为直接 loadRequest + 事后注入
+        try {
+          await controller.loadRequest(Uri.parse(_resolvedTarget));
+          _bootstrapped = true;
+        } catch (e2) {
+          if (mounted) {
+            setState(() {
+              _loading = false;
+              _error = e2.toString();
+            });
+          }
+          return;
         }
-        return;
       }
 
       if (!mounted) return;
       setState(() {
         _controller = controller;
         _unsupported = false;
-        _error = null;
       });
-    } catch (e) {
+    } on Object catch (e) {
       if (!mounted) return;
       setState(() {
         _unsupported = true;
         _loading = false;
-        _error = e.toString();
+        _error =
+            'WebView 初始化失败（${e.runtimeType}）：$e\n'
+            'Windows 需安装 Edge WebView2 Runtime，并确保使用支持桌面的 webview 插件。';
       });
     }
+  }
+
+  Future<void> _injectStorageOnly() async {
+    final controller = _controller;
+    if (controller == null) return;
+    final tokenLiteral = jsonEncode(widget.token);
+    final themeLiteral = jsonEncode(jsonEncode({'skin': widget.themeSkin}));
+    try {
+      await controller.runJavaScript(
+        "try {"
+        "  localStorage.setItem('chengehr-token', $tokenLiteral);"
+        "  localStorage.setItem('chengehr-theme', $themeLiteral);"
+        "} catch (e) {}",
+      );
+    } catch (_) {}
   }
 
   Future<void> _refreshCanGoBack() async {
@@ -158,66 +228,57 @@ class _ChengeCorePageState extends State<ChengeCorePage> {
     } catch (_) {}
   }
 
-  /// 正确把 JSON **字符串** 写入 localStorage（值必须是 JS 字符串字面量）。
-  Future<void> _injectAndNavigate(String url) async {
-    final controller = _controller;
-    if (controller == null) return;
-
-    final tokenLiteral = jsonEncode(widget.token);
-    // 先编码成 JSON 文本，再编码成 JS 字符串字面量：
-    // 结果形如 "{\"skin\":\"aqua\"}"，setItem 得到字符串 {"skin":"aqua"}
-    final themeValue = jsonEncode({'skin': widget.themeSkin});
-    final themeLiteral = jsonEncode(themeValue);
-
-    try {
-      await controller.runJavaScript(
-        "try {"
-        "  localStorage.setItem('chengehr-token', $tokenLiteral);"
-        "  localStorage.setItem('chengehr-theme', $themeLiteral);"
-        "} catch (e) {}",
-      );
-
-      final hash = widget.hashRoute.trim();
-      if (hash.isEmpty) return;
-
-      final normalized = hash.startsWith('#') ? hash : '#$hash';
-      await controller.runJavaScript(
-        "try {"
-        "  if (location.hash !== ${jsonEncode(normalized)}) {"
-        "    location.hash = ${jsonEncode(normalized)};"
-        "  }"
-        "} catch (e) {}",
-      );
-    } catch (_) {
-      // WebView 未就绪时忽略，等待下次 onPageFinished
-    }
-  }
-
   Future<void> _reload() async {
-    setState(() {
-      _error = null;
-      _loading = true;
-      _canGoBack = false;
-    });
     final controller = _controller;
     if (controller == null) {
       await _initWebView();
       return;
     }
+    setState(() {
+      _error = null;
+      _loading = true;
+      _canGoBack = false;
+      _bootstrapped = false;
+    });
     try {
-      await controller.loadRequest(_originUri);
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _loading = false;
-          _error = e.toString();
-        });
+      await controller.loadHtmlString(_bootstrapHtml(), baseUrl: '$_root/');
+      _bootstrapped = true;
+    } catch (_) {
+      try {
+        await controller.loadRequest(Uri.parse(_resolvedTarget));
+        _bootstrapped = true;
+      } catch (e) {
+        if (mounted) {
+          setState(() {
+            _loading = false;
+            _error = e.toString();
+          });
+        }
       }
     }
   }
 
-  /// 优先 WebView 后退；无历史则关闭本页。
-  Future<void> _handleBack() async {
+  /// 仅 WebView 历史后退（无历史则不做任何事）
+  Future<void> _goBackInWebView() async {
+    final controller = _controller;
+    if (controller == null) return;
+    try {
+      if (await controller.canGoBack()) {
+        await controller.goBack();
+        await _refreshCanGoBack();
+      }
+    } catch (_) {}
+  }
+
+  /// 关闭 WebView 页面
+  void _closeWebView() {
+    if (mounted && Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    }
+  }
+
+  /// 系统返回：有历史则后退，否则关闭
+  Future<void> _onSystemBack() async {
     final controller = _controller;
     if (controller != null) {
       try {
@@ -228,52 +289,44 @@ class _ChengeCorePageState extends State<ChengeCorePage> {
         }
       } catch (_) {}
     }
-    if (mounted && Navigator.of(context).canPop()) {
-      Navigator.of(context).pop();
-    }
+    _closeWebView();
   }
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final pageBg = scheme.surface;
+    final l10n = AppLocalizations.of(context);
 
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
-        await _handleBack();
+        await _onSystemBack();
       },
       child: Scaffold(
         backgroundColor: pageBg,
         appBar: AppBar(
           backgroundColor: scheme.surface,
-          // 显式返回键：优先历史后退
+          // 关闭：始终退出 WebView（与「返回」职责分离）
           leading: IconButton(
-            tooltip: AppLocalizations.of(context).text('返回'),
-            icon: const Icon(Icons.arrow_back_rounded),
-            onPressed: _handleBack,
+            tooltip: l10n.text('关闭'),
+            icon: const Icon(Icons.close_rounded),
+            onPressed: _closeWebView,
           ),
           title: Text(
-            AppLocalizations.of(context).text(widget.title),
+            l10n.text(widget.title),
             style: const TextStyle(fontWeight: FontWeight.w800),
           ),
           actions: [
-            if (_canGoBack)
-              IconButton(
-                tooltip: AppLocalizations.of(context).text('后退'),
-                onPressed: () async {
-                  final c = _controller;
-                  if (c == null) return;
-                  try {
-                    await c.goBack();
-                    await _refreshCanGoBack();
-                  } catch (_) {}
-                },
-                icon: const Icon(Icons.subdirectory_arrow_left_rounded),
-              ),
+            // 返回：仅历史后退；无历史时禁用
             IconButton(
-              tooltip: AppLocalizations.of(context).text('刷新'),
+              tooltip: l10n.text('返回'),
+              onPressed: _canGoBack ? _goBackInWebView : null,
+              icon: const Icon(Icons.arrow_back_rounded),
+            ),
+            IconButton(
+              tooltip: l10n.text('刷新'),
               onPressed: _reload,
               icon: const Icon(Icons.refresh_rounded),
             ),
@@ -299,10 +352,7 @@ class _ChengeCorePageState extends State<ChengeCorePage> {
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          _error ??
-                              AppLocalizations.of(
-                                context,
-                              ).text('当前平台暂不支持内置网页'),
+                          _error ?? l10n.text('当前平台暂不支持内置网页'),
                           textAlign: TextAlign.center,
                           style: TextStyle(color: scheme.onSurfaceVariant),
                         ),
@@ -310,7 +360,7 @@ class _ChengeCorePageState extends State<ChengeCorePage> {
                         FilledButton.icon(
                           onPressed: _reload,
                           icon: const Icon(Icons.refresh_rounded),
-                          label: Text(AppLocalizations.of(context).text('重试')),
+                          label: Text(l10n.text('重试')),
                         ),
                       ],
                     ),
