@@ -89,13 +89,14 @@ void main() {
       }),
     );
 
+    // Default test surface is 800x600 → responsive columns == 2 → ratio 0.92
     await tester.pumpWidget(
       MaterialApp(theme: AppTheme.light, home: FeedPage(api: api, token: null)),
     );
     await tester.pumpAndSettle();
 
     final cardSize = tester.getSize(find.byType(PostCard).first);
-    expect(cardSize.width / cardSize.height, closeTo(5 / 4, 0.01));
+    expect(cardSize.width / cardSize.height, closeTo(0.92, 0.01));
 
     await tester.scrollUntilVisible(
       find.byTooltip('下一页'),

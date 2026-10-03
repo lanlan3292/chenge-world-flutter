@@ -63,6 +63,11 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void didUpdateWidget(covariant ChatPage oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (!oldWidget.isActive &&
+        widget.isActive &&
+        MediaQuery.sizeOf(context).width < 760) {
+      _active = null;
+    }
     if (oldWidget.token != widget.token) {
       _pollTimer?.cancel();
       _conversations.clear();

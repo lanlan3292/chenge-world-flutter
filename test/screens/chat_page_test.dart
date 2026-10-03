@@ -45,6 +45,7 @@ void main() {
       await tester.tap(find.text('好友'));
       await tester.pumpAndSettle();
       expect(find.byType(ChatThreadPage), findsOneWidget);
+      expect(_selectedConversationTile(tester), findsOneWidget);
 
       updateHarness(() => isActive = false);
       tester.view.physicalSize = const Size(400, 800);
@@ -52,8 +53,24 @@ void main() {
 
       expect(find.byType(ChatThreadPage), findsNothing);
       expect(find.text('好友'), findsOneWidget);
+
+      updateHarness(() => isActive = true);
+      await tester.pumpAndSettle();
+
+      expect(_selectedConversationTile(tester), findsNothing);
       expect(tester.takeException(), isNull);
     },
+  );
+}
+
+Finder _selectedConversationTile(WidgetTester tester) {
+  final chatContext = tester.element(find.byType(ChatPage));
+  final selectedColor = Theme.of(chatContext).colorScheme.secondaryContainer;
+  return find.ancestor(
+    of: find.text('好友'),
+    matching: find.byWidgetPredicate(
+      (widget) => widget is Material && widget.color == selectedColor,
+    ),
   );
 }
 
