@@ -352,6 +352,25 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
+  /// 设置页修改 Token 后：校验已在设置页完成，这里保存并刷新会话。
+  Future<void> _applyToken(String token) async {
+    try {
+      final current = await widget.api.currentUser(token);
+      final result = <String, dynamic>{
+        'token': token,
+        if (current is Map<String, dynamic>) ...current,
+      };
+      if (result['user'] == null && current is Map) {
+        result['user'] = current['user'] ?? current;
+      }
+      await widget.onLogin(result);
+      final avatar = _pickAvatar(result);
+      if (mounted) setState(() => _avatarUrl = avatar);
+    } on ApiException {
+      rethrow;
+    }
+  }
+
   Future<void> _openSettings(BuildContext context, bool signedIn) async {
     await Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
@@ -363,6 +382,7 @@ class _AccountPageState extends State<AccountPage> {
               onLogout: widget.onLogout,
               token: widget.token,
               api: widget.api,
+              onTokenChanged: _applyToken,
             ),
       ),
     );
@@ -469,9 +489,9 @@ class _LoginDialogState extends State<_LoginDialog> {
       // 构造成与密码登录相近的结构，供 onLogin / 头像解析使用
       final result = <String, dynamic>{
         'token': token,
-        ...current,
+        if (current is Map<String, dynamic>) ...current,
       };
-      if (result['user'] == null) {
+      if (result['user'] == null && current is Map) {
         result['user'] = current['user'] ?? current;
       }
       if (mounted) Navigator.pop(context, result);
