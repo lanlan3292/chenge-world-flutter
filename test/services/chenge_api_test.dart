@@ -223,6 +223,69 @@ void main() {
     expect(message.id, 27);
   });
 
+  test('expands an owned emoji pack into sendable individual emoji assets', () async {
+    final pack = [
+      {'key': 'TSQ', 'fileId': 984, 'url': 'https://example.test/emoji-one.png'},
+      {'key': '申SQ', 'fileId': 985, 'url': 'https://example.test/emoji-two.png'},
+      {'key': '高光SQ', 'fileId': 986, 'url': 'https://example.test/emoji-three.png'},
+    ];
+    final client = MockClient((request) async {
+      if (request.url.path == '/shop/assets') {
+        return http.Response(
+          jsonEncode({
+            'code': 200,
+            'data': [
+              {
+                'itemId': 185,
+                'type': 'emoji',
+                'title': '表情包',
+                'content': jsonEncode(pack),
+              },
+            ],
+          }),
+          200,
+          headers: {'content-type': 'application/json; charset=utf-8'},
+        );
+      }
+      if (request.url.path == '/shop/my/items') {
+        return http.Response(
+          jsonEncode({'code': 200, 'data': {'records': [], 'total': 0}}),
+          200,
+          headers: {'content-type': 'application/json; charset=utf-8'},
+        );
+      }
+      return http.Response('not found', 404);
+    });
+    final api = ChengeApi(client: client, baseUrl: 'http://example.test');
+
+    final emojis = await api.myEmojiAssets('session-token');
+
+    expect(emojis, hasLength(3));
+    expect(
+      emojis.map((emoji) => emoji.toSendJson()).toList(),
+      [
+        {
+          'itemId': 185,
+          'key': 'TSQ',
+          'fileId': 984,
+          'url': 'https://example.test/emoji-one.png',
+        },
+        {
+          'itemId': 185,
+          'key': '申SQ',
+          'fileId': 985,
+          'url': 'https://example.test/emoji-two.png',
+        },
+        {
+          'itemId': 185,
+          'key': '高光SQ',
+          'fileId': 986,
+          'url': 'https://example.test/emoji-three.png',
+        },
+      ],
+    );
+  });
+
   test('loads nested comments and posts a reply', () async {
     final requests = <http.Request>[];
     final client = MockClient((request) async {

@@ -317,18 +317,57 @@ class ChengeApi {
 
   /// Load owned emoji packs from shop assets + my items (type == emoji).
   Future<List<EmojiAsset>> myEmojiAssets(String token) async {
-    final byId = <int, EmojiAsset>{};
+    final byId = <String, EmojiAsset>{};
+
+    void addEmoji(Map<String, dynamic> raw, {int? itemId}) {
+      final asset = EmojiAsset.fromMap({
+        ...raw,
+        if (itemId != null) 'itemId': itemId,
+      });
+      final key = asset.key?.trim();
+      final url = asset.url?.trim();
+      if (asset.itemId <= 0 ||
+          key == null ||
+          key.isEmpty ||
+          key.length > 32 ||
+          asset.fileId == null ||
+          asset.fileId! <= 0 ||
+          url == null ||
+          !_isValidEmojiUrl(url)) {
+        return;
+      }
+
+      final identity = '${asset.itemId}:${asset.fileId}';
+      byId.putIfAbsent(identity, () => asset);
+    }
 
     void absorb(Map<String, dynamic> raw) {
       final type = (raw['type'] ?? raw['itemType'] ?? '').toString().toLowerCase();
       if (type.isNotEmpty && type != 'emoji') return;
-      final asset = EmojiAsset.fromMap(raw);
-      if (asset.itemId <= 0) return;
-      // Prefer entries that already have a url.
-      final existing = byId[asset.itemId];
-      if (existing == null || (existing.url == null && asset.url != null)) {
-        byId[asset.itemId] = asset;
+
+      final itemId = _integer(raw['itemId'] ?? raw['id']);
+      if (itemId <= 0) return;
+
+      final content = raw['content'];
+      if (content is String && content.trim().isNotEmpty) {
+        try {
+          final decoded = jsonDecode(content);
+          if (decoded is List) {
+            for (final entry in decoded.whereType<Map<String, dynamic>>()) {
+              addEmoji({...entry, 'itemId': itemId});
+            }
+            return;
+          }
+          if (decoded is Map<String, dynamic>) {
+            addEmoji({...decoded, 'itemId': itemId});
+            return;
+          }
+        } on FormatException {
+          // Fall through for legacy responses that expose a single emoji directly.
+        }
       }
+
+      addEmoji(raw, itemId: itemId);
     }
 
     try {
@@ -370,17 +409,14 @@ class ChengeApi {
     if (byId.isEmpty) {
       try {
         for (final row in await shopAssets(token)) {
-          final asset = EmojiAsset.fromMap(row);
-          if (asset.itemId > 0) byId[asset.itemId] = asset;
+          absorb(row);
         }
       } on ApiException {
         // ignore
       }
     }
 
-    final list = byId.values.toList()
-      ..sort((a, b) => a.itemId.compareTo(b.itemId));
-    return list;
+    return byId.values.toList();
   }
 
   Future<ShopItemPage> shopItems({
@@ -623,6 +659,17 @@ class ChengeApi {
   }
 
   static int _integer(Object? value) => value is num ? value.toInt() : int.tryParse('$value') ?? 0;
+
+  static bool _isValidEmojiUrl(String url) {
+    const localPrefix = '/file-module/files/local/';
+    if (url.startsWith(localPrefix)) {
+      return !url.contains(r'\') && url.substring(localPrefix.length).trim().isNotEmpty;
+    }
+    final uri = Uri.tryParse(url);
+    return uri != null &&
+        (uri.scheme == 'http' || uri.scheme == 'https') &&
+        uri.host.isNotEmpty;
+  }
 }
 
 class SessionStore {
