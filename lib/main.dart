@@ -1,7 +1,7 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
+import 'l10n/app_localizations_text.dart';
 import 'screens/account_page.dart';
 import 'screens/feed_page.dart';
 import 'screens/shop_page.dart';
@@ -23,14 +23,27 @@ class ChengeWorldApp extends StatefulWidget {
   State<ChengeWorldApp> createState() => _ChengeWorldAppState();
 }
 
-class _ChengeWorldAppState extends State<ChengeWorldApp> {
+class _ChengeWorldAppState extends State<ChengeWorldApp>
+    with WidgetsBindingObserver {
   final _settings = SettingsStore();
   bool _ready = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _bootstrap();
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    if (_settings.themeMode == ThemeMode.system) _applySystemUi();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   Future<void> _bootstrap() async {
@@ -40,21 +53,43 @@ class _ChengeWorldAppState extends State<ChengeWorldApp> {
   }
 
   void _applySystemUi() {
-    final immersive = _settings.statusBarImmersive || _settings.navigationBarImmersive;
+    final brightness =
+        _settings.themeMode == ThemeMode.system
+            ? WidgetsBinding.instance.platformDispatcher.platformBrightness
+            : _settings.themeMode == ThemeMode.dark
+            ? Brightness.dark
+            : Brightness.light;
+    final background =
+        brightness == Brightness.dark ? const Color(0xFF141D1B) : AppTheme.mist;
+    final immersive =
+        _settings.statusBarImmersive || _settings.navigationBarImmersive;
     if (immersive) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     } else {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
+      SystemChrome.setEnabledSystemUIMode(
+        SystemUiMode.manual,
+        overlays: SystemUiOverlay.values,
+      );
     }
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: _settings.statusBarImmersive ? Colors.transparent : AppTheme.mist,
-      statusBarIconBrightness: Brightness.dark,
-      statusBarBrightness: Brightness.light,
-      systemNavigationBarColor:
-          _settings.navigationBarImmersive ? Colors.transparent : Colors.white,
-      systemNavigationBarIconBrightness: Brightness.dark,
-      systemNavigationBarContrastEnforced: !_settings.navigationBarImmersive,
-    ));
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor:
+            _settings.statusBarImmersive ? Colors.transparent : background,
+        statusBarIconBrightness:
+            brightness == Brightness.dark ? Brightness.light : Brightness.dark,
+        statusBarBrightness:
+            brightness == Brightness.dark ? Brightness.dark : Brightness.light,
+        systemNavigationBarColor:
+            _settings.navigationBarImmersive
+                ? Colors.transparent
+                : brightness == Brightness.dark
+                ? const Color(0xFF1D2725)
+                : Colors.white,
+        systemNavigationBarIconBrightness:
+            brightness == Brightness.dark ? Brightness.light : Brightness.dark,
+        systemNavigationBarContrastEnforced: !_settings.navigationBarImmersive,
+      ),
+    );
   }
 
   Future<void> _onSettingsChanged() async {
@@ -77,16 +112,35 @@ class _ChengeWorldAppState extends State<ChengeWorldApp> {
         var theme = AppTheme.build(
           dynamicScheme: useDynamic ? lightDynamic : null,
           seedColor: _settings.seedColor,
+          brightness: Brightness.light,
           statusBarImmersive: _settings.statusBarImmersive,
           navigationBarImmersive: _settings.navigationBarImmersive,
         );
-        theme = theme.copyWith(
+        var darkTheme = AppTheme.build(
+          dynamicScheme: useDynamic ? darkDynamic : null,
+          seedColor: _settings.seedColor,
+          brightness: Brightness.dark,
+          statusBarImmersive: _settings.statusBarImmersive,
+          navigationBarImmersive: _settings.navigationBarImmersive,
+        );
+        final transitions = PageTransitionsTheme(
+          builders: {
+            ...theme.pageTransitionsTheme.builders,
+            TargetPlatform.android:
+                _settings.predictiveBack
+                    ? const PredictiveBackPageTransitionsBuilder()
+                    : const ZoomPageTransitionsBuilder(),
+          },
+        );
+        theme = theme.copyWith(pageTransitionsTheme: transitions);
+        darkTheme = darkTheme.copyWith(
           pageTransitionsTheme: PageTransitionsTheme(
             builders: {
-              ...theme.pageTransitionsTheme.builders,
-              TargetPlatform.android: _settings.predictiveBack
-                  ? const PredictiveBackPageTransitionsBuilder()
-                  : const ZoomPageTransitionsBuilder(),
+              ...darkTheme.pageTransitionsTheme.builders,
+              TargetPlatform.android:
+                  _settings.predictiveBack
+                      ? const PredictiveBackPageTransitionsBuilder()
+                      : const ZoomPageTransitionsBuilder(),
             },
           ),
         );
@@ -95,6 +149,20 @@ class _ChengeWorldAppState extends State<ChengeWorldApp> {
           title: 'ChengeWorld',
           debugShowCheckedModeBanner: false,
           theme: theme,
+          darkTheme: darkTheme,
+          themeMode: _settings.themeMode,
+          locale: switch (_settings.localeCode) {
+            'zh_CN' => const Locale('zh', 'CN'),
+            'zh_TW' => const Locale('zh', 'TW'),
+            'en_US' => const Locale('en', 'US'),
+            _ => null,
+          },
+          supportedLocales: const [
+            Locale('zh', 'CN'),
+            Locale('zh', 'TW'),
+            Locale('en', 'US'),
+          ],
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           home: AppShell(
             settings: _settings,
             onSettingsChanged: _onSettingsChanged,
@@ -127,6 +195,7 @@ class _AppShellState extends State<AppShell> {
   String? _username;
   int? _userId;
   bool _restoring = true;
+
   /// Bottom nav / rail chrome; hidden while scrolling the feed downward.
   bool _chromeVisible = true;
 
@@ -146,7 +215,10 @@ class _AppShellState extends State<AppShell> {
         final current = await _api.currentUser(token);
         final user = current['user'];
         username = user is Map ? user['username']?.toString() : null;
-        userId = user is Map && user['id'] is num ? (user['id'] as num).toInt() : null;
+        userId =
+            user is Map && user['id'] is num
+                ? (user['id'] as num).toInt()
+                : null;
       } on ApiException catch (error) {
         if (error.statusCode == 401 || error.businessCode == 401) {
           await _sessionStore.clearToken();
@@ -171,7 +243,8 @@ class _AppShellState extends State<AppShell> {
     setState(() {
       _token = token;
       _username = user is Map ? user['username']?.toString() : null;
-      _userId = user is Map && user['id'] is num ? (user['id'] as num).toInt() : null;
+      _userId =
+          user is Map && user['id'] is num ? (user['id'] as num).toInt() : null;
     });
   }
 
@@ -195,29 +268,33 @@ class _AppShellState extends State<AppShell> {
 
   void _openTaskLink(String link) {
     final value = link.toLowerCase();
-    final destination = value.contains('shop')
-        ? 2
-        : value.contains('friend') || value.contains('chat')
+    final destination =
+        value.contains('shop')
+            ? 2
+            : value.contains('friend') || value.contains('chat')
             ? 1
             : 0;
     setState(() => _selectedIndex = destination);
   }
 
   void _openTasks() {
-    Navigator.of(context).push(MaterialPageRoute<void>(
-      builder: (_) => TasksPage(
-        api: _api,
-        token: _token,
-        onLoginRequested: () {
-          Navigator.of(context).pop();
-          setState(() => _selectedIndex = 3);
-        },
-        onOpenLink: (link) {
-          Navigator.of(context).pop();
-          _openTaskLink(link);
-        },
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder:
+            (_) => TasksPage(
+              api: _api,
+              token: _token,
+              onLoginRequested: () {
+                Navigator.of(context).pop();
+                setState(() => _selectedIndex = 3);
+              },
+              onOpenLink: (link) {
+                Navigator.of(context).pop();
+                _openTaskLink(link);
+              },
+            ),
       ),
-    ));
+    );
   }
 
   @override
@@ -256,19 +333,21 @@ class _AppShellState extends State<AppShell> {
         userId: _userId,
         settings: widget.settings,
         isActive: _selectedIndex == 1,
-        onLoginRequested: () => setState(() {
-          _selectedIndex = 3;
-          _chromeVisible = true;
-        }),
+        onLoginRequested:
+            () => setState(() {
+              _selectedIndex = 3;
+              _chromeVisible = true;
+            }),
       ),
       ShopPage(
         api: _api,
         token: _token,
         userId: _userId,
-        onLoginRequested: () => setState(() {
-          _selectedIndex = 3;
-          _chromeVisible = true;
-        }),
+        onLoginRequested:
+            () => setState(() {
+              _selectedIndex = 3;
+              _chromeVisible = true;
+            }),
         autoHideTopBar: widget.settings.autoHideTopBar,
         autoHideBottomBar: hideBottomBar,
         minColumns: widget.settings.shopMinColumns,
@@ -296,10 +375,11 @@ class _AppShellState extends State<AppShell> {
               padding: const EdgeInsets.fromLTRB(12, 16, 8, 16),
               child: NavigationRail(
                 selectedIndex: _selectedIndex,
-                onDestinationSelected: (index) => setState(() {
-                  _selectedIndex = index;
-                  _chromeVisible = true;
-                }),
+                onDestinationSelected:
+                    (index) => setState(() {
+                      _selectedIndex = index;
+                      _chromeVisible = true;
+                    }),
                 labelType: NavigationRailLabelType.all,
                 leading: Padding(
                   padding: const EdgeInsets.only(bottom: 16),
@@ -315,78 +395,80 @@ class _AppShellState extends State<AppShell> {
                     ),
                   ),
                 ),
-                destinations: const [
+                destinations: [
                   NavigationRailDestination(
                     icon: Icon(Icons.dynamic_feed_outlined),
                     selectedIcon: Icon(Icons.dynamic_feed_rounded),
-                    label: Text('发现'),
+                    label: Text(AppLocalizations.of(context).text('发现')),
                   ),
                   NavigationRailDestination(
                     icon: Icon(Icons.people_outline_rounded),
                     selectedIcon: Icon(Icons.people_rounded),
-                    label: Text('社交'),
+                    label: Text(AppLocalizations.of(context).text('社交')),
                   ),
                   NavigationRailDestination(
                     icon: Icon(Icons.storefront_outlined),
                     selectedIcon: Icon(Icons.storefront_rounded),
-                    label: Text('商城'),
+                    label: Text(AppLocalizations.of(context).text('商城')),
                   ),
                   NavigationRailDestination(
                     icon: Icon(Icons.person_outline_rounded),
                     selectedIcon: Icon(Icons.person_rounded),
-                    label: Text('我的'),
+                    label: Text(AppLocalizations.of(context).text('我的')),
                   ),
                 ],
               ),
             ),
-          Expanded(
-            child: IndexedStack(index: _selectedIndex, children: pages),
-          ),
+          Expanded(child: IndexedStack(index: _selectedIndex, children: pages)),
         ],
       ),
-      bottomNavigationBar: wide
-          ? null
-          : ClipRect(
-              child: AnimatedAlign(
-                duration: const Duration(milliseconds: 320),
-                curve: Curves.easeInOutCubic,
-                alignment: Alignment.topCenter,
-                heightFactor: (!hideBottomBar || _chromeVisible) ? 1 : 0,
-                child: Material(
-                  elevation: (!hideBottomBar || _chromeVisible) ? 3 : 0,
-                  color: Theme.of(context).navigationBarTheme.backgroundColor ?? Colors.white,
-                  child: NavigationBar(
-                    selectedIndex: _selectedIndex,
-                    onDestinationSelected: (index) => setState(() {
-                      _selectedIndex = index;
-                      _chromeVisible = true;
-                    }),
-                    destinations: const [
-                      NavigationDestination(
-                        icon: Icon(Icons.dynamic_feed_outlined),
-                        selectedIcon: Icon(Icons.dynamic_feed_rounded),
-                        label: '发现',
-                      ),
-                      NavigationDestination(
-                        icon: Icon(Icons.people_outline_rounded),
-                        selectedIcon: Icon(Icons.people_rounded),
-                        label: '社交',
-                      ),
-                      NavigationDestination(
-                        icon: Icon(Icons.storefront_outlined),
-                        selectedIcon: Icon(Icons.storefront_rounded),
-                        label: '商城',
-                      ),
-                      NavigationDestination(
-                        icon: Icon(Icons.person_outline_rounded),
-                        selectedIcon: Icon(Icons.person_rounded),
-                        label: '我的',
-                      ),
-                    ],
+      bottomNavigationBar:
+          wide
+              ? null
+              : ClipRect(
+                child: AnimatedAlign(
+                  duration: const Duration(milliseconds: 320),
+                  curve: Curves.easeInOutCubic,
+                  alignment: Alignment.topCenter,
+                  heightFactor: (!hideBottomBar || _chromeVisible) ? 1 : 0,
+                  child: Material(
+                    elevation: (!hideBottomBar || _chromeVisible) ? 3 : 0,
+                    color:
+                        Theme.of(context).navigationBarTheme.backgroundColor ??
+                        Colors.white,
+                    child: NavigationBar(
+                      selectedIndex: _selectedIndex,
+                      onDestinationSelected:
+                          (index) => setState(() {
+                            _selectedIndex = index;
+                            _chromeVisible = true;
+                          }),
+                      destinations: [
+                        NavigationDestination(
+                          icon: Icon(Icons.dynamic_feed_outlined),
+                          selectedIcon: Icon(Icons.dynamic_feed_rounded),
+                          label: AppLocalizations.of(context).text('发现'),
+                        ),
+                        NavigationDestination(
+                          icon: Icon(Icons.people_outline_rounded),
+                          selectedIcon: Icon(Icons.people_rounded),
+                          label: AppLocalizations.of(context).text('社交'),
+                        ),
+                        NavigationDestination(
+                          icon: Icon(Icons.storefront_outlined),
+                          selectedIcon: Icon(Icons.storefront_rounded),
+                          label: AppLocalizations.of(context).text('商城'),
+                        ),
+                        NavigationDestination(
+                          icon: Icon(Icons.person_outline_rounded),
+                          selectedIcon: Icon(Icons.person_rounded),
+                          label: AppLocalizations.of(context).text('我的'),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
     );
   }
 }

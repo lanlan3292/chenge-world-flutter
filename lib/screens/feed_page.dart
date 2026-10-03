@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+import '../l10n/app_localizations_text.dart';
 import '../models/blog_post.dart';
 import '../services/chenge_api.dart';
-import '../theme/app_theme.dart';
 import '../widgets/post_card.dart';
 import 'post_detail_page.dart';
 
@@ -171,7 +171,7 @@ class _FeedPageState extends State<FeedPage> {
                   floating: widget.autoHideTopBar,
                   snap: widget.autoHideTopBar,
                   pinned: !widget.autoHideTopBar,
-                  backgroundColor: AppTheme.mist,
+                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                   surfaceTintColor: Colors.transparent,
                   elevation: 0,
                   scrolledUnderElevation: 0,
@@ -192,7 +192,7 @@ class _FeedPageState extends State<FeedPage> {
                         ),
                         const SizedBox(width: 11),
                       ],
-                      const Column(
+                      Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
@@ -203,10 +203,15 @@ class _FeedPageState extends State<FeedPage> {
                             ),
                           ),
                           Text(
-                            '社区广场',
+                            AppLocalizations.of(
+                              context,
+                            ).text('ChengeWorld 社区广场'),
                             style: TextStyle(
                               fontSize: 11,
-                              color: Color(0xFF70817D),
+                              color:
+                                  Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -215,7 +220,7 @@ class _FeedPageState extends State<FeedPage> {
                   ),
                   actions: [
                     IconButton(
-                      tooltip: '刷新帖子',
+                      tooltip: AppLocalizations.of(context).text('刷新帖子'),
                       onPressed: _loading ? null : () => _loadPage(1),
                       icon: const Icon(Icons.refresh_rounded),
                     ),
@@ -231,9 +236,9 @@ class _FeedPageState extends State<FeedPage> {
                   sliver: SliverToBoxAdapter(child: _buildFeedHeader()),
                 ),
                 if (_loading && _posts.isEmpty)
-                  const SliverFillRemaining(
+                  SliverFillRemaining(
                     hasScrollBody: false,
-                    child: Center(child: CircularProgressIndicator()),
+                    child: const Center(child: CircularProgressIndicator()),
                   )
                 else if (_error.isNotEmpty && _posts.isEmpty)
                   SliverFillRemaining(
@@ -241,10 +246,7 @@ class _FeedPageState extends State<FeedPage> {
                     child: _buildError(),
                   )
                 else if (_posts.isEmpty)
-                  const SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: _EmptyFeed(),
-                  )
+                  SliverFillRemaining(hasScrollBody: false, child: _EmptyFeed())
                 else ...[
                   SliverPadding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -295,15 +297,15 @@ class _FeedPageState extends State<FeedPage> {
           controller: _searchController,
           textInputAction: TextInputAction.search,
           onSubmitted: (_) => _loadPage(1),
-          decoration: const InputDecoration(
-            hintText: '搜索帖子和话题',
+          decoration: InputDecoration(
+            hintText: AppLocalizations.of(context).text('搜索帖子和话题'),
             prefixIcon: Icon(Icons.search_rounded),
           ),
         ),
       ),
       const SizedBox(width: 10),
       IconButton.filledTonal(
-        tooltip: '搜索',
+        tooltip: AppLocalizations.of(context).text('搜索'),
         onPressed: () => _loadPage(1),
         icon: const Icon(Icons.arrow_forward_rounded),
       ),
@@ -316,12 +318,12 @@ class _FeedPageState extends State<FeedPage> {
       Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '此刻在聊',
+                  AppLocalizations.of(context).text('此刻在聊'),
                   style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.w900,
@@ -329,31 +331,41 @@ class _FeedPageState extends State<FeedPage> {
                   ),
                 ),
                 SizedBox(height: 4),
-                Text('看看社区里的新鲜讨论', style: TextStyle(color: Color(0xFF70817D))),
+                Text(
+                  AppLocalizations.of(context).text('看看社区里的新鲜讨论'),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
               ],
             ),
           ),
           if (_total > 0)
-            Text('$_total 篇', style: const TextStyle(color: Color(0xFF70817D))),
+            Text(
+              AppLocalizations.of(context).postCount(_total),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
         ],
       ),
       const SizedBox(height: 16),
       SegmentedButton<String>(
         showSelectedIcon: false,
-        segments: const [
+        segments: [
           ButtonSegment(
             value: 'latest',
-            label: Text('最新'),
+            label: Text(AppLocalizations.of(context).text('最新')),
             icon: Icon(Icons.schedule_rounded),
           ),
           ButtonSegment(
             value: 'hot',
-            label: Text('热门'),
+            label: Text(AppLocalizations.of(context).text('热门')),
             icon: Icon(Icons.local_fire_department_rounded),
           ),
           ButtonSegment(
             value: 'essence',
-            label: Text('精华'),
+            label: Text(AppLocalizations.of(context).text('精华')),
             icon: Icon(Icons.auto_awesome_rounded),
           ),
         ],
@@ -376,7 +388,7 @@ class _FeedPageState extends State<FeedPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton.filledTonal(
-              tooltip: '上一页',
+              tooltip: AppLocalizations.of(context).text('上一页'),
               onPressed:
                   _loading || _page <= 1 ? null : () => _loadPage(_page - 1),
               icon: const Icon(Icons.chevron_left_rounded),
@@ -384,12 +396,12 @@ class _FeedPageState extends State<FeedPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 14),
               child: Text(
-                '第 $_page / $totalPages 页',
+                AppLocalizations.of(context).pageCount(_page, totalPages),
                 style: const TextStyle(fontWeight: FontWeight.w700),
               ),
             ),
             IconButton.filledTonal(
-              tooltip: '下一页',
+              tooltip: AppLocalizations.of(context).text('下一页'),
               onPressed:
                   _loading || _page >= totalPages
                       ? null
@@ -408,21 +420,23 @@ class _FeedPageState extends State<FeedPage> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
+          Icon(
             Icons.cloud_off_rounded,
             size: 48,
-            color: Color(0xFF70817D),
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
           const SizedBox(height: 12),
           Text(
             _error,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Color(0xFF70817D)),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: 16),
           FilledButton.tonal(
             onPressed: () => _loadPage(1),
-            child: const Text('重试'),
+            child: Text(AppLocalizations.of(context).text('重试')),
           ),
         ],
       ),
@@ -434,20 +448,29 @@ class _EmptyFeed extends StatelessWidget {
   const _EmptyFeed();
 
   @override
-  Widget build(BuildContext context) => const Center(
+  Widget build(BuildContext context) => Center(
     child: Padding(
       padding: EdgeInsets.all(32),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.forum_outlined, size: 48, color: Color(0xFF70817D)),
+          Icon(
+            Icons.forum_outlined,
+            size: 48,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
           SizedBox(height: 12),
           Text(
-            '暂时没有帖子',
-            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+            AppLocalizations.of(context).text('暂时没有帖子'),
+            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
           ),
           SizedBox(height: 6),
-          Text('换个关键词或稍后再来看看', style: TextStyle(color: Color(0xFF70817D))),
+          Text(
+            AppLocalizations.of(context).text('换个关键词或稍后再来看看'),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
         ],
       ),
     ),

@@ -49,6 +49,8 @@
 
 - Flutter / Dart
 - Material 3
+- 深色 / 浅色 / 跟随系统主题
+- 中文（中国）、中文（台湾）、英语（美国）界面语言
 - `http`：HTTP API
 - `flutter_secure_storage`：安全保存登录凭据
 - `flutter_markdown`：Markdown 渲染

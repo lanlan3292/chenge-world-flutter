@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations_text.dart';
 import '../services/chenge_api.dart';
 import '../services/settings_store.dart';
 import 'settings_page.dart';
@@ -32,10 +33,13 @@ class AccountPage extends StatelessWidget {
     final signedIn = token != null;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('我的', style: TextStyle(fontWeight: FontWeight.w800)),
+        title: Text(
+          AppLocalizations.of(context).text('我的'),
+          style: const TextStyle(fontWeight: FontWeight.w800),
+        ),
         actions: [
           IconButton(
-            tooltip: '设置',
+            tooltip: AppLocalizations.of(context).text('设置'),
             onPressed: () => _openSettings(context, signedIn),
             icon: const Icon(Icons.settings_outlined),
           ),
@@ -51,7 +55,7 @@ class AccountPage extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(22),
                 decoration: BoxDecoration(
-                  color: AppTheme.ink,
+                  color: Theme.of(context).colorScheme.primaryContainer,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -60,14 +64,15 @@ class AccountPage extends StatelessWidget {
                       width: 60,
                       height: 60,
                       decoration: BoxDecoration(
-                        color: AppTheme.citrus,
+                        color: Theme.of(context).colorScheme.tertiaryContainer,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Icon(
                         signedIn
                             ? Icons.person_rounded
                             : Icons.lock_open_rounded,
-                        color: AppTheme.ink,
+                        color:
+                            Theme.of(context).colorScheme.onTertiaryContainer,
                         size: 30,
                       ),
                     ),
@@ -77,17 +82,30 @@ class AccountPage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            signedIn ? (username ?? '已登录') : '欢迎来到社区',
-                            style: const TextStyle(
-                              color: Colors.white,
+                            signedIn
+                                ? (username ??
+                                    AppLocalizations.of(context).text('已登录'))
+                                : AppLocalizations.of(context).text('欢迎来到社区'),
+                            style: TextStyle(
+                              color:
+                                  Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimaryContainer,
                               fontSize: 21,
                               fontWeight: FontWeight.w800,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            signedIn ? '账户已连接到 ChengeWorld' : '登录后浏览个性化内容',
-                            style: const TextStyle(color: Color(0xFFC4D8D0)),
+                            AppLocalizations.of(context).text(
+                              signedIn ? '账户已连接到 ChengeWorld' : '登录后浏览个性化内容',
+                            ),
+                            style: TextStyle(
+                              color:
+                                  Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimaryContainer,
+                            ),
                           ),
                         ],
                       ),
@@ -97,7 +115,7 @@ class AccountPage extends StatelessWidget {
               ),
               const SizedBox(height: 18),
               Material(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surfaceContainerLow,
                 borderRadius: BorderRadius.circular(8),
                 child: ListTile(
                   onTap: onOpenTasks,
@@ -109,19 +127,21 @@ class AccountPage extends StatelessWidget {
                     width: 42,
                     height: 42,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFFFE8C5),
+                      color: Theme.of(context).colorScheme.tertiaryContainer,
                       borderRadius: BorderRadius.circular(14),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.task_alt_rounded,
-                      color: AppTheme.ink,
+                      color: Theme.of(context).colorScheme.onTertiaryContainer,
                     ),
                   ),
-                  title: const Text(
-                    '任务中心',
-                    style: TextStyle(fontWeight: FontWeight.w800),
+                  title: Text(
+                    AppLocalizations.of(context).text('任务中心'),
+                    style: const TextStyle(fontWeight: FontWeight.w800),
                   ),
-                  subtitle: const Text('签到、完成任务并领取 ChengeCoin'),
+                  subtitle: Text(
+                    AppLocalizations.of(context).text('签到、完成任务并领取 ChengeCoin'),
+                  ),
                   trailing: const Icon(Icons.chevron_right_rounded),
                 ),
               ),
@@ -130,7 +150,7 @@ class AccountPage extends StatelessWidget {
                 FilledButton.icon(
                   onPressed: () => _showLogin(context),
                   icon: const Icon(Icons.login_rounded),
-                  label: const Text('登录账户'),
+                  label: Text(AppLocalizations.of(context).text('登录账户')),
                 ),
             ],
           ),
@@ -161,9 +181,9 @@ class AccountPage extends StatelessWidget {
     if (result == null || !context.mounted) return;
     await onLogin(result);
     if (context.mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('登录成功')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context).text('登录成功'))),
+      );
     }
   }
 }
@@ -217,15 +237,18 @@ class _LoginDialogState extends State<_LoginDialog> {
       width: 54,
       height: 54,
       decoration: BoxDecoration(
-        color: const Color(0xFFE0F0E8),
+        color: Theme.of(context).colorScheme.primaryContainer,
         borderRadius: BorderRadius.circular(18),
       ),
-      child: const Icon(Icons.waving_hand_rounded, color: AppTheme.leaf),
+      child: Icon(
+        Icons.waving_hand_rounded,
+        color: Theme.of(context).colorScheme.onPrimaryContainer,
+      ),
     ),
-    title: const Text(
-      '登录 ChengeWorld',
+    title: Text(
+      AppLocalizations.of(context).text('登录 ChengeWorld'),
       textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 21, fontWeight: FontWeight.w800),
+      style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w800),
     ),
     content: SizedBox(
       width: 390,
@@ -240,13 +263,15 @@ class _LoginDialogState extends State<_LoginDialog> {
               enabled: !_loading,
               textInputAction: TextInputAction.next,
               autofillHints: const [AutofillHints.username],
-              decoration: const InputDecoration(
-                labelText: '用户名',
-                prefixIcon: Icon(Icons.person_outline_rounded),
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context).text('用户名'),
+                prefixIcon: const Icon(Icons.person_outline_rounded),
               ),
               validator:
                   (value) =>
-                      value == null || value.trim().isEmpty ? '请输入用户名' : null,
+                      value == null || value.trim().isEmpty
+                          ? AppLocalizations.of(context).text('请输入用户名')
+                          : null,
             ),
             const SizedBox(height: 12),
             TextFormField(
@@ -257,10 +282,12 @@ class _LoginDialogState extends State<_LoginDialog> {
               autofillHints: const [AutofillHints.password],
               onFieldSubmitted: (_) => _submit(),
               decoration: InputDecoration(
-                labelText: '密码',
+                labelText: AppLocalizations.of(context).text('密码'),
                 prefixIcon: const Icon(Icons.lock_outline_rounded),
                 suffixIcon: IconButton(
-                  tooltip: _obscurePassword ? '显示密码' : '隐藏密码',
+                  tooltip: AppLocalizations.of(
+                    context,
+                  ).text(_obscurePassword ? '显示密码' : '隐藏密码'),
                   onPressed:
                       () =>
                           setState(() => _obscurePassword = !_obscurePassword),
@@ -272,7 +299,10 @@ class _LoginDialogState extends State<_LoginDialog> {
                 ),
               ),
               validator:
-                  (value) => value == null || value.isEmpty ? '请输入密码' : null,
+                  (value) =>
+                      value == null || value.isEmpty
+                          ? AppLocalizations.of(context).text('请输入密码')
+                          : null,
             ),
             if (_error != null) ...[
               const SizedBox(height: 12),
@@ -290,7 +320,7 @@ class _LoginDialogState extends State<_LoginDialog> {
     actions: [
       TextButton(
         onPressed: _loading ? null : () => Navigator.pop(context),
-        child: const Text('取消'),
+        child: Text(AppLocalizations.of(context).text('取消')),
       ),
       FilledButton.icon(
         onPressed: _loading ? null : _submit,
@@ -301,7 +331,9 @@ class _LoginDialogState extends State<_LoginDialog> {
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
                 : const Icon(Icons.login_rounded),
-        label: Text(_loading ? '正在登录' : '登录'),
+        label: Text(
+          AppLocalizations.of(context).text(_loading ? '正在登录' : '登录'),
+        ),
       ),
     ],
   );

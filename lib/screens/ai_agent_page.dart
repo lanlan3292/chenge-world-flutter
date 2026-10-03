@@ -339,7 +339,9 @@ class _AiAgentPageState extends State<AiAgentPage> {
   Widget _sessionTile(AiSession session) {
     final active = _active?.sessionId == session.sessionId;
     return Material(
-      color: active ? AppTheme.leaf.withValues(alpha: 0.1) : Colors.white,
+      color: active
+          ? Theme.of(context).colorScheme.secondaryContainer
+          : Theme.of(context).colorScheme.surfaceContainerLow,
       borderRadius: BorderRadius.circular(8),
       child: InkWell(
         borderRadius: BorderRadius.circular(8),

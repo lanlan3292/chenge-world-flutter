@@ -24,6 +24,7 @@ abstract final class AppTheme {
   static ThemeData build({
     ColorScheme? dynamicScheme,
     Color seedColor = leaf,
+    Brightness brightness = Brightness.light,
     bool statusBarImmersive = true,
     bool navigationBarImmersive = true,
   }) {
@@ -33,83 +34,114 @@ abstract final class AppTheme {
     } else {
       scheme = ColorScheme.fromSeed(
         seedColor: seedColor,
-        brightness: Brightness.light,
+        brightness: brightness,
         primary: seedColor,
         secondary: coral,
         tertiary: citrus,
-        surface: Colors.white,
       );
     }
 
     final primary = scheme.primary;
-    final surfaceTint = scheme.surfaceContainerHighest.withValues(alpha: 0.0);
+    final isDark = brightness == Brightness.dark;
+    final background = scheme.surface;
+    final systemBarStyle = SystemUiOverlayStyle(
+      statusBarColor: statusBarImmersive ? Colors.transparent : background,
+      statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+      statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
+      systemNavigationBarColor:
+          navigationBarImmersive ? Colors.transparent : scheme.surface,
+      systemNavigationBarIconBrightness:
+          isDark ? Brightness.light : Brightness.dark,
+      systemNavigationBarContrastEnforced: !navigationBarImmersive,
+    );
 
     return ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
-      scaffoldBackgroundColor: mist,
+      brightness: brightness,
+      scaffoldBackgroundColor: background,
       appBarTheme: AppBarTheme(
-        backgroundColor: statusBarImmersive ? Colors.transparent : mist,
+        backgroundColor: statusBarImmersive ? Colors.transparent : background,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         centerTitle: false,
-        systemOverlayStyle: SystemUiOverlayStyle(
-          statusBarColor: statusBarImmersive ? Colors.transparent : mist,
-          statusBarIconBrightness: Brightness.dark,
-          statusBarBrightness: Brightness.light,
-          systemNavigationBarColor:
-              navigationBarImmersive ? Colors.transparent : Colors.white,
-          systemNavigationBarIconBrightness: Brightness.dark,
-          systemNavigationBarContrastEnforced: !navigationBarImmersive,
-        ),
+        systemOverlayStyle: systemBarStyle,
       ),
       cardTheme: CardThemeData(
-        color: Colors.white,
+        color: scheme.surfaceContainerLow,
         elevation: 0,
         margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.white,
+        fillColor: scheme.surfaceContainerLow,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Color(0xFFDCE6E1)),
+          borderSide: BorderSide(color: scheme.outlineVariant),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(color: primary, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 15,
+        ),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           minimumSize: const Size(48, 52),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           textStyle: const TextStyle(fontWeight: FontWeight.w700),
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: navigationBarImmersive
-            ? Colors.white.withValues(alpha: 0.92)
-            : Colors.white,
-        indicatorColor: primary.withValues(alpha: 0.12),
+        backgroundColor:
+            navigationBarImmersive
+                ? scheme.surface.withValues(alpha: 0.92)
+                : scheme.surface,
+        indicatorColor: scheme.secondaryContainer,
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         elevation: navigationBarImmersive ? 0 : null,
-        surfaceTintColor: surfaceTint,
+        surfaceTintColor: scheme.surfaceTint,
       ),
       navigationRailTheme: NavigationRailThemeData(
-        backgroundColor: mist,
-        indicatorColor: primary.withValues(alpha: 0.12),
-        selectedIconTheme: IconThemeData(color: primary),
-        selectedLabelTextStyle:
-            const TextStyle(color: ink, fontWeight: FontWeight.w700),
+        backgroundColor: background,
+        indicatorColor: scheme.secondaryContainer,
+        selectedIconTheme: IconThemeData(color: scheme.onSecondaryContainer),
+        selectedLabelTextStyle: TextStyle(
+          color: scheme.onSurface,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+      dividerTheme: DividerThemeData(
+        color: scheme.outlineVariant,
+        thickness: 1,
+        space: 1,
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: scheme.surfaceContainerHigh,
+        surfaceTintColor: scheme.surfaceTint,
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: scheme.surfaceContainerLow,
+        surfaceTintColor: scheme.surfaceTint,
+        modalBackgroundColor: scheme.surfaceContainerLow,
+      ),
+      popupMenuTheme: PopupMenuThemeData(
+        color: scheme.surfaceContainer,
+        surfaceTintColor: scheme.surfaceTint,
       ),
       snackBarTheme: SnackBarThemeData(
+        backgroundColor: scheme.inverseSurface,
+        contentTextStyle: TextStyle(color: scheme.onInverseSurface),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),

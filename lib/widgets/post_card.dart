@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../models/blog_post.dart';
-import '../theme/app_theme.dart';
 
 class PostCard extends StatelessWidget {
   const PostCard({
@@ -27,7 +26,7 @@ class PostCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AspectRatio(aspectRatio: 4 / 3, child: _cover()),
+              AspectRatio(aspectRatio: 4 / 3, child: _cover(context)),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(16, 13, 16, 13),
@@ -37,14 +36,19 @@ class PostCard extends StatelessWidget {
                       Row(
                         children: [
                           if (post.categoryName != null)
-                            _label(post.categoryName!, AppTheme.leaf),
+                            _label(
+                              post.categoryName!,
+                              theme.colorScheme.primaryContainer,
+                              theme.colorScheme.onPrimaryContainer,
+                            ),
                           if (post.tags.isNotEmpty) ...[
                             if (post.categoryName != null)
                               const SizedBox(width: 7),
                             Flexible(
                               child: _label(
                                 '#${post.tags.first}',
-                                AppTheme.coral,
+                                theme.colorScheme.secondaryContainer,
+                                theme.colorScheme.onSecondaryContainer,
                               ),
                             ),
                           ],
@@ -67,29 +71,34 @@ class PostCard extends StatelessWidget {
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.bodySmall?.copyWith(
-                            color: const Color(0xFF667975),
+                            color: theme.colorScheme.onSurfaceVariant,
                             height: 1.4,
                           ),
                         ),
                       ),
                       Row(
                         children: [
-                          _avatar(),
+                          _avatar(context),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               '${post.authorName} · ${_dateLabel(post.createdAt)}',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 11,
-                                color: Color(0xFF70817D),
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ),
-                          _metric(Icons.visibility_outlined, post.viewCount),
+                          _metric(
+                            context,
+                            Icons.visibility_outlined,
+                            post.viewCount,
+                          ),
                           const SizedBox(width: 9),
                           _metric(
+                            context,
                             Icons.chat_bubble_outline_rounded,
                             post.commentCount,
                           ),
@@ -106,14 +115,14 @@ class PostCard extends StatelessWidget {
     );
   }
 
-  Widget _cover() {
+  Widget _cover(BuildContext context) {
     final imageUrl = post.coverImage;
-    if (imageUrl == null) return _coverPlaceholder();
+    if (imageUrl == null) return _coverPlaceholder(context);
     return Image.network(
       imageUrl,
       width: double.infinity,
       fit: BoxFit.cover,
-      errorBuilder: (_, __, ___) => _coverPlaceholder(),
+      errorBuilder: (_, __, ___) => _coverPlaceholder(context),
       loadingBuilder:
           (context, child, progress) =>
               progress == null
@@ -121,7 +130,7 @@ class PostCard extends StatelessWidget {
                   : Stack(
                     fit: StackFit.expand,
                     children: [
-                      _coverPlaceholder(),
+                      _coverPlaceholder(context),
                       Center(
                         child: CircularProgressIndicator(
                           value:
@@ -137,26 +146,29 @@ class PostCard extends StatelessWidget {
     );
   }
 
-  Widget _coverPlaceholder() => Container(
+  Widget _coverPlaceholder(BuildContext context) => Container(
     width: double.infinity,
-    color: const Color(0xFFDDECE5),
+    color: Theme.of(context).colorScheme.surfaceContainerHighest,
     child: Stack(
       children: [
         Positioned(
           right: -18,
           top: -34,
-          child: _shape(125, const Color(0xFFB8D8CB)),
+          child: _shape(
+            125,
+            Theme.of(context).colorScheme.surfaceContainerHigh,
+          ),
         ),
         Positioned(
           left: 24,
           bottom: -45,
-          child: _shape(110, const Color(0xFFF4D792)),
+          child: _shape(110, Theme.of(context).colorScheme.tertiaryContainer),
         ),
         Center(
           child: Icon(
             Icons.article_rounded,
             size: 34,
-            color: AppTheme.ink.withValues(alpha: 0.75),
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
       ],
@@ -172,7 +184,7 @@ class PostCard extends StatelessWidget {
     ),
   );
 
-  Widget _label(String label, Color color) => Container(
+  Widget _label(String label, Color color, Color foreground) => Container(
     constraints: const BoxConstraints(maxWidth: 150),
     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
     decoration: BoxDecoration(
@@ -183,31 +195,46 @@ class PostCard extends StatelessWidget {
       label,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
-      style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.w700),
+      style: TextStyle(
+        color: foreground,
+        fontSize: 10,
+        fontWeight: FontWeight.w700,
+      ),
     ),
   );
 
-  Widget _avatar() {
+  Widget _avatar(BuildContext context) {
     final avatar = post.authorAvatar;
     return CircleAvatar(
       radius: 12,
-      backgroundColor: const Color(0xFFFFE8C5),
+      backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
       foregroundImage: avatar == null ? null : NetworkImage(avatar),
       child:
           avatar == null
-              ? const Icon(Icons.person_rounded, size: 15, color: AppTheme.ink)
+              ? Icon(
+                Icons.person_rounded,
+                size: 15,
+                color: Theme.of(context).colorScheme.onTertiaryContainer,
+              )
               : null,
     );
   }
 
-  Widget _metric(IconData icon, int value) => Row(
+  Widget _metric(BuildContext context, IconData icon, int value) => Row(
     mainAxisSize: MainAxisSize.min,
     children: [
-      Icon(icon, size: 13, color: const Color(0xFF70817D)),
+      Icon(
+        icon,
+        size: 13,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+      ),
       const SizedBox(width: 3),
       Text(
         '$value',
-        style: const TextStyle(fontSize: 10, color: Color(0xFF70817D)),
+        style: TextStyle(
+          fontSize: 10,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
       ),
     ],
   );

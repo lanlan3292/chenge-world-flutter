@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
+import '../l10n/app_localizations_text.dart';
 import '../models/blog_comment.dart';
 import '../models/blog_post.dart';
 import '../services/chenge_api.dart';
 import '../theme/app_theme.dart';
 
 class PostDetailPage extends StatefulWidget {
-  const PostDetailPage({super.key, required this.api, required this.post, this.token});
+  const PostDetailPage({
+    super.key,
+    required this.api,
+    required this.post,
+    this.token,
+  });
 
   final ChengeApi api;
   final BlogPost post;
@@ -52,7 +58,10 @@ class _PostDetailPageState extends State<PostDetailPage> {
 
   Future<BlogPost> _loadDetail() async {
     try {
-      final post = await widget.api.postDetail(widget.post.id, token: widget.token);
+      final post = await widget.api.postDetail(
+        widget.post.id,
+        token: widget.token,
+      );
       if (mounted) {
         setState(() {
           _liked = post.liked;
@@ -78,7 +87,10 @@ class _PostDetailPageState extends State<PostDetailPage> {
         _comments
           ..clear()
           ..addAll(comments);
-        _commentCount = comments.fold<int>(0, (count, comment) => count + 1 + comment.children.length);
+        _commentCount = comments.fold<int>(
+          0,
+          (count, comment) => count + 1 + comment.children.length,
+        );
       });
     } on ApiException catch (error) {
       if (mounted) setState(() => _commentError = error.message);
@@ -99,7 +111,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
       final liked = await widget.api.togglePostLike(widget.post.id, token);
       if (!mounted) return;
       setState(() {
-        if (_liked != liked) _likeCount = (_likeCount + (liked ? 1 : -1)).clamp(0, 1 << 30);
+        if (_liked != liked)
+          _likeCount = (_likeCount + (liked ? 1 : -1)).clamp(0, 1 << 30);
         _liked = liked;
       });
     } on ApiException catch (error) {
@@ -144,19 +157,32 @@ class _PostDetailPageState extends State<PostDetailPage> {
     setState(() => _replyTo = comment);
     final composerContext = _composerKey.currentContext;
     if (composerContext == null) return;
-    await Scrollable.ensureVisible(composerContext, duration: const Duration(milliseconds: 220), alignment: 0.75);
+    await Scrollable.ensureVisible(
+      composerContext,
+      duration: const Duration(milliseconds: 220),
+      alignment: 0.75,
+    );
     if (mounted) _commentFocusNode.requestFocus();
   }
 
   Future<void> _scrollToComments() async {
     final target = _commentSectionKey.currentContext;
-    if (target != null) await Scrollable.ensureVisible(target, duration: const Duration(milliseconds: 240));
+    if (target != null)
+      await Scrollable.ensureVisible(
+        target,
+        duration: const Duration(milliseconds: 240),
+      );
   }
 
   void _showMessage(String message, {bool isError = false}) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(message), backgroundColor: isError ? AppTheme.coral : null));
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: isError ? AppTheme.coral : null,
+        ),
+      );
   }
 
   @override
@@ -165,15 +191,20 @@ class _PostDetailPageState extends State<PostDetailPage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          tooltip: '返回',
+          tooltip: AppLocalizations.of(context).text('返回'),
           onPressed: () => Navigator.pop(context),
           icon: const Icon(Icons.arrow_back_rounded),
         ),
-        title: const Text('帖子', style: TextStyle(fontWeight: FontWeight.w800)),
+        title: Text(
+          AppLocalizations.of(context).text('帖子'),
+          style: const TextStyle(fontWeight: FontWeight.w800),
+        ),
       ),
       body: FutureBuilder<BlogPost>(
         future: _detail,
-        builder: (context, snapshot) => _body(snapshot.data ?? widget.post, bottomInset),
+        builder:
+            (context, snapshot) =>
+                _body(snapshot.data ?? widget.post, bottomInset),
       ),
     );
   }
@@ -182,7 +213,9 @@ class _PostDetailPageState extends State<PostDetailPage> {
     final width = MediaQuery.sizeOf(context).width;
     return Center(
       child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: width > 780 ? 760 : double.infinity),
+        constraints: BoxConstraints(
+          maxWidth: width > 780 ? 760 : double.infinity,
+        ),
         child: ListView(
           // Use system bottom inset so content clears the nav/gesture bar under edge-to-edge.
           padding: EdgeInsets.fromLTRB(22, 12, 22, 28 + bottomInset),
@@ -191,28 +224,69 @@ class _PostDetailPageState extends State<PostDetailPage> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(color: const Color(0xFFE0F0E8), borderRadius: BorderRadius.circular(20)),
-                  child: Text(post.categoryName!, style: const TextStyle(color: AppTheme.leaf, fontWeight: FontWeight.w700)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    post.categoryName!,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
               ),
             const SizedBox(height: 12),
-            Text(post.title, style: const TextStyle(fontSize: 30, height: 1.15, fontWeight: FontWeight.w900)),
+            Text(
+              post.title,
+              style: const TextStyle(
+                fontSize: 30,
+                height: 1.15,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
             const SizedBox(height: 16),
             Row(
               children: [
                 CircleAvatar(
-                  backgroundColor: const Color(0xFFFFE8C5),
-                  foregroundImage: post.authorAvatar == null ? null : NetworkImage(post.authorAvatar!),
-                  child: post.authorAvatar == null ? const Icon(Icons.person_rounded, color: AppTheme.ink) : null,
+                  backgroundColor:
+                      Theme.of(context).colorScheme.tertiaryContainer,
+                  foregroundImage:
+                      post.authorAvatar == null
+                          ? null
+                          : NetworkImage(post.authorAvatar!),
+                  child:
+                      post.authorAvatar == null
+                          ? Icon(
+                            Icons.person_rounded,
+                            color:
+                                Theme.of(
+                                  context,
+                                ).colorScheme.onTertiaryContainer,
+                          )
+                          : null,
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(post.authorName, style: const TextStyle(fontWeight: FontWeight.w700)),
-                      Text(_date(post.createdAt), style: const TextStyle(fontSize: 12, color: Color(0xFF70817D))),
+                      Text(
+                        post.authorName,
+                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                      Text(
+                        _date(post.createdAt),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF70817D),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -224,16 +298,28 @@ class _PostDetailPageState extends State<PostDetailPage> {
               children: [
                 FilledButton.tonalIcon(
                   onPressed: _likeBusy ? null : _toggleLike,
-                  icon: _likeBusy
-                      ? const SizedBox.square(dimension: 17, child: CircularProgressIndicator(strokeWidth: 2))
-                      : Icon(_liked ? Icons.thumb_up_alt_rounded : Icons.thumb_up_alt_outlined),
-                  label: Text('${_liked ? '已点赞' : '点赞'} · $_likeCount'),
+                  icon:
+                      _likeBusy
+                          ? const SizedBox.square(
+                            dimension: 17,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                          : Icon(
+                            _liked
+                                ? Icons.thumb_up_alt_rounded
+                                : Icons.thumb_up_alt_outlined,
+                          ),
+                  label: Text(
+                    '${AppLocalizations.of(context).text(_liked ? '已点赞' : '点赞')} · $_likeCount',
+                  ),
                 ),
                 const SizedBox(width: 8),
                 OutlinedButton.icon(
                   onPressed: _scrollToComments,
                   icon: const Icon(Icons.chat_bubble_outline_rounded),
-                  label: Text('评论 · $_commentCount'),
+                  label: Text(
+                    AppLocalizations.of(context).commentCount(_commentCount),
+                  ),
                 ),
               ],
             ),
@@ -253,29 +339,53 @@ class _PostDetailPageState extends State<PostDetailPage> {
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: post.tags
-                    .map(
-                      (tag) => Chip(
-                        label: Text('#$tag'),
-                        visualDensity: VisualDensity.compact,
-                        backgroundColor: const Color(0xFFFFE8E1),
-                        side: BorderSide.none,
-                      ),
-                    )
-                    .toList(),
+                children:
+                    post.tags
+                        .map(
+                          (tag) => Chip(
+                            label: Text('#$tag'),
+                            visualDensity: VisualDensity.compact,
+                            backgroundColor:
+                                Theme.of(
+                                  context,
+                                ).colorScheme.secondaryContainer,
+                            side: BorderSide.none,
+                          ),
+                        )
+                        .toList(),
               ),
             MarkdownBody(
               data: post.content.isNotEmpty ? post.content : post.summary,
               selectable: true,
               styleSheet: MarkdownStyleSheet(
-                p: const TextStyle(fontSize: 16, height: 1.75, color: AppTheme.ink),
-                h1: const TextStyle(fontSize: 25, fontWeight: FontWeight.w800, color: AppTheme.ink),
-                h2: const TextStyle(fontSize: 21, fontWeight: FontWeight.w800, color: AppTheme.ink),
-                blockquoteDecoration: const BoxDecoration(
-                  color: Color(0xFFEAF2ED),
-                  border: Border(left: BorderSide(color: AppTheme.leaf, width: 3)),
+                p: TextStyle(
+                  fontSize: 16,
+                  height: 1.75,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
-                codeblockDecoration: BoxDecoration(color: const Color(0xFFEAF2ED), borderRadius: BorderRadius.circular(8)),
+                h1: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.w800,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+                h2: TextStyle(
+                  fontSize: 21,
+                  fontWeight: FontWeight.w800,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+                blockquoteDecoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                  border: Border(
+                    left: BorderSide(
+                      color: Theme.of(context).colorScheme.primary,
+                      width: 3,
+                    ),
+                  ),
+                ),
+                codeblockDecoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
             ),
             const SizedBox(height: 26),
@@ -287,128 +397,246 @@ class _PostDetailPageState extends State<PostDetailPage> {
   }
 
   Widget _commentSection() => Column(
-        key: _commentSectionKey,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+    key: _commentSectionKey,
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Row(
         children: [
-          Row(
+          Expanded(
+            child: Text(
+              AppLocalizations.of(context).commentsWithCount(_commentCount),
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+            ),
+          ),
+          IconButton(
+            tooltip: AppLocalizations.of(context).text('刷新评论'),
+            onPressed: _commentsLoading ? null : _loadComments,
+            icon: const Icon(Icons.refresh_rounded),
+          ),
+        ],
+      ),
+      const SizedBox(height: 8),
+      Container(
+        key: _composerKey,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (_replyTo != null) ...[
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      '回复 @${_replyTo!.authorName ?? '用户'}',
+                      style: const TextStyle(
+                        color: AppTheme.leaf,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    tooltip: AppLocalizations.of(context).text('取消回复'),
+                    visualDensity: VisualDensity.compact,
+                    onPressed: () => setState(() => _replyTo = null),
+                    icon: const Icon(Icons.close_rounded, size: 18),
+                  ),
+                ],
+              ),
+            ],
+            TextField(
+              controller: _commentController,
+              focusNode: _commentFocusNode,
+              minLines: 2,
+              maxLines: 5,
+              textInputAction: TextInputAction.newline,
+              enabled: !_commentPosting,
+              onChanged: (_) => setState(() {}),
+              decoration: InputDecoration(
+                hintText: AppLocalizations.of(context).text('写下你的评论…'),
+                border: InputBorder.none,
+                filled: false,
+              ),
+            ),
+            if (_commentError != null) ...[
+              const SizedBox(height: 6),
+              Text(
+                _commentError!,
+                style: const TextStyle(color: AppTheme.coral, fontSize: 12),
+              ),
+            ],
+            Align(
+              alignment: Alignment.centerRight,
+              child: FilledButton.icon(
+                onPressed:
+                    _commentPosting || _commentController.text.trim().isEmpty
+                        ? null
+                        : _submitComment,
+                icon:
+                    _commentPosting
+                        ? const SizedBox.square(
+                          dimension: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                        : const Icon(Icons.send_rounded),
+                label: Text(
+                  AppLocalizations.of(
+                    context,
+                  ).text(_commentPosting ? '正在发表' : '发表评论'),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      const SizedBox(height: 12),
+      if (_commentsLoading && _comments.isEmpty)
+        const Padding(
+          padding: EdgeInsets.all(24),
+          child: Center(child: CircularProgressIndicator()),
+        )
+      else if (_commentError != null && _comments.isEmpty)
+        Center(
+          child: Column(
             children: [
-              Expanded(child: Text('评论 ($_commentCount)', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900))),
-              IconButton(tooltip: '刷新评论', onPressed: _commentsLoading ? null : _loadComments, icon: const Icon(Icons.refresh_rounded)),
+              Text(
+                _commentError!,
+                style: const TextStyle(color: AppTheme.coral),
+              ),
+              TextButton(
+                onPressed: _loadComments,
+                child: Text(AppLocalizations.of(context).text('重试')),
+              ),
             ],
           ),
-          const SizedBox(height: 8),
-          Container(
-            key: _composerKey,
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
+        )
+      else if (_comments.isEmpty)
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 24),
+          child: Center(
+            child: Text(
+              AppLocalizations.of(context).text('还没有评论'),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        )
+      else
+        ..._comments.map((comment) => _commentTile(comment)),
+    ],
+  );
+
+  Widget _commentTile(BlogComment comment, {bool isReply = false}) => Padding(
+    padding: EdgeInsets.only(left: isReply ? 34 : 0, bottom: 10),
+    child: Container(
+      padding: const EdgeInsets.all(11),
+      decoration: BoxDecoration(
+        color:
+            isReply
+                ? Theme.of(context).colorScheme.surfaceContainerHigh
+                : Theme.of(context).colorScheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CircleAvatar(
+            radius: isReply ? 13 : 16,
+            backgroundColor: const Color(0xFFFFE8C5),
+            foregroundImage:
+                comment.authorAvatar == null
+                    ? null
+                    : NetworkImage(comment.authorAvatar!),
+            child:
+                comment.authorAvatar == null
+                    ? const Icon(
+                      Icons.person_rounded,
+                      size: 17,
+                      color: AppTheme.ink,
+                    )
+                    : null,
+          ),
+          const SizedBox(width: 9),
+          Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (_replyTo != null) ...[
-                  Row(children: [
-                    Expanded(child: Text('回复 @${_replyTo!.authorName ?? '用户'}', style: const TextStyle(color: AppTheme.leaf, fontSize: 12, fontWeight: FontWeight.w700))),
-                    IconButton(tooltip: '取消回复', visualDensity: VisualDensity.compact, onPressed: () => setState(() => _replyTo = null), icon: const Icon(Icons.close_rounded, size: 18)),
-                  ]),
-                ],
-                TextField(
-                  controller: _commentController,
-                  focusNode: _commentFocusNode,
-                  minLines: 2,
-                  maxLines: 5,
-                  textInputAction: TextInputAction.newline,
-                  enabled: !_commentPosting,
-                  onChanged: (_) => setState(() {}),
-                  decoration: const InputDecoration(hintText: '写下你的评论…', border: InputBorder.none, filled: false),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        comment.authorName ?? '匿名用户',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      _date(comment.createdAt),
+                      style: const TextStyle(
+                        color: Color(0xFF87948F),
+                        fontSize: 10,
+                      ),
+                    ),
+                  ],
                 ),
-                if (_commentError != null) ...[
-                  const SizedBox(height: 6),
-                  Text(_commentError!, style: const TextStyle(color: AppTheme.coral, fontSize: 12)),
-                ],
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: FilledButton.icon(
-                    onPressed: _commentPosting || _commentController.text.trim().isEmpty ? null : _submitComment,
-                    icon: _commentPosting
-                        ? const SizedBox.square(dimension: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                        : const Icon(Icons.send_rounded),
-                    label: Text(_commentPosting ? '正在发表' : '发表评论'),
+                if (comment.replyToName?.isNotEmpty == true) ...[
+                  const SizedBox(height: 3),
+                  Text(
+                    '回复 @${comment.replyToName}',
+                    style: const TextStyle(color: AppTheme.leaf, fontSize: 11),
                   ),
+                ],
+                const SizedBox(height: 5),
+                SelectableText(
+                  comment.content,
+                  style: const TextStyle(height: 1.45, color: AppTheme.ink),
                 ),
+                if (!isReply)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton.icon(
+                      onPressed: () => _replyToComment(comment),
+                      icon: const Icon(Icons.reply_rounded, size: 16),
+                      label: const Text('回复'),
+                      style: TextButton.styleFrom(
+                        visualDensity: VisualDensity.compact,
+                      ),
+                    ),
+                  ),
+                if (!isReply && comment.children.isNotEmpty) ...[
+                  const SizedBox(height: 3),
+                  ...comment.children.map(
+                    (reply) => _commentTile(reply, isReply: true),
+                  ),
+                ],
               ],
             ),
           ),
-          const SizedBox(height: 12),
-          if (_commentsLoading && _comments.isEmpty)
-            const Padding(padding: EdgeInsets.all(24), child: Center(child: CircularProgressIndicator()))
-          else if (_commentError != null && _comments.isEmpty)
-            Center(child: Column(children: [Text(_commentError!, style: const TextStyle(color: AppTheme.coral)), TextButton(onPressed: _loadComments, child: const Text('重试'))]))
-          else if (_comments.isEmpty)
-            const Padding(padding: EdgeInsets.symmetric(vertical: 24), child: Center(child: Text('还没有评论', style: TextStyle(color: Color(0xFF70817D)))))
-          else
-            ..._comments.map((comment) => _commentTile(comment)),
         ],
-      );
-
-  Widget _commentTile(BlogComment comment, {bool isReply = false}) => Padding(
-        padding: EdgeInsets.only(left: isReply ? 34 : 0, bottom: 10),
-        child: Container(
-          padding: const EdgeInsets.all(11),
-          decoration: BoxDecoration(color: isReply ? const Color(0xFFF4F7F5) : Colors.white, borderRadius: BorderRadius.circular(8)),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CircleAvatar(
-                radius: isReply ? 13 : 16,
-                backgroundColor: const Color(0xFFFFE8C5),
-                foregroundImage: comment.authorAvatar == null ? null : NetworkImage(comment.authorAvatar!),
-                child: comment.authorAvatar == null ? const Icon(Icons.person_rounded, size: 17, color: AppTheme.ink) : null,
-              ),
-              const SizedBox(width: 9),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(children: [
-                      Expanded(child: Text(comment.authorName ?? '匿名用户', maxLines: 1, overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13))),
-                      Text(_date(comment.createdAt), style: const TextStyle(color: Color(0xFF87948F), fontSize: 10)),
-                    ]),
-                    if (comment.replyToName?.isNotEmpty == true) ...[
-                      const SizedBox(height: 3),
-                      Text('回复 @${comment.replyToName}', style: const TextStyle(color: AppTheme.leaf, fontSize: 11)),
-                    ],
-                    const SizedBox(height: 5),
-                    SelectableText(comment.content, style: const TextStyle(height: 1.45, color: AppTheme.ink)),
-                    if (!isReply)
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton.icon(
-                          onPressed: () => _replyToComment(comment),
-                          icon: const Icon(Icons.reply_rounded, size: 16),
-                          label: const Text('回复'),
-                          style: TextButton.styleFrom(visualDensity: VisualDensity.compact),
-                        ),
-                      ),
-                    if (!isReply && comment.children.isNotEmpty) ...[
-                      const SizedBox(height: 3),
-                      ...comment.children.map((reply) => _commentTile(reply, isReply: true)),
-                    ],
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
+      ),
+    ),
+  );
 
   Widget _stat(IconData icon, int value) => Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: const Color(0xFF70817D)),
-          const SizedBox(width: 4),
-          Text('$value', style: const TextStyle(fontSize: 12, color: Color(0xFF70817D))),
-        ],
-      );
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Icon(icon, size: 16, color: const Color(0xFF70817D)),
+      const SizedBox(width: 4),
+      Text(
+        '$value',
+        style: const TextStyle(fontSize: 12, color: Color(0xFF70817D)),
+      ),
+    ],
+  );
 
   static String _date(DateTime? date) {
     if (date == null) return '时间未知';

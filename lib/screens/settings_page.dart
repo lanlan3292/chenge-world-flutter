@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations_text.dart';
 import '../services/settings_store.dart';
 import '../theme/app_theme.dart';
 
@@ -35,11 +36,15 @@ class _SettingsPageState extends State<SettingsPage> {
   late int _shopMaxColumns;
   late bool _chatShowSelfAvatar;
   late bool _chatShowPeerAvatar;
+  late ThemeMode _themeMode;
+  late String _localeCode;
 
   @override
   void initState() {
     super.initState();
     _useDynamic = widget.settings.useDynamicColor;
+    _themeMode = widget.settings.themeMode;
+    _localeCode = widget.settings.localeCode;
     _seed = widget.settings.seedColor;
     _statusImmersive = widget.settings.statusBarImmersive;
     _navImmersive = widget.settings.navigationBarImmersive;
@@ -70,8 +75,11 @@ class _SettingsPageState extends State<SettingsPage> {
     return SwitchListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 4),
       secondary: Icon(icon, color: Theme.of(context).colorScheme.primary),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
-      subtitle: Text(subtitle),
+      title: Text(
+        AppLocalizations.of(context).text(title),
+        style: const TextStyle(fontWeight: FontWeight.w700),
+      ),
+      subtitle: Text(AppLocalizations.of(context).text(subtitle)),
       value: value,
       onChanged: (nextValue) async {
         setState(() => setValue(nextValue));
@@ -81,16 +89,16 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _sectionTitle(String title) => Padding(
-        padding: const EdgeInsets.only(left: 4, top: 12, bottom: 6),
-        child: Text(
-          title,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w800,
-            color: Color(0xFF70817D),
-          ),
-        ),
-      );
+    padding: const EdgeInsets.only(left: 4, top: 12, bottom: 6),
+    child: Text(
+      AppLocalizations.of(context).text(title),
+      style: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w800,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+      ),
+    ),
+  );
 
   /// Discrete range slider for min…max columns (1–3). Min never exceeds max.
   Widget _columnRangeSlider({
@@ -117,13 +125,22 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           const SizedBox(height: 4),
           Text(
-            '当前：$lo – $hi 列（宽度足够时在此范围内自适应）',
-            style: const TextStyle(fontSize: 12, color: Color(0xFF70817D)),
+            AppLocalizations.of(context).columnRange(lo, hi),
+            style: TextStyle(
+              fontSize: 12,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: 4),
           Row(
             children: [
-              const Text('1', style: TextStyle(fontSize: 12, color: Color(0xFF70817D))),
+              Text(
+                '1',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
               Expanded(
                 child: RangeSlider(
                   values: RangeValues(lo.toDouble(), hi.toDouble()),
@@ -134,10 +151,12 @@ class _SettingsPageState extends State<SettingsPage> {
                   onChanged: (values) {
                     final nextMin = values.start.round().clamp(1, 3);
                     final nextMax = values.end.round().clamp(1, 3);
-                    setState(() => setLocal(
-                          nextMin <= nextMax ? nextMin : nextMax,
-                          nextMin <= nextMax ? nextMax : nextMin,
-                        ));
+                    setState(
+                      () => setLocal(
+                        nextMin <= nextMax ? nextMin : nextMax,
+                        nextMin <= nextMax ? nextMax : nextMin,
+                      ),
+                    );
                   },
                   onChangeEnd: (values) async {
                     final nextMin = values.start.round().clamp(1, 3);
@@ -149,7 +168,13 @@ class _SettingsPageState extends State<SettingsPage> {
                   },
                 ),
               ),
-              const Text('3', style: TextStyle(fontSize: 12, color: Color(0xFF70817D))),
+              Text(
+                '3',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
             ],
           ),
           Padding(
@@ -157,8 +182,20 @@ class _SettingsPageState extends State<SettingsPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('最小 $lo', style: const TextStyle(fontSize: 11, color: Color(0xFF70817D))),
-                Text('最大 $hi', style: const TextStyle(fontSize: 11, color: Color(0xFF70817D))),
+                Text(
+                  AppLocalizations.of(context).minimumColumns(lo),
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                Text(
+                  AppLocalizations.of(context).maximumColumns(hi),
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
               ],
             ),
           ),
@@ -171,7 +208,10 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('设置', style: TextStyle(fontWeight: FontWeight.w800)),
+        title: Text(
+          AppLocalizations.of(context).text('设置'),
+          style: const TextStyle(fontWeight: FontWeight.w800),
+        ),
       ),
       body: SafeArea(
         child: Center(
@@ -181,6 +221,37 @@ class _SettingsPageState extends State<SettingsPage> {
               padding: const EdgeInsets.fromLTRB(18, 4, 18, 24),
               children: [
                 _sectionTitle('外观'),
+                _selectionTile<ThemeMode>(
+                  title: '主题模式',
+                  value: _themeMode,
+                  items: {
+                    ThemeMode.system: '跟随系统',
+                    ThemeMode.light: '浅色',
+                    ThemeMode.dark: '深色',
+                  },
+                  onChanged: (value) async {
+                    setState(() => _themeMode = value);
+                    await _updateSetting(
+                      () => widget.settings.setThemeMode(value),
+                    );
+                  },
+                ),
+                _selectionTile<String>(
+                  title: '语言',
+                  value: _localeCode,
+                  items: {
+                    'system': '跟随系统',
+                    'zh_CN': '中文（中国）',
+                    'zh_TW': '中文（台湾）',
+                    'en_US': '英语（美国）',
+                  },
+                  onChanged: (value) async {
+                    setState(() => _localeCode = value);
+                    await _updateSetting(
+                      () => widget.settings.setLocaleCode(value),
+                    );
+                  },
+                ),
                 _switchTile(
                   icon: Icons.wallpaper_rounded,
                   title: '动态取色',
@@ -190,11 +261,11 @@ class _SettingsPageState extends State<SettingsPage> {
                   saveValue: widget.settings.setUseDynamicColor,
                 ),
                 if (!_useDynamic) ...[
-                  const Padding(
+                  Padding(
                     padding: EdgeInsets.only(left: 4, top: 8, bottom: 10),
                     child: Text(
-                      '主题色',
-                      style: TextStyle(fontWeight: FontWeight.w700),
+                      AppLocalizations.of(context).text('主题色'),
+                      style: const TextStyle(fontWeight: FontWeight.w700),
                     ),
                   ),
                   Padding(
@@ -304,27 +375,29 @@ class _SettingsPageState extends State<SettingsPage> {
                 if (widget.signedIn)
                   ListTile(
                     contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-                    leading: const Icon(
+                    leading: Icon(
                       Icons.logout_rounded,
-                      color: AppTheme.coral,
+                      color: Theme.of(context).colorScheme.error,
                     ),
-                    title: const Text(
-                      '退出登录',
+                    title: Text(
+                      AppLocalizations.of(context).text('退出登录'),
                       style: TextStyle(
-                        color: AppTheme.coral,
+                        color: Theme.of(context).colorScheme.error,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
                     onTap: _confirmLogout,
                   )
                 else
-                  const ListTile(
+                  ListTile(
                     contentPadding: EdgeInsets.symmetric(horizontal: 4),
                     leading: Icon(
                       Icons.lock_outline_rounded,
-                      color: AppTheme.leaf,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
-                    title: Text('登录后可管理账户设置'),
+                    title: Text(
+                      AppLocalizations.of(context).text('登录后可管理账户设置'),
+                    ),
                   ),
               ],
             ),
@@ -339,16 +412,18 @@ class _SettingsPageState extends State<SettingsPage> {
       context: context,
       builder:
           (dialogContext) => AlertDialog(
-            title: const Text('退出登录'),
-            content: const Text('确定退出当前 ChengeWorld 账户？'),
+            title: Text(AppLocalizations.of(context).text('退出登录')),
+            content: Text(
+              AppLocalizations.of(context).text('确定退出当前 ChengeWorld 账户？'),
+            ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(dialogContext, false),
-                child: const Text('取消'),
+                child: Text(AppLocalizations.of(context).text('取消')),
               ),
               FilledButton.tonal(
                 onPressed: () => Navigator.pop(dialogContext, true),
-                child: const Text('退出'),
+                child: Text(AppLocalizations.of(context).text('退出')),
               ),
             ],
           ),
@@ -357,9 +432,39 @@ class _SettingsPageState extends State<SettingsPage> {
     await widget.onLogout();
     if (!mounted) return;
     Navigator.pop(context);
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('已退出登录')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(AppLocalizations.of(context).text('已退出登录'))),
+    );
+  }
+
+  Widget _selectionTile<T>({
+    required String title,
+    required T value,
+    required Map<T, String> items,
+    required ValueChanged<T> onChanged,
+  }) {
+    final localizations = AppLocalizations.of(context);
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+      title: Text(
+        localizations.text(title),
+        style: const TextStyle(fontWeight: FontWeight.w700),
+      ),
+      trailing: DropdownButton<T>(
+        value: value,
+        underline: const SizedBox.shrink(),
+        items: [
+          for (final entry in items.entries)
+            DropdownMenuItem(
+              value: entry.key,
+              child: Text(localizations.text(entry.value)),
+            ),
+        ],
+        onChanged: (next) {
+          if (next != null) onChanged(next);
+        },
+      ),
+    );
   }
 }
 
@@ -376,6 +481,7 @@ class _ColorSwatch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -386,7 +492,7 @@ class _ColorSwatch extends StatelessWidget {
           color: color,
           shape: BoxShape.circle,
           border: Border.all(
-            color: selected ? Colors.black87 : Colors.transparent,
+            color: selected ? colorScheme.onSurface : Colors.transparent,
             width: selected ? 3 : 0,
           ),
           boxShadow: [

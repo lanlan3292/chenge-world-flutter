@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../models/blog_post.dart';
 import '../models/chat_conversation.dart';
 import '../models/chat_message.dart';
+import '../l10n/app_localizations_text.dart';
 import '../models/shop_item.dart';
 import '../services/chenge_api.dart';
 import '../theme/app_theme.dart';
@@ -32,8 +33,10 @@ class ChatThreadPage extends StatefulWidget {
   final ChatConversation conversation;
   final bool showBackButton;
   final bool? peerOnline;
+
   /// 是否在自己的消息旁显示头像（设置项，默认关）
   final bool showSelfAvatar;
+
   /// 是否在私聊中显示对方头像（设置项，默认关）；群聊始终显示成员头像
   final bool showPeerAvatar;
 
@@ -63,7 +66,10 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     _conversation = widget.conversation;
     _messageScrollController.addListener(_onScroll);
     _loadMessages();
-    _pollTimer = Timer.periodic(const Duration(seconds: 8), (_) => _loadMessages(silent: true));
+    _pollTimer = Timer.periodic(
+      const Duration(seconds: 8),
+      (_) => _loadMessages(silent: true),
+    );
   }
 
   @override
@@ -78,7 +84,8 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     if (_emojiPickerOpen) return;
     _popScheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && Navigator.of(context).canPop()) Navigator.of(context).pop(true);
+      if (mounted && Navigator.of(context).canPop())
+        Navigator.of(context).pop(true);
     });
   }
 
@@ -86,7 +93,9 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
   void dispose() {
     _pollTimer?.cancel();
     _messageController.dispose();
-    _messageScrollController..removeListener(_onScroll)..dispose();
+    _messageScrollController
+      ..removeListener(_onScroll)
+      ..dispose();
     super.dispose();
   }
 
@@ -94,7 +103,10 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     if (_loading && !silent) return;
     if (!silent && mounted) setState(() => _loading = true);
     try {
-      final messages = await widget.api.chatMessages(_conversation.id, widget.token);
+      final messages = await widget.api.chatMessages(
+        _conversation.id,
+        widget.token,
+      );
       if (!mounted) return;
       final byId = {for (final m in _messages) m.id: m};
       for (final m in messages) {
@@ -103,12 +115,18 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       final merged = byId.values.toList()..sort((a, b) => a.id.compareTo(b.id));
       final isInitial = !_initialScrollDone;
       setState(() {
-        _messages..clear()..addAll(merged);
+        _messages
+          ..clear()
+          ..addAll(merged);
         _hasMore = messages.length >= 30;
         if (!isInitial) _loading = false;
       });
       final lastId = merged.isEmpty ? null : merged.last.id;
-      await widget.api.markChatRead(_conversation.id, widget.token, messageId: lastId);
+      await widget.api.markChatRead(
+        _conversation.id,
+        widget.token,
+        messageId: lastId,
+      );
       if (!mounted) return;
       if (isInitial) {
         if (merged.isEmpty) {
@@ -131,10 +149,16 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
         });
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
-          ..showSnackBar(SnackBar(content: Text(error.message), backgroundColor: AppTheme.coral));
+          ..showSnackBar(
+            SnackBar(
+              content: Text(error.message),
+              backgroundColor: AppTheme.coral,
+            ),
+          );
       }
     } finally {
-      if (mounted && !silent && _initialScrollDone && _loading) setState(() => _loading = false);
+      if (mounted && !silent && _initialScrollDone && _loading)
+        setState(() => _loading = false);
     }
   }
 
@@ -145,8 +169,11 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     if (!mounted) return;
     void jump() {
       if (!_messageScrollController.hasClients) return;
-      _messageScrollController.jumpTo(_messageScrollController.position.maxScrollExtent);
+      _messageScrollController.jumpTo(
+        _messageScrollController.position.maxScrollExtent,
+      );
     }
+
     jump();
     await WidgetsBinding.instance.endOfFrame;
     if (!mounted) return;
@@ -164,7 +191,11 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     if (_loadingOlder || !_hasMore || _messages.isEmpty) return;
     setState(() => _loadingOlder = true);
     try {
-      final older = await widget.api.chatMessages(_conversation.id, widget.token, beforeId: _messages.first.id);
+      final older = await widget.api.chatMessages(
+        _conversation.id,
+        widget.token,
+        beforeId: _messages.first.id,
+      );
       if (!mounted) return;
       setState(() {
         _messages.insertAll(0, older);
@@ -174,7 +205,12 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       if (mounted) {
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
-          ..showSnackBar(SnackBar(content: Text(error.message), backgroundColor: AppTheme.coral));
+          ..showSnackBar(
+            SnackBar(
+              content: Text(error.message),
+              backgroundColor: AppTheme.coral,
+            ),
+          );
       }
     } finally {
       if (mounted) setState(() => _loadingOlder = false);
@@ -186,7 +222,11 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     if (text.isEmpty || _sending) return;
     setState(() => _sending = true);
     try {
-      final message = await widget.api.sendChatMessage(_conversation.id, text, widget.token);
+      final message = await widget.api.sendChatMessage(
+        _conversation.id,
+        text,
+        widget.token,
+      );
       if (!mounted) return;
       setState(() {
         if (!_messages.any((m) => m.id == message.id)) _messages.add(message);
@@ -198,7 +238,12 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       if (mounted) {
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
-          ..showSnackBar(SnackBar(content: Text(error.message), backgroundColor: AppTheme.coral));
+          ..showSnackBar(
+            SnackBar(
+              content: Text(error.message),
+              backgroundColor: AppTheme.coral,
+            ),
+          );
       }
     } finally {
       if (mounted) setState(() => _sending = false);
@@ -225,7 +270,12 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       if (mounted) {
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
-          ..showSnackBar(SnackBar(content: Text(error.message), backgroundColor: AppTheme.coral));
+          ..showSnackBar(
+            SnackBar(
+              content: Text(error.message),
+              backgroundColor: AppTheme.coral,
+            ),
+          );
       }
     } finally {
       if (mounted) setState(() => _sending = false);
@@ -240,9 +290,12 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       asset = await showModalBottomSheet<EmojiAsset>(
         context: context,
         isScrollControlled: true,
-        backgroundColor: Colors.white,
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
-        builder: (context) => EmojiPickerSheet(api: widget.api, token: widget.token),
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerLow,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        ),
+        builder:
+            (context) => EmojiPickerSheet(api: widget.api, token: widget.token),
       );
     } finally {
       _emojiPickerOpen = false;
@@ -264,11 +317,16 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       if (!_messageScrollController.hasClients) return;
       final max = _messageScrollController.position.maxScrollExtent;
       if (animate) {
-        _messageScrollController.animateTo(max, duration: const Duration(milliseconds: 180), curve: Curves.easeOut);
+        _messageScrollController.animateTo(
+          max,
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
+        );
       } else {
         _messageScrollController.jumpTo(max);
       }
     }
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       go();
       if (!animate) WidgetsBinding.instance.addPostFrameCallback((_) => go());
@@ -277,31 +335,44 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.showBackButton && MediaQuery.sizeOf(context).width >= 760) _maybePopForWideLayout();
+    if (widget.showBackButton && MediaQuery.sizeOf(context).width >= 760)
+      _maybePopForWideLayout();
     final isGroup = _conversation.type == 'group';
-    final onlineLabel = !isGroup && widget.peerOnline != null ? (widget.peerOnline! ? '在线' : '离线') : '';
+    final localizations = AppLocalizations.of(context);
+    final onlineLabel =
+        !isGroup && widget.peerOnline != null
+            ? localizations.text(widget.peerOnline! ? '在线' : '离线')
+            : '';
 
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: widget.showBackButton,
-        leading: widget.showBackButton
-            ? IconButton(
-                tooltip: '返回会话列表',
-                onPressed: () => Navigator.of(context).pop(false),
-                icon: const Icon(Icons.arrow_back_rounded),
-              )
-            : null,
+        leading:
+            widget.showBackButton
+                ? IconButton(
+                  tooltip: localizations.text('返回会话列表'),
+                  onPressed: () => Navigator.of(context).pop(false),
+                  icon: const Icon(Icons.arrow_back_rounded),
+                )
+                : null,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(_conversation.name, maxLines: 1, overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 17)),
+            Text(
+              _conversation.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 17),
+            ),
             if (onlineLabel.isNotEmpty || isGroup)
               Text(
-                isGroup ? '群聊' : onlineLabel,
+                isGroup ? localizations.text('群聊') : onlineLabel,
                 style: TextStyle(
                   fontSize: 12,
-                  color: !isGroup && widget.peerOnline == true ? const Color(0xFF2ECC71) : const Color(0xFF70817D),
+                  color:
+                      !isGroup && widget.peerOnline == true
+                          ? const Color(0xFF2ECC71)
+                          : const Color(0xFF70817D),
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -324,10 +395,16 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                         return Center(
                           child: TextButton.icon(
                             onPressed: _loadingOlder ? null : _loadOlder,
-                            icon: _loadingOlder
-                                ? const SizedBox.square(dimension: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                                : const Icon(Icons.expand_less_rounded),
-                            label: const Text('加载更早消息'),
+                            icon:
+                                _loadingOlder
+                                    ? const SizedBox.square(
+                                      dimension: 16,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                    : const Icon(Icons.expand_less_rounded),
+                            label: Text(localizations.text('加载更早消息')),
                           ),
                         );
                       }
@@ -340,9 +417,19 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                   ),
                 ),
                 if (!_contentReady)
-                  const ColoredBox(color: Color(0xFFF7F9F8), child: Center(child: CircularProgressIndicator()))
+                  ColoredBox(
+                    color: Theme.of(context).colorScheme.surface,
+                    child: const Center(child: CircularProgressIndicator()),
+                  )
                 else if (_messages.isEmpty)
-                  const Center(child: Text('还没有消息，打个招呼吧', style: TextStyle(color: Color(0xFF70817D)))),
+                  Center(
+                    child: Text(
+                      localizations.text('还没有消息，打个招呼吧'),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -371,35 +458,48 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     final showMineAvatar = mine && widget.showSelfAvatar;
 
     Widget avatarFor(String name, String? url) => CircleAvatar(
-          radius: 15,
-          backgroundColor: const Color(0xFFFFE8C5),
-          foregroundImage: url == null ? null : NetworkImage(url),
-          onForegroundImageError: url == null ? null : (_, __) {},
-          child: Text(
-            name.isEmpty ? '友' : name.characters.first,
-            style: const TextStyle(color: AppTheme.ink, fontWeight: FontWeight.w700),
-          ),
-        );
+      radius: 15,
+      backgroundColor: const Color(0xFFFFE8C5),
+      foregroundImage: url == null ? null : NetworkImage(url),
+      onForegroundImageError: url == null ? null : (_, __) {},
+      child: Text(
+        name.isEmpty ? '友' : name.characters.first,
+        style: const TextStyle(
+          color: AppTheme.ink,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
-        mainAxisAlignment: mine ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment:
+            mine ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (showOtherAvatar) ...[
-            avatarFor(message.senderName ?? _conversation.name, message.senderAvatar),
+            avatarFor(
+              message.senderName ?? _conversation.name,
+              message.senderAvatar,
+            ),
             const SizedBox(width: 8),
           ],
           Flexible(
             child: Column(
-              crossAxisAlignment: mine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  mine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
               children: [
                 if (!mine)
                   Padding(
                     padding: const EdgeInsets.only(left: 4, bottom: 4),
-                    child: Text(message.senderName ?? _conversation.name,
-                        style: const TextStyle(fontSize: 11, color: Color(0xFF70817D))),
+                    child: Text(
+                      message.senderName ?? _conversation.name,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: Color(0xFF70817D),
+                      ),
+                    ),
                   ),
                 if (isEmoji)
                   _emojiImage(message)
@@ -408,9 +508,17 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                 else
                   Container(
                     constraints: const BoxConstraints(maxWidth: 520),
-                    padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 13,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
-                      color: mine ? AppTheme.leaf : Colors.white,
+                      color:
+                          mine
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerHigh,
                       borderRadius: BorderRadius.only(
                         topLeft: const Radius.circular(16),
                         topRight: const Radius.circular(16),
@@ -419,14 +527,28 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                       ),
                     ),
                     child: SelectableText(
-                      message.type == 'text' ? message.content : _specialMessage(message),
-                      style: TextStyle(color: mine ? Colors.white : AppTheme.ink, height: 1.4),
+                      message.type == 'text'
+                          ? message.content
+                          : _specialMessage(message),
+                      style: TextStyle(
+                        color:
+                            mine
+                                ? Theme.of(context).colorScheme.onPrimary
+                                : Theme.of(context).colorScheme.onSurface,
+                        height: 1.4,
+                      ),
                     ),
                   ),
                 if (showTime)
                   Padding(
                     padding: const EdgeInsets.only(top: 3, left: 4, right: 4),
-                    child: Text(_shortTime(message.createdAt), style: const TextStyle(fontSize: 10, color: Color(0xFF83918D))),
+                    child: Text(
+                      _shortTime(message.createdAt),
+                      style: const TextStyle(
+                        fontSize: 10,
+                        color: Color(0xFF83918D),
+                      ),
+                    ),
                   ),
               ],
             ),
@@ -447,7 +569,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     final tag = isPost ? '分享帖子' : '商品订单';
 
     return Material(
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.surfaceContainerLow,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
@@ -462,11 +584,27 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(tag, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
-                  color: isPost ? const Color(0xFF3D6BAA) : const Color(0xFFB86B1A))),
+              Text(
+                tag,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color:
+                      isPost
+                          ? const Color(0xFF3D6BAA)
+                          : const Color(0xFFB86B1A),
+                ),
+              ),
               const SizedBox(height: 6),
-              Text(title, maxLines: 2, overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+              Text(
+                title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                ),
+              ),
             ],
           ),
         ),
@@ -488,7 +626,8 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     Map<String, dynamic> payload,
   ) async {
     final isPost = message.type == 'post';
-    final nested = isPost ? payload['post'] : payload['item'] ?? payload['product'];
+    final nested =
+        isPost ? payload['post'] : payload['item'] ?? payload['product'];
     final nestedPayload = nested is Map<String, dynamic> ? nested : payload;
     final id = _shareId(
       nestedPayload[isPost ? 'postId' : 'itemId'] ??
@@ -510,7 +649,10 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
         title: title,
         summary: _shareText(nestedPayload['summary']),
         content: _shareText(nestedPayload['content']),
-        authorName: _shareText(nestedPayload['authorName'], fallback: 'Chenge 用户'),
+        authorName: _shareText(
+          nestedPayload['authorName'],
+          fallback: 'Chenge 用户',
+        ),
         createdAt: DateTime.tryParse(_shareText(nestedPayload['createdAt'])),
         viewCount: 0,
         likeCount: 0,
@@ -518,7 +660,12 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       );
       await Navigator.of(context).push<bool>(
         MaterialPageRoute<bool>(
-          builder: (_) => PostDetailPage(api: widget.api, post: post, token: widget.token),
+          builder:
+              (_) => PostDetailPage(
+                api: widget.api,
+                post: post,
+                token: widget.token,
+              ),
         ),
       );
       return;
@@ -533,13 +680,14 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     );
     await Navigator.of(context).push<void>(
       MaterialPageRoute<void>(
-        builder: (_) => ShopDetailPage(
-          api: widget.api,
-          item: item,
-          token: widget.token,
-          userId: widget.userId,
-          onLoginRequested: () => _showShareError('登录后才能购买'),
-        ),
+        builder:
+            (_) => ShopDetailPage(
+              api: widget.api,
+              item: item,
+              token: widget.token,
+              userId: widget.userId,
+              onLoginRequested: () => _showShareError('登录后才能购买'),
+            ),
       ),
     );
   }
@@ -564,47 +712,59 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
   }
 
   Widget _composer() => SafeArea(
-        top: false,
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(8, 10, 12, 10),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            border: Border(top: BorderSide(color: Color(0xFFE2EAE5))),
+    top: false,
+    child: Container(
+      padding: const EdgeInsets.fromLTRB(8, 10, 12, 10),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerLow,
+        border: Border(
+          top: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          IconButton(
+            tooltip: '表情包',
+            onPressed: _sending ? null : _openEmojiPicker,
+            icon: const Icon(Icons.emoji_emotions_outlined),
           ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              IconButton(
-                tooltip: '表情包',
-                onPressed: _sending ? null : _openEmojiPicker,
-                icon: const Icon(Icons.emoji_emotions_outlined),
-              ),
-              Expanded(
-                child: TextField(
-                  controller: _messageController,
-                  minLines: 1,
-                  maxLines: 5,
-                  textInputAction: TextInputAction.newline,
-                  onChanged: (_) => setState(() {}),
-                  decoration: const InputDecoration(
-                    hintText: '输入消息…',
-                    isDense: true,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                  ),
+          Expanded(
+            child: TextField(
+              controller: _messageController,
+              minLines: 1,
+              maxLines: 5,
+              textInputAction: TextInputAction.newline,
+              onChanged: (_) => setState(() {}),
+              decoration: const InputDecoration(
+                hintText: '输入消息…',
+                isDense: true,
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
                 ),
               ),
-              const SizedBox(width: 8),
-              IconButton.filled(
-                tooltip: '发送消息',
-                onPressed: _sending || _messageController.text.trim().isEmpty ? null : _send,
-                icon: _sending
-                    ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Icon(Icons.send_rounded),
-              ),
-            ],
+            ),
           ),
-        ),
-      );
+          const SizedBox(width: 8),
+          IconButton.filled(
+            tooltip: '发送消息',
+            onPressed:
+                _sending || _messageController.text.trim().isEmpty
+                    ? null
+                    : _send,
+            icon:
+                _sending
+                    ? const SizedBox.square(
+                      dimension: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                    : const Icon(Icons.send_rounded),
+          ),
+        ],
+      ),
+    ),
+  );
 
   Widget _emojiImage(ChatMessage message) {
     final url = message.emoji?.url;
@@ -613,14 +773,27 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
         width: 132,
         height: 84,
         alignment: Alignment.center,
-        decoration: BoxDecoration(color: const Color(0xFFEAF2ED), borderRadius: BorderRadius.circular(9)),
+        decoration: BoxDecoration(
+          color: const Color(0xFFEAF2ED),
+          borderRadius: BorderRadius.circular(9),
+        ),
         child: const Text('表情', style: TextStyle(fontWeight: FontWeight.w700)),
       );
     }
     return ClipRRect(
       borderRadius: BorderRadius.circular(9),
-      child: Image.network(url, width: 132, height: 132, fit: BoxFit.contain,
-          errorBuilder: (_, __, ___) => const SizedBox(width: 132, height: 84, child: Center(child: Text('表情')))),
+      child: Image.network(
+        url,
+        width: 132,
+        height: 132,
+        fit: BoxFit.contain,
+        errorBuilder:
+            (_, __, ___) => const SizedBox(
+              width: 132,
+              height: 84,
+              child: Center(child: Text('表情')),
+            ),
+      ),
     );
   }
 
@@ -635,7 +808,9 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     if (value == null) return '';
     final date = value.toLocal();
     final now = DateTime.now();
-    if (date.year == now.year && date.month == now.month && date.day == now.day) {
+    if (date.year == now.year &&
+        date.month == now.month &&
+        date.day == now.day) {
       return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
     }
     return '${date.month}/${date.day}';

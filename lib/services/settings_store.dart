@@ -7,6 +7,8 @@ class SettingsStore {
 
   static const _seedKey = 'appearance_seed_color';
   static const _dynamicKey = 'appearance_use_dynamic_color';
+  static const _themeModeKey = 'appearance_theme_mode';
+  static const _localeKey = 'appearance_locale';
   static const _statusImmersiveKey = 'appearance_status_bar_immersive';
   static const _navImmersiveKey = 'appearance_nav_bar_immersive';
   static const _autoHideTopKey = 'appearance_auto_hide_top_bar';
@@ -24,25 +26,36 @@ class SettingsStore {
 
   Color seedColor = defaultSeed;
   bool useDynamicColor = true;
+  ThemeMode themeMode = ThemeMode.system;
+  String localeCode = 'system';
   bool statusBarImmersive = true;
   bool navigationBarImmersive = true;
+
   /// Scroll down to hide the page top app bar (feed / shop). Default on.
   bool autoHideTopBar = true;
+
   /// Scroll down to hide the shell bottom navigation bar. Default on.
   /// Not applied when the shell uses a side NavigationRail (wide layout).
   bool autoHideBottomBar = true;
+
   /// Android predictive back page transitions. Default off.
   bool predictiveBack = false;
+
   /// Minimum grid columns on the feed page (1–3). Default 1.
   int feedMinColumns = 1;
+
   /// Maximum grid columns on the feed page (1–3). Default 3. Always ≥ min.
   int feedMaxColumns = 3;
+
   /// Minimum grid columns on the shop page (1–3). Default 1.
   int shopMinColumns = 1;
+
   /// Maximum grid columns on the shop page (1–3). Default 3. Always ≥ min.
   int shopMaxColumns = 3;
+
   /// Show own avatar on the right of sent bubbles. Default off.
   bool chatShowSelfAvatar = false;
+
   /// Show peer avatar on the left in private (single) chats. Default off.
   /// Group chats always show other members' avatars.
   bool chatShowPeerAvatar = false;
@@ -54,6 +67,16 @@ class SettingsStore {
       seedColor = Color(seedValue);
     }
     useDynamicColor = prefs.getBool(_dynamicKey) ?? true;
+    themeMode = ThemeMode.values.firstWhere(
+      (mode) => mode.name == prefs.getString(_themeModeKey),
+      orElse: () => ThemeMode.system,
+    );
+    localeCode = switch (prefs.getString(_localeKey)) {
+      'zh_CN' => 'zh_CN',
+      'zh_TW' => 'zh_TW',
+      'en_US' => 'en_US',
+      _ => 'system',
+    };
     statusBarImmersive = prefs.getBool(_statusImmersiveKey) ?? true;
     navigationBarImmersive = prefs.getBool(_navImmersiveKey) ?? true;
     autoHideTopBar = prefs.getBool(_autoHideTopKey) ?? true;
@@ -86,6 +109,23 @@ class SettingsStore {
     useDynamicColor = value;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_dynamicKey, value);
+  }
+
+  Future<void> setThemeMode(ThemeMode value) async {
+    themeMode = value;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_themeModeKey, value.name);
+  }
+
+  Future<void> setLocaleCode(String value) async {
+    localeCode = switch (value) {
+      'zh_CN' => 'zh_CN',
+      'zh_TW' => 'zh_TW',
+      'en_US' => 'en_US',
+      _ => 'system',
+    };
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_localeKey, localeCode);
   }
 
   Future<void> setStatusBarImmersive(bool value) async {
