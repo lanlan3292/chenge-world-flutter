@@ -27,6 +27,8 @@ abstract final class AppTheme {
     Brightness brightness = Brightness.light,
     bool statusBarImmersive = true,
     bool navigationBarImmersive = true,
+    /// 非 null 时写入状态栏颜色（用于顶栏可隐藏时的半透明遮罩）。
+    Color? statusBarMaskColor,
   }) {
     final ColorScheme scheme;
     if (dynamicScheme != null) {
@@ -44,8 +46,16 @@ abstract final class AppTheme {
     final primary = scheme.primary;
     final isDark = brightness == Brightness.dark;
     final background = scheme.surface;
+    final Color resolvedStatusBarColor;
+    if (!statusBarImmersive) {
+      resolvedStatusBarColor = background;
+    } else if (statusBarMaskColor != null) {
+      resolvedStatusBarColor = statusBarMaskColor;
+    } else {
+      resolvedStatusBarColor = Colors.transparent;
+    }
     final systemBarStyle = SystemUiOverlayStyle(
-      statusBarColor: statusBarImmersive ? Colors.transparent : background,
+      statusBarColor: resolvedStatusBarColor,
       statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
       statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
       systemNavigationBarColor:

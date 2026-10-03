@@ -120,12 +120,33 @@ class _ChengeWorldAppState extends State<ChengeWorldApp>
     return DynamicColorBuilder(
       builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
         final useDynamic = _settings.useDynamicColor && lightDynamic != null;
+        final useStatusMask =
+            _settings.statusBarImmersive &&
+            _settings.statusBarTopHideMask &&
+            _settings.autoHideTopBar;
+        // 半透明主题背景，覆盖在状态栏区域（AppBar 也会带上同一 systemOverlayStyle）。
+        final lightMask =
+            useStatusMask
+                ? (useDynamic && lightDynamic != null
+                        ? lightDynamic.surface
+                        : AppTheme.mist)
+                    .withValues(alpha: 0.78)
+                : null;
+        final darkMask =
+            useStatusMask
+                ? (useDynamic && darkDynamic != null
+                        ? darkDynamic.surface
+                        : const Color(0xFF141D1B))
+                    .withValues(alpha: 0.78)
+                : null;
+
         var theme = AppTheme.build(
           dynamicScheme: useDynamic ? lightDynamic : null,
           seedColor: _settings.seedColor,
           brightness: Brightness.light,
           statusBarImmersive: _settings.statusBarImmersive,
           navigationBarImmersive: _settings.navigationBarImmersive,
+          statusBarMaskColor: lightMask,
         );
         var darkTheme = AppTheme.build(
           dynamicScheme: useDynamic ? darkDynamic : null,
@@ -133,6 +154,7 @@ class _ChengeWorldAppState extends State<ChengeWorldApp>
           brightness: Brightness.dark,
           statusBarImmersive: _settings.statusBarImmersive,
           navigationBarImmersive: _settings.navigationBarImmersive,
+          statusBarMaskColor: darkMask,
         );
         final transitions = PageTransitionsTheme(
           builders: {
@@ -174,6 +196,34 @@ class _ChengeWorldAppState extends State<ChengeWorldApp>
             Locale('en', 'US'),
           ],
           localizationsDelegates: AppLocalizations.localizationsDelegates,
+          // 物理层遮罩：部分机型上 statusBarColor 会被忽略，用一层半透明色盖住状态栏区域。
+          builder: (context, child) {
+            final showMask =
+                _settings.statusBarImmersive &&
+                _settings.statusBarTopHideMask &&
+                _settings.autoHideTopBar;
+            if (!showMask || child == null) return child ?? const SizedBox.shrink();
+            final top = MediaQuery.paddingOf(context).top;
+            if (top <= 0) return child;
+            final maskColor = Theme.of(
+              context,
+            ).colorScheme.surface.withValues(alpha: 0.78);
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                child,
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: top,
+                  child: IgnorePointer(
+                    child: ColoredBox(color: maskColor),
+                  ),
+                ),
+              ],
+            );
+          },
           home: AppShell(
             settings: _settings,
             onSettingsChanged: _onSettingsChanged,

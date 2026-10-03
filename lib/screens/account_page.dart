@@ -61,18 +61,8 @@ class _AccountPageState extends State<AccountPage> {
     setState(() => _avatarLoading = true);
     try {
       final current = await widget.api.currentUser(token);
-      final user = current['user'];
-      String? avatar;
-      if (user is Map) {
-        avatar = user['avatar']?.toString();
-        if (avatar == null || avatar.isEmpty || avatar == 'null') {
-          avatar = user['avatarUrl']?.toString();
-        }
-      }
-      if (avatar != null &&
-          (avatar.isEmpty || avatar == 'null' || avatar == 'undefined')) {
-        avatar = null;
-      }
+      // 后端 /home/me：avatar 在 profiles.avatar，不在 user 上
+      String? avatar = _pickAvatar(current);
       if (mounted) setState(() => _avatarUrl = avatar);
     } on ApiException {
       // 保持占位头像
@@ -322,12 +312,37 @@ class _AccountPageState extends State<AccountPage> {
     );
     if (result == null || !context.mounted) return;
     await widget.onLogin(result);
+    final fromLogin = _pickAvatar(result);
+    if (fromLogin != null && mounted) {
+      setState(() => _avatarUrl = fromLogin);
+    }
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context).text('登录成功'))),
       );
     }
     await _loadAvatar();
+  }
+
+  /// 从 /home/me 或登录响应中取出头像 URL（profiles.avatar 优先）。
+  static String? _pickAvatar(Map<String, dynamic> payload) {
+    String? clean(Object? v) {
+      final s = v?.toString().trim();
+      if (s == null || s.isEmpty || s == 'null' || s == 'undefined') return null;
+      return s;
+    }
+
+    final profiles = payload['profiles'];
+    if (profiles is Map) {
+      final a = clean(profiles['avatar'] ?? profiles['avatarUrl']);
+      if (a != null) return a;
+    }
+    final user = payload['user'];
+    if (user is Map) {
+      final a = clean(user['avatar'] ?? user['avatarUrl']);
+      if (a != null) return a;
+    }
+    return clean(payload['avatar'] ?? payload['avatarUrl']);
   }
 }
 

@@ -73,7 +73,10 @@ class _ChengeCorePageState extends State<ChengeCorePage> {
     final tokenLiteral = jsonEncode(widget.token);
     try {
       await _controller.runJavaScript(
-        "try { localStorage.setItem('chengehr-token', $tokenLiteral); } catch (e) {}",
+        "try {"
+        "  localStorage.setItem('chengehr-token', $tokenLiteral);"
+        "  localStorage.setItem('chengehr-theme', '{\"skin\":\"aqua\"}');"
+        "} catch (e) {}",
       );
       _tokenInjected = true;
 
