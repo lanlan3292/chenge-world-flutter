@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import '../models/blog_post.dart';
 import '../models/chat_conversation.dart';
 import '../models/chat_message.dart';
-import '../l10n/app_localizations_text.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../models/shop_item.dart';
 import '../services/chenge_api.dart';
 import '../theme/app_theme.dart';
@@ -344,7 +344,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     final localizations = AppLocalizations.of(context);
     final onlineLabel =
         !isGroup && widget.peerOnline != null
-            ? localizations.text(widget.peerOnline! ? '在线' : '离线')
+            ? (widget.peerOnline! ? localizations.online : localizations.offline)
             : '';
 
     return Scaffold(
@@ -353,7 +353,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
         leading:
             widget.showBackButton
                 ? IconButton(
-                  tooltip: localizations.text('返回会话列表'),
+                  tooltip: localizations.backToConversations,
                   onPressed: () => Navigator.of(context).pop(false),
                   icon: const Icon(Icons.arrow_back_rounded),
                 )
@@ -369,7 +369,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
             ),
             if (onlineLabel.isNotEmpty || isGroup)
               Text(
-                isGroup ? localizations.text('群聊') : onlineLabel,
+                isGroup ? localizations.groupChat : onlineLabel,
                 style: TextStyle(
                   fontSize: 12,
                   color:
@@ -407,7 +407,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                                       ),
                                     )
                                     : const Icon(Icons.expand_less_rounded),
-                            label: Text(localizations.text('加载更早消息')),
+                            label: Text(localizations.loadOlderMessages),
                           ),
                         );
                       }
@@ -427,7 +427,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                 else if (_messages.isEmpty)
                   Center(
                     child: Text(
-                      localizations.text('还没有消息，打个招呼吧'),
+                      localizations.noMessages,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),

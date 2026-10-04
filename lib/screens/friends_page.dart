@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../l10n/app_localizations_text.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../models/chat_conversation.dart';
 import '../models/friend_user.dart';
 import '../services/chenge_api.dart';
@@ -324,7 +324,7 @@ class _FriendsPageState extends State<FriendsPage> {
           widget.showAppBar
               ? AppBar(
                 title: Text(
-                  AppLocalizations.of(context).text('通讯录'),
+                  AppLocalizations.of(context).contacts,
                   style: const TextStyle(fontWeight: FontWeight.w800),
                 ),
                 actions: [
@@ -1058,7 +1058,7 @@ class _CreateGroupDialogState extends State<_CreateGroupDialog> {
                   ? Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       child: Text(
-                        AppLocalizations.of(context).text('暂无好友可邀请'),
+                        AppLocalizations.of(context).noFriendsToInvite,
                         style: TextStyle(color: scheme.onSurfaceVariant),
                       ),
                     )

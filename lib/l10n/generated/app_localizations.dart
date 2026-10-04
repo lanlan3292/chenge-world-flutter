@@ -964,6 +964,133 @@ abstract class AppLocalizations {
   /// In zh_CN, this message translates to:
   /// **'登录后开始聊天'**
   String get signInToStartChat;
+
+  /// No description provided for @chengeCore.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'ChengeCore'**
+  String get chengeCore;
+
+  /// No description provided for @signInWithToken.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'使用 Token 登录'**
+  String get signInWithToken;
+
+  /// No description provided for @openOfficialSiteWithWebView.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'使用 WebView 打开官网'**
+  String get openOfficialSiteWithWebView;
+
+  /// No description provided for @close.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'关闭'**
+  String get close;
+
+  /// No description provided for @raising.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'养成'**
+  String get raising;
+
+  /// No description provided for @copy.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'复制'**
+  String get copy;
+
+  /// No description provided for @webViewNotSupportedOnAllOs.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'并非所有操作系统都能够调用 WebView'**
+  String get webViewNotSupportedOnAllOs;
+
+  /// No description provided for @platformWebViewNotSupported.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'当前平台暂不支持内置网页'**
+  String get platformWebViewNotSupported;
+
+  /// No description provided for @openCoreEcosystem.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'打开核心生态'**
+  String get openCoreEcosystem;
+
+  /// No description provided for @openRaisingSystem.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'打开站娘养成系统'**
+  String get openRaisingSystem;
+
+  /// No description provided for @cannotOpenSiteMissingConfig.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'无法打开官网：缺少服务配置'**
+  String get cannotOpenSiteMissingConfig;
+
+  /// No description provided for @accessTokenDescription.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'用于校验身份的访问令牌'**
+  String get accessTokenDescription;
+
+  /// No description provided for @confirm.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'确定'**
+  String get confirm;
+
+  /// No description provided for @confirmSignIn.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'确认登录'**
+  String get confirmSignIn;
+
+  /// No description provided for @pasteJwtToken.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'粘贴 JWT Token'**
+  String get pasteJwtToken;
+
+  /// No description provided for @accessToken.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'访问令牌'**
+  String get accessToken;
+
+  /// No description provided for @accessTokenCopied.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'访问令牌 已复制'**
+  String get accessTokenCopied;
+
+  /// No description provided for @accessTokenUpdated.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'访问令牌 已更新'**
+  String get accessTokenUpdated;
+
+  /// No description provided for @signInToUseChengeCore.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'请先登录后再使用 ChengeCore'**
+  String get signInToUseChengeCore;
+
+  /// No description provided for @signInToUseRaising.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'请先登录后再使用养成'**
+  String get signInToUseRaising;
+
+  /// No description provided for @enterToken.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'请输入 Token'**
+  String get enterToken;
+
 }
 
 class _AppLocalizationsDelegate

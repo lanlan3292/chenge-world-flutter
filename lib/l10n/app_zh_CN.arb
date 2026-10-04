@@ -42,25 +42,57 @@
   "columnRange": "当前：{min} – {max} 列（宽度足够时在此范围内自适应）",
   "@columnRange": {
     "placeholders": {
-      "min": {"type": "int"},
-      "max": {"type": "int"}
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
     }
   },
   "minimumColumns": "最小 {count}",
-  "@minimumColumns": {"placeholders": {"count": {"type": "int"}}},
+  "@minimumColumns": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "maximumColumns": "最大 {count}",
-  "@maximumColumns": {"placeholders": {"count": {"type": "int"}}},
+  "@maximumColumns": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "postCount": "{count} 篇",
-  "@postCount": {"placeholders": {"count": {"type": "int"}}},
+  "@postCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "pageCount": "第 {page} / {total} 页",
   "@pageCount": {
     "placeholders": {
-      "page": {"type": "int"},
-      "total": {"type": "int"}
+      "page": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
   "itemCount": "{count} 件商品",
-  "@itemCount": {"placeholders": {"count": {"type": "int"}}},
+  "@itemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "rightNow": "此刻在聊",
   "freshDiscussions": "看看社区里的新鲜讨论",
   "searchPostsAndTopics": "搜索帖子和话题",
@@ -132,7 +164,13 @@
   "refreshTasks": "刷新任务",
   "claimComplete": "去完成",
   "rewardClaimed": "奖励已领取，+{coins} CC",
-  "@rewardClaimed": {"placeholders": {"coins": {"type": "String"}}},
+  "@rewardClaimed": {
+    "placeholders": {
+      "coins": {
+        "type": "String"
+      }
+    }
+  },
   "productPurchaseSuccess": "购买成功，已加入资产清单",
   "signInToLike": "登录后即可点赞",
   "signInToComment": "登录后即可发表评论",
@@ -140,7 +178,13 @@
   "noComments": "还没有评论",
   "back": "返回",
   "commentCount": "评论 · {count}",
-  "@commentCount": {"placeholders": {"count": {"type": "int"}}},
+  "@commentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "refreshComments": "刷新评论",
   "cancelReply": "取消回复",
   "writeComment": "写下你的评论…",
@@ -150,7 +194,13 @@
   "liked": "已点赞",
   "like": "点赞",
   "commentsWithCount": "评论 ({count})",
-  "@commentsWithCount": {"placeholders": {"count": {"type": "int"}}},
+  "@commentsWithCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "noMessages": "还没有消息，打个招呼吧",
   "online": "在线",
   "offline": "离线",
@@ -162,5 +212,26 @@
   "noFriendsToInvite": "暂无好友可邀请",
   "selectConversation": "选择一个会话，开始聊天",
   "refreshConversations": "刷新会话",
-  "signInToStartChat": "登录后开始聊天"
+  "signInToStartChat": "登录后开始聊天",
+  "chengeCore": "ChengeCore",
+  "signInWithToken": "使用 Token 登录",
+  "openOfficialSiteWithWebView": "使用 WebView 打开官网",
+  "close": "关闭",
+  "raising": "养成",
+  "copy": "复制",
+  "webViewNotSupportedOnAllOs": "并非所有操作系统都能够调用 WebView",
+  "platformWebViewNotSupported": "当前平台暂不支持内置网页",
+  "openCoreEcosystem": "打开核心生态",
+  "openRaisingSystem": "打开站娘养成系统",
+  "cannotOpenSiteMissingConfig": "无法打开官网：缺少服务配置",
+  "accessTokenDescription": "用于校验身份的访问令牌",
+  "confirm": "确定",
+  "confirmSignIn": "确认登录",
+  "pasteJwtToken": "粘贴 JWT Token",
+  "accessToken": "访问令牌",
+  "accessTokenCopied": "访问令牌 已复制",
+  "accessTokenUpdated": "访问令牌 已更新",
+  "signInToUseChengeCore": "请先登录后再使用 ChengeCore",
+  "signInToUseRaising": "请先登录后再使用养成",
+  "enterToken": "请输入 Token"
 }

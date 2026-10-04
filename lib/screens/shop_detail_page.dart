@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../l10n/app_localizations_text.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../models/shop_item.dart';
 import '../services/chenge_api.dart';
 import '../theme/app_theme.dart';
@@ -109,7 +109,7 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
         icon: const Icon(Icons.arrow_back_rounded),
       ),
       title: Text(
-        AppLocalizations.of(context).text('商品详情'),
+        AppLocalizations.of(context).productDetails,
         style: const TextStyle(fontWeight: FontWeight.w800),
       ),
     ),

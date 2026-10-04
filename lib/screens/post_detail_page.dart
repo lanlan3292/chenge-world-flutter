@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
-import '../l10n/app_localizations_text.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../models/blog_comment.dart';
 import '../models/blog_post.dart';
 import '../services/chenge_api.dart';
@@ -198,12 +198,12 @@ class _PostDetailPageState extends State<PostDetailPage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          tooltip: AppLocalizations.of(context).text('返回'),
+          tooltip: AppLocalizations.of(context).back,
           onPressed: () => Navigator.pop(context),
           icon: const Icon(Icons.arrow_back_rounded),
         ),
         title: Text(
-          AppLocalizations.of(context).text('帖子'),
+          AppLocalizations.of(context).post,
           style: const TextStyle(fontWeight: FontWeight.w800),
         ),
       ),
@@ -317,7 +317,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                                 : Icons.thumb_up_alt_outlined,
                           ),
                   label: Text(
-                    '${AppLocalizations.of(context).text(_liked ? '已点赞' : '点赞')} · $_likeCount',
+                    '${_liked ? AppLocalizations.of(context)!.liked : AppLocalizations.of(context)!.like} · $_likeCount',
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -416,7 +416,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
             ),
           ),
           IconButton(
-            tooltip: AppLocalizations.of(context).text('刷新评论'),
+            tooltip: AppLocalizations.of(context).refreshComments,
             onPressed: _commentsLoading ? null : _loadComments,
             icon: const Icon(Icons.refresh_rounded),
           ),
@@ -447,7 +447,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                     ),
                   ),
                   IconButton(
-                    tooltip: AppLocalizations.of(context).text('取消回复'),
+                    tooltip: AppLocalizations.of(context).cancelReply,
                     visualDensity: VisualDensity.compact,
                     onPressed: () => setState(() => _replyTo = null),
                     icon: const Icon(Icons.close_rounded, size: 18),
@@ -464,7 +464,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
               enabled: !_commentPosting,
               onChanged: (_) => setState(() {}),
               decoration: InputDecoration(
-                hintText: AppLocalizations.of(context).text('写下你的评论…'),
+                hintText: AppLocalizations.of(context).writeComment,
                 border: InputBorder.none,
                 filled: false,
               ),
@@ -493,7 +493,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 label: Text(
                   AppLocalizations.of(
                     context,
-                  ).text(_commentPosting ? '正在发表' : '发表评论'),
+                  (_commentPosting ? ).publishing : ).publishComment),
                 ),
               ),
             ),
@@ -516,7 +516,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
               ),
               TextButton(
                 onPressed: _loadComments,
-                child: Text(AppLocalizations.of(context).text('重试')),
+                child: Text(AppLocalizations.of(context).retry),
               ),
             ],
           ),
@@ -526,7 +526,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
           padding: const EdgeInsets.symmetric(vertical: 24),
           child: Center(
             child: Text(
-              AppLocalizations.of(context).text('还没有评论'),
+              AppLocalizations.of(context).noComments,
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),

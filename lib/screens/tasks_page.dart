@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../l10n/app_localizations_text.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../models/task_item.dart';
 import '../services/chenge_api.dart';
 import '../theme/app_theme.dart';
@@ -105,12 +105,12 @@ class _TasksPageState extends State<TasksPage> {
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
       title: Text(
-        AppLocalizations.of(context).text('任务中心'),
+        AppLocalizations.of(context).taskCenter,
         style: const TextStyle(fontWeight: FontWeight.w800),
       ),
       actions: [
         IconButton(
-          tooltip: AppLocalizations.of(context).text('刷新任务'),
+          tooltip: AppLocalizations.of(context).refreshTasks,
           onPressed: _loading ? null : _load,
           icon: const Icon(Icons.refresh_rounded),
         ),
@@ -388,7 +388,7 @@ class _TasksPageState extends State<TasksPage> {
                                         ? () => widget.onOpenLink(task.link!)
                                         : null,
                                 child: Text(
-                                  AppLocalizations.of(context).text('去完成'),
+                                  AppLocalizations.of(context).claimComplete,
                                 ),
                               ),
                     ),
@@ -432,7 +432,7 @@ class _TasksPageState extends State<TasksPage> {
         OutlinedButton.icon(
           onPressed: _load,
           icon: const Icon(Icons.refresh_rounded),
-          label: Text(AppLocalizations.of(context).text('重试')),
+          label: Text(AppLocalizations.of(context).retry),
         ),
       ],
     ),

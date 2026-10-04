@@ -1,10 +1,3 @@
-// ignore: unused_import
-import 'package:intl/intl.dart' as intl;
-import 'app_localizations.dart';
-
-// ignore_for_file: type=lint
-
-/// The translations for English (`en`).
 class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
@@ -460,6 +453,70 @@ class AppLocalizationsEn extends AppLocalizations {
 }
 
 /// The translations for English, as used in the United States (`en_US`).
+
+  @override
+  String get chengeCore => 'ChengeCore';
+
+  @override
+  String get signInWithToken => 'Sign in with Token';
+
+  @override
+  String get openOfficialSiteWithWebView => 'Open official site with WebView';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get raising => 'Raising';
+
+  @override
+  String get copy => 'Copy';
+
+  @override
+  String get webViewNotSupportedOnAllOs => 'Not all operating systems support WebView';
+
+  @override
+  String get platformWebViewNotSupported => 'Built-in web view is not supported on this platform';
+
+  @override
+  String get openCoreEcosystem => 'Open core ecosystem';
+
+  @override
+  String get openRaisingSystem => 'Open raising system';
+
+  @override
+  String get cannotOpenSiteMissingConfig => 'Cannot open site: missing service configuration';
+
+  @override
+  String get accessTokenDescription => 'Access token used for identity verification';
+
+  @override
+  String get confirm => 'OK';
+
+  @override
+  String get confirmSignIn => 'Confirm sign in';
+
+  @override
+  String get pasteJwtToken => 'Paste JWT Token';
+
+  @override
+  String get accessToken => 'Access token';
+
+  @override
+  String get accessTokenCopied => 'Access token copied';
+
+  @override
+  String get accessTokenUpdated => 'Access token updated';
+
+  @override
+  String get signInToUseChengeCore => 'Please sign in to use ChengeCore';
+
+  @override
+  String get signInToUseRaising => 'Please sign in to use raising';
+
+  @override
+  String get enterToken => 'Please enter token';
+
 class AppLocalizationsEnUs extends AppLocalizationsEn {
   AppLocalizationsEnUs() : super('en_US');
 
@@ -925,3 +982,67 @@ class AppLocalizationsEnUs extends AppLocalizationsEn {
   @override
   String get signInToStartChat => 'Sign in to start chatting';
 }
+
+  @override
+  String get chengeCore => 'ChengeCore';
+
+  @override
+  String get signInWithToken => 'Sign in with Token';
+
+  @override
+  String get openOfficialSiteWithWebView => 'Open official site with WebView';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get raising => 'Raising';
+
+  @override
+  String get copy => 'Copy';
+
+  @override
+  String get webViewNotSupportedOnAllOs => 'Not all operating systems support WebView';
+
+  @override
+  String get platformWebViewNotSupported => 'Built-in web view is not supported on this platform';
+
+  @override
+  String get openCoreEcosystem => 'Open core ecosystem';
+
+  @override
+  String get openRaisingSystem => 'Open raising system';
+
+  @override
+  String get cannotOpenSiteMissingConfig => 'Cannot open site: missing service configuration';
+
+  @override
+  String get accessTokenDescription => 'Access token used for identity verification';
+
+  @override
+  String get confirm => 'OK';
+
+  @override
+  String get confirmSignIn => 'Confirm sign in';
+
+  @override
+  String get pasteJwtToken => 'Paste JWT Token';
+
+  @override
+  String get accessToken => 'Access token';
+
+  @override
+  String get accessTokenCopied => 'Access token copied';
+
+  @override
+  String get accessTokenUpdated => 'Access token updated';
+
+  @override
+  String get signInToUseChengeCore => 'Please sign in to use ChengeCore';
+
+  @override
+  String get signInToUseRaising => 'Please sign in to use raising';
+
+  @override
+  String get enterToken => 'Please enter token';
+

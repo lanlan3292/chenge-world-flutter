@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../l10n/app_localizations_text.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../models/chat_conversation.dart';
 import '../models/chat_message.dart';
 import '../services/chenge_api.dart';
@@ -276,17 +276,17 @@ class _ChatPageState extends State<ChatPage> {
           widget.showAppBar
               ? AppBar(
                 title: Text(
-                  AppLocalizations.of(context).text('聊天'),
+                  AppLocalizations.of(context).chat,
                   style: const TextStyle(fontWeight: FontWeight.w800),
                 ),
                 actions: [
                   IconButton(
-                    tooltip: AppLocalizations.of(context).text('通讯录'),
+                    tooltip: AppLocalizations.of(context).contacts,
                     onPressed: widget.onOpenFriends,
                     icon: const Icon(Icons.contacts_outlined),
                   ),
                   IconButton(
-                    tooltip: AppLocalizations.of(context).text('刷新会话'),
+                    tooltip: AppLocalizations.of(context).refreshConversations,
                     onPressed: _loadConversations,
                     icon: const Icon(Icons.refresh_rounded),
                   ),
@@ -318,14 +318,14 @@ class _ChatPageState extends State<ChatPage> {
         ),
         const SizedBox(height: 12),
         Text(
-          AppLocalizations.of(context).text('登录后开始聊天'),
+          AppLocalizations.of(context).signInToStartChat,
           style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 16),
         FilledButton.icon(
           onPressed: widget.onLoginRequested,
           icon: const Icon(Icons.login_rounded),
-          label: Text(AppLocalizations.of(context).text('前往登录')),
+          label: Text(AppLocalizations.of(context).goSignIn),
         ),
       ],
     ),
@@ -349,7 +349,7 @@ class _ChatPageState extends State<ChatPage> {
                       ),
                       SizedBox(height: 12),
                       Text(
-                        AppLocalizations.of(context).text('选择一个会话，开始聊天'),
+                        AppLocalizations.of(context).selectConversation,
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
@@ -389,7 +389,7 @@ class _ChatPageState extends State<ChatPage> {
             controller: _searchController,
             onChanged: (value) => setState(() => _listQuery = value),
             decoration: InputDecoration(
-              hintText: AppLocalizations.of(context).text('搜索会话'),
+              hintText: AppLocalizations.of(context).searchConversation,
               prefixIcon: const Icon(Icons.search_rounded),
             ),
           ),

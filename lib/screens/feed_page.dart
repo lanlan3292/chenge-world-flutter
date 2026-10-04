@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
-import '../l10n/app_localizations_text.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../models/blog_post.dart';
 import '../services/chenge_api.dart';
 import '../widgets/post_card.dart';
@@ -234,7 +234,7 @@ class _FeedPageState extends State<FeedPage> {
                           Text(
                             AppLocalizations.of(
                               context,
-                            ).text('ChengeWorld 社区广场'),
+                            ).communityTitle,
                             style: TextStyle(
                               fontSize: 11,
                               color:
@@ -249,7 +249,7 @@ class _FeedPageState extends State<FeedPage> {
                   ),
                   actions: [
                     IconButton(
-                      tooltip: AppLocalizations.of(context).text('刷新帖子'),
+                      tooltip: AppLocalizations.of(context).refreshPosts,
                       onPressed: _loading ? null : () => _loadPage(1),
                       icon: const Icon(Icons.refresh_rounded),
                     ),
@@ -318,14 +318,14 @@ class _FeedPageState extends State<FeedPage> {
           textInputAction: TextInputAction.search,
           onSubmitted: (_) => _loadPage(1),
           decoration: InputDecoration(
-            hintText: AppLocalizations.of(context).text('搜索帖子和话题'),
+            hintText: AppLocalizations.of(context).searchPostsAndTopics,
             prefixIcon: Icon(Icons.search_rounded),
           ),
         ),
       ),
       const SizedBox(width: 10),
       IconButton.filledTonal(
-        tooltip: AppLocalizations.of(context).text('搜索'),
+        tooltip: AppLocalizations.of(context).search,
         onPressed: () => _loadPage(1),
         icon: const Icon(Icons.arrow_forward_rounded),
       ),
@@ -343,7 +343,7 @@ class _FeedPageState extends State<FeedPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  AppLocalizations.of(context).text('此刻在聊'),
+                  AppLocalizations.of(context).rightNow,
                   style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.w900,
@@ -352,7 +352,7 @@ class _FeedPageState extends State<FeedPage> {
                 ),
                 SizedBox(height: 4),
                 Text(
-                  AppLocalizations.of(context).text('看看社区里的新鲜讨论'),
+                  AppLocalizations.of(context).freshDiscussions,
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
@@ -375,17 +375,17 @@ class _FeedPageState extends State<FeedPage> {
         segments: [
           ButtonSegment(
             value: 'latest',
-            label: Text(AppLocalizations.of(context).text('最新')),
+            label: Text(AppLocalizations.of(context).latest),
             icon: Icon(Icons.schedule_rounded),
           ),
           ButtonSegment(
             value: 'hot',
-            label: Text(AppLocalizations.of(context).text('热门')),
+            label: Text(AppLocalizations.of(context).popular),
             icon: Icon(Icons.local_fire_department_rounded),
           ),
           ButtonSegment(
             value: 'essence',
-            label: Text(AppLocalizations.of(context).text('精华')),
+            label: Text(AppLocalizations.of(context).featured),
             icon: Icon(Icons.auto_awesome_rounded),
           ),
         ],
@@ -408,7 +408,7 @@ class _FeedPageState extends State<FeedPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton.filledTonal(
-              tooltip: AppLocalizations.of(context).text('上一页'),
+              tooltip: AppLocalizations.of(context).previousPage,
               onPressed:
                   _loading || _page <= 1 ? null : () => _loadPage(_page - 1),
               icon: const Icon(Icons.chevron_left_rounded),
@@ -421,7 +421,7 @@ class _FeedPageState extends State<FeedPage> {
               ),
             ),
             IconButton.filledTonal(
-              tooltip: AppLocalizations.of(context).text('下一页'),
+              tooltip: AppLocalizations.of(context).nextPage,
               onPressed:
                   _loading || _page >= totalPages
                       ? null
@@ -456,7 +456,7 @@ class _FeedPageState extends State<FeedPage> {
           const SizedBox(height: 16),
           FilledButton.tonal(
             onPressed: () => _loadPage(1),
-            child: Text(AppLocalizations.of(context).text('重试')),
+            child: Text(AppLocalizations.of(context).retry),
           ),
         ],
       ),
@@ -481,12 +481,12 @@ class _EmptyFeed extends StatelessWidget {
           ),
           SizedBox(height: 12),
           Text(
-            AppLocalizations.of(context).text('暂时没有帖子'),
+            AppLocalizations.of(context).noPosts,
             style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
           ),
           SizedBox(height: 6),
           Text(
-            AppLocalizations.of(context).text('换个关键词或稍后再来看看'),
+            AppLocalizations.of(context).noPostsHint,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),

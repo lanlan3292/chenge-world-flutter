@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../l10n/app_localizations_text.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../services/chenge_api.dart';
 import '../services/settings_store.dart';
 import 'ai_agent_page.dart';
@@ -59,7 +59,7 @@ class _SocialPageState extends State<SocialPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          AppLocalizations.of(context).text('社交'),
+          AppLocalizations.of(context).social,
           style: const TextStyle(fontWeight: FontWeight.w800),
         ),
       ),
@@ -72,12 +72,12 @@ class _SocialPageState extends State<SocialPage> {
               segments: [
                 ButtonSegment(
                   value: 0,
-                  label: Text(AppLocalizations.of(context).text('聊天')),
+                  label: Text(AppLocalizations.of(context).chat),
                   icon: const Icon(Icons.chat_bubble_outline_rounded),
                 ),
                 ButtonSegment(
                   value: 1,
-                  label: Text(AppLocalizations.of(context).text('通讯录')),
+                  label: Text(AppLocalizations.of(context).contacts),
                   icon: const Icon(Icons.contacts_outlined),
                 ),
                 ButtonSegment(

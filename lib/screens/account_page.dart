@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../l10n/app_localizations_text.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../services/chenge_api.dart';
 import '../services/settings_store.dart';
 import 'chenge_core_page.dart';
@@ -128,7 +128,7 @@ class _AccountPageState extends State<AccountPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            AppLocalizations.of(context).text('请先登录后再使用 ChengeCore'),
+            AppLocalizations.of(context).signInToUseChengeCore,
           ),
         ),
       );
@@ -151,7 +151,7 @@ class _AccountPageState extends State<AccountPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            AppLocalizations.of(context).text('请先登录后再使用养成'),
+            AppLocalizations.of(context).signInToUseRaising,
           ),
         ),
       );
@@ -174,12 +174,12 @@ class _AccountPageState extends State<AccountPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          AppLocalizations.of(context).text('我的'),
+          AppLocalizations.of(context).account,
           style: const TextStyle(fontWeight: FontWeight.w800),
         ),
         actions: [
           IconButton(
-            tooltip: AppLocalizations.of(context).text('设置'),
+            tooltip: AppLocalizations.of(context).settings,
             onPressed: () => _openSettings(context, signedIn),
             icon: const Icon(Icons.settings_outlined),
           ),
@@ -209,8 +209,8 @@ class _AccountPageState extends State<AccountPage> {
                           Text(
                             signedIn
                                 ? (widget.username ??
-                                    AppLocalizations.of(context).text('已登录'))
-                                : AppLocalizations.of(context).text('欢迎来到社区'),
+                                    AppLocalizations.of(context).signedIn)
+                                : AppLocalizations.of(context).welcome,
                             style: TextStyle(
                               color:
                                   Theme.of(
@@ -222,9 +222,7 @@ class _AccountPageState extends State<AccountPage> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            AppLocalizations.of(context).text(
-                              signedIn ? '账户已连接到 ChengeWorld' : '登录后浏览个性化内容',
-                            ),
+                            signedIn ? AppLocalizations.of(context)!.accountConnected : AppLocalizations.of(context)!.signInForPersonalized,
                             style: TextStyle(
                               color:
                                   Theme.of(
@@ -261,11 +259,11 @@ class _AccountPageState extends State<AccountPage> {
                     ),
                   ),
                   title: Text(
-                    AppLocalizations.of(context).text('任务中心'),
+                    AppLocalizations.of(context).taskCenter,
                     style: const TextStyle(fontWeight: FontWeight.w800),
                   ),
                   subtitle: Text(
-                    AppLocalizations.of(context).text('签到、完成任务并领取 ChengeCoin'),
+                    AppLocalizations.of(context).taskCenterDescription,
                   ),
                   trailing: const Icon(Icons.chevron_right_rounded),
                 ),
@@ -293,11 +291,11 @@ class _AccountPageState extends State<AccountPage> {
                     ),
                   ),
                   title: Text(
-                    AppLocalizations.of(context).text('ChengeCore'),
+                    AppLocalizations.of(context).chengeCore,
                     style: const TextStyle(fontWeight: FontWeight.w800),
                   ),
                   subtitle: Text(
-                    AppLocalizations.of(context).text('打开核心生态'),
+                    AppLocalizations.of(context).openCoreEcosystem,
                   ),
                   trailing: const Icon(Icons.chevron_right_rounded),
                 ),
@@ -325,11 +323,11 @@ class _AccountPageState extends State<AccountPage> {
                     ),
                   ),
                   title: Text(
-                    AppLocalizations.of(context).text('养成'),
+                    AppLocalizations.of(context).raising,
                     style: const TextStyle(fontWeight: FontWeight.w800),
                   ),
                   subtitle: Text(
-                    AppLocalizations.of(context).text('打开站娘养成系统'),
+                    AppLocalizations.of(context).openRaisingSystem,
                   ),
                   trailing: const Icon(Icons.chevron_right_rounded),
                 ),
@@ -339,7 +337,7 @@ class _AccountPageState extends State<AccountPage> {
                 FilledButton.icon(
                   onPressed: () => _showLogin(context),
                   icon: const Icon(Icons.login_rounded),
-                  label: Text(AppLocalizations.of(context).text('登录账户')),
+                  label: Text(AppLocalizations.of(context).signInAccount),
                 ),
             ],
           ),
@@ -397,7 +395,7 @@ class _AccountPageState extends State<AccountPage> {
     }
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).text('登录成功'))),
+        SnackBar(content: Text(AppLocalizations.of(context).signInSuccess)),
       );
     }
     await _loadAvatar();
@@ -513,7 +511,7 @@ class _LoginDialogState extends State<_LoginDialog> {
       ),
     ),
     title: Text(
-      AppLocalizations.of(context).text('登录 ChengeWorld'),
+      AppLocalizations.of(context).signInToChengeWorld,
       textAlign: TextAlign.center,
       style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w800),
     ),
@@ -531,13 +529,13 @@ class _LoginDialogState extends State<_LoginDialog> {
               textInputAction: TextInputAction.next,
               autofillHints: const [AutofillHints.username],
               decoration: InputDecoration(
-                labelText: AppLocalizations.of(context).text('用户名'),
+                labelText: AppLocalizations.of(context).username,
                 prefixIcon: const Icon(Icons.person_outline_rounded),
               ),
               validator:
                   (value) =>
                       value == null || value.trim().isEmpty
-                          ? AppLocalizations.of(context).text('请输入用户名')
+                          ? AppLocalizations.of(context).enterUsername
                           : null,
             ),
             const SizedBox(height: 12),
@@ -549,12 +547,12 @@ class _LoginDialogState extends State<_LoginDialog> {
               autofillHints: const [AutofillHints.password],
               onFieldSubmitted: (_) => _submit(),
               decoration: InputDecoration(
-                labelText: AppLocalizations.of(context).text('密码'),
+                labelText: AppLocalizations.of(context).password,
                 prefixIcon: const Icon(Icons.lock_outline_rounded),
                 suffixIcon: IconButton(
-                  tooltip: AppLocalizations.of(
-                    context,
-                  ).text(_obscurePassword ? '显示密码' : '隐藏密码'),
+                  tooltip: _obscurePassword
+                      ? AppLocalizations.of(context)!.showPassword
+                      : AppLocalizations.of(context)!.hidePassword,
                   onPressed:
                       () =>
                           setState(() => _obscurePassword = !_obscurePassword),
@@ -568,7 +566,7 @@ class _LoginDialogState extends State<_LoginDialog> {
               validator:
                   (value) =>
                       value == null || value.isEmpty
-                          ? AppLocalizations.of(context).text('请输入密码')
+                          ? AppLocalizations.of(context).enterPassword
                           : null,
             ),
             if (_error != null) ...[
@@ -587,11 +585,11 @@ class _LoginDialogState extends State<_LoginDialog> {
     actions: [
       TextButton(
         onPressed: _loading ? null : () => Navigator.pop(context),
-        child: Text(AppLocalizations.of(context).text('取消')),
+        child: Text(AppLocalizations.of(context).cancel),
       ),
       TextButton(
         onPressed: _loading ? null : _openTokenLogin,
-        child: Text(AppLocalizations.of(context).text('使用 Token 登录')),
+        child: Text(AppLocalizations.of(context).signInWithToken),
       ),
       FilledButton.icon(
         onPressed: _loading ? null : _submit,
@@ -603,7 +601,7 @@ class _LoginDialogState extends State<_LoginDialog> {
                 )
                 : const Icon(Icons.login_rounded),
         label: Text(
-          AppLocalizations.of(context).text(_loading ? '正在登录' : '登录'),
+          _loading ? AppLocalizations.of(context)!.signingIn : AppLocalizations.of(context)!.signIn,
         ),
       ),
     ],
@@ -636,7 +634,7 @@ class _TokenLoginDialogState extends State<_TokenLoginDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(
-        AppLocalizations.of(context).text('使用 Token 登录'),
+        AppLocalizations.of(context).signInWithToken,
         style: const TextStyle(fontWeight: FontWeight.w800),
       ),
       content: SizedBox(
@@ -649,13 +647,13 @@ class _TokenLoginDialogState extends State<_TokenLoginDialog> {
             maxLines: 4,
             minLines: 2,
             decoration: InputDecoration(
-              labelText: AppLocalizations.of(context).text('访问令牌'),
-              hintText: AppLocalizations.of(context).text('粘贴 JWT Token'),
+              labelText: AppLocalizations.of(context).accessToken,
+              hintText: AppLocalizations.of(context).pasteJwtToken,
               alignLabelWithHint: true,
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return AppLocalizations.of(context).text('请输入 Token');
+                return AppLocalizations.of(context).enterToken;
               }
               return null;
             },
@@ -665,11 +663,11 @@ class _TokenLoginDialogState extends State<_TokenLoginDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text(AppLocalizations.of(context).text('取消')),
+          child: Text(AppLocalizations.of(context).cancel),
         ),
         FilledButton(
           onPressed: _confirm,
-          child: Text(AppLocalizations.of(context).text('确认登录')),
+          child: Text(AppLocalizations.of(context).confirmSignIn),
         ),
       ],
     );

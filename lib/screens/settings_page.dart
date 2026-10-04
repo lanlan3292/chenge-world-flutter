@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../l10n/app_localizations_text.dart';
+import '../l10n/generated/app_localizations.dart';
 import 'package:flutter/services.dart';
 
 import '../services/chenge_api.dart';
@@ -89,10 +89,10 @@ class _SettingsPageState extends State<SettingsPage> {
       contentPadding: const EdgeInsets.symmetric(horizontal: 4),
       secondary: Icon(icon, color: Theme.of(context).colorScheme.primary),
       title: Text(
-        AppLocalizations.of(context).text(title),
+        title,
         style: const TextStyle(fontWeight: FontWeight.w700),
       ),
-      subtitle: Text(AppLocalizations.of(context).text(subtitle)),
+      subtitle: Text(subtitle),
       value: value,
       onChanged: (nextValue) async {
         setState(() => setValue(nextValue));
@@ -104,7 +104,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _sectionTitle(String title) => Padding(
     padding: const EdgeInsets.only(left: 4, top: 12, bottom: 6),
     child: Text(
-      AppLocalizations.of(context).text(title),
+      title,
       style: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w800,
@@ -222,7 +222,7 @@ class _SettingsPageState extends State<SettingsPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          AppLocalizations.of(context).text('设置'),
+          AppLocalizations.of(context).settings,
           style: const TextStyle(fontWeight: FontWeight.w800),
         ),
       ),
@@ -233,14 +233,14 @@ class _SettingsPageState extends State<SettingsPage> {
             child: ListView(
               padding: const EdgeInsets.fromLTRB(18, 4, 18, 24),
               children: [
-                _sectionTitle('外观'),
+                _sectionTitle(AppLocalizations.of(context).appearance),
                 _selectionTile<ThemeMode>(
-                  title: '主题模式',
+                  title: AppLocalizations.of(context).themeMode,
                   value: _themeMode,
                   items: {
-                    ThemeMode.system: '跟随系统',
-                    ThemeMode.light: '浅色',
-                    ThemeMode.dark: '深色',
+                    ThemeMode.system: AppLocalizations.of(context).followSystem,
+                    ThemeMode.light: AppLocalizations.of(context).light,
+                    ThemeMode.dark: AppLocalizations.of(context).dark,
                   },
                   onChanged: (value) async {
                     setState(() => _themeMode = value);
@@ -250,13 +250,13 @@ class _SettingsPageState extends State<SettingsPage> {
                   },
                 ),
                 _selectionTile<String>(
-                  title: '语言',
+                  title: AppLocalizations.of(context).language,
                   value: _localeCode,
                   items: {
-                    'system': '跟随系统',
-                    'zh_CN': '中文（中国）',
-                    'zh_TW': '中文（台湾）',
-                    'en_US': '英语（美国）',
+                    'system': AppLocalizations.of(context).followSystem,
+                    'zh_CN': AppLocalizations.of(context).localeZhCn,
+                    'zh_TW': AppLocalizations.of(context).localeZhTw,
+                    'en_US': AppLocalizations.of(context).localeEnUs,
                   },
                   onChanged: (value) async {
                     setState(() => _localeCode = value);
@@ -267,8 +267,8 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
                 _switchTile(
                   icon: Icons.wallpaper_rounded,
-                  title: '动态取色',
-                  subtitle: '使用 Android 12+ 壁纸配色（Material You）',
+                  title: AppLocalizations.of(context).dynamicColor,
+                  subtitle: AppLocalizations.of(context).dynamicColorDescription,
                   value: _useDynamic,
                   setValue: (value) => _useDynamic = value,
                   saveValue: widget.settings.setUseDynamicColor,
@@ -277,7 +277,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   Padding(
                     padding: EdgeInsets.only(left: 4, top: 8, bottom: 10),
                     child: Text(
-                      AppLocalizations.of(context).text('主题色'),
+                      AppLocalizations.of(context).themeColor,
                       style: const TextStyle(fontWeight: FontWeight.w700),
                     ),
                   ),
@@ -303,28 +303,28 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   const SizedBox(height: 8),
                 ],
-                _sectionTitle('系统栏'),
+                _sectionTitle(AppLocalizations.of(context).systemBars),
                 _switchTile(
                   icon: Icons.vertical_align_top_rounded,
-                  title: '状态栏沉浸',
-                  subtitle: '内容延伸至状态栏下方，状态栏透明',
+                  title: AppLocalizations.of(context).statusBarImmersive,
+                  subtitle: AppLocalizations.of(context).statusBarDescription,
                   value: _statusImmersive,
                   setValue: (value) => _statusImmersive = value,
                   saveValue: widget.settings.setStatusBarImmersive,
                 ),
                 _switchTile(
                   icon: Icons.vertical_align_bottom_rounded,
-                  title: '导航栏沉浸',
-                  subtitle: '内容延伸至导航栏下方，导航栏透明',
+                  title: AppLocalizations.of(context).navigationBarImmersive,
+                  subtitle: AppLocalizations.of(context).navigationBarDescription,
                   value: _navImmersive,
                   setValue: (value) => _navImmersive = value,
                   saveValue: widget.settings.setNavigationBarImmersive,
                 ),
-                _sectionTitle('滚动行为'),
+                _sectionTitle(AppLocalizations.of(context).scrollBehavior),
                 _switchTile(
                   icon: Icons.vertical_align_top_rounded,
-                  title: '自动隐藏顶栏',
-                  subtitle: '在发现 / 商城向下滚动时收起页面顶栏（默认开启）',
+                  title: AppLocalizations.of(context).autoHideTopBar,
+                  subtitle: AppLocalizations.of(context).autoHideTopDescription,
                   value: _autoHideTop,
                   setValue: (value) => _autoHideTop = value,
                   saveValue: widget.settings.setAutoHideTopBar,
@@ -339,41 +339,41 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
                 _switchTile(
                   icon: Icons.vertical_align_bottom_rounded,
-                  title: '自动隐藏底栏',
-                  subtitle: '在发现 / 商城向下滚动时收起底部导航；宽屏侧边栏不会隐藏',
+                  title: AppLocalizations.of(context).autoHideBottomBar,
+                  subtitle: AppLocalizations.of(context).autoHideBottomDescription,
                   value: _autoHideBottom,
                   setValue: (value) => _autoHideBottom = value,
                   saveValue: widget.settings.setAutoHideBottomBar,
                 ),
-                _sectionTitle('聊天'),
+                _sectionTitle(AppLocalizations.of(context).chat),
                 _switchTile(
                   icon: Icons.account_circle_outlined,
-                  title: '在会话聊天显示自己的头像',
-                  subtitle: '自己发送的消息右侧显示头像（默认关闭）',
+                  title: AppLocalizations.of(context).showSelfAvatar,
+                  subtitle: AppLocalizations.of(context).showSelfAvatarDescription,
                   value: _chatShowSelfAvatar,
                   setValue: (value) => _chatShowSelfAvatar = value,
                   saveValue: widget.settings.setChatShowSelfAvatar,
                 ),
                 _switchTile(
                   icon: Icons.face_outlined,
-                  title: '在私人会话聊天显示对方的头像',
-                  subtitle: '私聊中对方消息左侧显示头像；群聊始终显示成员头像（默认关闭）',
+                  title: AppLocalizations.of(context).showPeerAvatar,
+                  subtitle: AppLocalizations.of(context).showPeerAvatarDescription,
                   value: _chatShowPeerAvatar,
                   setValue: (value) => _chatShowPeerAvatar = value,
                   saveValue: widget.settings.setChatShowPeerAvatar,
                 ),
-                _sectionTitle('系统手势'),
+                _sectionTitle(AppLocalizations.of(context).systemGestures),
                 _switchTile(
                   icon: Icons.swipe_left_rounded,
-                  title: '预见式返回',
-                  subtitle: 'Android 13+ 页面过渡使用预见式返回动画（默认关闭）',
+                  title: AppLocalizations.of(context).predictiveBack,
+                  subtitle: AppLocalizations.of(context).predictiveBackDescription,
                   value: _predictiveBack,
                   setValue: (value) => _predictiveBack = value,
                   saveValue: widget.settings.setPredictiveBack,
                 ),
-                _sectionTitle('布局'),
+                _sectionTitle(AppLocalizations.of(context).layout),
                 _columnRangeSlider(
-                  title: '发现页列数范围',
+                  title: AppLocalizations.of(context).feedColumns,
                   minValue: _feedMinColumns,
                   maxValue: _feedMaxColumns,
                   setLocal: (min, max) {
@@ -383,7 +383,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   saveRange: widget.settings.setFeedColumnRange,
                 ),
                 _columnRangeSlider(
-                  title: '商店页列数范围',
+                  title: AppLocalizations.of(context).shopColumns,
                   minValue: _shopMinColumns,
                   maxValue: _shopMaxColumns,
                   setLocal: (min, max) {
@@ -400,11 +400,11 @@ class _SettingsPageState extends State<SettingsPage> {
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   title: Text(
-                    AppLocalizations.of(context).text('使用 WebView 打开官网'),
+                    AppLocalizations.of(context).openOfficialSiteWithWebView,
                     style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
                   subtitle: Text(
-                    AppLocalizations.of(context).text('并非所有操作系统都能够调用 WebView'),
+                    AppLocalizations.of(context).webViewNotSupportedOnAllOs,
                   ),
                   onTap: _openOfficialSite,
                 ),
@@ -416,11 +416,11 @@ class _SettingsPageState extends State<SettingsPage> {
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     title: Text(
-                      AppLocalizations.of(context).text('访问令牌'),
+                      AppLocalizations.of(context).accessToken,
                       style: const TextStyle(fontWeight: FontWeight.w700),
                     ),
                     subtitle: Text(
-                      AppLocalizations.of(context).text('用于校验身份的访问令牌'),
+                      AppLocalizations.of(context).accessTokenDescription,
                     ),
                     onTap: _showTokenDialog,
                   ),
@@ -433,7 +433,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       color: Theme.of(context).colorScheme.error,
                     ),
                     title: Text(
-                      AppLocalizations.of(context).text('退出登录'),
+                      AppLocalizations.of(context).signOut,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.error,
                         fontWeight: FontWeight.w700,
@@ -449,7 +449,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     title: Text(
-                      AppLocalizations.of(context).text('登录后可管理账户设置'),
+                      AppLocalizations.of(context).accountSettingsSignIn,
                     ),
                   ),
               ],
@@ -465,7 +465,7 @@ class _SettingsPageState extends State<SettingsPage> {
     if (api == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context).text('无法打开官网：缺少服务配置')),
+          content: Text(AppLocalizations.of(context).cannotOpenSiteMissingConfig),
         ),
       );
       return;
@@ -505,7 +505,7 @@ class _SettingsPageState extends State<SettingsPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context).text('访问令牌 已更新')),
+            content: Text(AppLocalizations.of(context).accessTokenUpdated),
           ),
         );
       }
@@ -529,18 +529,18 @@ class _SettingsPageState extends State<SettingsPage> {
       context: context,
       builder:
           (dialogContext) => AlertDialog(
-            title: Text(AppLocalizations.of(context).text('退出登录')),
+            title: Text(AppLocalizations.of(context).signOut),
             content: Text(
-              AppLocalizations.of(context).text('确定退出当前 ChengeWorld 账户？'),
+              AppLocalizations.of(context).confirmSignOut,
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(dialogContext, false),
-                child: Text(AppLocalizations.of(context).text('取消')),
+                child: Text(AppLocalizations.of(context).cancel),
               ),
               FilledButton.tonal(
                 onPressed: () => Navigator.pop(dialogContext, true),
-                child: Text(AppLocalizations.of(context).text('退出')),
+                child: Text(AppLocalizations.of(context).exit),
               ),
             ],
           ),
@@ -550,7 +550,7 @@ class _SettingsPageState extends State<SettingsPage> {
     if (!mounted) return;
     Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(AppLocalizations.of(context).text('已退出登录'))),
+      SnackBar(content: Text(AppLocalizations.of(context).signedOut)),
     );
   }
 
@@ -560,11 +560,10 @@ class _SettingsPageState extends State<SettingsPage> {
     required Map<T, String> items,
     required ValueChanged<T> onChanged,
   }) {
-    final localizations = AppLocalizations.of(context);
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 4),
       title: Text(
-        localizations.text(title),
+        title,
         style: const TextStyle(fontWeight: FontWeight.w700),
       ),
       trailing: DropdownButton<T>(
@@ -574,7 +573,7 @@ class _SettingsPageState extends State<SettingsPage> {
           for (final entry in items.entries)
             DropdownMenuItem(
               value: entry.key,
-              child: Text(localizations.text(entry.value)),
+              child: Text(entry.value),
             ),
         ],
         onChanged: (next) {
@@ -703,7 +702,7 @@ class _EditTokenDialogState extends State<_EditTokenDialog> {
     final l10n = AppLocalizations.of(context);
     return AlertDialog(
       title: Text(
-        l10n.text('访问令牌'),
+        l10n.accessToken,
         style: const TextStyle(fontWeight: FontWeight.w800),
       ),
       content: SizedBox(
@@ -720,17 +719,17 @@ class _EditTokenDialogState extends State<_EditTokenDialog> {
                 minLines: 3,
                 enabled: !_saving,
                 decoration: InputDecoration(
-                  labelText: l10n.text('访问令牌'),
+                  labelText: l10n.accessToken,
                   alignLabelWithHint: true,
                   suffixIcon: IconButton(
-                    tooltip: l10n.text('复制'),
+                    tooltip: l10n.copy,
                     onPressed: () async {
                       await Clipboard.setData(
                         ClipboardData(text: _controller.text),
                       );
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(l10n.text('访问令牌 已复制'))),
+                          SnackBar(content: Text(l10n.accessTokenCopied)),
                         );
                       }
                     },
@@ -752,7 +751,7 @@ class _EditTokenDialogState extends State<_EditTokenDialog> {
       actions: [
         TextButton(
           onPressed: _saving ? null : () => Navigator.of(context).pop(),
-          child: Text(l10n.text('取消')),
+          child: Text(l10n.cancel),
         ),
         FilledButton(
           onPressed: _saving ? null : _confirm,
@@ -762,7 +761,7 @@ class _EditTokenDialogState extends State<_EditTokenDialog> {
                     dimension: 18,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                  : Text(l10n.text('确定')),
+                  : Text(l10n.confirm),
         ),
       ],
     );

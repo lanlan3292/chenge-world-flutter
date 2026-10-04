@@ -1,10 +1,3 @@
-// ignore: unused_import
-import 'package:intl/intl.dart' as intl;
-import 'app_localizations.dart';
-
-// ignore_for_file: type=lint
-
-/// The translations for Chinese (`zh`).
 class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
@@ -460,6 +453,70 @@ class AppLocalizationsZh extends AppLocalizations {
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
+
+  @override
+  String get chengeCore => 'ChengeCore';
+
+  @override
+  String get signInWithToken => '使用 Token 登录';
+
+  @override
+  String get openOfficialSiteWithWebView => '使用 WebView 打开官网';
+
+  @override
+  String get close => '关闭';
+
+  @override
+  String get raising => '养成';
+
+  @override
+  String get copy => '复制';
+
+  @override
+  String get webViewNotSupportedOnAllOs => '并非所有操作系统都能够调用 WebView';
+
+  @override
+  String get platformWebViewNotSupported => '当前平台暂不支持内置网页';
+
+  @override
+  String get openCoreEcosystem => '打开核心生态';
+
+  @override
+  String get openRaisingSystem => '打开站娘养成系统';
+
+  @override
+  String get cannotOpenSiteMissingConfig => '无法打开官网：缺少服务配置';
+
+  @override
+  String get accessTokenDescription => '用于校验身份的访问令牌';
+
+  @override
+  String get confirm => '确定';
+
+  @override
+  String get confirmSignIn => '确认登录';
+
+  @override
+  String get pasteJwtToken => '粘贴 JWT Token';
+
+  @override
+  String get accessToken => '访问令牌';
+
+  @override
+  String get accessTokenCopied => '访问令牌 已复制';
+
+  @override
+  String get accessTokenUpdated => '访问令牌 已更新';
+
+  @override
+  String get signInToUseChengeCore => '请先登录后再使用 ChengeCore';
+
+  @override
+  String get signInToUseRaising => '请先登录后再使用养成';
+
+  @override
+  String get enterToken => '请输入 Token';
+
 class AppLocalizationsZhCn extends AppLocalizationsZh {
   AppLocalizationsZhCn() : super('zh_CN');
 
@@ -915,6 +972,70 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
+
+  @override
+  String get chengeCore => 'ChengeCore';
+
+  @override
+  String get signInWithToken => '使用 Token 登录';
+
+  @override
+  String get openOfficialSiteWithWebView => '使用 WebView 打开官网';
+
+  @override
+  String get close => '关闭';
+
+  @override
+  String get raising => '养成';
+
+  @override
+  String get copy => '复制';
+
+  @override
+  String get webViewNotSupportedOnAllOs => '并非所有操作系统都能够调用 WebView';
+
+  @override
+  String get platformWebViewNotSupported => '当前平台暂不支持内置网页';
+
+  @override
+  String get openCoreEcosystem => '打开核心生态';
+
+  @override
+  String get openRaisingSystem => '打开站娘养成系统';
+
+  @override
+  String get cannotOpenSiteMissingConfig => '无法打开官网：缺少服务配置';
+
+  @override
+  String get accessTokenDescription => '用于校验身份的访问令牌';
+
+  @override
+  String get confirm => '确定';
+
+  @override
+  String get confirmSignIn => '确认登录';
+
+  @override
+  String get pasteJwtToken => '粘贴 JWT Token';
+
+  @override
+  String get accessToken => '访问令牌';
+
+  @override
+  String get accessTokenCopied => '访问令牌 已复制';
+
+  @override
+  String get accessTokenUpdated => '访问令牌 已更新';
+
+  @override
+  String get signInToUseChengeCore => '请先登录后再使用 ChengeCore';
+
+  @override
+  String get signInToUseRaising => '请先登录后再使用养成';
+
+  @override
+  String get enterToken => '请输入 Token';
+
 class AppLocalizationsZhTw extends AppLocalizationsZh {
   AppLocalizationsZhTw() : super('zh_TW');
 
@@ -1368,3 +1489,67 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   @override
   String get signInToStartChat => '登入後開始聊天';
 }
+
+  @override
+  String get chengeCore => 'ChengeCore';
+
+  @override
+  String get signInWithToken => '使用 Token 登入';
+
+  @override
+  String get openOfficialSiteWithWebView => '使用 WebView 開啟官網';
+
+  @override
+  String get close => '關閉';
+
+  @override
+  String get raising => '養成';
+
+  @override
+  String get copy => '複製';
+
+  @override
+  String get webViewNotSupportedOnAllOs => '並非所有作業系統都能呼叫 WebView';
+
+  @override
+  String get platformWebViewNotSupported => '目前平台暫不支援內建網頁';
+
+  @override
+  String get openCoreEcosystem => '開啟核心生態';
+
+  @override
+  String get openRaisingSystem => '開啟站娘養成系統';
+
+  @override
+  String get cannotOpenSiteMissingConfig => '無法開啟官網：缺少服務設定';
+
+  @override
+  String get accessTokenDescription => '用於驗證身分的存取權杖';
+
+  @override
+  String get confirm => '確定';
+
+  @override
+  String get confirmSignIn => '確認登入';
+
+  @override
+  String get pasteJwtToken => '貼上 JWT Token';
+
+  @override
+  String get accessToken => '存取權杖';
+
+  @override
+  String get accessTokenCopied => '存取權杖 已複製';
+
+  @override
+  String get accessTokenUpdated => '存取權杖 已更新';
+
+  @override
+  String get signInToUseChengeCore => '請先登入後再使用 ChengeCore';
+
+  @override
+  String get signInToUseRaising => '請先登入後再使用養成';
+
+  @override
+  String get enterToken => '請輸入 Token';
+

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-import '../l10n/app_localizations_text.dart';
+import '../l10n/generated/app_localizations.dart';
 
 /// ChengeCore：aqua 主题，路由 `#/chengecore`
 class ChengeCorePage extends StatelessWidget {
@@ -331,22 +331,22 @@ class _SiteWebViewPageState extends State<_SiteWebViewPage> {
         appBar: AppBar(
           backgroundColor: scheme.surface,
           leading: IconButton(
-            tooltip: l10n.text('关闭'),
+            tooltip: l10n.close,
             icon: const Icon(Icons.close_rounded),
             onPressed: _closeWebView,
           ),
           title: Text(
-            l10n.text(widget.title),
+            widget.title,
             style: const TextStyle(fontWeight: FontWeight.w800),
           ),
           actions: [
             IconButton(
-              tooltip: l10n.text('返回'),
+              tooltip: l10n.back,
               onPressed: _canGoBack ? _goBackInWebView : null,
               icon: const Icon(Icons.arrow_back_rounded),
             ),
             IconButton(
-              tooltip: l10n.text('刷新'),
+              tooltip: l10n.refresh,
               onPressed: _reload,
               icon: const Icon(Icons.refresh_rounded),
             ),
@@ -372,7 +372,7 @@ class _SiteWebViewPageState extends State<_SiteWebViewPage> {
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          _error ?? l10n.text('当前平台暂不支持内置网页'),
+                          _error ?? l10n.platformWebViewNotSupported,
                           textAlign: TextAlign.center,
                           style: TextStyle(color: scheme.onSurfaceVariant),
                         ),
@@ -380,7 +380,7 @@ class _SiteWebViewPageState extends State<_SiteWebViewPage> {
                         FilledButton.icon(
                           onPressed: _reload,
                           icon: const Icon(Icons.refresh_rounded),
-                          label: Text(l10n.text('重试')),
+                          label: Text(l10n.retry),
                         ),
                       ],
                     ),

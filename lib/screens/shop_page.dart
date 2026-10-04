@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../l10n/app_localizations_text.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../models/shop_item.dart';
 import '../services/chenge_api.dart';
 import '../theme/app_theme.dart';
@@ -290,7 +290,7 @@ class _ShopPageState extends State<ShopPage> {
                     ),
                   ),
                   title: Text(
-                    AppLocalizations.of(context).text('商城'),
+                    AppLocalizations.of(context).store,
                     style: const TextStyle(fontWeight: FontWeight.w800),
                   ),
                   actions: [
@@ -367,7 +367,7 @@ class _ShopPageState extends State<ShopPage> {
               child: Row(
                 children: [
                   Text(
-                    AppLocalizations.of(context).text('发现好物'),
+                    AppLocalizations.of(context).discoverItems,
                     style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w900,
@@ -444,17 +444,17 @@ class _ShopPageState extends State<ShopPage> {
     segments: [
       ButtonSegment(
         value: 'mall',
-        label: Text(AppLocalizations.of(context).text('逛商城')),
+        label: Text(AppLocalizations.of(context).shopNow),
         icon: const Icon(Icons.storefront_outlined),
       ),
       ButtonSegment(
         value: 'assets',
-        label: Text(AppLocalizations.of(context).text('我的资产')),
+        label: Text(AppLocalizations.of(context).myAssets),
         icon: const Icon(Icons.inventory_2_outlined),
       ),
       ButtonSegment(
         value: 'orders',
-        label: Text(AppLocalizations.of(context).text('订单')),
+        label: Text(AppLocalizations.of(context).orders),
         icon: const Icon(Icons.receipt_long_outlined),
       ),
     ],
@@ -470,20 +470,20 @@ class _ShopPageState extends State<ShopPage> {
           textInputAction: TextInputAction.search,
           onSubmitted: (_) => _loadItems(),
           decoration: InputDecoration(
-            hintText: AppLocalizations.of(context).text('搜索商品'),
+            hintText: AppLocalizations.of(context).searchProducts,
             prefixIcon: const Icon(Icons.search_rounded),
           ),
         ),
       ),
       const SizedBox(width: 8),
       IconButton.filledTonal(
-        tooltip: AppLocalizations.of(context).text('搜索商品'),
+        tooltip: AppLocalizations.of(context).searchProducts,
         onPressed: () => _loadItems(),
         icon: const Icon(Icons.arrow_forward_rounded),
       ),
       const SizedBox(width: 5),
       PopupMenuButton<String>(
-        tooltip: AppLocalizations.of(context).text('排序商品'),
+        tooltip: AppLocalizations.of(context).sortProducts,
         initialValue: _sort,
         onSelected: (value) {
           setState(() => _sort = value);
@@ -493,23 +493,23 @@ class _ShopPageState extends State<ShopPage> {
             (context) => [
               PopupMenuItem(
                 value: 'latest',
-                child: Text(AppLocalizations.of(context).text('最新上架')),
+                child: Text(AppLocalizations.of(context).newestArrivals),
               ),
               PopupMenuItem(
                 value: 'hot',
-                child: Text(AppLocalizations.of(context).text('热门商品')),
+                child: Text(AppLocalizations.of(context).popularProducts),
               ),
               PopupMenuItem(
                 value: 'price_asc',
-                child: Text(AppLocalizations.of(context).text('价格从低到高')),
+                child: Text(AppLocalizations.of(context).priceLowToHigh),
               ),
               PopupMenuItem(
                 value: 'price_desc',
-                child: Text(AppLocalizations.of(context).text('价格从高到低')),
+                child: Text(AppLocalizations.of(context).priceHighToLow),
               ),
               PopupMenuItem(
                 value: 'rating',
-                child: Text(AppLocalizations.of(context).text('评分优先')),
+                child: Text(AppLocalizations.of(context).ratingFirst),
               ),
             ],
         child: const SizedBox.square(
@@ -525,14 +525,14 @@ class _ShopPageState extends State<ShopPage> {
     child: ListView(
       scrollDirection: Axis.horizontal,
       children: [
-        _typeChip('', AppLocalizations.of(context).text('全部')),
-        _typeChip('file', AppLocalizations.of(context).text('文件')),
-        _typeChip('emoji', AppLocalizations.of(context).text('表情包')),
-        _typeChip('ui', AppLocalizations.of(context).text('组件')),
-        _typeChip('app', AppLocalizations.of(context).text('应用')),
-        _typeChip('command', AppLocalizations.of(context).text('可执行')),
-        _typeChip('classes', AppLocalizations.of(context).text('类库')),
-        _typeChip('functions', AppLocalizations.of(context).text('函数库')),
+        _typeChip('', AppLocalizations.of(context).all),
+        _typeChip('file', AppLocalizations.of(context).files),
+        _typeChip('emoji', AppLocalizations.of(context).emojiPacks),
+        _typeChip('ui', AppLocalizations.of(context).components),
+        _typeChip('app', AppLocalizations.of(context).applications),
+        _typeChip('command', AppLocalizations.of(context).executables),
+        _typeChip('classes', AppLocalizations.of(context).libraries),
+        _typeChip('functions', AppLocalizations.of(context).functionLibraries),
       ],
     ),
   );

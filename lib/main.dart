@@ -1,7 +1,7 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'l10n/app_localizations_text.dart';
+import 'l10n/generated/app_localizations.dart';
 import 'screens/account_page.dart';
 import 'screens/feed_page.dart';
 import 'screens/shop_page.dart';
@@ -413,22 +413,22 @@ class _AppShellState extends State<AppShell> {
                   NavigationRailDestination(
                     icon: Icon(Icons.dynamic_feed_outlined),
                     selectedIcon: Icon(Icons.dynamic_feed_rounded),
-                    label: Text(AppLocalizations.of(context).text('发现')),
+                    label: Text(AppLocalizations.of(context).discover),
                   ),
                   NavigationRailDestination(
                     icon: Icon(Icons.people_outline_rounded),
                     selectedIcon: Icon(Icons.people_rounded),
-                    label: Text(AppLocalizations.of(context).text('社交')),
+                    label: Text(AppLocalizations.of(context).social),
                   ),
                   NavigationRailDestination(
                     icon: Icon(Icons.storefront_outlined),
                     selectedIcon: Icon(Icons.storefront_rounded),
-                    label: Text(AppLocalizations.of(context).text('商城')),
+                    label: Text(AppLocalizations.of(context).store),
                   ),
                   NavigationRailDestination(
                     icon: Icon(Icons.person_outline_rounded),
                     selectedIcon: Icon(Icons.person_rounded),
-                    label: Text(AppLocalizations.of(context).text('我的')),
+                    label: Text(AppLocalizations.of(context).account),
                   ),
                 ],
               ),
@@ -492,22 +492,22 @@ class _AppShellState extends State<AppShell> {
                           NavigationDestination(
                             icon: Icon(Icons.dynamic_feed_outlined),
                             selectedIcon: Icon(Icons.dynamic_feed_rounded),
-                            label: AppLocalizations.of(context).text('发现'),
+                            label: AppLocalizations.of(context).discover,
                           ),
                           NavigationDestination(
                             icon: Icon(Icons.people_outline_rounded),
                             selectedIcon: Icon(Icons.people_rounded),
-                            label: AppLocalizations.of(context).text('社交'),
+                            label: AppLocalizations.of(context).social,
                           ),
                           NavigationDestination(
                             icon: Icon(Icons.storefront_outlined),
                             selectedIcon: Icon(Icons.storefront_rounded),
-                            label: AppLocalizations.of(context).text('商城'),
+                            label: AppLocalizations.of(context).store,
                           ),
                           NavigationDestination(
                             icon: Icon(Icons.person_outline_rounded),
                             selectedIcon: Icon(Icons.person_rounded),
-                            label: AppLocalizations.of(context).text('我的'),
+                            label: AppLocalizations.of(context).account,
                           ),
                         ],
                       ),
