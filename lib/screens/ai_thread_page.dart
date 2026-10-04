@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/generated/app_localizations.dart';
+
 import '../models/ai_session.dart';
 import '../services/chenge_api.dart';
 import '../theme/app_theme.dart';
@@ -137,7 +139,7 @@ class _AiThreadPageState extends State<AiThreadPage> {
       role: 'assistant',
       content: '',
       streaming: true,
-      status: '思考中…',
+      status: AppLocalizations.of(context).thinking,
     );
 
     setState(() {
@@ -161,7 +163,7 @@ class _AiThreadPageState extends State<AiThreadPage> {
 
         if (type == 'error') {
           final message = data is Map
-              ? '${data['message'] ?? data['msg'] ?? 'AI 请求失败'}'
+              ? (data['message'] ?? data['msg'] ?? AppLocalizations.of(context).aiRequestFailed).toString()
               : '$data';
           setState(() {
             assistantBubble
@@ -207,10 +209,10 @@ class _AiThreadPageState extends State<AiThreadPage> {
               assistantBubble.content = finalText;
             }
             if (assistantBubble.content.isEmpty) {
-              assistantBubble.content = '（无文本回复）';
+              assistantBubble.content = AppLocalizations.of(context).noTextReply;
             }
           });
-          if (_session.name == '新对话' || _session.name.isEmpty) {
+          if (_session.name == AppLocalizations.of(context).newConversation || _session.name.isEmpty) {
             final title = text.length > 18 ? '${text.substring(0, 18)}…' : text;
             try {
               await widget.api.renameAiSession(_session.sessionId, title, widget.token);
@@ -234,7 +236,7 @@ class _AiThreadPageState extends State<AiThreadPage> {
         }
 
         if (type == 'pending' || type == 'artifacts' || type == 'sources') {
-          setState(() => assistantBubble.status = type == 'pending' ? '等待确认…' : '收到 $type');
+          setState(() => assistantBubble.status = type == 'pending' ? AppLocalizations.of(context).waitingConfirm : AppLocalizations.of(context).receivedType(type));
         }
       }
     } on ApiException catch (error) {
@@ -320,7 +322,7 @@ class _AiThreadPageState extends State<AiThreadPage> {
         automaticallyImplyLeading: widget.showBackButton,
         leading: widget.showBackButton
             ? IconButton(
-                tooltip: '返回会话列表',
+                tooltip: AppLocalizations.of(context).backToSessionList,
                 onPressed: () => Navigator.of(context).pop(false),
                 icon: const Icon(Icons.arrow_back_rounded),
               )
@@ -352,8 +354,8 @@ class _AiThreadPageState extends State<AiThreadPage> {
                     child: Center(child: CircularProgressIndicator()),
                   )
                 else if (_messages.isEmpty)
-                  const Center(
-                    child: Text('发一条消息开始对话', style: TextStyle(color: Color(0xFF70817D))),
+                  Center(
+                    child: Text(AppLocalizations.of(context).sendMessageToStart, style: const TextStyle(color: Color(0xFF70817D))),
                   ),
               ],
             ),
@@ -430,9 +432,9 @@ class _AiThreadPageState extends State<AiThreadPage> {
                 textInputAction: TextInputAction.send,
                 onSubmitted: (_) => _send(),
                 enabled: !_sending,
-                decoration: const InputDecoration(
-                  hintText: '向 AI Agent 提问…',
-                  prefixIcon: Icon(Icons.smart_toy_outlined),
+                decoration: InputDecoration(
+                  hintText: AppLocalizations.of(context).askAiAgent,
+                  prefixIcon: const Icon(Icons.smart_toy_outlined),
                 ),
               ),
             ),

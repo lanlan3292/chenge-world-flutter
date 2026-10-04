@@ -130,7 +130,7 @@ class _FriendsPageState extends State<FriendsPage> {
   Future<void> _search() async {
     final keyword = _searchController.text.trim();
     if (keyword.isEmpty) {
-      _showMessage(_searchMode == 'group' ? '请输入群名称关键词' : '请输入用户名、昵称或邮箱');
+      _showMessage(_searchMode == 'group' ? AppLocalizations.of(context).enterGroupNameKeyword : AppLocalizations.of(context).enterUserSearchHint);
       return;
     }
     final token = widget.token;
@@ -198,7 +198,7 @@ class _FriendsPageState extends State<FriendsPage> {
   Future<void> _apply(FriendUser user) => _runAction(
     user,
     () => widget.api.applyFriend(user.userId, widget.token!),
-    user.iReceived ? '已回加，现在你们是好友了' : '好友申请已发送',
+    user.iReceived ? AppLocalizations.of(context).friendAddedBack : AppLocalizations.of(context).friendRequestSent,
     updateSearch: true,
   );
 
@@ -207,20 +207,20 @@ class _FriendsPageState extends State<FriendsPage> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: Text(reject ? '拒绝好友申请' : '解除好友'),
+            title: Text(reject ? AppLocalizations.of(context).rejectFriendRequest : AppLocalizations.of(context).removeFriend),
             content: Text(
               reject
-                  ? '确定拒绝 ${user.displayName} 的好友申请？'
-                  : '确定与 ${user.displayName} 解除好友关系？',
+                  ? AppLocalizations.of(context).confirmRejectFriendRequest(user.displayName)
+                  : AppLocalizations.of(context).confirmRemoveFriend(user.displayName),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('取消'),
+                child: Text(AppLocalizations.of(context).cancel),
               ),
               FilledButton.tonal(
                 onPressed: () => Navigator.pop(context, true),
-                child: Text(reject ? '拒绝' : '解除'),
+                child: Text(reject ? AppLocalizations.of(context).reject : AppLocalizations.of(context).remove),
               ),
             ],
           ),
@@ -229,7 +229,7 @@ class _FriendsPageState extends State<FriendsPage> {
     await _runAction(
       user,
       () => widget.api.removeFriend(user.userId, widget.token!),
-      reject ? '已拒绝好友申请' : '已解除好友关系',
+      reject ? AppLocalizations.of(context).friendRequestRejected : AppLocalizations.of(context).friendRemoved,
       updateSearch: true,
     );
   }
@@ -245,7 +245,7 @@ class _FriendsPageState extends State<FriendsPage> {
     await _runAction(
       user,
       () => widget.api.setFriendRemark(user.userId, remark, widget.token!),
-      remark.isEmpty ? '备注已清除' : '备注已保存',
+      remark.isEmpty ? AppLocalizations.of(context).remarkCleared : AppLocalizations.of(context).remarkSaved,
     );
   }
 
@@ -256,7 +256,7 @@ class _FriendsPageState extends State<FriendsPage> {
     try {
       await widget.api.joinGroup(group.id, token);
       if (!mounted) return;
-      _showMessage('已加入「${group.name}」');
+      _showMessage(AppLocalizations.of(context).joinedGroup(group.name));
       setState(() => _groupResults.removeWhere((g) => g.id == group.id));
       await _refreshLists();
       widget.onOpenConversation?.call(group.id);
@@ -277,7 +277,7 @@ class _FriendsPageState extends State<FriendsPage> {
     );
     if (result == null || !mounted) return;
     if (result.name.isEmpty) {
-      _showMessage('请输入群名称', isError: true);
+      _showMessage(AppLocalizations.of(context).enterGroupName, isError: true);
       return;
     }
 
@@ -288,7 +288,7 @@ class _FriendsPageState extends State<FriendsPage> {
         token: token,
       );
       if (!mounted) return;
-      _showMessage('群聊「${conversation.name}」已创建');
+      _showMessage(AppLocalizations.of(context).groupCreated(conversation.name));
       await _refreshLists();
       widget.onOpenConversation?.call(conversation.id);
     } on ApiException catch (error) {
@@ -330,13 +330,13 @@ class _FriendsPageState extends State<FriendsPage> {
                 actions: [
                   if (widget.token != null)
                     IconButton(
-                      tooltip: '创建群聊',
+                      tooltip: AppLocalizations.of(context).createGroupChat,
                       onPressed: _createGroup,
                       icon: const Icon(Icons.group_add_rounded),
                     ),
                   if (widget.token != null)
                     IconButton(
-                      tooltip: '刷新',
+                      tooltip: AppLocalizations.of(context).refresh,
                       onPressed: _loading ? null : _refreshLists,
                       icon: const Icon(Icons.refresh_rounded),
                     ),
@@ -366,7 +366,7 @@ class _FriendsPageState extends State<FriendsPage> {
                                 Icons.group_add_rounded,
                                 size: 18,
                               ),
-                              label: const Text('创建群聊'),
+                              label: Text(AppLocalizations.of(context).createGroupChat),
                             ),
                           ),
                         _sectionSelector(),
@@ -393,13 +393,13 @@ class _FriendsPageState extends State<FriendsPage> {
         children: [
           const Icon(Icons.contacts_outlined, size: 56, color: AppTheme.leaf),
           const SizedBox(height: 14),
-          const Text(
-            '登录后管理通讯录',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
+          Text(
+            AppLocalizations.of(context).signInToManageContacts,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 6),
           Text(
-            '搜索用户、加入群聊、处理好友申请',
+            AppLocalizations.of(context).contactsSubtitle,
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -409,7 +409,7 @@ class _FriendsPageState extends State<FriendsPage> {
           FilledButton.icon(
             onPressed: widget.onLoginRequested,
             icon: const Icon(Icons.login_rounded),
-            label: const Text('前往登录'),
+            label: Text(AppLocalizations.of(context).goSignIn),
           ),
         ],
       ),
@@ -421,23 +421,23 @@ class _FriendsPageState extends State<FriendsPage> {
     segments: [
       ButtonSegment(
         value: 'friends',
-        label: Text('好友 ${_friends.length}'),
+        label: Text(AppLocalizations.of(context).friendsTab(_friends.length)),
         icon: const Icon(Icons.people_outline_rounded),
       ),
       ButtonSegment(
         value: 'groups',
-        label: Text('群聊 ${_groups.length}'),
+        label: Text(AppLocalizations.of(context).groupsTab(_groups.length)),
         icon: const Icon(Icons.groups_outlined),
       ),
       ButtonSegment(
         value: 'requests',
-        label: Text('申请 ${_requests.length}'),
+        label: Text(AppLocalizations.of(context).requestsTab(_requests.length)),
         icon: const Icon(Icons.person_add_alt_1_rounded),
       ),
-      const ButtonSegment(
+      ButtonSegment(
         value: 'search',
-        label: Text('搜索'),
-        icon: Icon(Icons.search_rounded),
+        label: Text(AppLocalizations.of(context).search),
+        icon: const Icon(Icons.search_rounded),
       ),
     ],
     selected: {_section},
@@ -450,15 +450,15 @@ class _FriendsPageState extends State<FriendsPage> {
     children: [
       SegmentedButton<String>(
         showSelectedIcon: false,
-        segments: const [
+        segments:  [
           ButtonSegment(
             value: 'user',
-            label: Text('搜用户'),
+            label: Text(AppLocalizations.of(context).searchUsers),
             icon: Icon(Icons.person_search_rounded),
           ),
           ButtonSegment(
             value: 'group',
-            label: Text('搜群聊'),
+            label: Text(AppLocalizations.of(context).searchGroups),
             icon: Icon(Icons.group_rounded),
           ),
         ],
@@ -478,10 +478,10 @@ class _FriendsPageState extends State<FriendsPage> {
         textInputAction: TextInputAction.search,
         onSubmitted: (_) => _search(),
         decoration: InputDecoration(
-          hintText: _searchMode == 'group' ? '群名称关键词' : '用户名、昵称或邮箱',
+          hintText: _searchMode == 'group' ? AppLocalizations.of(context).groupNameKeyword : AppLocalizations.of(context).userSearchHint,
           prefixIcon: const Icon(Icons.search_rounded),
           suffixIcon: IconButton(
-            tooltip: _searchMode == 'group' ? '搜索群聊' : '搜索用户',
+            tooltip: _searchMode == 'group' ? AppLocalizations.of(context).searchGroupsTooltip : AppLocalizations.of(context).searchUsersTooltip,
             onPressed: _searching ? null : _search,
             icon:
                 _searching
@@ -515,7 +515,7 @@ class _FriendsPageState extends State<FriendsPage> {
               child: Text(_error, style: const TextStyle(color: AppTheme.ink)),
             ),
             IconButton(
-              tooltip: '重试',
+              tooltip: AppLocalizations.of(context).retry,
               visualDensity: VisualDensity.compact,
               onPressed: _section == 'search' ? _search : _refreshLists,
               icon: const Icon(Icons.refresh_rounded),
@@ -533,21 +533,21 @@ class _FriendsPageState extends State<FriendsPage> {
       }
       if (!_searched) {
         return _empty(
-          _searchMode == 'group' ? '搜索公开群聊' : '搜索 ChengeWorld 用户',
-          _searchMode == 'group' ? '输入群名称关键词，加入感兴趣的群' : '支持用户名、昵称或邮箱',
+          _searchMode == 'group' ? AppLocalizations.of(context).searchPublicGroups : AppLocalizations.of(context).searchChengeUsers,
+          _searchMode == 'group' ? AppLocalizations.of(context).searchPublicGroupsHint : AppLocalizations.of(context).searchUsersHint,
         );
       }
       if (_searchMode == 'group') {
         if (_searching && _groupResults.isEmpty) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (_groupResults.isEmpty) return _empty('没有找到匹配的群', '试试其他关键词');
+        if (_groupResults.isEmpty) return _empty(AppLocalizations.of(context).noMatchingGroups, AppLocalizations.of(context).tryOtherKeywords);
         return _groupList(_groupResults, searchable: true);
       }
       if (_searching && _results.isEmpty) {
         return const Center(child: CircularProgressIndicator());
       }
-      if (_results.isEmpty) return _empty('没有找到匹配的人', '试试其他关键词');
+      if (_results.isEmpty) return _empty(AppLocalizations.of(context).noMatchingPeople, AppLocalizations.of(context).tryOtherKeywords);
       return _userList(_results, kind: _FriendListKind.search);
     }
 
@@ -555,7 +555,7 @@ class _FriendsPageState extends State<FriendsPage> {
       if (_loading && _groups.isEmpty) {
         return const Center(child: CircularProgressIndicator());
       }
-      if (_groups.isEmpty) return _empty('还没有群聊', '创建群聊，或在搜索里加入公开群');
+      if (_groups.isEmpty) return _empty(AppLocalizations.of(context).noGroupsYet, AppLocalizations.of(context).noGroupsHint);
       return _groupList(_groups, searchable: false);
     }
 
@@ -565,8 +565,8 @@ class _FriendsPageState extends State<FriendsPage> {
     }
     if (users.isEmpty) {
       return _section == 'friends'
-          ? _empty('还没有好友', '搜索用户名或昵称，认识新朋友')
-          : _empty('没有待处理的申请', '新的好友申请会显示在这里');
+          ? _empty(AppLocalizations.of(context).noFriendsYet, AppLocalizations.of(context).noFriendsHint)
+          : _empty(AppLocalizations.of(context).noPendingRequests, AppLocalizations.of(context).noPendingRequestsHint);
     }
     return _userList(
       users,
@@ -746,7 +746,7 @@ class _FriendsPageState extends State<FriendsPage> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      searchable ? '群聊 · 点击加入' : '群聊',
+                      searchable ? AppLocalizations.of(context).groupTapToJoin : AppLocalizations.of(context).groupChat,
                       style: TextStyle(
                         fontSize: 12,
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -771,11 +771,11 @@ class _FriendsPageState extends State<FriendsPage> {
                     minimumSize: const Size(0, 40),
                     padding: const EdgeInsets.symmetric(horizontal: 12),
                   ),
-                  child: const Text('加入'),
+                  child: Text(AppLocalizations.of(context).join),
                 )
               else
                 IconButton(
-                  tooltip: '进入群聊',
+                  tooltip: AppLocalizations.of(context).enterGroup,
                   onPressed: () => _openGroupChat(group),
                   icon: const Icon(Icons.chat_bubble_outline_rounded),
                 ),
@@ -787,12 +787,12 @@ class _FriendsPageState extends State<FriendsPage> {
   }
 
   String _subtitle(FriendUser user, _FriendListKind kind) {
-    if (kind == _FriendListKind.request) return '@${user.username} · 申请添加你';
+    if (kind == _FriendListKind.request) return AppLocalizations.of(context).requestAddYou(user.username);
     if (kind == _FriendListKind.friend) {
       final online = _online[user.userId] == true;
-      final status = online ? '在线' : '离线';
+      final status = online ? AppLocalizations.of(context).online : AppLocalizations.of(context).offline;
       if (user.remark?.isNotEmpty == true) {
-        return '$status · 备注：${user.remark} · @${user.username}';
+        return AppLocalizations.of(context).onlineWithRemark(status, user.remark ?? '', user.username);
       }
       return '$status · @${user.username}';
     }
@@ -801,7 +801,7 @@ class _FriendsPageState extends State<FriendsPage> {
 
   Widget _actions(FriendUser user, _FriendListKind kind) {
     if (kind == _FriendListKind.search) {
-      if (user.mutual) return _statusPill('好友', AppTheme.leaf);
+      if (user.mutual) return _statusPill(AppLocalizations.of(context).friend, AppTheme.leaf);
       if (user.iReceived) {
         return FilledButton.tonal(
           onPressed: () => _apply(user),
@@ -809,17 +809,17 @@ class _FriendsPageState extends State<FriendsPage> {
             minimumSize: const Size(0, 40),
             padding: const EdgeInsets.symmetric(horizontal: 12),
           ),
-          child: const Text('回加'),
+          child: Text(AppLocalizations.of(context).addBack),
         );
       }
-      if (user.iSent) return _statusPill('已申请', const Color(0xFF8A5A08));
+      if (user.iSent) return _statusPill(AppLocalizations.of(context).requested, const Color(0xFF8A5A08));
       return FilledButton.tonal(
         onPressed: () => _apply(user),
         style: FilledButton.styleFrom(
           minimumSize: const Size(0, 40),
           padding: const EdgeInsets.symmetric(horizontal: 12),
         ),
-        child: const Text('添加'),
+        child: Text(AppLocalizations.of(context).add),
       );
     }
     if (kind == _FriendListKind.request) {
@@ -827,12 +827,12 @@ class _FriendsPageState extends State<FriendsPage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton.filledTonal(
-            tooltip: '回加并接受',
+            tooltip: AppLocalizations.of(context).acceptAndAddBack,
             onPressed: () => _apply(user),
             icon: const Icon(Icons.person_add_alt_1_rounded),
           ),
           IconButton(
-            tooltip: '拒绝申请',
+            tooltip: AppLocalizations.of(context).rejectRequest,
             onPressed: () => _remove(user, reject: true),
             color: AppTheme.coral,
             icon: const Icon(Icons.close_rounded),
@@ -841,7 +841,7 @@ class _FriendsPageState extends State<FriendsPage> {
       );
     }
     return PopupMenuButton<String>(
-      tooltip: '好友操作',
+      tooltip: AppLocalizations.of(context).friendActions,
       onSelected: (action) {
         if (action == 'chat') _openFriendChat(user);
         if (action == 'remark') _editRemark(user);
@@ -849,12 +849,12 @@ class _FriendsPageState extends State<FriendsPage> {
       },
       itemBuilder:
           (_) => [
-            const PopupMenuItem(value: 'chat', child: Text('发消息')),
+            PopupMenuItem(value: 'chat', child: Text(AppLocalizations.of(context).sendMessageAction)),
             PopupMenuItem(
               value: 'remark',
-              child: Text(user.remark?.isNotEmpty == true ? '修改备注' : '设置备注'),
+              child: Text(user.remark?.isNotEmpty == true ? AppLocalizations.of(context).editRemark : AppLocalizations.of(context).setRemark),
             ),
-            const PopupMenuItem(value: 'remove', child: Text('解除好友关系')),
+            PopupMenuItem(value: 'remove', child: Text(AppLocalizations.of(context).removeFriendRelation)),
           ],
       child: const SizedBox.square(
         dimension: 42,
@@ -949,26 +949,26 @@ class _EditRemarkDialogState extends State<_EditRemarkDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('设置好友备注'),
+      title: Text(AppLocalizations.of(context).setFriendRemark),
       content: TextField(
         controller: _controller,
         autofocus: true,
         maxLength: 40,
         textInputAction: TextInputAction.done,
         onSubmitted: (_) => _submit(),
-        decoration: const InputDecoration(
-          labelText: '备注名称',
-          hintText: '留空以清除备注',
+        decoration: InputDecoration(
+          labelText: AppLocalizations.of(context).remarkName,
+          hintText: AppLocalizations.of(context).remarkHintClear,
         ),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('取消'),
+          child: Text(AppLocalizations.of(context).cancel),
         ),
         FilledButton(
           onPressed: _submit,
-          child: const Text('保存'),
+          child: Text(AppLocalizations.of(context).save),
         ),
       ],
     );
@@ -1024,7 +1024,7 @@ class _CreateGroupDialogState extends State<_CreateGroupDialog> {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return AlertDialog(
-      title: const Text('创建群聊'),
+      title: Text(AppLocalizations.of(context).createGroupChat),
       content: SizedBox(
         width: 360,
         child: Column(
@@ -1034,16 +1034,16 @@ class _CreateGroupDialogState extends State<_CreateGroupDialog> {
               controller: _nameController,
               autofocus: true,
               maxLength: 40,
-              decoration: const InputDecoration(
-                labelText: '群名称',
-                hintText: '给群聊起个名字',
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context).groupName,
+                hintText: AppLocalizations.of(context).groupNameHint,
               ),
             ),
             const SizedBox(height: 8),
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                '选择成员（可选）',
+                AppLocalizations.of(context).selectMembersOptional,
                 style: TextStyle(
                   fontSize: 13,
                   color: scheme.onSurface,
@@ -1095,11 +1095,11 @@ class _CreateGroupDialogState extends State<_CreateGroupDialog> {
       actions: [
         TextButton(
           onPressed: _cancel,
-          child: const Text('取消'),
+          child: Text(AppLocalizations.of(context).cancel),
         ),
         FilledButton(
           onPressed: _confirm,
-          child: const Text('创建'),
+          child: Text(AppLocalizations.of(context).create),
         ),
       ],
     );

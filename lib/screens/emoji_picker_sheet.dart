@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/generated/app_localizations.dart';
+
 import '../services/chenge_api.dart';
 import '../theme/app_theme.dart';
 
@@ -75,7 +77,7 @@ class _EmojiPickerSheetState extends State<EmojiPickerSheet> {
     for (final asset in _assets) {
       categories.putIfAbsent(
         asset.itemId,
-        () => asset.title ?? '表情包 ${asset.itemId}',
+        () => asset.title ?? AppLocalizations.of(context).emojiPackTitle(asset.itemId),
       );
     }
     final visibleAssets =
@@ -102,17 +104,17 @@ class _EmojiPickerSheetState extends State<EmojiPickerSheet> {
               padding: const EdgeInsets.fromLTRB(16, 14, 8, 8),
               child: Row(
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: Text(
-                      '表情包',
-                      style: TextStyle(
+                      AppLocalizations.of(context).emojiPacks,
+                      style: const TextStyle(
                         fontWeight: FontWeight.w800,
                         fontSize: 16,
                       ),
                     ),
                   ),
                   IconButton(
-                    tooltip: '关闭',
+                    tooltip: AppLocalizations.of(context).close,
                     onPressed: _closingForResize
                         ? null
                         : () => Navigator.pop(context),
@@ -131,7 +133,7 @@ class _EmojiPickerSheetState extends State<EmojiPickerSheet> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
                       child: ChoiceChip(
-                        label: const Text('全部'),
+                        label: Text(AppLocalizations.of(context).all),
                         selected: _selectedItemId == null,
                         onSelected:
                             (_) => setState(() => _selectedItemId = null),
@@ -164,10 +166,10 @@ class _EmojiPickerSheetState extends State<EmojiPickerSheet> {
                   _loading
                       ? const Center(child: CircularProgressIndicator())
                       : visibleAssets.isEmpty
-                      ? const Center(
+                      ? Center(
                         child: Text(
-                          '暂无表情包，可在商店购买',
-                          style: TextStyle(color: Color(0xFF70817D)),
+                          AppLocalizations.of(context).noEmojiPacksBuyInShop,
+                          style: const TextStyle(color: Color(0xFF70817D)),
                         ),
                       )
                       : GridView.builder(

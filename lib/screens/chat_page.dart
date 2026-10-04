@@ -193,7 +193,7 @@ class _ChatPageState extends State<ChatPage> {
     if (found != null) {
       _selectConversation(found);
     } else {
-      _showError('未找到该会话，请刷新后重试');
+      _showError(AppLocalizations.of(context).conversationNotFound);
     }
   }
 
@@ -510,7 +510,7 @@ class _ChatPageState extends State<ChatPage> {
                       children: [
                         Expanded(
                           child: Text(
-                            _preview(conversation.lastMessage),
+                            _preview(context, conversation.lastMessage),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
@@ -563,14 +563,14 @@ class _ChatPageState extends State<ChatPage> {
           const Icon(Icons.forum_outlined, size: 48, color: AppTheme.leaf),
           const SizedBox(height: 10),
           Text(
-            _listQuery.isNotEmpty ? '没有匹配的会话' : '还没有会话',
+            _listQuery.isNotEmpty ? AppLocalizations.of(context).noMatchingConversations : AppLocalizations.of(context).noConversationsYet,
             style: const TextStyle(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 6),
           TextButton.icon(
             onPressed: widget.onOpenFriends,
             icon: const Icon(Icons.contacts_outlined),
-            label: const Text('去通讯录发起聊天'),
+            label: Text(AppLocalizations.of(context).goContactsToChat),
           ),
         ],
       ),
@@ -596,7 +596,7 @@ class _ChatPageState extends State<ChatPage> {
               size: 22,
             )
             : Text(
-              name.isEmpty ? '友' : name.characters.first,
+              name.isEmpty ? AppLocalizations.of(context).friendInitial : name.characters.first,
               style: const TextStyle(
                 color: AppTheme.ink,
                 fontWeight: FontWeight.w700,
@@ -604,16 +604,20 @@ class _ChatPageState extends State<ChatPage> {
             ),
   );
 
-  static String _preview(ChatMessage? message) {
-    if (message == null) return '还没有消息';
-    if (message.type == 'emoji') return '[表情] ${_emojiKey(message.content)}';
-    if (message.type == 'post') return '[分享帖子]';
-    if (message.type == 'order') return '[商品订单]';
+  static String _preview(BuildContext context, ChatMessage? message) {
+    final l10n = AppLocalizations.of(context);
+    if (message == null) return l10n.noMessagesYetShort;
+    if (message.type == 'emoji') {
+      return l10n.previewEmoji(_emojiKey(context, message.content));
+    }
+    if (message.type == 'post') return l10n.previewSharedPost;
+    if (message.type == 'order') return l10n.previewOrder;
     return message.content;
   }
 
-  static String _emojiKey(String content) =>
-      EmojiMessageContent.tryParse(content)?.key ?? '表情消息';
+  static String _emojiKey(BuildContext context, String content) =>
+      EmojiMessageContent.tryParse(content)?.key ??
+      AppLocalizations.of(context).emojiMessage;
 
   static String _shortTime(DateTime? value) {
     if (value == null) return '';

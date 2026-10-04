@@ -1091,6 +1091,810 @@ abstract class AppLocalizations {
   /// **'请输入 Token'**
   String get enterToken;
 
+  /// No description provided for @communityMerchant.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'社区商家'**
+  String get communityMerchant;
+
+  /// No description provided for @product.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'商品'**
+  String get product;
+
+  /// No description provided for @productInitial.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'商'**
+  String get productInitial;
+
+  /// No description provided for @stockCount.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'库存 {count}'**
+  String stockCount(int count);
+
+  /// No description provided for @soldCount.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'已售 {count}'**
+  String soldCount(int count);
+
+  /// No description provided for @ratingReviews.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'{rating} · {count} 评价'**
+  String ratingReviews(String rating, int count);
+
+  /// No description provided for @productDescription.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'商品介绍'**
+  String get productDescription;
+
+  /// No description provided for @purchasedContent.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'已购内容'**
+  String get purchasedContent;
+
+  /// No description provided for @purchaseToViewContent.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'购买后可查看完整内容'**
+  String get purchaseToViewContent;
+
+  /// No description provided for @openOrDownloadFile.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'打开/下载文件'**
+  String get openOrDownloadFile;
+
+  /// No description provided for @balanceCc.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'余额 {amount} CC'**
+  String balanceCc(String amount);
+
+  /// No description provided for @buying.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'购买中…'**
+  String get buying;
+
+  /// No description provided for @buy.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'购买'**
+  String get buy;
+
+  /// No description provided for @yourListedProduct.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'这是你上架的商品'**
+  String get yourListedProduct;
+
+  /// No description provided for @backToShop.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'返回商城'**
+  String get backToShop;
+
+  /// No description provided for @holdingQuantityType.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'持有 {quantity} 件 · {type}'**
+  String holdingQuantityType(Object quantity, String type);
+
+  /// No description provided for @orderPending.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'待支付'**
+  String get orderPending;
+
+  /// No description provided for @orderPaid.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'已支付'**
+  String get orderPaid;
+
+  /// No description provided for @orderRefunded.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'已退款'**
+  String get orderRefunded;
+
+  /// No description provided for @statusUnknown.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'状态未知'**
+  String get statusUnknown;
+
+  /// No description provided for @conversationNotFound.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'未找到该会话，请刷新后重试'**
+  String get conversationNotFound;
+
+  /// No description provided for @noMatchingConversations.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'没有匹配的会话'**
+  String get noMatchingConversations;
+
+  /// No description provided for @noConversationsYet.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'还没有会话'**
+  String get noConversationsYet;
+
+  /// No description provided for @goContactsToChat.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'去通讯录发起聊天'**
+  String get goContactsToChat;
+
+  /// No description provided for @friendInitial.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'友'**
+  String get friendInitial;
+
+  /// No description provided for @noMessagesYetShort.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'还没有消息'**
+  String get noMessagesYetShort;
+
+  /// No description provided for @previewEmoji.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'[表情] {key}'**
+  String previewEmoji(String key);
+
+  /// No description provided for @previewSharedPost.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'[分享帖子]'**
+  String get previewSharedPost;
+
+  /// No description provided for @previewOrder.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'[商品订单]'**
+  String get previewOrder;
+
+  /// No description provided for @emojiMessage.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'表情消息'**
+  String get emojiMessage;
+
+  /// No description provided for @me.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'我'**
+  String get me;
+
+  /// No description provided for @sharedPost.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'分享帖子'**
+  String get sharedPost;
+
+  /// No description provided for @productOrder.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'商品订单'**
+  String get productOrder;
+
+  /// No description provided for @cannotOpenPostMissingId.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'无法打开帖子：分享内容缺少帖子编号'**
+  String get cannotOpenPostMissingId;
+
+  /// No description provided for @cannotOpenProductMissingId.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'无法打开商品：分享内容缺少商品编号'**
+  String get cannotOpenProductMissingId;
+
+  /// No description provided for @chengeUser.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'Chenge 用户'**
+  String get chengeUser;
+
+  /// No description provided for @signInToPurchase.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'登录后才能购买'**
+  String get signInToPurchase;
+
+  /// No description provided for @typeMessage.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'输入消息…'**
+  String get typeMessage;
+
+  /// No description provided for @sendMessage.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'发送消息'**
+  String get sendMessage;
+
+  /// No description provided for @emoji.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'表情'**
+  String get emoji;
+
+  /// No description provided for @previewEmojiOnly.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'[表情]'**
+  String get previewEmojiOnly;
+
+  /// No description provided for @enterGroupNameKeyword.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'请输入群名称关键词'**
+  String get enterGroupNameKeyword;
+
+  /// No description provided for @enterUserSearchHint.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'请输入用户名、昵称或邮箱'**
+  String get enterUserSearchHint;
+
+  /// No description provided for @friendAddedBack.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'已回加，现在你们是好友了'**
+  String get friendAddedBack;
+
+  /// No description provided for @friendRequestSent.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'好友申请已发送'**
+  String get friendRequestSent;
+
+  /// No description provided for @rejectFriendRequest.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'拒绝好友申请'**
+  String get rejectFriendRequest;
+
+  /// No description provided for @removeFriend.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'解除好友'**
+  String get removeFriend;
+
+  /// No description provided for @confirmRejectFriendRequest.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'确定拒绝 {name} 的好友申请？'**
+  String confirmRejectFriendRequest(String name);
+
+  /// No description provided for @confirmRemoveFriend.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'确定与 {name} 解除好友关系？'**
+  String confirmRemoveFriend(String name);
+
+  /// No description provided for @reject.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'拒绝'**
+  String get reject;
+
+  /// No description provided for @remove.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'解除'**
+  String get remove;
+
+  /// No description provided for @friendRequestRejected.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'已拒绝好友申请'**
+  String get friendRequestRejected;
+
+  /// No description provided for @friendRemoved.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'已解除好友关系'**
+  String get friendRemoved;
+
+  /// No description provided for @remarkCleared.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'备注已清除'**
+  String get remarkCleared;
+
+  /// No description provided for @remarkSaved.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'备注已保存'**
+  String get remarkSaved;
+
+  /// No description provided for @joinedGroup.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'已加入「{name}」'**
+  String joinedGroup(String name);
+
+  /// No description provided for @enterGroupName.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'请输入群名称'**
+  String get enterGroupName;
+
+  /// No description provided for @groupCreated.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'群聊「{name}」已创建'**
+  String groupCreated(String name);
+
+  /// No description provided for @createGroupChat.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'创建群聊'**
+  String get createGroupChat;
+
+  /// No description provided for @signInToManageContacts.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'登录后管理通讯录'**
+  String get signInToManageContacts;
+
+  /// No description provided for @contactsSubtitle.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'搜索用户、加入群聊、处理好友申请'**
+  String get contactsSubtitle;
+
+  /// No description provided for @friendsTab.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'好友 {count}'**
+  String friendsTab(int count);
+
+  /// No description provided for @groupsTab.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'群聊 {count}'**
+  String groupsTab(int count);
+
+  /// No description provided for @requestsTab.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'申请 {count}'**
+  String requestsTab(int count);
+
+  /// No description provided for @searchUsers.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'搜用户'**
+  String get searchUsers;
+
+  /// No description provided for @searchGroups.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'搜群聊'**
+  String get searchGroups;
+
+  /// No description provided for @groupNameKeyword.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'群名称关键词'**
+  String get groupNameKeyword;
+
+  /// No description provided for @userSearchHint.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'用户名、昵称或邮箱'**
+  String get userSearchHint;
+
+  /// No description provided for @searchGroupsTooltip.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'搜索群聊'**
+  String get searchGroupsTooltip;
+
+  /// No description provided for @searchUsersTooltip.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'搜索用户'**
+  String get searchUsersTooltip;
+
+  /// No description provided for @searchPublicGroups.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'搜索公开群聊'**
+  String get searchPublicGroups;
+
+  /// No description provided for @searchChengeUsers.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'搜索 ChengeWorld 用户'**
+  String get searchChengeUsers;
+
+  /// No description provided for @searchPublicGroupsHint.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'输入群名称关键词，加入感兴趣的群'**
+  String get searchPublicGroupsHint;
+
+  /// No description provided for @searchUsersHint.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'支持用户名、昵称或邮箱'**
+  String get searchUsersHint;
+
+  /// No description provided for @noMatchingGroups.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'没有找到匹配的群'**
+  String get noMatchingGroups;
+
+  /// No description provided for @noMatchingPeople.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'没有找到匹配的人'**
+  String get noMatchingPeople;
+
+  /// No description provided for @tryOtherKeywords.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'试试其他关键词'**
+  String get tryOtherKeywords;
+
+  /// No description provided for @noGroupsYet.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'还没有群聊'**
+  String get noGroupsYet;
+
+  /// No description provided for @noGroupsHint.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'创建群聊，或在搜索里加入公开群'**
+  String get noGroupsHint;
+
+  /// No description provided for @noFriendsYet.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'还没有好友'**
+  String get noFriendsYet;
+
+  /// No description provided for @noFriendsHint.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'搜索用户名或昵称，认识新朋友'**
+  String get noFriendsHint;
+
+  /// No description provided for @noPendingRequests.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'没有待处理的申请'**
+  String get noPendingRequests;
+
+  /// No description provided for @noPendingRequestsHint.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'新的好友申请会显示在这里'**
+  String get noPendingRequestsHint;
+
+  /// No description provided for @groupTapToJoin.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'群聊 · 点击加入'**
+  String get groupTapToJoin;
+
+  /// No description provided for @join.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'加入'**
+  String get join;
+
+  /// No description provided for @enterGroup.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'进入群聊'**
+  String get enterGroup;
+
+  /// No description provided for @requestAddYou.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'@{username} · 申请添加你'**
+  String requestAddYou(String username);
+
+  /// No description provided for @onlineWithRemark.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'{status} · 备注：{remark} · @{username}'**
+  String onlineWithRemark(String status, String remark, String username);
+
+  /// No description provided for @friend.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'好友'**
+  String get friend;
+
+  /// No description provided for @addBack.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'回加'**
+  String get addBack;
+
+  /// No description provided for @requested.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'已申请'**
+  String get requested;
+
+  /// No description provided for @add.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'添加'**
+  String get add;
+
+  /// No description provided for @acceptAndAddBack.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'回加并接受'**
+  String get acceptAndAddBack;
+
+  /// No description provided for @rejectRequest.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'拒绝申请'**
+  String get rejectRequest;
+
+  /// No description provided for @friendActions.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'好友操作'**
+  String get friendActions;
+
+  /// No description provided for @sendMessageAction.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'发消息'**
+  String get sendMessageAction;
+
+  /// No description provided for @editRemark.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'修改备注'**
+  String get editRemark;
+
+  /// No description provided for @setRemark.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'设置备注'**
+  String get setRemark;
+
+  /// No description provided for @removeFriendRelation.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'解除好友关系'**
+  String get removeFriendRelation;
+
+  /// No description provided for @setFriendRemark.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'设置好友备注'**
+  String get setFriendRemark;
+
+  /// No description provided for @remarkName.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'备注名称'**
+  String get remarkName;
+
+  /// No description provided for @remarkHintClear.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'留空以清除备注'**
+  String get remarkHintClear;
+
+  /// No description provided for @save.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'保存'**
+  String get save;
+
+  /// No description provided for @groupName.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'群名称'**
+  String get groupName;
+
+  /// No description provided for @groupNameHint.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'给群聊起个名字'**
+  String get groupNameHint;
+
+  /// No description provided for @selectMembersOptional.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'选择成员（可选）'**
+  String get selectMembersOptional;
+
+  /// No description provided for @create.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'创建'**
+  String get create;
+
+  /// No description provided for @newConversation.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'新对话'**
+  String get newConversation;
+
+  /// No description provided for @deleteSession.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'删除会话'**
+  String get deleteSession;
+
+  /// No description provided for @confirmDeleteSession.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'确定删除「{name}」？聊天记录将一并清除。'**
+  String confirmDeleteSession(String name);
+
+  /// No description provided for @delete.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'删除'**
+  String get delete;
+
+  /// No description provided for @newChat.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'新建对话'**
+  String get newChat;
+
+  /// No description provided for @refreshSessions.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'刷新会话'**
+  String get refreshSessions;
+
+  /// No description provided for @signInToUseAiAgent.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'登录后使用 AI Agent'**
+  String get signInToUseAiAgent;
+
+  /// No description provided for @aiAgentSubtitle.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'支持多会话、流式回复与 MCP 工具'**
+  String get aiAgentSubtitle;
+
+  /// No description provided for @selectOrCreateAiSession.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'选择或新建一个 AI 会话'**
+  String get selectOrCreateAiSession;
+
+  /// No description provided for @aiSessions.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'AI 会话'**
+  String get aiSessions;
+
+  /// No description provided for @noAiChatsYet.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'还没有 AI 对话'**
+  String get noAiChatsYet;
+
+  /// No description provided for @tapNewToStartChat.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'点下方新建开始对话'**
+  String get tapNewToStartChat;
+
+  /// No description provided for @thinking.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'思考中…'**
+  String get thinking;
+
+  /// No description provided for @aiRequestFailed.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'AI 请求失败'**
+  String get aiRequestFailed;
+
+  /// No description provided for @noTextReply.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'（无文本回复）'**
+  String get noTextReply;
+
+  /// No description provided for @waitingConfirm.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'等待确认…'**
+  String get waitingConfirm;
+
+  /// No description provided for @receivedType.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'收到 {type}'**
+  String receivedType(String type);
+
+  /// No description provided for @backToSessionList.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'返回会话列表'**
+  String get backToSessionList;
+
+  /// No description provided for @sendMessageToStart.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'发一条消息开始对话'**
+  String get sendMessageToStart;
+
+  /// No description provided for @askAiAgent.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'向 AI Agent 提问…'**
+  String get askAiAgent;
+
+  /// No description provided for @emojiPackTitle.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'表情包 {id}'**
+  String emojiPackTitle(Object id);
+
+  /// No description provided for @noEmojiPacksBuyInShop.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'暂无表情包，可在商店购买'**
+  String get noEmojiPacksBuyInShop;
+
+  /// No description provided for @replyToUser.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'回复 @{name}'**
+  String replyToUser(String name);
+
+  /// No description provided for @user.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'用户'**
+  String get user;
+
+  /// No description provided for @anonymousUser.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'匿名用户'**
+  String get anonymousUser;
+
+  /// No description provided for @timeUnknown.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'时间未知'**
+  String get timeUnknown;
+
+  /// No description provided for @dateYmd.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'{year}年{month}月{day}日'**
+  String dateYmd(int year, int month, int day);
+
   /// No description provided for @tasksInProgress.
   ///
   /// In zh_CN, this message translates to:

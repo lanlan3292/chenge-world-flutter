@@ -234,7 +234,299 @@
   "signInToUseChengeCore": "请先登录后再使用 ChengeCore",
   "signInToUseRaising": "请先登录后再使用养成",
   "enterToken": "请输入 Token",
-"tasksInProgress": "进行中",
+  "communityMerchant": "社区商家",
+  "product": "商品",
+  "productInitial": "商",
+  "stockCount": "库存 {count}",
+  "@stockCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "soldCount": "已售 {count}",
+  "@soldCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "ratingReviews": "{rating} · {count} 评价",
+  "@ratingReviews": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "productDescription": "商品介绍",
+  "purchasedContent": "已购内容",
+  "purchaseToViewContent": "购买后可查看完整内容",
+  "openOrDownloadFile": "打开/下载文件",
+  "balanceCc": "余额 {amount} CC",
+  "@balanceCc": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buying": "购买中…",
+  "buy": "购买",
+  "yourListedProduct": "这是你上架的商品",
+  "backToShop": "返回商城",
+  "holdingQuantityType": "持有 {quantity} 件 · {type}",
+  "@holdingQuantityType": {
+    "placeholders": {
+      "quantity": {
+        "type": "Object"
+      },
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "orderPending": "待支付",
+  "orderPaid": "已支付",
+  "orderRefunded": "已退款",
+  "statusUnknown": "状态未知",
+  "conversationNotFound": "未找到该会话，请刷新后重试",
+  "noMatchingConversations": "没有匹配的会话",
+  "noConversationsYet": "还没有会话",
+  "goContactsToChat": "去通讯录发起聊天",
+  "friendInitial": "友",
+  "noMessagesYetShort": "还没有消息",
+  "previewEmoji": "[表情] {key}",
+  "@previewEmoji": {
+    "placeholders": {
+      "key": {
+        "type": "String"
+      }
+    }
+  },
+  "previewSharedPost": "[分享帖子]",
+  "previewOrder": "[商品订单]",
+  "emojiMessage": "表情消息",
+  "me": "我",
+  "sharedPost": "分享帖子",
+  "productOrder": "商品订单",
+  "cannotOpenPostMissingId": "无法打开帖子：分享内容缺少帖子编号",
+  "cannotOpenProductMissingId": "无法打开商品：分享内容缺少商品编号",
+  "chengeUser": "Chenge 用户",
+  "signInToPurchase": "登录后才能购买",
+  "typeMessage": "输入消息…",
+  "sendMessage": "发送消息",
+  "emoji": "表情",
+  "previewEmojiOnly": "[表情]",
+  "enterGroupNameKeyword": "请输入群名称关键词",
+  "enterUserSearchHint": "请输入用户名、昵称或邮箱",
+  "friendAddedBack": "已回加，现在你们是好友了",
+  "friendRequestSent": "好友申请已发送",
+  "rejectFriendRequest": "拒绝好友申请",
+  "removeFriend": "解除好友",
+  "confirmRejectFriendRequest": "确定拒绝 {name} 的好友申请？",
+  "@confirmRejectFriendRequest": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmRemoveFriend": "确定与 {name} 解除好友关系？",
+  "@confirmRemoveFriend": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reject": "拒绝",
+  "remove": "解除",
+  "friendRequestRejected": "已拒绝好友申请",
+  "friendRemoved": "已解除好友关系",
+  "remarkCleared": "备注已清除",
+  "remarkSaved": "备注已保存",
+  "joinedGroup": "已加入「{name}」",
+  "@joinedGroup": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "enterGroupName": "请输入群名称",
+  "groupCreated": "群聊「{name}」已创建",
+  "@groupCreated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "createGroupChat": "创建群聊",
+  "signInToManageContacts": "登录后管理通讯录",
+  "contactsSubtitle": "搜索用户、加入群聊、处理好友申请",
+  "friendsTab": "好友 {count}",
+  "@friendsTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupsTab": "群聊 {count}",
+  "@groupsTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "requestsTab": "申请 {count}",
+  "@requestsTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchUsers": "搜用户",
+  "searchGroups": "搜群聊",
+  "groupNameKeyword": "群名称关键词",
+  "userSearchHint": "用户名、昵称或邮箱",
+  "searchGroupsTooltip": "搜索群聊",
+  "searchUsersTooltip": "搜索用户",
+  "searchPublicGroups": "搜索公开群聊",
+  "searchChengeUsers": "搜索 ChengeWorld 用户",
+  "searchPublicGroupsHint": "输入群名称关键词，加入感兴趣的群",
+  "searchUsersHint": "支持用户名、昵称或邮箱",
+  "noMatchingGroups": "没有找到匹配的群",
+  "noMatchingPeople": "没有找到匹配的人",
+  "tryOtherKeywords": "试试其他关键词",
+  "noGroupsYet": "还没有群聊",
+  "noGroupsHint": "创建群聊，或在搜索里加入公开群",
+  "noFriendsYet": "还没有好友",
+  "noFriendsHint": "搜索用户名或昵称，认识新朋友",
+  "noPendingRequests": "没有待处理的申请",
+  "noPendingRequestsHint": "新的好友申请会显示在这里",
+  "groupTapToJoin": "群聊 · 点击加入",
+  "join": "加入",
+  "enterGroup": "进入群聊",
+  "requestAddYou": "@{username} · 申请添加你",
+  "@requestAddYou": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "onlineWithRemark": "{status} · 备注：{remark} · @{username}",
+  "@onlineWithRemark": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "remark": {
+        "type": "String"
+      },
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "friend": "好友",
+  "addBack": "回加",
+  "requested": "已申请",
+  "add": "添加",
+  "acceptAndAddBack": "回加并接受",
+  "rejectRequest": "拒绝申请",
+  "friendActions": "好友操作",
+  "sendMessageAction": "发消息",
+  "editRemark": "修改备注",
+  "setRemark": "设置备注",
+  "removeFriendRelation": "解除好友关系",
+  "setFriendRemark": "设置好友备注",
+  "remarkName": "备注名称",
+  "remarkHintClear": "留空以清除备注",
+  "save": "保存",
+  "groupName": "群名称",
+  "groupNameHint": "给群聊起个名字",
+  "selectMembersOptional": "选择成员（可选）",
+  "create": "创建",
+  "newConversation": "新对话",
+  "deleteSession": "删除会话",
+  "confirmDeleteSession": "确定删除「{name}」？聊天记录将一并清除。",
+  "@confirmDeleteSession": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "delete": "删除",
+  "newChat": "新建对话",
+  "refreshSessions": "刷新会话",
+  "signInToUseAiAgent": "登录后使用 AI Agent",
+  "aiAgentSubtitle": "支持多会话、流式回复与 MCP 工具",
+  "selectOrCreateAiSession": "选择或新建一个 AI 会话",
+  "aiSessions": "AI 会话",
+  "noAiChatsYet": "还没有 AI 对话",
+  "tapNewToStartChat": "点下方新建开始对话",
+  "thinking": "思考中…",
+  "aiRequestFailed": "AI 请求失败",
+  "noTextReply": "（无文本回复）",
+  "waitingConfirm": "等待确认…",
+  "receivedType": "收到 {type}",
+  "@receivedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "backToSessionList": "返回会话列表",
+  "sendMessageToStart": "发一条消息开始对话",
+  "askAiAgent": "向 AI Agent 提问…",
+  "emojiPackTitle": "表情包 {id}",
+  "@emojiPackTitle": {
+    "placeholders": {
+      "id": {
+        "type": "Object"
+      }
+    }
+  },
+  "noEmojiPacksBuyInShop": "暂无表情包，可在商店购买",
+  "replyToUser": "回复 @{name}",
+  "@replyToUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "user": "用户",
+  "anonymousUser": "匿名用户",
+  "timeUnknown": "时间未知",
+  "dateYmd": "{year}年{month}月{day}日",
+  "@dateYmd": {
+    "placeholders": {
+      "year": {
+        "type": "int"
+      },
+      "month": {
+        "type": "int"
+      },
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "tasksInProgress": "进行中",
   "tasksNoInProgress": "当前没有进行中的任务",
   "tasksCompletedSection": "已完成",
   "tasksRewardHint": "奖励需要手动领取 · 任务按周期刷新",

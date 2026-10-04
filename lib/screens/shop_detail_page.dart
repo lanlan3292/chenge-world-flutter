@@ -82,7 +82,7 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('购买成功，已加入资产清单')));
+      ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).productPurchaseSuccess)));
       setState(() => _buying = false);
       Navigator.pop(context, true);
       routeClosed = true;
@@ -104,7 +104,7 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
       leading: IconButton(
-        tooltip: '返回商城',
+        tooltip: AppLocalizations.of(context).backToShop,
         onPressed: () => Navigator.pop(context),
         icon: const Icon(Icons.arrow_back_rounded),
       ),
@@ -170,13 +170,13 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
               spacing: 16,
               runSpacing: 8,
               children: [
-                _stat(Icons.inventory_2_outlined, '库存 ${item.stock}'),
-                _stat(Icons.shopping_bag_outlined, '已售 ${item.soldCount}'),
+                _stat(Icons.inventory_2_outlined, AppLocalizations.of(context).stockCount(item.stock)),
+                _stat(Icons.shopping_bag_outlined, AppLocalizations.of(context).soldCount(item.soldCount)),
                 _stat(
                   Icons.star_outline_rounded,
-                  '${item.rating.toStringAsFixed(1)} · ${item.ratingCount} 评价',
+                  AppLocalizations.of(context).ratingReviews(item.rating.toStringAsFixed(1), item.ratingCount),
                 ),
-                _stat(Icons.category_outlined, _typeLabel(item.type)),
+                _stat(Icons.category_outlined, _typeLabel(context, item.type)),
               ],
             ),
             if (item.sellerName != null) ...[
@@ -202,9 +202,9 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
             ],
             if (item.detail?.trim().isNotEmpty == true) ...[
               const SizedBox(height: 20),
-              const Text(
-                '商品介绍',
-                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+              Text(
+                AppLocalizations.of(context).productDescription,
+                style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
               ),
               const SizedBox(height: 8),
               MarkdownBody(data: item.detail!, selectable: true),
@@ -212,9 +212,9 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
             if (item.content?.trim().isNotEmpty == true &&
                 (_owned || isSeller)) ...[
               const SizedBox(height: 20),
-              const Text(
-                '已购内容',
-                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+              Text(
+                AppLocalizations.of(context).purchasedContent,
+                style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
               ),
               const SizedBox(height: 8),
               SelectableText(
@@ -226,7 +226,7 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
                 item.content?.isNotEmpty == true) ...[
               const SizedBox(height: 12),
               Text(
-                '购买后可查看完整内容',
+                AppLocalizations.of(context).purchaseToViewContent,
                 style: TextStyle(color: Color(0xFF70817D), fontSize: 13),
               ),
             ],
@@ -239,7 +239,7 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
                       mode: LaunchMode.externalApplication,
                     ),
                 icon: const Icon(Icons.download_rounded),
-                label: const Text('打开/下载文件'),
+                label: Text(AppLocalizations.of(context).openOrDownloadFile),
               ),
             ],
             const SizedBox(height: 22),
@@ -247,7 +247,7 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: Text(
-                  '余额 ${_balance!.toStringAsFixed(2)} CC',
+                  AppLocalizations.of(context).balanceCc(_balance!.toStringAsFixed(2)),
                   style: const TextStyle(color: Color(0xFF70817D)),
                 ),
               ),
@@ -292,14 +292,14 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
                               ),
                             )
                             : const Icon(Icons.shopping_bag_outlined),
-                    label: Text(_buying ? '购买中…' : '购买'),
+                    label: Text(_buying ? AppLocalizations.of(context).buying : AppLocalizations.of(context).buy),
                   ),
                 ],
               ),
             ] else if (isSeller)
-              const Text(
-                '这是你上架的商品',
-                style: TextStyle(color: Color(0xFF70817D)),
+              Text(
+                AppLocalizations.of(context).yourListedProduct,
+                style: const TextStyle(color: Color(0xFF70817D)),
               ),
           ],
         ),
@@ -314,7 +314,7 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
         color: const Color(0xFFDDECE5),
         child: Center(
           child: Text(
-            item.title.isEmpty ? '商' : item.title.characters.first,
+            item.title.isEmpty ? AppLocalizations.of(context).productInitial : item.title.characters.first,
             style: const TextStyle(
               fontSize: 64,
               fontWeight: FontWeight.w900,
@@ -333,7 +333,7 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
             color: const Color(0xFFDDECE5),
             child: Center(
               child: Text(
-                item.title.isEmpty ? '商' : item.title.characters.first,
+                item.title.isEmpty ? AppLocalizations.of(context).productInitial : item.title.characters.first,
                 style: const TextStyle(
                   fontSize: 64,
                   fontWeight: FontWeight.w900,
@@ -372,14 +372,17 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
     ],
   );
 
-  static String _typeLabel(String? type) => switch (type) {
-    'emoji' => '表情包',
-    'file' => '文件',
-    'ui' => '组件',
-    'app' => '应用',
-    'command' => '可执行',
-    'classes' => '类库',
-    'functions' => '函数库',
-    _ => type ?? '商品',
-  };
+  static String _typeLabel(BuildContext context, [String? type]) {
+    final l10n = AppLocalizations.of(context);
+    return switch (type) {
+      'emoji' => l10n.emojiPacks,
+      'file' => l10n.files,
+      'ui' => l10n.components,
+      'app' => l10n.applications,
+      'command' => l10n.executables,
+      'classes' => l10n.libraries,
+      'functions' => l10n.functionLibraries,
+      _ => type ?? l10n.product,
+    };
+  }
 }

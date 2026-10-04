@@ -299,7 +299,7 @@ class _ShopPageState extends State<ShopPage> {
                         child: _coinPill('${_balance!.toStringAsFixed(2)} CC'),
                       ),
                     IconButton(
-                      tooltip: '刷新',
+                      tooltip: AppLocalizations.of(context).refresh,
                       onPressed:
                           _loading
                               ? null
@@ -353,12 +353,12 @@ class _ShopPageState extends State<ShopPage> {
         else if (_error.isNotEmpty && _items.isEmpty)
           SliverFillRemaining(
             hasScrollBody: false,
-            child: _empty('商城暂时不可用', '检查网络后重试'),
+            child: _empty(AppLocalizations.of(context).shopUnavailable, AppLocalizations.of(context).checkNetworkAndRetry),
           )
         else if (_items.isEmpty)
           SliverFillRemaining(
             hasScrollBody: false,
-            child: _empty('暂时没有商品', '试试其他关键词或分类'),
+            child: _empty(AppLocalizations.of(context).noProducts, AppLocalizations.of(context).tryOtherSearch),
           )
         else ...[
           SliverPadding(
@@ -419,8 +419,8 @@ class _ShopPageState extends State<ShopPage> {
         SliverFillRemaining(
           hasScrollBody: false,
           child: _empty(
-            _view == 'assets' ? '还没有资产' : '还没有订单',
-            '在商城购买的内容会显示在这里',
+            _view == 'assets' ? AppLocalizations.of(context).noAssets : AppLocalizations.of(context).noOrders,
+            AppLocalizations.of(context).purchasesShowHere,
           ),
         ),
       ];
@@ -577,7 +577,7 @@ class _ShopPageState extends State<ShopPage> {
                   const SizedBox(height: 4),
                   Expanded(
                     child: Text(
-                      item.summary ?? _typeLabel(item.type),
+                      item.summary ?? _typeLabel(context, item.type),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
@@ -591,7 +591,7 @@ class _ShopPageState extends State<ShopPage> {
                     children: [
                       Expanded(
                         child: Text(
-                          item.sellerName ?? '社区商家',
+                          item.sellerName ?? AppLocalizations.of(context).communityMerchant,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -619,7 +619,7 @@ class _ShopPageState extends State<ShopPage> {
   );
 
   Widget _privateRow(Map<String, dynamic> row, {required bool isAsset}) {
-    final title = row['title']?.toString() ?? '商品';
+    final title = row['title']?.toString() ?? AppLocalizations.of(context).product;
     final cover = row['cover']?.toString();
     final price =
         row['price'] is num ? (row['price'] as num).toDouble() / 100 : 0.0;
@@ -666,8 +666,8 @@ class _ShopPageState extends State<ShopPage> {
                     const SizedBox(height: 5),
                     Text(
                       isAsset
-                          ? '持有 ${row['quantity'] ?? 0} 件 · ${_typeLabel(row['type']?.toString() ?? '')}'
-                          : '${price.toStringAsFixed(2)} CC × ${row['quantity'] ?? 1} · ${_orderStatus(row['status']?.toString())}',
+                          ? AppLocalizations.of(context).holdingQuantityType(row['quantity'] ?? 0, _typeLabel(context, row['type']?.toString()))
+                          : '${price.toStringAsFixed(2)} CC × ${row['quantity'] ?? 1} · ${_orderStatus(context, row['status']?.toString())}',
                       style: const TextStyle(
                         fontSize: 12,
                         color: Color(0xFF70817D),
@@ -709,7 +709,7 @@ class _ShopPageState extends State<ShopPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             IconButton.filledTonal(
-              tooltip: '上一页',
+              tooltip: AppLocalizations.of(context).previousPage,
               onPressed:
                   _loading || _page <= 1
                       ? null
@@ -719,12 +719,12 @@ class _ShopPageState extends State<ShopPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 14),
               child: Text(
-                '第 $_page / $totalPages 页',
+                AppLocalizations.of(context).pageCount(_page, totalPages),
                 style: const TextStyle(fontWeight: FontWeight.w700),
               ),
             ),
             IconButton.filledTonal(
-              tooltip: '下一页',
+              tooltip: AppLocalizations.of(context).nextPage,
               onPressed:
                   _loading || _page >= totalPages
                       ? null
@@ -749,12 +749,12 @@ class _ShopPageState extends State<ShopPage> {
       children: [
         const Icon(Icons.lock_outline_rounded, size: 44, color: AppTheme.leaf),
         const SizedBox(height: 10),
-        const Text('登录后查看资产与订单', style: TextStyle(fontWeight: FontWeight.w700)),
+        Text(AppLocalizations.of(context).noAssetsOrOrdersSignIn, style: const TextStyle(fontWeight: FontWeight.w700)),
         const SizedBox(height: 10),
         FilledButton.icon(
           onPressed: widget.onLoginRequested,
           icon: const Icon(Icons.login_rounded),
-          label: const Text('前往登录'),
+          label: Text(AppLocalizations.of(context).goSignIn),
         ),
       ],
     ),
@@ -785,7 +785,7 @@ class _ShopPageState extends State<ShopPage> {
           OutlinedButton.icon(
             onPressed: _loadItems,
             icon: const Icon(Icons.refresh_rounded),
-            label: const Text('重试'),
+            label: Text(AppLocalizations.of(context).retry),
           ),
         ],
       ],
@@ -811,7 +811,7 @@ class _ShopPageState extends State<ShopPage> {
               child: Text(_error, maxLines: 2, overflow: TextOverflow.ellipsis),
             ),
             IconButton(
-              tooltip: '重试',
+              tooltip: AppLocalizations.of(context).retry,
               onPressed:
                   () => _view == 'mall' ? _loadItems() : _loadPrivate(_view),
               icon: const Icon(Icons.refresh_rounded),
@@ -841,7 +841,7 @@ class _ShopPageState extends State<ShopPage> {
     color: const Color(0xFFDDECE5),
     child: Center(
       child: Text(
-        title.isEmpty ? '商' : title.characters.first,
+        title.isEmpty ? AppLocalizations.of(context).productInitial : title.characters.first,
         style: const TextStyle(
           fontSize: 28,
           fontWeight: FontWeight.w900,
@@ -868,21 +868,27 @@ class _ShopPageState extends State<ShopPage> {
     ),
   );
 
-  static String _typeLabel(String? type) => switch (type) {
-    'emoji' => '表情包',
-    'file' => '文件',
-    'ui' => '组件',
-    'app' => '应用',
-    'command' => '可执行',
-    'classes' => '类库',
-    'functions' => '函数库',
-    _ => type ?? '商品',
-  };
+  static String _typeLabel(BuildContext context, [String? type]) {
+    final l10n = AppLocalizations.of(context);
+    return switch (type) {
+      'emoji' => l10n.emojiPacks,
+      'file' => l10n.files,
+      'ui' => l10n.components,
+      'app' => l10n.applications,
+      'command' => l10n.executables,
+      'classes' => l10n.libraries,
+      'functions' => l10n.functionLibraries,
+      _ => type ?? l10n.product,
+    };
+  }
 
-  static String _orderStatus(String? status) => switch (status) {
-    'pending' => '待支付',
-    'paid' => '已支付',
-    'refunded' => '已退款',
-    _ => status ?? '状态未知',
-  };
+  static String _orderStatus(BuildContext context, [String? status]) {
+    final l10n = AppLocalizations.of(context);
+    return switch (status) {
+      'pending' => l10n.orderPending,
+      'paid' => l10n.orderPaid,
+      'refunded' => l10n.orderRefunded,
+      _ => status ?? l10n.statusUnknown,
+    };
+  }
 }

@@ -165,7 +165,299 @@
   "signInToUseChengeCore": "Please sign in to use ChengeCore",
   "signInToUseRaising": "Please sign in to use raising",
   "enterToken": "Please enter token",
-"tasksInProgress": "In progress",
+  "communityMerchant": "Community seller",
+  "product": "Product",
+  "productInitial": "P",
+  "stockCount": "Stock {count}",
+  "@stockCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "soldCount": "Sold {count}",
+  "@soldCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "ratingReviews": "{rating} · {count} reviews",
+  "@ratingReviews": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "productDescription": "Description",
+  "purchasedContent": "Purchased content",
+  "purchaseToViewContent": "Purchase to view full content",
+  "openOrDownloadFile": "Open / download file",
+  "balanceCc": "Balance {amount} CC",
+  "@balanceCc": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buying": "Buying…",
+  "buy": "Buy",
+  "yourListedProduct": "This is your listed product",
+  "backToShop": "Back to store",
+  "holdingQuantityType": "Owned {quantity} · {type}",
+  "@holdingQuantityType": {
+    "placeholders": {
+      "quantity": {
+        "type": "Object"
+      },
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "orderPending": "Pending",
+  "orderPaid": "Paid",
+  "orderRefunded": "Refunded",
+  "statusUnknown": "Unknown status",
+  "conversationNotFound": "Conversation not found. Please refresh and try again.",
+  "noMatchingConversations": "No matching conversations",
+  "noConversationsYet": "No conversations yet",
+  "goContactsToChat": "Go to contacts to start a chat",
+  "friendInitial": "F",
+  "noMessagesYetShort": "No messages yet",
+  "previewEmoji": "[Emoji] {key}",
+  "@previewEmoji": {
+    "placeholders": {
+      "key": {
+        "type": "String"
+      }
+    }
+  },
+  "previewSharedPost": "[Shared post]",
+  "previewOrder": "[Product order]",
+  "emojiMessage": "Emoji message",
+  "me": "Me",
+  "sharedPost": "Shared post",
+  "productOrder": "Product order",
+  "cannotOpenPostMissingId": "Cannot open post: missing post id in share",
+  "cannotOpenProductMissingId": "Cannot open product: missing product id in share",
+  "chengeUser": "Chenge user",
+  "signInToPurchase": "Sign in to purchase",
+  "typeMessage": "Type a message…",
+  "sendMessage": "Send message",
+  "emoji": "Emoji",
+  "previewEmojiOnly": "[Emoji]",
+  "enterGroupNameKeyword": "Enter a group name keyword",
+  "enterUserSearchHint": "Enter username, nickname, or email",
+  "friendAddedBack": "Added back — you are friends now",
+  "friendRequestSent": "Friend request sent",
+  "rejectFriendRequest": "Reject friend request",
+  "removeFriend": "Remove friend",
+  "confirmRejectFriendRequest": "Reject friend request from {name}?",
+  "@confirmRejectFriendRequest": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmRemoveFriend": "Remove {name} from friends?",
+  "@confirmRemoveFriend": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reject": "Reject",
+  "remove": "Remove",
+  "friendRequestRejected": "Friend request rejected",
+  "friendRemoved": "Friend removed",
+  "remarkCleared": "Remark cleared",
+  "remarkSaved": "Remark saved",
+  "joinedGroup": "Joined “{name}”",
+  "@joinedGroup": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "enterGroupName": "Please enter a group name",
+  "groupCreated": "Group “{name}” created",
+  "@groupCreated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "createGroupChat": "Create group chat",
+  "signInToManageContacts": "Sign in to manage contacts",
+  "contactsSubtitle": "Search users, join groups, handle friend requests",
+  "friendsTab": "Friends {count}",
+  "@friendsTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupsTab": "Groups {count}",
+  "@groupsTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "requestsTab": "Requests {count}",
+  "@requestsTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchUsers": "Users",
+  "searchGroups": "Groups",
+  "groupNameKeyword": "Group name keyword",
+  "userSearchHint": "Username, nickname, or email",
+  "searchGroupsTooltip": "Search groups",
+  "searchUsersTooltip": "Search users",
+  "searchPublicGroups": "Search public groups",
+  "searchChengeUsers": "Search ChengeWorld users",
+  "searchPublicGroupsHint": "Enter a group name to join groups you like",
+  "searchUsersHint": "Username, nickname, or email supported",
+  "noMatchingGroups": "No matching groups",
+  "noMatchingPeople": "No matching people",
+  "tryOtherKeywords": "Try other keywords",
+  "noGroupsYet": "No groups yet",
+  "noGroupsHint": "Create a group, or join a public one from search",
+  "noFriendsYet": "No friends yet",
+  "noFriendsHint": "Search by username or nickname to meet people",
+  "noPendingRequests": "No pending requests",
+  "noPendingRequestsHint": "New friend requests will show up here",
+  "groupTapToJoin": "Group · tap to join",
+  "join": "Join",
+  "enterGroup": "Enter group",
+  "requestAddYou": "@{username} · wants to add you",
+  "@requestAddYou": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "onlineWithRemark": "{status} · remark: {remark} · @{username}",
+  "@onlineWithRemark": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "remark": {
+        "type": "String"
+      },
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "friend": "Friend",
+  "addBack": "Add back",
+  "requested": "Requested",
+  "add": "Add",
+  "acceptAndAddBack": "Accept and add back",
+  "rejectRequest": "Reject request",
+  "friendActions": "Friend actions",
+  "sendMessageAction": "Message",
+  "editRemark": "Edit remark",
+  "setRemark": "Set remark",
+  "removeFriendRelation": "Remove friend",
+  "setFriendRemark": "Set friend remark",
+  "remarkName": "Remark name",
+  "remarkHintClear": "Leave empty to clear remark",
+  "save": "Save",
+  "groupName": "Group name",
+  "groupNameHint": "Give the group a name",
+  "selectMembersOptional": "Select members (optional)",
+  "create": "Create",
+  "newConversation": "New chat",
+  "deleteSession": "Delete session",
+  "confirmDeleteSession": "Delete “{name}”? Chat history will be removed.",
+  "@confirmDeleteSession": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "delete": "Delete",
+  "newChat": "New chat",
+  "refreshSessions": "Refresh sessions",
+  "signInToUseAiAgent": "Sign in to use AI Agent",
+  "aiAgentSubtitle": "Multi-session, streaming replies, and MCP tools",
+  "selectOrCreateAiSession": "Select or create an AI session",
+  "aiSessions": "AI sessions",
+  "noAiChatsYet": "No AI chats yet",
+  "tapNewToStartChat": "Tap New below to start chatting",
+  "thinking": "Thinking…",
+  "aiRequestFailed": "AI request failed",
+  "noTextReply": "(No text reply)",
+  "waitingConfirm": "Waiting for confirmation…",
+  "receivedType": "Received {type}",
+  "@receivedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "backToSessionList": "Back to sessions",
+  "sendMessageToStart": "Send a message to start chatting",
+  "askAiAgent": "Ask AI Agent…",
+  "emojiPackTitle": "Emoji pack {id}",
+  "@emojiPackTitle": {
+    "placeholders": {
+      "id": {
+        "type": "Object"
+      }
+    }
+  },
+  "noEmojiPacksBuyInShop": "No emoji packs yet — buy some in the store",
+  "replyToUser": "Reply @{name}",
+  "@replyToUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "user": "User",
+  "anonymousUser": "Anonymous",
+  "timeUnknown": "Unknown time",
+  "dateYmd": "{year}-{month}-{day}",
+  "@dateYmd": {
+    "placeholders": {
+      "year": {
+        "type": "int"
+      },
+      "month": {
+        "type": "int"
+      },
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "tasksInProgress": "In progress",
   "tasksNoInProgress": "No tasks in progress",
   "tasksCompletedSection": "Completed",
   "tasksRewardHint": "Rewards must be claimed manually · Tasks refresh by cycle",

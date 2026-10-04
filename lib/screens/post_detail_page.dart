@@ -102,7 +102,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
   Future<void> _toggleLike() async {
     final token = widget.token;
     if (token == null) {
-      _showMessage('登录后即可点赞');
+      _showMessage(AppLocalizations.of(context).signInToLike);
       return;
     }
     if (_likeBusy) return;
@@ -127,7 +127,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
     final token = widget.token;
     final content = _commentController.text.trim();
     if (token == null) {
-      _showMessage('登录后即可发表评论');
+      _showMessage(AppLocalizations.of(context).signInToComment);
       return;
     }
     if (content.isEmpty || _commentPosting) return;
@@ -151,7 +151,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
       _commentController.clear();
       setState(() => _replyTo = null);
       await _loadComments();
-      if (mounted) _showMessage('评论已发表');
+      if (mounted) _showMessage(AppLocalizations.of(context).commentPublished);
     } on ApiException catch (error) {
       if (mounted) setState(() => _commentError = error.message);
     } finally {
@@ -288,7 +288,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                         style: const TextStyle(fontWeight: FontWeight.w700),
                       ),
                       Text(
-                        _date(post.createdAt),
+                        _date(context, post.createdAt),
                         style: const TextStyle(
                           fontSize: 12,
                           color: Color(0xFF70817D),
@@ -438,7 +438,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 children: [
                   Expanded(
                     child: Text(
-                      '回复 @${_replyTo!.authorName ?? '用户'}',
+                      AppLocalizations.of(context).replyToUser(_replyTo!.authorName ?? AppLocalizations.of(context).user),
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.primary,
                         fontSize: 12,
@@ -577,7 +577,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                   children: [
                     Expanded(
                       child: Text(
-                        comment.authorName ?? '匿名用户',
+                        comment.authorName ?? AppLocalizations.of(context).anonymousUser,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -587,7 +587,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                       ),
                     ),
                     Text(
-                      _date(comment.createdAt),
+                      _date(context, comment.createdAt),
                       style: const TextStyle(
                         color: Color(0xFF87948F),
                         fontSize: 10,
@@ -598,7 +598,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 if (comment.replyToName?.isNotEmpty == true) ...[
                   const SizedBox(height: 3),
                   Text(
-                    '回复 @${comment.replyToName}',
+                    AppLocalizations.of(context).replyToUser(comment.replyToName ?? ''),
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.primary,
                       fontSize: 11,
@@ -618,7 +618,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                   child: TextButton.icon(
                     onPressed: () => _replyToComment(comment),
                     icon: const Icon(Icons.reply_rounded, size: 16),
-                    label: const Text('回复'),
+                    label: Text(AppLocalizations.of(context).reply),
                     style: TextButton.styleFrom(
                       visualDensity: VisualDensity.compact,
                     ),
@@ -650,8 +650,9 @@ class _PostDetailPageState extends State<PostDetailPage> {
     ],
   );
 
-  static String _date(DateTime? date) {
-    if (date == null) return '时间未知';
-    return '${date.year}年${date.month}月${date.day}日';
+  static String _date(BuildContext context, DateTime? date) {
+    final l10n = AppLocalizations.of(context);
+    if (date == null) return l10n.timeUnknown;
+    return l10n.dateYmd(date.year, date.month, date.day);
   }
 }

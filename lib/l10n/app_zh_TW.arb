@@ -165,7 +165,299 @@
   "signInToUseChengeCore": "請先登入後再使用 ChengeCore",
   "signInToUseRaising": "請先登入後再使用養成",
   "enterToken": "請輸入 Token",
-"tasksInProgress": "進行中",
+  "communityMerchant": "社群商家",
+  "product": "商品",
+  "productInitial": "商",
+  "stockCount": "庫存 {count}",
+  "@stockCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "soldCount": "已售 {count}",
+  "@soldCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "ratingReviews": "{rating} · {count} 評價",
+  "@ratingReviews": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "productDescription": "商品介紹",
+  "purchasedContent": "已購內容",
+  "purchaseToViewContent": "購買後可查看完整內容",
+  "openOrDownloadFile": "開啟/下載檔案",
+  "balanceCc": "餘額 {amount} CC",
+  "@balanceCc": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buying": "購買中…",
+  "buy": "購買",
+  "yourListedProduct": "這是你上架的商品",
+  "backToShop": "返回商城",
+  "holdingQuantityType": "持有 {quantity} 件 · {type}",
+  "@holdingQuantityType": {
+    "placeholders": {
+      "quantity": {
+        "type": "Object"
+      },
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "orderPending": "待支付",
+  "orderPaid": "已支付",
+  "orderRefunded": "已退款",
+  "statusUnknown": "狀態未知",
+  "conversationNotFound": "找不到該對話，請重新整理後再試",
+  "noMatchingConversations": "沒有符合的對話",
+  "noConversationsYet": "還沒有對話",
+  "goContactsToChat": "前往通訊錄發起聊天",
+  "friendInitial": "友",
+  "noMessagesYetShort": "還沒有訊息",
+  "previewEmoji": "[表情] {key}",
+  "@previewEmoji": {
+    "placeholders": {
+      "key": {
+        "type": "String"
+      }
+    }
+  },
+  "previewSharedPost": "[分享貼文]",
+  "previewOrder": "[商品訂單]",
+  "emojiMessage": "表情訊息",
+  "me": "我",
+  "sharedPost": "分享貼文",
+  "productOrder": "商品訂單",
+  "cannotOpenPostMissingId": "無法開啟貼文：分享內容缺少貼文編號",
+  "cannotOpenProductMissingId": "無法開啟商品：分享內容缺少商品編號",
+  "chengeUser": "Chenge 使用者",
+  "signInToPurchase": "登入後才能購買",
+  "typeMessage": "輸入訊息…",
+  "sendMessage": "傳送訊息",
+  "emoji": "表情",
+  "previewEmojiOnly": "[表情]",
+  "enterGroupNameKeyword": "請輸入群名稱關鍵字",
+  "enterUserSearchHint": "請輸入使用者名稱、暱稱或電子郵件",
+  "friendAddedBack": "已回加，現在你們是好友了",
+  "friendRequestSent": "好友申請已送出",
+  "rejectFriendRequest": "拒絕好友申請",
+  "removeFriend": "解除好友",
+  "confirmRejectFriendRequest": "確定拒絕 {name} 的好友申請？",
+  "@confirmRejectFriendRequest": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmRemoveFriend": "確定與 {name} 解除好友關係？",
+  "@confirmRemoveFriend": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reject": "拒絕",
+  "remove": "解除",
+  "friendRequestRejected": "已拒絕好友申請",
+  "friendRemoved": "已解除好友關係",
+  "remarkCleared": "備註已清除",
+  "remarkSaved": "備註已儲存",
+  "joinedGroup": "已加入「{name}」",
+  "@joinedGroup": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "enterGroupName": "請輸入群名稱",
+  "groupCreated": "群聊「{name}」已建立",
+  "@groupCreated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "createGroupChat": "建立群聊",
+  "signInToManageContacts": "登入後管理通訊錄",
+  "contactsSubtitle": "搜尋使用者、加入群聊、處理好友申請",
+  "friendsTab": "好友 {count}",
+  "@friendsTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupsTab": "群聊 {count}",
+  "@groupsTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "requestsTab": "申請 {count}",
+  "@requestsTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchUsers": "搜使用者",
+  "searchGroups": "搜群聊",
+  "groupNameKeyword": "群名稱關鍵字",
+  "userSearchHint": "使用者名稱、暱稱或電子郵件",
+  "searchGroupsTooltip": "搜尋群聊",
+  "searchUsersTooltip": "搜尋使用者",
+  "searchPublicGroups": "搜尋公開群聊",
+  "searchChengeUsers": "搜尋 ChengeWorld 使用者",
+  "searchPublicGroupsHint": "輸入群名稱關鍵字，加入感興趣的群",
+  "searchUsersHint": "支援使用者名稱、暱稱或電子郵件",
+  "noMatchingGroups": "找不到符合的群",
+  "noMatchingPeople": "找不到符合的人",
+  "tryOtherKeywords": "試試其他關鍵字",
+  "noGroupsYet": "還沒有群聊",
+  "noGroupsHint": "建立群聊，或在搜尋中加入公開群",
+  "noFriendsYet": "還沒有好友",
+  "noFriendsHint": "搜尋使用者名稱或暱稱，認識新朋友",
+  "noPendingRequests": "沒有待處理的申請",
+  "noPendingRequestsHint": "新的好友申請會顯示在這裡",
+  "groupTapToJoin": "群聊 · 點擊加入",
+  "join": "加入",
+  "enterGroup": "進入群聊",
+  "requestAddYou": "@{username} · 申請加你為好友",
+  "@requestAddYou": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "onlineWithRemark": "{status} · 備註：{remark} · @{username}",
+  "@onlineWithRemark": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "remark": {
+        "type": "String"
+      },
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "friend": "好友",
+  "addBack": "回加",
+  "requested": "已申請",
+  "add": "新增",
+  "acceptAndAddBack": "回加並接受",
+  "rejectRequest": "拒絕申請",
+  "friendActions": "好友操作",
+  "sendMessageAction": "傳訊息",
+  "editRemark": "修改備註",
+  "setRemark": "設定備註",
+  "removeFriendRelation": "解除好友關係",
+  "setFriendRemark": "設定好友備註",
+  "remarkName": "備註名稱",
+  "remarkHintClear": "留空以清除備註",
+  "save": "儲存",
+  "groupName": "群名稱",
+  "groupNameHint": "幫群聊取個名字",
+  "selectMembersOptional": "選擇成員（可選）",
+  "create": "建立",
+  "newConversation": "新對話",
+  "deleteSession": "刪除對話",
+  "confirmDeleteSession": "確定刪除「{name}」？聊天紀錄將一併清除。",
+  "@confirmDeleteSession": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "delete": "刪除",
+  "newChat": "新建對話",
+  "refreshSessions": "重新整理對話",
+  "signInToUseAiAgent": "登入後使用 AI Agent",
+  "aiAgentSubtitle": "支援多對話、串流回覆與 MCP 工具",
+  "selectOrCreateAiSession": "選擇或新建一個 AI 對話",
+  "aiSessions": "AI 對話",
+  "noAiChatsYet": "還沒有 AI 對話",
+  "tapNewToStartChat": "點下方新建開始對話",
+  "thinking": "思考中…",
+  "aiRequestFailed": "AI 請求失敗",
+  "noTextReply": "（無文字回覆）",
+  "waitingConfirm": "等待確認…",
+  "receivedType": "收到 {type}",
+  "@receivedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "backToSessionList": "返回對話列表",
+  "sendMessageToStart": "發一則訊息開始對話",
+  "askAiAgent": "向 AI Agent 提問…",
+  "emojiPackTitle": "表情包 {id}",
+  "@emojiPackTitle": {
+    "placeholders": {
+      "id": {
+        "type": "Object"
+      }
+    }
+  },
+  "noEmojiPacksBuyInShop": "暫無表情包，可在商店購買",
+  "replyToUser": "回覆 @{name}",
+  "@replyToUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "user": "使用者",
+  "anonymousUser": "匿名使用者",
+  "timeUnknown": "時間未知",
+  "dateYmd": "{year}年{month}月{day}日",
+  "@dateYmd": {
+    "placeholders": {
+      "year": {
+        "type": "int"
+      },
+      "month": {
+        "type": "int"
+      },
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "tasksInProgress": "進行中",
   "tasksNoInProgress": "目前沒有進行中的任務",
   "tasksCompletedSection": "已完成",
   "tasksRewardHint": "獎勵需手動領取 · 任務依週期刷新",

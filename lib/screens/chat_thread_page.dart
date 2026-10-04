@@ -466,7 +466,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       foregroundImage: url == null ? null : NetworkImage(url),
       onForegroundImageError: url == null ? null : (_, __) {},
       child: Text(
-        name.isEmpty ? '友' : name.characters.first,
+        name.isEmpty ? AppLocalizations.of(context).friendInitial : name.characters.first,
         style: const TextStyle(
           color: AppTheme.ink,
           fontWeight: FontWeight.w700,
@@ -532,7 +532,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                     child: SelectableText(
                       message.type == 'text'
                           ? message.content
-                          : _specialMessage(message),
+                          : _specialMessage(context, message),
                       style: TextStyle(
                         color:
                             mine
@@ -558,7 +558,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
           ),
           if (showMineAvatar) ...[
             const SizedBox(width: 8),
-            avatarFor('我', message.senderAvatar),
+            avatarFor(AppLocalizations.of(context).me, message.senderAvatar),
           ],
         ],
       ),
@@ -568,8 +568,8 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
   Widget _shareCard(ChatMessage message) {
     final isPost = message.type == 'post';
     final payload = _sharePayload(message.content);
-    final title = (payload['title'] ?? (isPost ? '帖子' : '商品')).toString();
-    final tag = isPost ? '分享帖子' : '商品订单';
+    final title = (payload['title'] ?? (isPost ? AppLocalizations.of(context).post : AppLocalizations.of(context).product)).toString();
+    final tag = isPost ? AppLocalizations.of(context).sharedPost : AppLocalizations.of(context).productOrder;
 
     return Material(
       color: Theme.of(context).colorScheme.surfaceContainerLow,
@@ -641,12 +641,12 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
           payload['id'],
     );
     if (id == null || id <= 0) {
-      _showShareError(isPost ? '无法打开帖子：分享内容缺少帖子编号' : '无法打开商品：分享内容缺少商品编号');
+      _showShareError(isPost ? AppLocalizations.of(context).cannotOpenPostMissingId : AppLocalizations.of(context).cannotOpenProductMissingId);
       return;
     }
 
     if (isPost) {
-      final title = _shareText(nestedPayload['title'], fallback: '帖子');
+      final title = _shareText(nestedPayload['title'], fallback: AppLocalizations.of(context).post);
       final post = BlogPost(
         id: id,
         title: title,
@@ -654,7 +654,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
         content: _shareText(nestedPayload['content']),
         authorName: _shareText(
           nestedPayload['authorName'],
-          fallback: 'Chenge 用户',
+          fallback: AppLocalizations.of(context).chengeUser,
         ),
         createdAt: DateTime.tryParse(_shareText(nestedPayload['createdAt'])),
         viewCount: 0,
@@ -676,7 +676,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
 
     final item = ShopItem(
       id: id,
-      title: _shareText(nestedPayload['title'], fallback: '商品'),
+      title: _shareText(nestedPayload['title'], fallback: AppLocalizations.of(context).product),
       type: _shareText(nestedPayload['type'], fallback: 'file'),
       price: _shareInt(nestedPayload['price']),
       stock: _shareInt(nestedPayload['stock']),
@@ -689,7 +689,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
               item: item,
               token: widget.token,
               userId: widget.userId,
-              onLoginRequested: () => _showShareError('登录后才能购买'),
+              onLoginRequested: () => _showShareError(AppLocalizations.of(context).signInToPurchase),
             ),
       ),
     );
@@ -735,7 +735,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               IconButton(
-                tooltip: '表情包',
+                tooltip: AppLocalizations.of(context).emojiPacks,
                 onPressed: _sending ? null : _openEmojiPicker,
                 icon: const Icon(Icons.emoji_emotions_outlined),
               ),
@@ -746,10 +746,10 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                   maxLines: 5,
                   textInputAction: TextInputAction.newline,
                   onChanged: (_) => setState(() {}),
-                  decoration: const InputDecoration(
-                    hintText: '输入消息…',
+                  decoration: InputDecoration(
+                    hintText: AppLocalizations.of(context).typeMessage,
                     isDense: true,
-                    contentPadding: EdgeInsets.symmetric(
+                    contentPadding: const EdgeInsets.symmetric(
                       horizontal: 14,
                       vertical: 12,
                     ),
@@ -758,7 +758,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
               ),
               const SizedBox(width: 8),
               IconButton.filled(
-                tooltip: '发送消息',
+                tooltip: AppLocalizations.of(context).sendMessage,
                 onPressed:
                     _sending || _messageController.text.trim().isEmpty
                         ? null
@@ -789,7 +789,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
           color: const Color(0xFFEAF2ED),
           borderRadius: BorderRadius.circular(9),
         ),
-        child: const Text('表情', style: TextStyle(fontWeight: FontWeight.w700)),
+        child: Text(AppLocalizations.of(context).emoji, style: const TextStyle(fontWeight: FontWeight.w700)),
       );
     }
     return ClipRRect(
@@ -800,19 +800,20 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
         height: 132,
         fit: BoxFit.contain,
         errorBuilder:
-            (_, __, ___) => const SizedBox(
+            (context, __, ___) => SizedBox(
               width: 132,
               height: 84,
-              child: Center(child: Text('表情')),
+              child: Center(child: Text(AppLocalizations.of(context).emoji)),
             ),
       ),
     );
   }
 
-  static String _specialMessage(ChatMessage message) {
-    if (message.type == 'emoji') return '[表情]';
-    if (message.type == 'post') return '[分享帖子]';
-    if (message.type == 'order') return '[商品订单]';
+  static String _specialMessage(BuildContext context, ChatMessage message) {
+    final l10n = AppLocalizations.of(context);
+    if (message.type == 'emoji') return l10n.previewEmojiOnly;
+    if (message.type == 'post') return l10n.previewSharedPost;
+    if (message.type == 'order') return l10n.previewOrder;
     return '[${message.type}]';
   }
 

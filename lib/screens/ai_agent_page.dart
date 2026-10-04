@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/generated/app_localizations.dart';
+
 import '../models/ai_session.dart';
 import '../services/chenge_api.dart';
 import '../theme/app_theme.dart';
@@ -82,7 +84,7 @@ class _AiAgentPageState extends State<AiAgentPage> {
     if (token == null || _busy) return;
     setState(() => _busy = true);
     try {
-      final session = await widget.api.createAiSession(token, name: '新对话');
+      final session = await widget.api.createAiSession(token, name: AppLocalizations.of(context).newConversation);
       if (!mounted) return;
       setState(() {
         _sessions.insert(0, session);
@@ -101,13 +103,13 @@ class _AiAgentPageState extends State<AiAgentPage> {
     final ok = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('删除会话'),
-        content: Text('确定删除「${session.name}」？聊天记录将一并清除。'),
+        title: Text(AppLocalizations.of(context).deleteSession),
+        content: Text(AppLocalizations.of(context).confirmDeleteSession(session.name)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('取消')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(AppLocalizations.of(context).cancel)),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('删除'),
+            child: Text(AppLocalizations.of(context).delete),
           ),
         ],
       ),
@@ -199,12 +201,12 @@ class _AiAgentPageState extends State<AiAgentPage> {
               title: const Text('AI Agent', style: TextStyle(fontWeight: FontWeight.w800)),
               actions: [
                 IconButton(
-                  tooltip: '新建对话',
+                  tooltip: AppLocalizations.of(context).newChat,
                   onPressed: widget.token == null || _busy ? null : _createSession,
                   icon: const Icon(Icons.add_comment_rounded),
                 ),
                 IconButton(
-                  tooltip: '刷新会话',
+                  tooltip: AppLocalizations.of(context).refreshSessions,
                   onPressed: widget.token == null ? null : () => _loadSessions(),
                   icon: const Icon(Icons.refresh_rounded),
                 ),
@@ -226,14 +228,14 @@ class _AiAgentPageState extends State<AiAgentPage> {
           children: [
             const Icon(Icons.smart_toy_outlined, color: AppTheme.leaf, size: 54),
             const SizedBox(height: 12),
-            const Text('登录后使用 AI Agent', style: TextStyle(fontSize: 19, fontWeight: FontWeight.w800)),
+            Text(AppLocalizations.of(context).signInToUseAiAgent, style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w800)),
             const SizedBox(height: 8),
-            const Text('支持多会话、流式回复与 MCP 工具', style: TextStyle(color: Color(0xFF70817D))),
+            Text(AppLocalizations.of(context).aiAgentSubtitle, style: const TextStyle(color: Color(0xFF70817D))),
             const SizedBox(height: 16),
             FilledButton.icon(
               onPressed: widget.onLoginRequested,
               icon: const Icon(Icons.login_rounded),
-              label: const Text('前往登录'),
+              label: Text(AppLocalizations.of(context).goSignIn),
             ),
           ],
         ),
@@ -245,8 +247,8 @@ class _AiAgentPageState extends State<AiAgentPage> {
           const VerticalDivider(width: 1),
           Expanded(
             child: _active == null
-                ? const Center(
-                    child: Text('选择或新建一个 AI 会话', style: TextStyle(color: Color(0xFF70817D))),
+                ? Center(
+                    child: Text(AppLocalizations.of(context).selectOrCreateAiSession, style: const TextStyle(color: Color(0xFF70817D))),
                   )
                 : AiThreadPage(
                     key: ValueKey('wide-ai-${_active!.sessionId}'),
@@ -276,16 +278,16 @@ class _AiAgentPageState extends State<AiAgentPage> {
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
             child: Row(
               children: [
-                const Expanded(
-                  child: Text('AI 会话', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+                Expanded(
+                  child: Text(AppLocalizations.of(context).aiSessions, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
                 ),
                 IconButton(
-                  tooltip: '新建对话',
+                  tooltip: AppLocalizations.of(context).newChat,
                   onPressed: _busy ? null : _createSession,
                   icon: const Icon(Icons.add_comment_rounded),
                 ),
                 IconButton(
-                  tooltip: '刷新',
+                  tooltip: AppLocalizations.of(context).refresh,
                   onPressed: () => _loadSessions(),
                   icon: const Icon(Icons.refresh_rounded),
                 ),
@@ -323,14 +325,14 @@ class _AiAgentPageState extends State<AiAgentPage> {
           children: [
             const Icon(Icons.forum_outlined, size: 48, color: Color(0xFF70817D)),
             const SizedBox(height: 12),
-            const Text('还没有 AI 对话', style: TextStyle(fontWeight: FontWeight.w700)),
+            Text(AppLocalizations.of(context).noAiChatsYet, style: const TextStyle(fontWeight: FontWeight.w700)),
             const SizedBox(height: 8),
-            const Text('点下方新建开始对话', style: TextStyle(color: Color(0xFF70817D), fontSize: 13)),
+            Text(AppLocalizations.of(context).tapNewToStartChat, style: const TextStyle(color: Color(0xFF70817D), fontSize: 13)),
             const SizedBox(height: 16),
             FilledButton.tonalIcon(
               onPressed: _busy ? null : _createSession,
               icon: const Icon(Icons.add_rounded),
-              label: const Text('新建对话'),
+              label: Text(AppLocalizations.of(context).newChat),
             ),
           ],
         ),
@@ -382,7 +384,7 @@ class _AiAgentPageState extends State<AiAgentPage> {
                 ),
               ),
               IconButton(
-                tooltip: '删除',
+                tooltip: AppLocalizations.of(context).delete,
                 iconSize: 18,
                 onPressed: () => _deleteSession(session),
                 icon: const Icon(Icons.delete_outline_rounded, color: Color(0xFF70817D)),

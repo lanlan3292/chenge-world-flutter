@@ -522,6 +522,448 @@ class AppLocalizationsZh extends AppLocalizations {
   String get enterToken => '请输入 Token';
 
   @override
+  String get communityMerchant => '社区商家';
+
+  @override
+  String get product => '商品';
+
+  @override
+  String get productInitial => '商';
+
+  @override
+  String stockCount(int count) {
+    return '库存 $count';
+  }
+
+  @override
+  String soldCount(int count) {
+    return '已售 $count';
+  }
+
+  @override
+  String ratingReviews(String rating, int count) {
+    return '$rating · $count 评价';
+  }
+
+  @override
+  String get productDescription => '商品介绍';
+
+  @override
+  String get purchasedContent => '已购内容';
+
+  @override
+  String get purchaseToViewContent => '购买后可查看完整内容';
+
+  @override
+  String get openOrDownloadFile => '打开/下载文件';
+
+  @override
+  String balanceCc(String amount) {
+    return '余额 $amount CC';
+  }
+
+  @override
+  String get buying => '购买中…';
+
+  @override
+  String get buy => '购买';
+
+  @override
+  String get yourListedProduct => '这是你上架的商品';
+
+  @override
+  String get backToShop => '返回商城';
+
+  @override
+  String holdingQuantityType(Object quantity, String type) {
+    return '持有 $quantity 件 · $type';
+  }
+
+  @override
+  String get orderPending => '待支付';
+
+  @override
+  String get orderPaid => '已支付';
+
+  @override
+  String get orderRefunded => '已退款';
+
+  @override
+  String get statusUnknown => '状态未知';
+
+  @override
+  String get conversationNotFound => '未找到该会话，请刷新后重试';
+
+  @override
+  String get noMatchingConversations => '没有匹配的会话';
+
+  @override
+  String get noConversationsYet => '还没有会话';
+
+  @override
+  String get goContactsToChat => '去通讯录发起聊天';
+
+  @override
+  String get friendInitial => '友';
+
+  @override
+  String get noMessagesYetShort => '还没有消息';
+
+  @override
+  String previewEmoji(String key) {
+    return '[表情] $key';
+  }
+
+  @override
+  String get previewSharedPost => '[分享帖子]';
+
+  @override
+  String get previewOrder => '[商品订单]';
+
+  @override
+  String get emojiMessage => '表情消息';
+
+  @override
+  String get me => '我';
+
+  @override
+  String get sharedPost => '分享帖子';
+
+  @override
+  String get productOrder => '商品订单';
+
+  @override
+  String get cannotOpenPostMissingId => '无法打开帖子：分享内容缺少帖子编号';
+
+  @override
+  String get cannotOpenProductMissingId => '无法打开商品：分享内容缺少商品编号';
+
+  @override
+  String get chengeUser => 'Chenge 用户';
+
+  @override
+  String get signInToPurchase => '登录后才能购买';
+
+  @override
+  String get typeMessage => '输入消息…';
+
+  @override
+  String get sendMessage => '发送消息';
+
+  @override
+  String get emoji => '表情';
+
+  @override
+  String get previewEmojiOnly => '[表情]';
+
+  @override
+  String get enterGroupNameKeyword => '请输入群名称关键词';
+
+  @override
+  String get enterUserSearchHint => '请输入用户名、昵称或邮箱';
+
+  @override
+  String get friendAddedBack => '已回加，现在你们是好友了';
+
+  @override
+  String get friendRequestSent => '好友申请已发送';
+
+  @override
+  String get rejectFriendRequest => '拒绝好友申请';
+
+  @override
+  String get removeFriend => '解除好友';
+
+  @override
+  String confirmRejectFriendRequest(String name) {
+    return '确定拒绝 $name 的好友申请？';
+  }
+
+  @override
+  String confirmRemoveFriend(String name) {
+    return '确定与 $name 解除好友关系？';
+  }
+
+  @override
+  String get reject => '拒绝';
+
+  @override
+  String get remove => '解除';
+
+  @override
+  String get friendRequestRejected => '已拒绝好友申请';
+
+  @override
+  String get friendRemoved => '已解除好友关系';
+
+  @override
+  String get remarkCleared => '备注已清除';
+
+  @override
+  String get remarkSaved => '备注已保存';
+
+  @override
+  String joinedGroup(String name) {
+    return '已加入「$name」';
+  }
+
+  @override
+  String get enterGroupName => '请输入群名称';
+
+  @override
+  String groupCreated(String name) {
+    return '群聊「$name」已创建';
+  }
+
+  @override
+  String get createGroupChat => '创建群聊';
+
+  @override
+  String get signInToManageContacts => '登录后管理通讯录';
+
+  @override
+  String get contactsSubtitle => '搜索用户、加入群聊、处理好友申请';
+
+  @override
+  String friendsTab(int count) {
+    return '好友 $count';
+  }
+
+  @override
+  String groupsTab(int count) {
+    return '群聊 $count';
+  }
+
+  @override
+  String requestsTab(int count) {
+    return '申请 $count';
+  }
+
+  @override
+  String get searchUsers => '搜用户';
+
+  @override
+  String get searchGroups => '搜群聊';
+
+  @override
+  String get groupNameKeyword => '群名称关键词';
+
+  @override
+  String get userSearchHint => '用户名、昵称或邮箱';
+
+  @override
+  String get searchGroupsTooltip => '搜索群聊';
+
+  @override
+  String get searchUsersTooltip => '搜索用户';
+
+  @override
+  String get searchPublicGroups => '搜索公开群聊';
+
+  @override
+  String get searchChengeUsers => '搜索 ChengeWorld 用户';
+
+  @override
+  String get searchPublicGroupsHint => '输入群名称关键词，加入感兴趣的群';
+
+  @override
+  String get searchUsersHint => '支持用户名、昵称或邮箱';
+
+  @override
+  String get noMatchingGroups => '没有找到匹配的群';
+
+  @override
+  String get noMatchingPeople => '没有找到匹配的人';
+
+  @override
+  String get tryOtherKeywords => '试试其他关键词';
+
+  @override
+  String get noGroupsYet => '还没有群聊';
+
+  @override
+  String get noGroupsHint => '创建群聊，或在搜索里加入公开群';
+
+  @override
+  String get noFriendsYet => '还没有好友';
+
+  @override
+  String get noFriendsHint => '搜索用户名或昵称，认识新朋友';
+
+  @override
+  String get noPendingRequests => '没有待处理的申请';
+
+  @override
+  String get noPendingRequestsHint => '新的好友申请会显示在这里';
+
+  @override
+  String get groupTapToJoin => '群聊 · 点击加入';
+
+  @override
+  String get join => '加入';
+
+  @override
+  String get enterGroup => '进入群聊';
+
+  @override
+  String requestAddYou(String username) {
+    return '@$username · 申请添加你';
+  }
+
+  @override
+  String onlineWithRemark(String status, String remark, String username) {
+    return '$status · 备注：$remark · @$username';
+  }
+
+  @override
+  String get friend => '好友';
+
+  @override
+  String get addBack => '回加';
+
+  @override
+  String get requested => '已申请';
+
+  @override
+  String get add => '添加';
+
+  @override
+  String get acceptAndAddBack => '回加并接受';
+
+  @override
+  String get rejectRequest => '拒绝申请';
+
+  @override
+  String get friendActions => '好友操作';
+
+  @override
+  String get sendMessageAction => '发消息';
+
+  @override
+  String get editRemark => '修改备注';
+
+  @override
+  String get setRemark => '设置备注';
+
+  @override
+  String get removeFriendRelation => '解除好友关系';
+
+  @override
+  String get setFriendRemark => '设置好友备注';
+
+  @override
+  String get remarkName => '备注名称';
+
+  @override
+  String get remarkHintClear => '留空以清除备注';
+
+  @override
+  String get save => '保存';
+
+  @override
+  String get groupName => '群名称';
+
+  @override
+  String get groupNameHint => '给群聊起个名字';
+
+  @override
+  String get selectMembersOptional => '选择成员（可选）';
+
+  @override
+  String get create => '创建';
+
+  @override
+  String get newConversation => '新对话';
+
+  @override
+  String get deleteSession => '删除会话';
+
+  @override
+  String confirmDeleteSession(String name) {
+    return '确定删除「$name」？聊天记录将一并清除。';
+  }
+
+  @override
+  String get delete => '删除';
+
+  @override
+  String get newChat => '新建对话';
+
+  @override
+  String get refreshSessions => '刷新会话';
+
+  @override
+  String get signInToUseAiAgent => '登录后使用 AI Agent';
+
+  @override
+  String get aiAgentSubtitle => '支持多会话、流式回复与 MCP 工具';
+
+  @override
+  String get selectOrCreateAiSession => '选择或新建一个 AI 会话';
+
+  @override
+  String get aiSessions => 'AI 会话';
+
+  @override
+  String get noAiChatsYet => '还没有 AI 对话';
+
+  @override
+  String get tapNewToStartChat => '点下方新建开始对话';
+
+  @override
+  String get thinking => '思考中…';
+
+  @override
+  String get aiRequestFailed => 'AI 请求失败';
+
+  @override
+  String get noTextReply => '（无文本回复）';
+
+  @override
+  String get waitingConfirm => '等待确认…';
+
+  @override
+  String receivedType(String type) {
+    return '收到 $type';
+  }
+
+  @override
+  String get backToSessionList => '返回会话列表';
+
+  @override
+  String get sendMessageToStart => '发一条消息开始对话';
+
+  @override
+  String get askAiAgent => '向 AI Agent 提问…';
+
+  @override
+  String emojiPackTitle(Object id) {
+    return '表情包 $id';
+  }
+
+  @override
+  String get noEmojiPacksBuyInShop => '暂无表情包，可在商店购买';
+
+  @override
+  String replyToUser(String name) {
+    return '回复 @$name';
+  }
+
+  @override
+  String get user => '用户';
+
+  @override
+  String get anonymousUser => '匿名用户';
+
+  @override
+  String get timeUnknown => '时间未知';
+
+  @override
+  String dateYmd(int year, int month, int day) {
+    return '$year年$month月$day日';
+  }
+
+  @override
   String get tasksInProgress => '进行中';
 
   @override
@@ -1098,6 +1540,448 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get enterToken => '请输入 Token';
 
   @override
+  String get communityMerchant => '社区商家';
+
+  @override
+  String get product => '商品';
+
+  @override
+  String get productInitial => '商';
+
+  @override
+  String stockCount(int count) {
+    return '库存 $count';
+  }
+
+  @override
+  String soldCount(int count) {
+    return '已售 $count';
+  }
+
+  @override
+  String ratingReviews(String rating, int count) {
+    return '$rating · $count 评价';
+  }
+
+  @override
+  String get productDescription => '商品介绍';
+
+  @override
+  String get purchasedContent => '已购内容';
+
+  @override
+  String get purchaseToViewContent => '购买后可查看完整内容';
+
+  @override
+  String get openOrDownloadFile => '打开/下载文件';
+
+  @override
+  String balanceCc(String amount) {
+    return '余额 $amount CC';
+  }
+
+  @override
+  String get buying => '购买中…';
+
+  @override
+  String get buy => '购买';
+
+  @override
+  String get yourListedProduct => '这是你上架的商品';
+
+  @override
+  String get backToShop => '返回商城';
+
+  @override
+  String holdingQuantityType(Object quantity, String type) {
+    return '持有 $quantity 件 · $type';
+  }
+
+  @override
+  String get orderPending => '待支付';
+
+  @override
+  String get orderPaid => '已支付';
+
+  @override
+  String get orderRefunded => '已退款';
+
+  @override
+  String get statusUnknown => '状态未知';
+
+  @override
+  String get conversationNotFound => '未找到该会话，请刷新后重试';
+
+  @override
+  String get noMatchingConversations => '没有匹配的会话';
+
+  @override
+  String get noConversationsYet => '还没有会话';
+
+  @override
+  String get goContactsToChat => '去通讯录发起聊天';
+
+  @override
+  String get friendInitial => '友';
+
+  @override
+  String get noMessagesYetShort => '还没有消息';
+
+  @override
+  String previewEmoji(String key) {
+    return '[表情] $key';
+  }
+
+  @override
+  String get previewSharedPost => '[分享帖子]';
+
+  @override
+  String get previewOrder => '[商品订单]';
+
+  @override
+  String get emojiMessage => '表情消息';
+
+  @override
+  String get me => '我';
+
+  @override
+  String get sharedPost => '分享帖子';
+
+  @override
+  String get productOrder => '商品订单';
+
+  @override
+  String get cannotOpenPostMissingId => '无法打开帖子：分享内容缺少帖子编号';
+
+  @override
+  String get cannotOpenProductMissingId => '无法打开商品：分享内容缺少商品编号';
+
+  @override
+  String get chengeUser => 'Chenge 用户';
+
+  @override
+  String get signInToPurchase => '登录后才能购买';
+
+  @override
+  String get typeMessage => '输入消息…';
+
+  @override
+  String get sendMessage => '发送消息';
+
+  @override
+  String get emoji => '表情';
+
+  @override
+  String get previewEmojiOnly => '[表情]';
+
+  @override
+  String get enterGroupNameKeyword => '请输入群名称关键词';
+
+  @override
+  String get enterUserSearchHint => '请输入用户名、昵称或邮箱';
+
+  @override
+  String get friendAddedBack => '已回加，现在你们是好友了';
+
+  @override
+  String get friendRequestSent => '好友申请已发送';
+
+  @override
+  String get rejectFriendRequest => '拒绝好友申请';
+
+  @override
+  String get removeFriend => '解除好友';
+
+  @override
+  String confirmRejectFriendRequest(String name) {
+    return '确定拒绝 $name 的好友申请？';
+  }
+
+  @override
+  String confirmRemoveFriend(String name) {
+    return '确定与 $name 解除好友关系？';
+  }
+
+  @override
+  String get reject => '拒绝';
+
+  @override
+  String get remove => '解除';
+
+  @override
+  String get friendRequestRejected => '已拒绝好友申请';
+
+  @override
+  String get friendRemoved => '已解除好友关系';
+
+  @override
+  String get remarkCleared => '备注已清除';
+
+  @override
+  String get remarkSaved => '备注已保存';
+
+  @override
+  String joinedGroup(String name) {
+    return '已加入「$name」';
+  }
+
+  @override
+  String get enterGroupName => '请输入群名称';
+
+  @override
+  String groupCreated(String name) {
+    return '群聊「$name」已创建';
+  }
+
+  @override
+  String get createGroupChat => '创建群聊';
+
+  @override
+  String get signInToManageContacts => '登录后管理通讯录';
+
+  @override
+  String get contactsSubtitle => '搜索用户、加入群聊、处理好友申请';
+
+  @override
+  String friendsTab(int count) {
+    return '好友 $count';
+  }
+
+  @override
+  String groupsTab(int count) {
+    return '群聊 $count';
+  }
+
+  @override
+  String requestsTab(int count) {
+    return '申请 $count';
+  }
+
+  @override
+  String get searchUsers => '搜用户';
+
+  @override
+  String get searchGroups => '搜群聊';
+
+  @override
+  String get groupNameKeyword => '群名称关键词';
+
+  @override
+  String get userSearchHint => '用户名、昵称或邮箱';
+
+  @override
+  String get searchGroupsTooltip => '搜索群聊';
+
+  @override
+  String get searchUsersTooltip => '搜索用户';
+
+  @override
+  String get searchPublicGroups => '搜索公开群聊';
+
+  @override
+  String get searchChengeUsers => '搜索 ChengeWorld 用户';
+
+  @override
+  String get searchPublicGroupsHint => '输入群名称关键词，加入感兴趣的群';
+
+  @override
+  String get searchUsersHint => '支持用户名、昵称或邮箱';
+
+  @override
+  String get noMatchingGroups => '没有找到匹配的群';
+
+  @override
+  String get noMatchingPeople => '没有找到匹配的人';
+
+  @override
+  String get tryOtherKeywords => '试试其他关键词';
+
+  @override
+  String get noGroupsYet => '还没有群聊';
+
+  @override
+  String get noGroupsHint => '创建群聊，或在搜索里加入公开群';
+
+  @override
+  String get noFriendsYet => '还没有好友';
+
+  @override
+  String get noFriendsHint => '搜索用户名或昵称，认识新朋友';
+
+  @override
+  String get noPendingRequests => '没有待处理的申请';
+
+  @override
+  String get noPendingRequestsHint => '新的好友申请会显示在这里';
+
+  @override
+  String get groupTapToJoin => '群聊 · 点击加入';
+
+  @override
+  String get join => '加入';
+
+  @override
+  String get enterGroup => '进入群聊';
+
+  @override
+  String requestAddYou(String username) {
+    return '@$username · 申请添加你';
+  }
+
+  @override
+  String onlineWithRemark(String status, String remark, String username) {
+    return '$status · 备注：$remark · @$username';
+  }
+
+  @override
+  String get friend => '好友';
+
+  @override
+  String get addBack => '回加';
+
+  @override
+  String get requested => '已申请';
+
+  @override
+  String get add => '添加';
+
+  @override
+  String get acceptAndAddBack => '回加并接受';
+
+  @override
+  String get rejectRequest => '拒绝申请';
+
+  @override
+  String get friendActions => '好友操作';
+
+  @override
+  String get sendMessageAction => '发消息';
+
+  @override
+  String get editRemark => '修改备注';
+
+  @override
+  String get setRemark => '设置备注';
+
+  @override
+  String get removeFriendRelation => '解除好友关系';
+
+  @override
+  String get setFriendRemark => '设置好友备注';
+
+  @override
+  String get remarkName => '备注名称';
+
+  @override
+  String get remarkHintClear => '留空以清除备注';
+
+  @override
+  String get save => '保存';
+
+  @override
+  String get groupName => '群名称';
+
+  @override
+  String get groupNameHint => '给群聊起个名字';
+
+  @override
+  String get selectMembersOptional => '选择成员（可选）';
+
+  @override
+  String get create => '创建';
+
+  @override
+  String get newConversation => '新对话';
+
+  @override
+  String get deleteSession => '删除会话';
+
+  @override
+  String confirmDeleteSession(String name) {
+    return '确定删除「$name」？聊天记录将一并清除。';
+  }
+
+  @override
+  String get delete => '删除';
+
+  @override
+  String get newChat => '新建对话';
+
+  @override
+  String get refreshSessions => '刷新会话';
+
+  @override
+  String get signInToUseAiAgent => '登录后使用 AI Agent';
+
+  @override
+  String get aiAgentSubtitle => '支持多会话、流式回复与 MCP 工具';
+
+  @override
+  String get selectOrCreateAiSession => '选择或新建一个 AI 会话';
+
+  @override
+  String get aiSessions => 'AI 会话';
+
+  @override
+  String get noAiChatsYet => '还没有 AI 对话';
+
+  @override
+  String get tapNewToStartChat => '点下方新建开始对话';
+
+  @override
+  String get thinking => '思考中…';
+
+  @override
+  String get aiRequestFailed => 'AI 请求失败';
+
+  @override
+  String get noTextReply => '（无文本回复）';
+
+  @override
+  String get waitingConfirm => '等待确认…';
+
+  @override
+  String receivedType(String type) {
+    return '收到 $type';
+  }
+
+  @override
+  String get backToSessionList => '返回会话列表';
+
+  @override
+  String get sendMessageToStart => '发一条消息开始对话';
+
+  @override
+  String get askAiAgent => '向 AI Agent 提问…';
+
+  @override
+  String emojiPackTitle(Object id) {
+    return '表情包 $id';
+  }
+
+  @override
+  String get noEmojiPacksBuyInShop => '暂无表情包，可在商店购买';
+
+  @override
+  String replyToUser(String name) {
+    return '回复 @$name';
+  }
+
+  @override
+  String get user => '用户';
+
+  @override
+  String get anonymousUser => '匿名用户';
+
+  @override
+  String get timeUnknown => '时间未知';
+
+  @override
+  String dateYmd(int year, int month, int day) {
+    return '$year年$month月$day日';
+  }
+
+  @override
   String get tasksInProgress => '进行中';
 
   @override
@@ -1672,6 +2556,448 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get enterToken => '請輸入 Token';
+
+  @override
+  String get communityMerchant => '社群商家';
+
+  @override
+  String get product => '商品';
+
+  @override
+  String get productInitial => '商';
+
+  @override
+  String stockCount(int count) {
+    return '庫存 $count';
+  }
+
+  @override
+  String soldCount(int count) {
+    return '已售 $count';
+  }
+
+  @override
+  String ratingReviews(String rating, int count) {
+    return '$rating · $count 評價';
+  }
+
+  @override
+  String get productDescription => '商品介紹';
+
+  @override
+  String get purchasedContent => '已購內容';
+
+  @override
+  String get purchaseToViewContent => '購買後可查看完整內容';
+
+  @override
+  String get openOrDownloadFile => '開啟/下載檔案';
+
+  @override
+  String balanceCc(String amount) {
+    return '餘額 $amount CC';
+  }
+
+  @override
+  String get buying => '購買中…';
+
+  @override
+  String get buy => '購買';
+
+  @override
+  String get yourListedProduct => '這是你上架的商品';
+
+  @override
+  String get backToShop => '返回商城';
+
+  @override
+  String holdingQuantityType(Object quantity, String type) {
+    return '持有 $quantity 件 · $type';
+  }
+
+  @override
+  String get orderPending => '待支付';
+
+  @override
+  String get orderPaid => '已支付';
+
+  @override
+  String get orderRefunded => '已退款';
+
+  @override
+  String get statusUnknown => '狀態未知';
+
+  @override
+  String get conversationNotFound => '找不到該對話，請重新整理後再試';
+
+  @override
+  String get noMatchingConversations => '沒有符合的對話';
+
+  @override
+  String get noConversationsYet => '還沒有對話';
+
+  @override
+  String get goContactsToChat => '前往通訊錄發起聊天';
+
+  @override
+  String get friendInitial => '友';
+
+  @override
+  String get noMessagesYetShort => '還沒有訊息';
+
+  @override
+  String previewEmoji(String key) {
+    return '[表情] $key';
+  }
+
+  @override
+  String get previewSharedPost => '[分享貼文]';
+
+  @override
+  String get previewOrder => '[商品訂單]';
+
+  @override
+  String get emojiMessage => '表情訊息';
+
+  @override
+  String get me => '我';
+
+  @override
+  String get sharedPost => '分享貼文';
+
+  @override
+  String get productOrder => '商品訂單';
+
+  @override
+  String get cannotOpenPostMissingId => '無法開啟貼文：分享內容缺少貼文編號';
+
+  @override
+  String get cannotOpenProductMissingId => '無法開啟商品：分享內容缺少商品編號';
+
+  @override
+  String get chengeUser => 'Chenge 使用者';
+
+  @override
+  String get signInToPurchase => '登入後才能購買';
+
+  @override
+  String get typeMessage => '輸入訊息…';
+
+  @override
+  String get sendMessage => '傳送訊息';
+
+  @override
+  String get emoji => '表情';
+
+  @override
+  String get previewEmojiOnly => '[表情]';
+
+  @override
+  String get enterGroupNameKeyword => '請輸入群名稱關鍵字';
+
+  @override
+  String get enterUserSearchHint => '請輸入使用者名稱、暱稱或電子郵件';
+
+  @override
+  String get friendAddedBack => '已回加，現在你們是好友了';
+
+  @override
+  String get friendRequestSent => '好友申請已送出';
+
+  @override
+  String get rejectFriendRequest => '拒絕好友申請';
+
+  @override
+  String get removeFriend => '解除好友';
+
+  @override
+  String confirmRejectFriendRequest(String name) {
+    return '確定拒絕 $name 的好友申請？';
+  }
+
+  @override
+  String confirmRemoveFriend(String name) {
+    return '確定與 $name 解除好友關係？';
+  }
+
+  @override
+  String get reject => '拒絕';
+
+  @override
+  String get remove => '解除';
+
+  @override
+  String get friendRequestRejected => '已拒絕好友申請';
+
+  @override
+  String get friendRemoved => '已解除好友關係';
+
+  @override
+  String get remarkCleared => '備註已清除';
+
+  @override
+  String get remarkSaved => '備註已儲存';
+
+  @override
+  String joinedGroup(String name) {
+    return '已加入「$name」';
+  }
+
+  @override
+  String get enterGroupName => '請輸入群名稱';
+
+  @override
+  String groupCreated(String name) {
+    return '群聊「$name」已建立';
+  }
+
+  @override
+  String get createGroupChat => '建立群聊';
+
+  @override
+  String get signInToManageContacts => '登入後管理通訊錄';
+
+  @override
+  String get contactsSubtitle => '搜尋使用者、加入群聊、處理好友申請';
+
+  @override
+  String friendsTab(int count) {
+    return '好友 $count';
+  }
+
+  @override
+  String groupsTab(int count) {
+    return '群聊 $count';
+  }
+
+  @override
+  String requestsTab(int count) {
+    return '申請 $count';
+  }
+
+  @override
+  String get searchUsers => '搜使用者';
+
+  @override
+  String get searchGroups => '搜群聊';
+
+  @override
+  String get groupNameKeyword => '群名稱關鍵字';
+
+  @override
+  String get userSearchHint => '使用者名稱、暱稱或電子郵件';
+
+  @override
+  String get searchGroupsTooltip => '搜尋群聊';
+
+  @override
+  String get searchUsersTooltip => '搜尋使用者';
+
+  @override
+  String get searchPublicGroups => '搜尋公開群聊';
+
+  @override
+  String get searchChengeUsers => '搜尋 ChengeWorld 使用者';
+
+  @override
+  String get searchPublicGroupsHint => '輸入群名稱關鍵字，加入感興趣的群';
+
+  @override
+  String get searchUsersHint => '支援使用者名稱、暱稱或電子郵件';
+
+  @override
+  String get noMatchingGroups => '找不到符合的群';
+
+  @override
+  String get noMatchingPeople => '找不到符合的人';
+
+  @override
+  String get tryOtherKeywords => '試試其他關鍵字';
+
+  @override
+  String get noGroupsYet => '還沒有群聊';
+
+  @override
+  String get noGroupsHint => '建立群聊，或在搜尋中加入公開群';
+
+  @override
+  String get noFriendsYet => '還沒有好友';
+
+  @override
+  String get noFriendsHint => '搜尋使用者名稱或暱稱，認識新朋友';
+
+  @override
+  String get noPendingRequests => '沒有待處理的申請';
+
+  @override
+  String get noPendingRequestsHint => '新的好友申請會顯示在這裡';
+
+  @override
+  String get groupTapToJoin => '群聊 · 點擊加入';
+
+  @override
+  String get join => '加入';
+
+  @override
+  String get enterGroup => '進入群聊';
+
+  @override
+  String requestAddYou(String username) {
+    return '@$username · 申請加你為好友';
+  }
+
+  @override
+  String onlineWithRemark(String status, String remark, String username) {
+    return '$status · 備註：$remark · @$username';
+  }
+
+  @override
+  String get friend => '好友';
+
+  @override
+  String get addBack => '回加';
+
+  @override
+  String get requested => '已申請';
+
+  @override
+  String get add => '新增';
+
+  @override
+  String get acceptAndAddBack => '回加並接受';
+
+  @override
+  String get rejectRequest => '拒絕申請';
+
+  @override
+  String get friendActions => '好友操作';
+
+  @override
+  String get sendMessageAction => '傳訊息';
+
+  @override
+  String get editRemark => '修改備註';
+
+  @override
+  String get setRemark => '設定備註';
+
+  @override
+  String get removeFriendRelation => '解除好友關係';
+
+  @override
+  String get setFriendRemark => '設定好友備註';
+
+  @override
+  String get remarkName => '備註名稱';
+
+  @override
+  String get remarkHintClear => '留空以清除備註';
+
+  @override
+  String get save => '儲存';
+
+  @override
+  String get groupName => '群名稱';
+
+  @override
+  String get groupNameHint => '幫群聊取個名字';
+
+  @override
+  String get selectMembersOptional => '選擇成員（可選）';
+
+  @override
+  String get create => '建立';
+
+  @override
+  String get newConversation => '新對話';
+
+  @override
+  String get deleteSession => '刪除對話';
+
+  @override
+  String confirmDeleteSession(String name) {
+    return '確定刪除「$name」？聊天紀錄將一併清除。';
+  }
+
+  @override
+  String get delete => '刪除';
+
+  @override
+  String get newChat => '新建對話';
+
+  @override
+  String get refreshSessions => '重新整理對話';
+
+  @override
+  String get signInToUseAiAgent => '登入後使用 AI Agent';
+
+  @override
+  String get aiAgentSubtitle => '支援多對話、串流回覆與 MCP 工具';
+
+  @override
+  String get selectOrCreateAiSession => '選擇或新建一個 AI 對話';
+
+  @override
+  String get aiSessions => 'AI 對話';
+
+  @override
+  String get noAiChatsYet => '還沒有 AI 對話';
+
+  @override
+  String get tapNewToStartChat => '點下方新建開始對話';
+
+  @override
+  String get thinking => '思考中…';
+
+  @override
+  String get aiRequestFailed => 'AI 請求失敗';
+
+  @override
+  String get noTextReply => '（無文字回覆）';
+
+  @override
+  String get waitingConfirm => '等待確認…';
+
+  @override
+  String receivedType(String type) {
+    return '收到 $type';
+  }
+
+  @override
+  String get backToSessionList => '返回對話列表';
+
+  @override
+  String get sendMessageToStart => '發一則訊息開始對話';
+
+  @override
+  String get askAiAgent => '向 AI Agent 提問…';
+
+  @override
+  String emojiPackTitle(Object id) {
+    return '表情包 $id';
+  }
+
+  @override
+  String get noEmojiPacksBuyInShop => '暫無表情包，可在商店購買';
+
+  @override
+  String replyToUser(String name) {
+    return '回覆 @$name';
+  }
+
+  @override
+  String get user => '使用者';
+
+  @override
+  String get anonymousUser => '匿名使用者';
+
+  @override
+  String get timeUnknown => '時間未知';
+
+  @override
+  String dateYmd(int year, int month, int day) {
+    return '$year年$month月$day日';
+  }
 
   @override
   String get tasksInProgress => '進行中';
