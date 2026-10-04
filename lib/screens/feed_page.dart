@@ -8,6 +8,9 @@ import '../widgets/post_card.dart';
 import 'post_detail_page.dart';
 import 'create_post_page.dart';
 
+import 'dart:math' as math;
+import 'dart:ui' show lerpDouble;
+
 class FeedPage extends StatefulWidget {
   const FeedPage({
     super.key,
@@ -49,6 +52,7 @@ class _FeedPageState extends State<FeedPage> {
   int _requestId = 0;
   bool _loading = false;
   bool _chromeVisible = true;
+  bool _fabExpanded = true;
 
   @override
   void initState() {
@@ -81,40 +85,56 @@ class _FeedPageState extends State<FeedPage> {
   double _lastScrollPixels = 0;
   double _chromeScrollAccum = 0;
 
-  void _onScroll() {
-    if (!widget.autoHideTopBar && !widget.autoHideBottomBar) return;
-    if (!_scrollController.hasClients) return;
-    final position = _scrollController.position;
-    final offset = position.pixels;
+void _onScroll() {
+  if (!_scrollController.hasClients) return;
 
-    if (offset <= 8) {
-      _chromeScrollAccum = 0;
-      _lastScrollPixels = offset;
-      _setChromeVisible(true);
-      return;
-    }
+  final offset = _scrollController.position.pixels;
 
-    final delta = offset - _lastScrollPixels;
-    _lastScrollPixels = offset;
-    if (delta == 0) return;
+  // Material 3 FAB:
+  // 顶部：展开
+  // 离开顶部：收起
+  final fabExpanded = offset <= 8;
 
-    // Same direction as current intent: accumulate; reverse direction: reset and accumulate opposite.
-    if ((_chromeScrollAccum > 0 && delta < 0) ||
-        (_chromeScrollAccum < 0 && delta > 0)) {
-      _chromeScrollAccum = 0;
-    }
-    _chromeScrollAccum += delta;
-
-    if (_chromeScrollAccum > _chromeScrollThreshold) {
-      // Scrolling down
-      _chromeScrollAccum = 0;
-      _setChromeVisible(false);
-    } else if (_chromeScrollAccum < -_chromeScrollThreshold) {
-      // Scrolling up
-      _chromeScrollAccum = 0;
-      _setChromeVisible(true);
-    }
+  if (_fabExpanded != fabExpanded) {
+    setState(() {
+      _fabExpanded = fabExpanded;
+    });
   }
+
+  // AppBar / BottomBar 的自动隐藏逻辑
+  if (!widget.autoHideTopBar && !widget.autoHideBottomBar) return;
+
+  if (offset <= 8) {
+    _chromeScrollAccum = 0;
+    _lastScrollPixels = offset;
+    _setChromeVisible(true);
+    return;
+  }
+
+  final delta = offset - _lastScrollPixels;
+  _lastScrollPixels = offset;
+
+  if (delta == 0) return;
+
+  // Same direction as current intent: accumulate;
+  // reverse direction: reset and accumulate opposite.
+  if ((_chromeScrollAccum > 0 && delta < 0) ||
+      (_chromeScrollAccum < 0 && delta > 0)) {
+    _chromeScrollAccum = 0;
+  }
+
+  _chromeScrollAccum += delta;
+
+  if (_chromeScrollAccum > _chromeScrollThreshold) {
+    // Scrolling down
+    _chromeScrollAccum = 0;
+    _setChromeVisible(false);
+  } else if (_chromeScrollAccum < -_chromeScrollThreshold) {
+    // Scrolling up
+    _chromeScrollAccum = 0;
+    _setChromeVisible(true);
+  }
+}
 
   void _setChromeVisible(bool visible) {
     if (_chromeVisible == visible) return;
@@ -227,6 +247,7 @@ class _FeedPageState extends State<FeedPage> {
                 onPressed: _openCreatePost,
                 // Dock to bottom nav when chrome is shown; sink to screen corner when hidden.
                 dockedToBottomBar: !widget.autoHideBottomBar || _chromeVisible,
+                expanded: _fabExpanded
               )
               : null,
       body: Center(
@@ -542,25 +563,240 @@ class _CreatePostFab extends StatelessWidget {
   const _CreatePostFab({
     required this.onPressed,
     required this.dockedToBottomBar,
+    required this.expanded,
   });
 
   final VoidCallback onPressed;
   final bool dockedToBottomBar;
+  final bool expanded;
 
   @override
-  Widget build(BuildContext context) => AnimatedPadding(
-    duration: const Duration(milliseconds: 220),
-    curve: Curves.easeOut,
-    padding: EdgeInsets.only(
-      bottom:
-          MediaQuery.paddingOf(context).bottom +
-          // Material 3 NavigationBar is 80px tall; the old M2 constant is 56px.
-          (dockedToBottomBar ? 80 + 24 : 8),
-    ),
-    child: FloatingActionButton.extended(
-      onPressed: onPressed,
-      icon: const Icon(Icons.edit_rounded),
-      label: Text(AppLocalizations.of(context).createPost),
-    ),
-  );
+  Widget build(BuildContext context) {
+    return AnimatedPadding(
+      duration: const Duration(milliseconds: 220),
+      curve: Curves.easeOut,
+      padding: EdgeInsets.only(
+        bottom:
+            MediaQuery.paddingOf(context).bottom +
+            (dockedToBottomBar ? 80 + 24 : 8),
+      ),
+      child: _AnimatedExtendedFab(
+        onPressed: onPressed,
+        expanded: expanded,
+        icon: const Icon(Icons.edit_rounded),
+        label: AppLocalizations.of(context).createPost,
+      ),
+    );
+  }
+}
+
+class _AnimatedExtendedFab extends StatefulWidget {
+  const _AnimatedExtendedFab({
+    required this.onPressed,
+    required this.expanded,
+    required this.icon,
+    required this.label,
+  });
+
+  final VoidCallback onPressed;
+  final bool expanded;
+  final Widget icon;
+  final String label;
+
+  @override
+  State<_AnimatedExtendedFab> createState() => _AnimatedExtendedFabState();
+}
+
+class _AnimatedExtendedFabState extends State<_AnimatedExtendedFab>
+    with SingleTickerProviderStateMixin {
+  static const _collapsedWidth = 56.0;
+  static const _height = 56.0;
+
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+      reverseDuration: const Duration(milliseconds: 180),
+      value: widget.expanded ? 1.0 : 0.0,
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant _AnimatedExtendedFab oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (oldWidget.expanded == widget.expanded) {
+      return;
+    }
+
+    if (widget.expanded) {
+      _controller.forward();
+    } else {
+      _controller.reverse();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final fabTheme = FloatingActionButtonTheme.of(context);
+    final colors = theme.colorScheme;
+
+    final iconSize = fabTheme.iconSize ?? 24.0;
+
+    final textStyle =
+        fabTheme.extendedTextStyle ??
+        theme.textTheme.labelLarge!;
+
+    final expandedWidth = _expandedWidth(
+      context,
+      textStyle,
+      iconSize,
+    );
+
+    final backgroundColor =
+        fabTheme.backgroundColor ?? colors.primaryContainer;
+
+    final foregroundColor =
+        fabTheme.foregroundColor ?? colors.onPrimaryContainer;
+
+    final shape =
+        fabTheme.shape ??
+        const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(16),
+          ),
+        );
+
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, _) {
+        final progress = Curves.easeInOutCubic.transform(
+          _controller.value,
+        );
+
+        final width = lerpDouble(
+          _collapsedWidth,
+          expandedWidth,
+          progress,
+        )!;
+
+        // collapsed: icon 居中
+        // expanded: icon 左侧 16dp
+        final iconStart = lerpDouble(
+          (_collapsedWidth - iconSize) / 2,
+          16,
+          progress,
+        )!;
+
+        return SizedBox(
+          width: width,
+          height: _height,
+          child: RawMaterialButton(
+            onPressed: widget.onPressed,
+            elevation: fabTheme.elevation ?? 6,
+            focusElevation: fabTheme.focusElevation ?? 6,
+            hoverElevation: fabTheme.hoverElevation ?? 8,
+            highlightElevation: fabTheme.highlightElevation ?? 6,
+            disabledElevation: fabTheme.disabledElevation ?? 6,
+            fillColor: backgroundColor,
+            focusColor:
+                fabTheme.focusColor ??
+                colors.onPrimaryContainer.withOpacity(0.10),
+            hoverColor:
+                fabTheme.hoverColor ??
+                colors.onPrimaryContainer.withOpacity(0.08),
+            splashColor:
+                fabTheme.splashColor ??
+                colors.onPrimaryContainer.withOpacity(0.10),
+            shape: shape,
+            clipBehavior: Clip.antiAlias,
+            materialTapTargetSize: theme.materialTapTargetSize,
+            child: SizedBox(
+              width: width,
+              height: _height,
+              child: Stack(
+                children: [
+                  // 唯一的 icon
+                  PositionedDirectional(
+                    start: iconStart,
+                    top: (_height - iconSize) / 2,
+                    child: IconTheme.merge(
+                      data: IconThemeData(
+                        size: iconSize,
+                        color: foregroundColor,
+                      ),
+                      child: widget.icon,
+                    ),
+                  ),
+
+                  // 唯一的 label
+                  PositionedDirectional(
+                    start: 16 + iconSize + 8,
+                    end: 20,
+                    top: 0,
+                    bottom: 0,
+                    child: IgnorePointer(
+                      child: Opacity(
+                        opacity: progress,
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: DefaultTextStyle(
+                            style: textStyle.copyWith(
+                              color: foregroundColor,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.clip,
+                            child: Text(
+                              widget.label,
+                              softWrap: false,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  double _expandedWidth(
+    BuildContext context,
+    TextStyle textStyle,
+    double iconSize,
+  ) {
+    final painter = TextPainter(
+      text: TextSpan(
+        text: widget.label,
+        style: textStyle,
+      ),
+      textDirection: Directionality.of(context),
+      maxLines: 1,
+    )..layout();
+
+    return math.max(
+      _collapsedWidth,
+      16 +
+          iconSize +
+          8 +
+          painter.width +
+          20,
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 }
