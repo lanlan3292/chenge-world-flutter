@@ -354,11 +354,11 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   /// 设置页修改 Token 后：校验已在设置页完成，这里保存并刷新会话。
-  /// 空字符串表示清除令牌并退出登录。
+  /// 空字符串：仅清除本地会话（不请求 /home/logout，原令牌在服务端仍有效）。
   Future<void> _applyToken(String token) async {
     final trimmed = token.trim();
     if (trimmed.isEmpty) {
-      await widget.onLogout();
+      await widget.onLogin({'token': ''});
       if (mounted) setState(() => _avatarUrl = null);
       return;
     }

@@ -244,7 +244,21 @@ class _AppShellState extends State<AppShell> {
   }
 
   Future<void> _onLogin(Map<String, dynamic> result) async {
-    final token = result['token'] as String;
+    final raw = result['token'];
+    final token = raw == null ? '' : raw.toString().trim();
+
+    // 空令牌：只清本地会话，不调用 /home/logout，原令牌在服务端仍有效
+    if (token.isEmpty) {
+      await _sessionStore.clearToken();
+      if (!mounted) return;
+      setState(() {
+        _token = null;
+        _username = null;
+        _userId = null;
+      });
+      return;
+    }
+
     final user = result['user'];
     await _sessionStore.saveToken(token);
     if (!mounted) return;

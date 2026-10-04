@@ -426,6 +426,22 @@ class _SettingsPageState extends State<SettingsPage> {
                     onTap: _showTokenDialog,
                   ),
                 const Divider(height: 28),
+                ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+                  leading: Icon(
+                    Icons.cleaning_services_outlined,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  title: Text(
+                    AppLocalizations.of(context).clearCache,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  subtitle: Text(
+                    AppLocalizations.of(context).clearCacheDescription,
+                  ),
+                  onTap: _confirmClearCache,
+                ),
+                const Divider(height: 28),
                 if (widget.signedIn)
                   ListTile(
                     contentPadding: const EdgeInsets.symmetric(horizontal: 4),
@@ -444,7 +460,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   )
                 else
                   ListTile(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 4),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 4),
                     leading: Icon(
                       Icons.lock_outline_rounded,
                       color: Theme.of(context).colorScheme.primary,
@@ -453,22 +469,6 @@ class _SettingsPageState extends State<SettingsPage> {
                       AppLocalizations.of(context).accountSettingsSignIn,
                     ),
                   ),
-                const Divider(height: 28),
-                ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-                  leading: Icon(
-                    Icons.cleaning_services_outlined,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  title: Text(
-                    AppLocalizations.of(context).clearCache,
-                    style: const TextStyle(fontWeight: FontWeight.w700),
-                  ),
-                  subtitle: Text(
-                    AppLocalizations.of(context).clearCacheDescription,
-                  ),
-                  onTap: _confirmClearCache,
-                ),
               ],
             ),
           ),
@@ -520,10 +520,11 @@ class _SettingsPageState extends State<SettingsPage> {
         await cb(result);
       }
       if (mounted) {
+        final msg = result.trim().isEmpty
+            ? AppLocalizations.of(context).accessTokenCleared
+            : AppLocalizations.of(context).accessTokenUpdated;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context).accessTokenUpdated),
-          ),
+          SnackBar(content: Text(msg)),
         );
       }
     } on ApiException catch (e) {
@@ -719,8 +720,15 @@ class _EditTokenDialogState extends State<_EditTokenDialog> {
   Future<void> _confirm() async {
     if (!_formKey.currentState!.validate() || _saving) return;
     final next = _controller.text.trim();
-    if (next == widget.initialToken) {
+    final initial = widget.initialToken.trim();
+    if (next == initial) {
       Navigator.of(context).pop(); // 无变化，直接关闭
+      return;
+    }
+
+    // 允许为空：不请求 /home/me，由外层忽略（不改会话、不注销）
+    if (next.isEmpty) {
+      Navigator.of(context).pop('');
       return;
     }
 

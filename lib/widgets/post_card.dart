@@ -110,7 +110,7 @@ class PostCard extends StatelessWidget {
               children: [
                 AspectRatio(
                   aspectRatio: 16 / 9,
-                  child: _cover(context),
+                  child: _cover(context, width: w),
                 ),
                 if (hasBoundedHeight) Expanded(child: body) else body,
               ],
@@ -158,29 +158,31 @@ class PostCard extends StatelessWidget {
     );
   }
 
-  Widget _cover(BuildContext context) {
+  Widget _cover(BuildContext context, {required double width}) {
     final imageUrl = post.coverImage;
-    if (imageUrl == null) return _coverPlaceholder(context);
+    if (imageUrl == null || imageUrl.isEmpty) return _coverPlaceholder(context);
+
+    // 按展示宽度限制解码尺寸，避免瀑布流里按原图解码导致卡顿
+    final dpr = MediaQuery.devicePixelRatioOf(context);
+    final memW = (width * dpr).round().clamp(64, 720);
+    final memH = (memW * 9 / 16).round().clamp(36, 405);
+
     return CachedNetworkImage(
       imageUrl: imageUrl,
-      fadeInDuration: const Duration(milliseconds: 120),
-      fadeOutDuration: const Duration(milliseconds: 80),
       width: double.infinity,
       height: double.infinity,
       fit: BoxFit.cover,
+      // 列表滚动时淡入也会抢帧，封面直接显示
+      fadeInDuration: Duration.zero,
+      fadeOutDuration: Duration.zero,
+      memCacheWidth: memW,
+      memCacheHeight: memH,
+      maxWidthDiskCache: memW,
+      maxHeightDiskCache: memH,
+      filterQuality: FilterQuality.low,
+      // 静态占位，避免每张图一个转圈动画
+      placeholder: (_, __) => _coverPlaceholder(context),
       errorWidget: (_, __, ___) => _coverPlaceholder(context),
-      placeholder: (context, _) => Stack(
-        fit: StackFit.expand,
-        children: [
-          _coverPlaceholder(context),
-          const Center(
-            child: SizedBox.square(
-              dimension: 22,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -252,17 +254,49 @@ class PostCard extends StatelessWidget {
 
   Widget _avatar(BuildContext context, {double radius = 12}) {
     final avatar = post.authorAvatar;
+    final dpr = MediaQuery.devicePixelRatioOf(context);
+    final px = (radius * 2 * dpr).round().clamp(24, 96);
+
+    if (avatar == null || avatar.isEmpty) {
+      return CircleAvatar(
+        radius: radius,
+        backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
+        child: Icon(
+          Icons.person_rounded,
+          size: radius + 2,
+          color: Theme.of(context).colorScheme.onTertiaryContainer,
+        ),
+      );
+    }
+
     return CircleAvatar(
       radius: radius,
       backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
-      foregroundImage: avatar == null ? null : CachedNetworkImageProvider(avatar),
-      child: avatar == null
-          ? Icon(
-              Icons.person_rounded,
-              size: radius + 2,
-              color: Theme.of(context).colorScheme.onTertiaryContainer,
-            )
-          : null,
+      child: ClipOval(
+        child: CachedNetworkImage(
+          imageUrl: avatar,
+          width: radius * 2,
+          height: radius * 2,
+          fit: BoxFit.cover,
+          fadeInDuration: Duration.zero,
+          fadeOutDuration: Duration.zero,
+          memCacheWidth: px,
+          memCacheHeight: px,
+          maxWidthDiskCache: px,
+          maxHeightDiskCache: px,
+          filterQuality: FilterQuality.low,
+          placeholder: (_, __) => Icon(
+            Icons.person_rounded,
+            size: radius + 2,
+            color: Theme.of(context).colorScheme.onTertiaryContainer,
+          ),
+          errorWidget: (_, __, ___) => Icon(
+            Icons.person_rounded,
+            size: radius + 2,
+            color: Theme.of(context).colorScheme.onTertiaryContainer,
+          ),
+        ),
+      ),
     );
   }
 
