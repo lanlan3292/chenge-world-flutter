@@ -1020,6 +1020,57 @@ class AppLocalizationsZh extends AppLocalizations {
   String webViewInitFailed(String errorType, String error) {
     return 'WebView 初始化失败（$errorType）：$error\nWindows 需安装 Edge WebView2 Runtime。';
   }
+
+  @override
+  String get registerAccount => '注册账号';
+
+  @override
+  String get registerTitle => '注册 ChengeWorld';
+
+  @override
+  String get registerSuccess => '注册成功，请登录';
+
+  @override
+  String get nicknameOptional => '昵称（可选）';
+
+  @override
+  String get email => '邮箱';
+
+  @override
+  String get enterEmail => '请输入邮箱';
+
+  @override
+  String get invalidEmail => '邮箱格式不正确';
+
+  @override
+  String get emailCode => '邮箱验证码';
+
+  @override
+  String get enterEmailCode => '请输入验证码';
+
+  @override
+  String get getEmailCode => '获取验证码';
+
+  @override
+  String get sendingCode => '发送中';
+
+  @override
+  String get emailCodeSent => '验证码已发送（开发环境可查看后端日志）';
+
+  @override
+  String get fillEmailFirst => '请先填写邮箱';
+
+  @override
+  String get passwordMinSix => '密码（至少 6 位）';
+
+  @override
+  String get passwordTooShort => '密码至少 6 位';
+
+  @override
+  String get register => '注册';
+
+  @override
+  String get registering => '注册中…';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -2038,6 +2089,57 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String webViewInitFailed(String errorType, String error) {
     return 'WebView 初始化失败（$errorType）：$error\nWindows 需安装 Edge WebView2 Runtime。';
   }
+
+  @override
+  String get registerAccount => '注册账号';
+
+  @override
+  String get registerTitle => '注册 ChengeWorld';
+
+  @override
+  String get registerSuccess => '注册成功，请登录';
+
+  @override
+  String get nicknameOptional => '昵称（可选）';
+
+  @override
+  String get email => '邮箱';
+
+  @override
+  String get enterEmail => '请输入邮箱';
+
+  @override
+  String get invalidEmail => '邮箱格式不正确';
+
+  @override
+  String get emailCode => '邮箱验证码';
+
+  @override
+  String get enterEmailCode => '请输入验证码';
+
+  @override
+  String get getEmailCode => '获取验证码';
+
+  @override
+  String get sendingCode => '发送中';
+
+  @override
+  String get emailCodeSent => '验证码已发送（开发环境可查看后端日志）';
+
+  @override
+  String get fillEmailFirst => '请先填写邮箱';
+
+  @override
+  String get passwordMinSix => '密码（至少 6 位）';
+
+  @override
+  String get passwordTooShort => '密码至少 6 位';
+
+  @override
+  String get register => '注册';
+
+  @override
+  String get registering => '注册中…';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -3056,4 +3158,55 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String webViewInitFailed(String errorType, String error) {
     return 'WebView 初始化失敗（$errorType）：$error\nWindows 需安裝 Edge WebView2 Runtime。';
   }
+
+  @override
+  String get registerAccount => '註冊帳號';
+
+  @override
+  String get registerTitle => '註冊 ChengeWorld';
+
+  @override
+  String get registerSuccess => '註冊成功，請登入';
+
+  @override
+  String get nicknameOptional => '暱稱（可選）';
+
+  @override
+  String get email => '電子郵件';
+
+  @override
+  String get enterEmail => '請輸入電子郵件';
+
+  @override
+  String get invalidEmail => '電子郵件格式不正確';
+
+  @override
+  String get emailCode => '電子郵件驗證碼';
+
+  @override
+  String get enterEmailCode => '請輸入驗證碼';
+
+  @override
+  String get getEmailCode => '取得驗證碼';
+
+  @override
+  String get sendingCode => '傳送中';
+
+  @override
+  String get emailCodeSent => '驗證碼已傳送（開發環境可查看後端日誌）';
+
+  @override
+  String get fillEmailFirst => '請先填寫電子郵件';
+
+  @override
+  String get passwordMinSix => '密碼（至少 6 位）';
+
+  @override
+  String get passwordTooShort => '密碼至少 6 位';
+
+  @override
+  String get register => '註冊';
+
+  @override
+  String get registering => '註冊中…';
 }

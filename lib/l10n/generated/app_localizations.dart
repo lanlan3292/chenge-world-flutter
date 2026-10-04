@@ -1996,6 +1996,108 @@ abstract class AppLocalizations {
   /// In zh_CN, this message translates to:
   /// **'WebView 初始化失败（{errorType}）：{error}\nWindows 需安装 Edge WebView2 Runtime。'**
   String webViewInitFailed(String errorType, String error);
+
+  /// No description provided for @registerAccount.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'注册账号'**
+  String get registerAccount;
+
+  /// No description provided for @registerTitle.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'注册 ChengeWorld'**
+  String get registerTitle;
+
+  /// No description provided for @registerSuccess.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'注册成功，请登录'**
+  String get registerSuccess;
+
+  /// No description provided for @nicknameOptional.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'昵称（可选）'**
+  String get nicknameOptional;
+
+  /// No description provided for @email.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'邮箱'**
+  String get email;
+
+  /// No description provided for @enterEmail.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'请输入邮箱'**
+  String get enterEmail;
+
+  /// No description provided for @invalidEmail.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'邮箱格式不正确'**
+  String get invalidEmail;
+
+  /// No description provided for @emailCode.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'邮箱验证码'**
+  String get emailCode;
+
+  /// No description provided for @enterEmailCode.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'请输入验证码'**
+  String get enterEmailCode;
+
+  /// No description provided for @getEmailCode.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'获取验证码'**
+  String get getEmailCode;
+
+  /// No description provided for @sendingCode.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'发送中'**
+  String get sendingCode;
+
+  /// No description provided for @emailCodeSent.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'验证码已发送（开发环境可查看后端日志）'**
+  String get emailCodeSent;
+
+  /// No description provided for @fillEmailFirst.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'请先填写邮箱'**
+  String get fillEmailFirst;
+
+  /// No description provided for @passwordMinSix.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'密码（至少 6 位）'**
+  String get passwordMinSix;
+
+  /// No description provided for @passwordTooShort.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'密码至少 6 位'**
+  String get passwordTooShort;
+
+  /// No description provided for @register.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'注册'**
+  String get register;
+
+  /// No description provided for @registering.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'注册中…'**
+  String get registering;
 }
 
 class _AppLocalizationsDelegate

@@ -500,5 +500,22 @@
         "type": "String"
       }
     }
-  }
+  },
+  "registerAccount": "Create account",
+  "registerTitle": "Sign up for ChengeWorld",
+  "registerSuccess": "Registration successful. Please sign in.",
+  "nicknameOptional": "Nickname (optional)",
+  "email": "Email",
+  "enterEmail": "Enter email",
+  "invalidEmail": "Invalid email format",
+  "emailCode": "Email verification code",
+  "enterEmailCode": "Enter verification code",
+  "getEmailCode": "Get code",
+  "sendingCode": "Sending",
+  "emailCodeSent": "Code sent (check backend logs in development)",
+  "fillEmailFirst": "Please enter your email first",
+  "passwordMinSix": "Password (min 6 characters)",
+  "passwordTooShort": "Password must be at least 6 characters",
+  "register": "Sign up",
+  "registering": "Signing up…"
 }

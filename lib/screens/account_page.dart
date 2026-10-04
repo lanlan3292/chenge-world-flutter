@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/generated/app_localizations.dart';
@@ -85,30 +86,29 @@ class _AccountPageState extends State<AccountPage> {
       clipBehavior: Clip.antiAlias,
       child:
           hasAvatar
-              ? Image.network(
-                _avatarUrl!,
+              ? CachedNetworkImage(
+                imageUrl: _avatarUrl!,
+                fadeInDuration: const Duration(milliseconds: 120),
+                fadeOutDuration: const Duration(milliseconds: 80),
                 fit: BoxFit.cover,
                 width: 60,
                 height: 60,
-                errorBuilder:
+                errorWidget:
                     (_, __, ___) => Icon(
                       Icons.person_rounded,
                       color: scheme.onTertiaryContainer,
                       size: 30,
                     ),
-                loadingBuilder: (context, child, progress) {
-                  if (progress == null) return child;
-                  return Center(
-                    child: SizedBox(
-                      width: 22,
-                      height: 22,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: scheme.onTertiaryContainer,
-                      ),
+                placeholder: (context, _) => Center(
+                  child: SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: scheme.onTertiaryContainer,
                     ),
-                  );
-                },
+                  ),
+                ),
               )
               : Icon(
                 signedIn
@@ -333,12 +333,19 @@ class _AccountPageState extends State<AccountPage> {
                 ),
               ),
               const SizedBox(height: 24),
-              if (!signedIn)
+              if (!signedIn) ...[
                 FilledButton.icon(
                   onPressed: () => _showLogin(context),
                   icon: const Icon(Icons.login_rounded),
                   label: Text(AppLocalizations.of(context).signInAccount),
                 ),
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: () => _showRegister(context),
+                  icon: const Icon(Icons.person_add_alt_1_rounded),
+                  label: Text(AppLocalizations.of(context).registerAccount),
+                ),
+              ],
             ],
           ),
         ),
@@ -399,6 +406,20 @@ class _AccountPageState extends State<AccountPage> {
       );
     }
     await _loadAvatar();
+  }
+
+
+  Future<void> _showRegister(BuildContext context) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (_) => _RegisterDialog(api: widget.api),
+    );
+    if (ok == true && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context).registerSuccess)),
+      );
+      await _showLogin(context);
+    }
   }
 
   /// 从 /home/me 或登录响应中取出头像 URL（profiles.avatar 优先）。
@@ -668,6 +689,271 @@ class _TokenLoginDialogState extends State<_TokenLoginDialog> {
         FilledButton(
           onPressed: _confirm,
           child: Text(AppLocalizations.of(context).confirmSignIn),
+        ),
+      ],
+    );
+  }
+}
+
+
+class _RegisterDialog extends StatefulWidget {
+  const _RegisterDialog({required this.api});
+
+  final ChengeApi api;
+
+  @override
+  State<_RegisterDialog> createState() => _RegisterDialogState();
+}
+
+class _RegisterDialogState extends State<_RegisterDialog> {
+  final _formKey = GlobalKey<FormState>();
+  final _username = TextEditingController();
+  final _nickname = TextEditingController();
+  final _email = TextEditingController();
+  final _code = TextEditingController();
+  final _password = TextEditingController();
+  bool _obscurePassword = true;
+  bool _loading = false;
+  bool _sendingCode = false;
+  int _countdown = 0;
+  String? _error;
+
+  @override
+  void dispose() {
+    _username.dispose();
+    _nickname.dispose();
+    _email.dispose();
+    _code.dispose();
+    _password.dispose();
+    super.dispose();
+  }
+
+  Future<void> _sendCode() async {
+    final email = _email.text.trim();
+    if (email.isEmpty) {
+      setState(() => _error = AppLocalizations.of(context).fillEmailFirst);
+      return;
+    }
+    if (_sendingCode || _countdown > 0) return;
+    setState(() {
+      _sendingCode = true;
+      _error = null;
+    });
+    try {
+      await widget.api.sendEmailCode(email);
+      if (!mounted) return;
+      setState(() => _countdown = 60);
+      // 简单倒计时
+      Future.doWhile(() async {
+        await Future<void>.delayed(const Duration(seconds: 1));
+        if (!mounted) return false;
+        setState(() => _countdown = (_countdown - 1).clamp(0, 60));
+        return _countdown > 0;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context).emailCodeSent)),
+      );
+    } on ApiException catch (e) {
+      if (mounted) setState(() => _error = e.message);
+    } finally {
+      if (mounted) setState(() => _sendingCode = false);
+    }
+  }
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate() || _loading) return;
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      await widget.api.register(
+        username: _username.text.trim(),
+        password: _password.text,
+        email: _email.text.trim(),
+        code: _code.text.trim(),
+        nickname: _nickname.text.trim().isEmpty
+            ? null
+            : _nickname.text.trim(),
+      );
+      if (mounted) Navigator.pop(context, true);
+    } on ApiException catch (e) {
+      if (mounted) setState(() => _error = e.message);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      icon: Container(
+        width: 54,
+        height: 54,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.secondaryContainer,
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Icon(
+          Icons.person_add_alt_1_rounded,
+          color: Theme.of(context).colorScheme.onSecondaryContainer,
+        ),
+      ),
+      title: Text(
+        AppLocalizations.of(context).registerTitle,
+        textAlign: TextAlign.center,
+        style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w800),
+      ),
+      content: SizedBox(
+        width: 390,
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: _username,
+                  enabled: !_loading,
+                  textInputAction: TextInputAction.next,
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context).username,
+                    prefixIcon: const Icon(Icons.person_outline_rounded),
+                  ),
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty)
+                          ? AppLocalizations.of(context).enterUsername
+                          : null,
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _nickname,
+                  enabled: !_loading,
+                  textInputAction: TextInputAction.next,
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context).nicknameOptional,
+                    prefixIcon: const Icon(Icons.badge_outlined),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _email,
+                  enabled: !_loading,
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context).email,
+                    prefixIcon: const Icon(Icons.email_outlined),
+                  ),
+                  validator: (v) {
+                    if (v == null || v.trim().isEmpty) {
+                      return AppLocalizations.of(context).enterEmail;
+                    }
+                    if (!v.contains('@')) {
+                      return AppLocalizations.of(context).invalidEmail;
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _code,
+                        enabled: !_loading,
+                        textInputAction: TextInputAction.next,
+                        decoration: InputDecoration(
+                          labelText: AppLocalizations.of(context).emailCode,
+                          prefixIcon: const Icon(Icons.pin_outlined),
+                        ),
+                        validator: (v) =>
+                            (v == null || v.trim().isEmpty)
+                                ? AppLocalizations.of(context).enterEmailCode
+                                : null,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: FilledButton.tonal(
+                        onPressed: (_sendingCode || _countdown > 0 || _loading)
+                            ? null
+                            : _sendCode,
+                        child: Text(
+                          _countdown > 0
+                              ? '${_countdown}s'
+                              : (_sendingCode
+                                  ? AppLocalizations.of(context).sendingCode
+                                  : AppLocalizations.of(context).getEmailCode),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _password,
+                  enabled: !_loading,
+                  obscureText: _obscurePassword,
+                  textInputAction: TextInputAction.done,
+                  onFieldSubmitted: (_) => _submit(),
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(context).passwordMinSix,
+                    prefixIcon: const Icon(Icons.lock_outline_rounded),
+                    suffixIcon: IconButton(
+                      onPressed: () =>
+                          setState(() => _obscurePassword = !_obscurePassword),
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
+                      ),
+                    ),
+                  ),
+                  validator: (v) {
+                    if (v == null || v.isEmpty) {
+                      return AppLocalizations.of(context).enterPassword;
+                    }
+                    if (v.length < 6) {
+                      return AppLocalizations.of(context).passwordTooShort;
+                    }
+                    return null;
+                  },
+                ),
+                if (_error != null) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    _error!,
+                    style: const TextStyle(color: AppTheme.coral),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+      actionsAlignment: MainAxisAlignment.center,
+      actions: [
+        TextButton(
+          onPressed: _loading ? null : () => Navigator.pop(context),
+          child: Text(AppLocalizations.of(context).cancel),
+        ),
+        FilledButton.icon(
+          onPressed: _loading ? null : _submit,
+          icon: _loading
+              ? const SizedBox.square(
+                  dimension: 17,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Icon(Icons.person_add_alt_1_rounded),
+          label: Text(
+            _loading
+                ? AppLocalizations.of(context).registering
+                : AppLocalizations.of(context).register,
+          ),
         ),
       ],
     );

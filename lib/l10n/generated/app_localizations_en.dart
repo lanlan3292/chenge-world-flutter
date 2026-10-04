@@ -1020,6 +1020,57 @@ class AppLocalizationsEn extends AppLocalizations {
   String webViewInitFailed(String errorType, String error) {
     return 'WebView 初始化失败（$errorType）：$error\nWindows 需安装 Edge WebView2 Runtime。';
   }
+
+  @override
+  String get registerAccount => '注册账号';
+
+  @override
+  String get registerTitle => '注册 ChengeWorld';
+
+  @override
+  String get registerSuccess => '注册成功，请登录';
+
+  @override
+  String get nicknameOptional => '昵称（可选）';
+
+  @override
+  String get email => '邮箱';
+
+  @override
+  String get enterEmail => '请输入邮箱';
+
+  @override
+  String get invalidEmail => '邮箱格式不正确';
+
+  @override
+  String get emailCode => '邮箱验证码';
+
+  @override
+  String get enterEmailCode => '请输入验证码';
+
+  @override
+  String get getEmailCode => '获取验证码';
+
+  @override
+  String get sendingCode => '发送中';
+
+  @override
+  String get emailCodeSent => '验证码已发送（开发环境可查看后端日志）';
+
+  @override
+  String get fillEmailFirst => '请先填写邮箱';
+
+  @override
+  String get passwordMinSix => '密码（至少 6 位）';
+
+  @override
+  String get passwordTooShort => '密码至少 6 位';
+
+  @override
+  String get register => '注册';
+
+  @override
+  String get registering => '注册中…';
 }
 
 /// The translations for English, as used in the United States (`en_US`).
@@ -2063,4 +2114,55 @@ class AppLocalizationsEnUs extends AppLocalizationsEn {
   String webViewInitFailed(String errorType, String error) {
     return 'WebView failed to initialize ($errorType): $error\nWindows requires Edge WebView2 Runtime.';
   }
+
+  @override
+  String get registerAccount => 'Create account';
+
+  @override
+  String get registerTitle => 'Sign up for ChengeWorld';
+
+  @override
+  String get registerSuccess => 'Registration successful. Please sign in.';
+
+  @override
+  String get nicknameOptional => 'Nickname (optional)';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get enterEmail => 'Enter email';
+
+  @override
+  String get invalidEmail => 'Invalid email format';
+
+  @override
+  String get emailCode => 'Email verification code';
+
+  @override
+  String get enterEmailCode => 'Enter verification code';
+
+  @override
+  String get getEmailCode => 'Get code';
+
+  @override
+  String get sendingCode => 'Sending';
+
+  @override
+  String get emailCodeSent => 'Code sent (check backend logs in development)';
+
+  @override
+  String get fillEmailFirst => 'Please enter your email first';
+
+  @override
+  String get passwordMinSix => 'Password (min 6 characters)';
+
+  @override
+  String get passwordTooShort => 'Password must be at least 6 characters';
+
+  @override
+  String get register => 'Sign up';
+
+  @override
+  String get registering => 'Signing up…';
 }

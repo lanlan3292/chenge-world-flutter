@@ -118,6 +118,48 @@ class ChengeApi {
     return data;
   }
 
+  /// 发送邮箱验证码：GET /home/sendemailcode?email=
+  Future<void> sendEmailCode(String email) async {
+    await _request(
+      'GET',
+      '/home/sendemailcode',
+      query: {'email': email.trim()},
+    );
+  }
+
+  /// 注册：POST /home/register
+  /// 必填 username / password / email / code；可选 nickname、avatar、gender、birthday、roleCode
+  Future<void> register({
+    required String username,
+    required String password,
+    required String email,
+    required String code,
+    String? nickname,
+    String? avatar,
+    int gender = 0,
+    String? birthday,
+    String roleCode = '1',
+  }) async {
+    final body = <String, dynamic>{
+      'username': username.trim(),
+      'password': password,
+      'email': email.trim(),
+      'code': code.trim(),
+      'gender': gender,
+      'roleCode': roleCode,
+      'nickname': (nickname == null || nickname.trim().isEmpty)
+          ? username.trim()
+          : nickname.trim(),
+    };
+    if (avatar != null && avatar.trim().isNotEmpty) {
+      body['avatar'] = avatar.trim();
+    }
+    if (birthday != null && birthday.trim().isNotEmpty) {
+      body['birthday'] = birthday.trim();
+    }
+    await _request('POST', '/home/register', body: body);
+  }
+
   Future<PostPage> listPosts({
     required int page,
     required String sort,

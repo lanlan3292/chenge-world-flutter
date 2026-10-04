@@ -500,5 +500,22 @@
         "type": "String"
       }
     }
-  }
+  },
+  "registerAccount": "註冊帳號",
+  "registerTitle": "註冊 ChengeWorld",
+  "registerSuccess": "註冊成功，請登入",
+  "nicknameOptional": "暱稱（可選）",
+  "email": "電子郵件",
+  "enterEmail": "請輸入電子郵件",
+  "invalidEmail": "電子郵件格式不正確",
+  "emailCode": "電子郵件驗證碼",
+  "enterEmailCode": "請輸入驗證碼",
+  "getEmailCode": "取得驗證碼",
+  "sendingCode": "傳送中",
+  "emailCodeSent": "驗證碼已傳送（開發環境可查看後端日誌）",
+  "fillEmailFirst": "請先填寫電子郵件",
+  "passwordMinSix": "密碼（至少 6 位）",
+  "passwordTooShort": "密碼至少 6 位",
+  "register": "註冊",
+  "registering": "註冊中…"
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../models/blog_post.dart';
@@ -9,6 +10,7 @@ import '../models/chat_message.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../models/shop_item.dart';
 import '../services/chenge_api.dart';
+import '../services/chat_socket.dart';
 import '../theme/app_theme.dart';
 import 'emoji_picker_sheet.dart';
 import 'post_detail_page.dart';
@@ -21,6 +23,7 @@ class ChatThreadPage extends StatefulWidget {
     required this.token,
     required this.userId,
     required this.conversation,
+    this.chatSocket,
     this.showBackButton = true,
     this.peerOnline,
     this.showSelfAvatar = false,
@@ -31,6 +34,8 @@ class ChatThreadPage extends StatefulWidget {
   final String token;
   final int? userId;
   final ChatConversation conversation;
+  /// 可选：共享 WebSocket；为空时本页自行建连
+  final ChatSocket? chatSocket;
   final bool showBackButton;
   final bool? peerOnline;
 
@@ -48,7 +53,10 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
   final _messageController = TextEditingController();
   final _messageScrollController = ScrollController();
   final _messages = <ChatMessage>[];
-  Timer? _pollTimer;
+  ChatSocket? _ownedSocket;
+  StreamSubscription<ChatMessage>? _wsSub;
+  /// 断线时的轻量兜底轮询（仅在 WS 不可用时启用）
+  Timer? _fallbackPoll;
   bool _loading = false;
   bool _loadingOlder = false;
   bool _sending = false;
@@ -66,9 +74,41 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     _conversation = widget.conversation;
     _messageScrollController.addListener(_onScroll);
     _loadMessages();
-    _pollTimer = Timer.periodic(
-      const Duration(seconds: 8),
-      (_) => _loadMessages(silent: true),
+    _bindSocket();
+  }
+
+  void _bindSocket() {
+    final shared = widget.chatSocket;
+    if (shared != null) {
+      shared.connect(widget.token);
+      _wsSub = shared.messages.listen(_onWsMessage);
+      return;
+    }
+    final socket = ChatSocket(baseUrl: widget.api.baseUrl);
+    _ownedSocket = socket;
+    socket.connect(widget.token);
+    _wsSub = socket.messages.listen(_onWsMessage);
+    // 若 12s 内仍无连接成功的消息活动，启动兜底轮询
+    _fallbackPoll = Timer.periodic(const Duration(seconds: 12), (_) {
+      if (!mounted) return;
+      _loadMessages(silent: true);
+    });
+  }
+
+  void _onWsMessage(ChatMessage message) {
+    if (!mounted) return;
+    if (message.conversationId != _conversation.id) return;
+    if (_messages.any((m) => m.id == message.id)) return;
+    setState(() {
+      _messages.add(message);
+      _messages.sort((a, b) => a.id.compareTo(b.id));
+    });
+    if (_stickToBottom) _scrollToBottom(animate: true);
+    // 静默已读
+    widget.api.markChatRead(
+      _conversation.id,
+      widget.token,
+      messageId: message.id,
     );
   }
 
@@ -92,7 +132,9 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
 
   @override
   void dispose() {
-    _pollTimer?.cancel();
+    _fallbackPoll?.cancel();
+    _wsSub?.cancel();
+    _ownedSocket?.dispose();
     _messageController.dispose();
     _messageScrollController
       ..removeListener(_onScroll)
@@ -463,7 +505,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     Widget avatarFor(String name, String? url) => CircleAvatar(
       radius: 15,
       backgroundColor: const Color(0xFFFFE8C5),
-      foregroundImage: url == null ? null : NetworkImage(url),
+      foregroundImage: url == null ? null : CachedNetworkImageProvider(url),
       onForegroundImageError: url == null ? null : (_, __) {},
       child: Text(
         name.isEmpty ? AppLocalizations.of(context).friendInitial : name.characters.first,
@@ -794,17 +836,28 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     }
     return ClipRRect(
       borderRadius: BorderRadius.circular(9),
-      child: Image.network(
-        url,
+      child: CachedNetworkImage(
+        imageUrl: url,
+        fadeInDuration: const Duration(milliseconds: 120),
+        fadeOutDuration: const Duration(milliseconds: 80),
         width: 132,
         height: 132,
         fit: BoxFit.contain,
-        errorBuilder:
-            (context, __, ___) => SizedBox(
-              width: 132,
-              height: 84,
-              child: Center(child: Text(AppLocalizations.of(context).emoji)),
+        placeholder: (_, __) => const SizedBox(
+          width: 132,
+          height: 84,
+          child: Center(
+            child: SizedBox.square(
+              dimension: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
             ),
+          ),
+        ),
+        errorWidget: (context, __, ___) => SizedBox(
+          width: 132,
+          height: 84,
+          child: Center(child: Text(AppLocalizations.of(context).emoji)),
+        ),
       ),
     );
   }

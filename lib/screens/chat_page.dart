@@ -6,6 +6,7 @@ import '../l10n/generated/app_localizations.dart';
 import '../models/chat_conversation.dart';
 import '../models/chat_message.dart';
 import '../services/chenge_api.dart';
+import '../services/chat_socket.dart';
 import '../services/settings_store.dart';
 import '../theme/app_theme.dart';
 import 'chat_thread_page.dart';
@@ -47,7 +48,10 @@ class _ChatPageState extends State<ChatPage> {
   final _conversations = <ChatConversation>[];
   final _peerOnline = <int, bool>{};
   ChatConversation? _active;
-  Timer? _pollTimer;
+  ChatSocket? _chatSocket;
+  StreamSubscription? _wsSub;
+  /// 仅作 WebSocket 断线兜底
+  Timer? _fallbackPoll;
   String _error = '';
   String _listQuery = '';
   bool _loadingList = false;
@@ -69,7 +73,7 @@ class _ChatPageState extends State<ChatPage> {
       _active = null;
     }
     if (oldWidget.token != widget.token) {
-      _pollTimer?.cancel();
+      _teardownSocket();
       _conversations.clear();
       _peerOnline.clear();
       _active = null;
@@ -86,22 +90,46 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   void dispose() {
-    _pollTimer?.cancel();
+    _teardownSocket();
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _teardownSocket() {
+    _fallbackPoll?.cancel();
+    _fallbackPoll = null;
+    _wsSub?.cancel();
+    _wsSub = null;
+    _chatSocket?.dispose();
+    _chatSocket = null;
   }
 
   void _startSession() {
     if (widget.token == null) return;
     _loadConversations();
-    _pollTimer = Timer.periodic(const Duration(seconds: 8), (_) {
-      _loadConversations(silent: true);
-    });
+    _ensureSocket();
     if (widget.launchConversationId != null) {
       _openConversationId(widget.launchConversationId!);
     } else if (widget.launchPeerId != null) {
       _openPeer(widget.launchPeerId!);
     }
+  }
+
+  void _ensureSocket() {
+    final token = widget.token;
+    if (token == null) return;
+    _chatSocket ??= ChatSocket(baseUrl: widget.api.baseUrl);
+    _chatSocket!.connect(token);
+    _wsSub?.cancel();
+    _wsSub = _chatSocket!.messages.listen((message) {
+      // 收到任意新消息时刷新会话列表（未读/最后一条）
+      _loadConversations(silent: true);
+    });
+    // 断线兜底：每 20s 静默刷新列表（正常有 WS 时几乎无感）
+    _fallbackPoll?.cancel();
+    _fallbackPoll = Timer.periodic(const Duration(seconds: 20), (_) {
+      _loadConversations(silent: true);
+    });
   }
 
   Future<void> _loadConversations({bool silent = false}) async {
@@ -217,6 +245,7 @@ class _ChatPageState extends State<ChatPage> {
               token: token,
               userId: widget.userId,
               conversation: conversation,
+              chatSocket: _chatSocket,
               peerOnline:
                   conversation.type == 'single' && conversation.peerId != null
                       ? _peerOnline[conversation.peerId!]
@@ -363,6 +392,7 @@ class _ChatPageState extends State<ChatPage> {
                   token: widget.token!,
                   userId: widget.userId,
                   conversation: _active!,
+                  chatSocket: _chatSocket,
                   showBackButton: false,
                   peerOnline:
                       _active!.type == 'single' && _active!.peerId != null

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../models/blog_post.dart';
@@ -160,29 +161,26 @@ class PostCard extends StatelessWidget {
   Widget _cover(BuildContext context) {
     final imageUrl = post.coverImage;
     if (imageUrl == null) return _coverPlaceholder(context);
-    return Image.network(
-      imageUrl,
+    return CachedNetworkImage(
+      imageUrl: imageUrl,
+      fadeInDuration: const Duration(milliseconds: 120),
+      fadeOutDuration: const Duration(milliseconds: 80),
       width: double.infinity,
       height: double.infinity,
       fit: BoxFit.cover,
-      errorBuilder: (_, __, ___) => _coverPlaceholder(context),
-      loadingBuilder: (context, child, progress) => progress == null
-          ? child
-          : Stack(
-              fit: StackFit.expand,
-              children: [
-                _coverPlaceholder(context),
-                Center(
-                  child: CircularProgressIndicator(
-                    value: progress.expectedTotalBytes == null
-                        ? null
-                        : progress.cumulativeBytesLoaded /
-                            progress.expectedTotalBytes!,
-                    strokeWidth: 2,
-                  ),
-                ),
-              ],
+      errorWidget: (_, __, ___) => _coverPlaceholder(context),
+      placeholder: (context, _) => Stack(
+        fit: StackFit.expand,
+        children: [
+          _coverPlaceholder(context),
+          const Center(
+            child: SizedBox.square(
+              dimension: 22,
+              child: CircularProgressIndicator(strokeWidth: 2),
             ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -257,7 +255,7 @@ class PostCard extends StatelessWidget {
     return CircleAvatar(
       radius: radius,
       backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
-      foregroundImage: avatar == null ? null : NetworkImage(avatar),
+      foregroundImage: avatar == null ? null : CachedNetworkImageProvider(avatar),
       child: avatar == null
           ? Icon(
               Icons.person_rounded,

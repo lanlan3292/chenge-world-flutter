@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/generated/app_localizations.dart';
@@ -195,10 +196,12 @@ class _EmojiPickerSheetState extends State<EmojiPickerSheet> {
                               padding: const EdgeInsets.all(8),
                               child:
                                   asset.url?.isNotEmpty == true
-                                      ? Image.network(
-                                        asset.url!,
+                                      ? CachedNetworkImage(
+                                        imageUrl: asset.url!,
+                                        fadeInDuration: const Duration(milliseconds: 120),
+                                        fadeOutDuration: const Duration(milliseconds: 80),
                                         fit: BoxFit.contain,
-                                        errorBuilder:
+                                        errorWidget:
                                             (_, __, ___) => Center(
                                               child: Text(
                                                 (asset.key ?? asset.displayName)
