@@ -13,3 +13,4 @@
 /windows/flutter/generated_plugins.cmake
 android/.kotlin
 .idea/
+devtools_options.yaml
