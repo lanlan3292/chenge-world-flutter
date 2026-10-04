@@ -331,8 +331,8 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
                 _switchTile(
                   icon: Icons.blur_on_rounded,
-                  title: '顶栏隐藏时状态栏遮罩',
-                  subtitle: '顶栏可自动隐藏时，状态栏使用半透明主题背景，避免内容顶到状态栏（默认开启）',
+                  title: AppLocalizations.of(context).statusBarTopHideMask,
+                  subtitle: AppLocalizations.of(context).statusBarTopHideMaskDescription,
                   value: _statusBarTopHideMask,
                   setValue: (value) => _statusBarTopHideMask = value,
                   saveValue: widget.settings.setStatusBarTopHideMask,
@@ -392,7 +392,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   },
                   saveRange: widget.settings.setShopColumnRange,
                 ),
-                _sectionTitle('站点与令牌'),
+                _sectionTitle(AppLocalizations.of(context).siteAndToken),
                 ListTile(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 4),
                   leading: Icon(

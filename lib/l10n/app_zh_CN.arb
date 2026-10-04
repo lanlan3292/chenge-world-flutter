@@ -233,5 +233,49 @@
   "accessTokenUpdated": "访问令牌 已更新",
   "signInToUseChengeCore": "请先登录后再使用 ChengeCore",
   "signInToUseRaising": "请先登录后再使用养成",
-  "enterToken": "请输入 Token"
+  "enterToken": "请输入 Token",
+"tasksInProgress": "进行中",
+  "tasksNoInProgress": "当前没有进行中的任务",
+  "tasksCompletedSection": "已完成",
+  "tasksRewardHint": "奖励需要手动领取 · 任务按周期刷新",
+  "tasksTodayGoal": "今日目标",
+  "tasksTodayGoalSubtitle": "完成社区任务，领取 ChengeCoin",
+  "tasksProgressSummary": "待完成 · {completed} 已完成",
+  "@tasksProgressSummary": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      }
+    }
+  },
+  "taskClaimable": "可领取",
+  "taskCompletedBadge": "已完成",
+  "taskCheckinStreak": "已连续签到 {streak} 天 · 累计 {totalDays} 天",
+  "@taskCheckinStreak": {
+    "placeholders": {
+      "streak": {
+        "type": "int"
+      },
+      "totalDays": {
+        "type": "int"
+      }
+    }
+  },
+  "checkIn": "签到",
+  "claim": "领取",
+  "statusBarTopHideMask": "顶栏隐藏时状态栏遮罩",
+  "statusBarTopHideMaskDescription": "顶栏可自动隐藏时，状态栏使用半透明主题背景，避免内容顶到状态栏（默认开启）",
+  "siteAndToken": "站点与令牌",
+  "officialSite": "官网",
+  "webViewInitFailed": "WebView 初始化失败（{errorType}）：{error}\nWindows 需安装 Edge WebView2 Runtime。",
+  "@webViewInitFailed": {
+    "placeholders": {
+      "errorType": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

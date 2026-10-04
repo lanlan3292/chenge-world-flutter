@@ -2,6 +2,7 @@ import 'package:chenge_world_app/screens/account_page.dart';
 import 'package:chenge_world_app/services/chenge_api.dart';
 import 'package:chenge_world_app/services/settings_store.dart';
 import 'package:flutter/material.dart';
+import 'package:chenge_world_app/l10n/generated/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -15,6 +16,9 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('zh', 'CN'),
         home: AccountPage(
           api: api,
           token: 'session-token',

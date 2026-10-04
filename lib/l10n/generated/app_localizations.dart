@@ -1090,6 +1090,108 @@ abstract class AppLocalizations {
   /// In zh_CN, this message translates to:
   /// **'请输入 Token'**
   String get enterToken;
+
+  /// No description provided for @tasksInProgress.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'进行中'**
+  String get tasksInProgress;
+
+  /// No description provided for @tasksNoInProgress.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'当前没有进行中的任务'**
+  String get tasksNoInProgress;
+
+  /// No description provided for @tasksCompletedSection.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'已完成'**
+  String get tasksCompletedSection;
+
+  /// No description provided for @tasksRewardHint.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'奖励需要手动领取 · 任务按周期刷新'**
+  String get tasksRewardHint;
+
+  /// No description provided for @tasksTodayGoal.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'今日目标'**
+  String get tasksTodayGoal;
+
+  /// No description provided for @tasksTodayGoalSubtitle.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'完成社区任务，领取 ChengeCoin'**
+  String get tasksTodayGoalSubtitle;
+
+  /// No description provided for @tasksProgressSummary.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'待完成 · {completed} 已完成'**
+  String tasksProgressSummary(int completed);
+
+  /// No description provided for @taskClaimable.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'可领取'**
+  String get taskClaimable;
+
+  /// No description provided for @taskCompletedBadge.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'已完成'**
+  String get taskCompletedBadge;
+
+  /// No description provided for @taskCheckinStreak.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'已连续签到 {streak} 天 · 累计 {totalDays} 天'**
+  String taskCheckinStreak(int streak, int totalDays);
+
+  /// No description provided for @checkIn.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'签到'**
+  String get checkIn;
+
+  /// No description provided for @claim.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'领取'**
+  String get claim;
+
+  /// No description provided for @statusBarTopHideMask.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'顶栏隐藏时状态栏遮罩'**
+  String get statusBarTopHideMask;
+
+  /// No description provided for @statusBarTopHideMaskDescription.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'顶栏可自动隐藏时，状态栏使用半透明主题背景，避免内容顶到状态栏（默认开启）'**
+  String get statusBarTopHideMaskDescription;
+
+  /// No description provided for @siteAndToken.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'站点与令牌'**
+  String get siteAndToken;
+
+  /// No description provided for @officialSite.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'官网'**
+  String get officialSite;
+
+  /// No description provided for @webViewInitFailed.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'WebView 初始化失败（{errorType}）：{error}\nWindows 需安装 Edge WebView2 Runtime。'**
+  String webViewInitFailed(String errorType, String error);
 }
 
 class _AppLocalizationsDelegate

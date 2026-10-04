@@ -164,5 +164,49 @@
   "accessTokenUpdated": "存取權杖 已更新",
   "signInToUseChengeCore": "請先登入後再使用 ChengeCore",
   "signInToUseRaising": "請先登入後再使用養成",
-  "enterToken": "請輸入 Token"
+  "enterToken": "請輸入 Token",
+"tasksInProgress": "進行中",
+  "tasksNoInProgress": "目前沒有進行中的任務",
+  "tasksCompletedSection": "已完成",
+  "tasksRewardHint": "獎勵需手動領取 · 任務依週期刷新",
+  "tasksTodayGoal": "今日目標",
+  "tasksTodayGoalSubtitle": "完成社群任務，領取 ChengeCoin",
+  "tasksProgressSummary": "待完成 · {completed} 已完成",
+  "@tasksProgressSummary": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      }
+    }
+  },
+  "taskClaimable": "可領取",
+  "taskCompletedBadge": "已完成",
+  "taskCheckinStreak": "已連續簽到 {streak} 天 · 累計 {totalDays} 天",
+  "@taskCheckinStreak": {
+    "placeholders": {
+      "streak": {
+        "type": "int"
+      },
+      "totalDays": {
+        "type": "int"
+      }
+    }
+  },
+  "checkIn": "簽到",
+  "claim": "領取",
+  "statusBarTopHideMask": "頂欄隱藏時狀態列遮罩",
+  "statusBarTopHideMaskDescription": "頂欄可自動隱藏時，狀態列使用半透明主題背景，避免內容頂到狀態列（預設開啟）",
+  "siteAndToken": "站點與權杖",
+  "officialSite": "官網",
+  "webViewInitFailed": "WebView 初始化失敗（{errorType}）：{error}\nWindows 需安裝 Edge WebView2 Runtime。",
+  "@webViewInitFailed": {
+    "placeholders": {
+      "errorType": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

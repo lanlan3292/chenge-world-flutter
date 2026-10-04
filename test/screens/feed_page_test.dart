@@ -5,6 +5,7 @@ import 'package:chenge_world_app/services/chenge_api.dart';
 import 'package:chenge_world_app/theme/app_theme.dart';
 import 'package:chenge_world_app/widgets/post_card.dart';
 import 'package:flutter/material.dart';
+import 'package:chenge_world_app/l10n/generated/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -46,7 +47,11 @@ void main() {
     );
 
     await tester.pumpWidget(
-      MaterialApp(theme: AppTheme.light, home: FeedPage(api: api, token: null)),
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('zh', 'CN'),
+        theme: AppTheme.light, home: FeedPage(api: api, token: null)),
     );
     await tester.pumpAndSettle();
 
@@ -90,7 +95,11 @@ void main() {
     );
 
     await tester.pumpWidget(
-      MaterialApp(theme: AppTheme.light, home: FeedPage(api: api, token: null)),
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('zh', 'CN'),
+        theme: AppTheme.light, home: FeedPage(api: api, token: null)),
     );
     await tester.pumpAndSettle();
 

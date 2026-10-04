@@ -520,6 +520,64 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get enterToken => '请输入 Token';
+
+  @override
+  String get tasksInProgress => '进行中';
+
+  @override
+  String get tasksNoInProgress => '当前没有进行中的任务';
+
+  @override
+  String get tasksCompletedSection => '已完成';
+
+  @override
+  String get tasksRewardHint => '奖励需要手动领取 · 任务按周期刷新';
+
+  @override
+  String get tasksTodayGoal => '今日目标';
+
+  @override
+  String get tasksTodayGoalSubtitle => '完成社区任务，领取 ChengeCoin';
+
+  @override
+  String tasksProgressSummary(int completed) {
+    return '待完成 · $completed 已完成';
+  }
+
+  @override
+  String get taskClaimable => '可领取';
+
+  @override
+  String get taskCompletedBadge => '已完成';
+
+  @override
+  String taskCheckinStreak(int streak, int totalDays) {
+    return '已连续签到 $streak 天 · 累计 $totalDays 天';
+  }
+
+  @override
+  String get checkIn => '签到';
+
+  @override
+  String get claim => '领取';
+
+  @override
+  String get statusBarTopHideMask => '顶栏隐藏时状态栏遮罩';
+
+  @override
+  String get statusBarTopHideMaskDescription =>
+      '顶栏可自动隐藏时，状态栏使用半透明主题背景，避免内容顶到状态栏（默认开启）';
+
+  @override
+  String get siteAndToken => '站点与令牌';
+
+  @override
+  String get officialSite => '官网';
+
+  @override
+  String webViewInitFailed(String errorType, String error) {
+    return 'WebView 初始化失败（$errorType）：$error\nWindows 需安装 Edge WebView2 Runtime。';
+  }
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -1038,6 +1096,64 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get enterToken => '请输入 Token';
+
+  @override
+  String get tasksInProgress => '进行中';
+
+  @override
+  String get tasksNoInProgress => '当前没有进行中的任务';
+
+  @override
+  String get tasksCompletedSection => '已完成';
+
+  @override
+  String get tasksRewardHint => '奖励需要手动领取 · 任务按周期刷新';
+
+  @override
+  String get tasksTodayGoal => '今日目标';
+
+  @override
+  String get tasksTodayGoalSubtitle => '完成社区任务，领取 ChengeCoin';
+
+  @override
+  String tasksProgressSummary(int completed) {
+    return '待完成 · $completed 已完成';
+  }
+
+  @override
+  String get taskClaimable => '可领取';
+
+  @override
+  String get taskCompletedBadge => '已完成';
+
+  @override
+  String taskCheckinStreak(int streak, int totalDays) {
+    return '已连续签到 $streak 天 · 累计 $totalDays 天';
+  }
+
+  @override
+  String get checkIn => '签到';
+
+  @override
+  String get claim => '领取';
+
+  @override
+  String get statusBarTopHideMask => '顶栏隐藏时状态栏遮罩';
+
+  @override
+  String get statusBarTopHideMaskDescription =>
+      '顶栏可自动隐藏时，状态栏使用半透明主题背景，避免内容顶到状态栏（默认开启）';
+
+  @override
+  String get siteAndToken => '站点与令牌';
+
+  @override
+  String get officialSite => '官网';
+
+  @override
+  String webViewInitFailed(String errorType, String error) {
+    return 'WebView 初始化失败（$errorType）：$error\nWindows 需安装 Edge WebView2 Runtime。';
+  }
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -1556,4 +1672,62 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get enterToken => '請輸入 Token';
+
+  @override
+  String get tasksInProgress => '進行中';
+
+  @override
+  String get tasksNoInProgress => '目前沒有進行中的任務';
+
+  @override
+  String get tasksCompletedSection => '已完成';
+
+  @override
+  String get tasksRewardHint => '獎勵需手動領取 · 任務依週期刷新';
+
+  @override
+  String get tasksTodayGoal => '今日目標';
+
+  @override
+  String get tasksTodayGoalSubtitle => '完成社群任務，領取 ChengeCoin';
+
+  @override
+  String tasksProgressSummary(int completed) {
+    return '待完成 · $completed 已完成';
+  }
+
+  @override
+  String get taskClaimable => '可領取';
+
+  @override
+  String get taskCompletedBadge => '已完成';
+
+  @override
+  String taskCheckinStreak(int streak, int totalDays) {
+    return '已連續簽到 $streak 天 · 累計 $totalDays 天';
+  }
+
+  @override
+  String get checkIn => '簽到';
+
+  @override
+  String get claim => '領取';
+
+  @override
+  String get statusBarTopHideMask => '頂欄隱藏時狀態列遮罩';
+
+  @override
+  String get statusBarTopHideMaskDescription =>
+      '頂欄可自動隱藏時，狀態列使用半透明主題背景，避免內容頂到狀態列（預設開啟）';
+
+  @override
+  String get siteAndToken => '站點與權杖';
+
+  @override
+  String get officialSite => '官網';
+
+  @override
+  String webViewInitFailed(String errorType, String error) {
+    return 'WebView 初始化失敗（$errorType）：$error\nWindows 需安裝 Edge WebView2 Runtime。';
+  }
 }

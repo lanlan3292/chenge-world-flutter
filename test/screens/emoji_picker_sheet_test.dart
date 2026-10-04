@@ -5,6 +5,7 @@ import 'package:chenge_world_app/screens/chat_thread_page.dart';
 import 'package:chenge_world_app/screens/emoji_picker_sheet.dart';
 import 'package:chenge_world_app/services/chenge_api.dart';
 import 'package:flutter/material.dart';
+import 'package:chenge_world_app/l10n/generated/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -19,6 +20,9 @@ void main() {
     final api = _api();
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('zh', 'CN'),
         home: Builder(
           builder:
               (context) => Scaffold(
@@ -56,6 +60,9 @@ void main() {
     final api = _api();
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('zh', 'CN'),
         home: Builder(
           builder:
               (context) => Scaffold(
@@ -97,6 +104,9 @@ void main() {
     final api = _api();
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('zh', 'CN'),
         home: Builder(
           builder: (context) => Scaffold(
             body: Column(
@@ -143,6 +153,9 @@ void main() {
     final api = _api();
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('zh', 'CN'),
         home: Builder(
           builder:
               (context) => Scaffold(

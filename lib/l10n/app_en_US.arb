@@ -164,5 +164,49 @@
   "accessTokenUpdated": "Access token updated",
   "signInToUseChengeCore": "Please sign in to use ChengeCore",
   "signInToUseRaising": "Please sign in to use raising",
-  "enterToken": "Please enter token"
+  "enterToken": "Please enter token",
+"tasksInProgress": "In progress",
+  "tasksNoInProgress": "No tasks in progress",
+  "tasksCompletedSection": "Completed",
+  "tasksRewardHint": "Rewards must be claimed manually · Tasks refresh by cycle",
+  "tasksTodayGoal": "Today's goals",
+  "tasksTodayGoalSubtitle": "Complete community tasks and claim ChengeCoin",
+  "tasksProgressSummary": "Pending · {completed} completed",
+  "@tasksProgressSummary": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      }
+    }
+  },
+  "taskClaimable": "Claimable",
+  "taskCompletedBadge": "Done",
+  "taskCheckinStreak": "Checked in {streak} days in a row · {totalDays} days total",
+  "@taskCheckinStreak": {
+    "placeholders": {
+      "streak": {
+        "type": "int"
+      },
+      "totalDays": {
+        "type": "int"
+      }
+    }
+  },
+  "checkIn": "Check in",
+  "claim": "Claim",
+  "statusBarTopHideMask": "Status bar mask when top bar is hidden",
+  "statusBarTopHideMaskDescription": "When the top bar can auto-hide, use a translucent theme background for the status bar so content does not go under it (on by default)",
+  "siteAndToken": "Site & token",
+  "officialSite": "Official site",
+  "webViewInitFailed": "WebView failed to initialize ({errorType}): {error}\nWindows requires Edge WebView2 Runtime.",
+  "@webViewInitFailed": {
+    "placeholders": {
+      "errorType": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  }
 }

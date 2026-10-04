@@ -21,7 +21,7 @@ class ChengeCorePage extends StatelessWidget {
     return _SiteWebViewPage(
       baseUrl: baseUrl,
       token: token,
-      title: 'ChengeCore',
+      title: AppLocalizations.of(context).chengeCore,
       hashRoute: '#/chengecore',
       themeSkin: 'aqua',
     );
@@ -45,7 +45,7 @@ class NurturePage extends StatelessWidget {
     return _SiteWebViewPage(
       baseUrl: baseUrl,
       token: token,
-      title: '养成',
+      title: AppLocalizations.of(context).raising,
       hashRoute: '#/intelligence?mode=nurture',
       themeSkin: 'cute',
     );
@@ -68,7 +68,7 @@ class OfficialSitePage extends StatelessWidget {
     return _SiteWebViewPage(
       baseUrl: baseUrl,
       token: token,
-      title: '官网',
+      title: AppLocalizations.of(context).officialSite,
       hashRoute: '',
       themeSkin: 'aqua',
     );
@@ -208,9 +208,10 @@ class _SiteWebViewPageState extends State<_SiteWebViewPage> {
       setState(() {
         _unsupported = true;
         _loading = false;
-        _error =
-            'WebView 初始化失败（${e.runtimeType}）：$e\n'
-            'Windows 需安装 Edge WebView2 Runtime。';
+        _error = AppLocalizations.of(context).webViewInitFailed(
+          e.runtimeType.toString(),
+          e.toString(),
+        );
       });
     }
   }

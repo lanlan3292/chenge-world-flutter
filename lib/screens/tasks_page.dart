@@ -79,8 +79,7 @@ class _TasksPageState extends State<TasksPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            AppLocalizations.of(context)?.rewardClaimed(coins.toString()) ??
-                '奖励已领取，+$coins CC',
+            AppLocalizations.of(context).rewardClaimed(coins.toString()),
           ),
         ),
       );
@@ -139,20 +138,20 @@ class _TasksPageState extends State<TasksPage> {
       children: [
         _summary(pending.length, completed.length),
         const SizedBox(height: 20),
-        _sectionHeader('进行中', pending.length),
+        _sectionHeader(AppLocalizations.of(context).tasksInProgress, pending.length),
         if (pending.isEmpty)
-          _emptySection('当前没有进行中的任务')
+          _emptySection(AppLocalizations.of(context).tasksNoInProgress)
         else
           ...pending.map(_taskCard),
         if (completed.isNotEmpty) ...[
           const SizedBox(height: 22),
-          _sectionHeader('已完成', completed.length),
+          _sectionHeader(AppLocalizations.of(context).tasksCompletedSection, completed.length),
           ...completed.map(_taskCard),
         ],
         const SizedBox(height: 12),
         Center(
           child: Text(
-            '奖励需要手动领取 · 任务按周期刷新',
+            AppLocalizations.of(context).tasksRewardHint,
             style: TextStyle(
               fontSize: 12,
               color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -190,7 +189,7 @@ class _TasksPageState extends State<TasksPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '今日目标',
+                AppLocalizations.of(context).tasksTodayGoal,
                 style: TextStyle(
                   fontSize: 19,
                   color: Theme.of(context).colorScheme.onPrimaryContainer,
@@ -199,7 +198,7 @@ class _TasksPageState extends State<TasksPage> {
               ),
               SizedBox(height: 3),
               Text(
-                '完成社区任务，领取 ChengeCoin',
+                AppLocalizations.of(context).tasksTodayGoalSubtitle,
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onPrimaryContainer,
                   fontSize: 12,
@@ -220,7 +219,7 @@ class _TasksPageState extends State<TasksPage> {
               ),
             ),
             Text(
-              '待完成 · $completed 已完成',
+              AppLocalizations.of(context).tasksProgressSummary(completed),
               style: TextStyle(
                 color: Theme.of(context).colorScheme.onPrimaryContainer,
                 fontSize: 10,
@@ -296,8 +295,8 @@ class _TasksPageState extends State<TasksPage> {
                           ),
                         ),
                         if (task.claimable && !task.rewarded)
-                          _badge('可领取', AppTheme.coral),
-                        if (task.rewarded) _badge('已完成', AppTheme.leaf),
+                          _badge(AppLocalizations.of(context).taskClaimable, AppTheme.coral),
+                        if (task.rewarded) _badge(AppLocalizations.of(context).taskCompletedBadge, AppTheme.leaf),
                       ],
                     ),
                     if (task.description?.isNotEmpty == true) ...[
@@ -340,7 +339,7 @@ class _TasksPageState extends State<TasksPage> {
                       if (task.type == 'checkin' && task.streak > 0) ...[
                         const SizedBox(height: 5),
                         Text(
-                          '已连续签到 ${task.streak} 天 · 累计 ${task.totalDays} 天',
+                          AppLocalizations.of(context).taskCheckinStreak(task.streak, task.totalDays),
                           style: const TextStyle(
                             fontSize: 11,
                             color: Color(0xFF70817D),
@@ -379,7 +378,9 @@ class _TasksPageState extends State<TasksPage> {
                                           ),
                                         )
                                         : Text(
-                                          task.type == 'checkin' ? '签到' : '领取',
+                                          task.type == 'checkin'
+                                              ? AppLocalizations.of(context).checkIn
+                                              : AppLocalizations.of(context).claim,
                                         ),
                               )
                               : OutlinedButton(

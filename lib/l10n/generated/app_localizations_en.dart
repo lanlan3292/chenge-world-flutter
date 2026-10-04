@@ -520,6 +520,64 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get enterToken => '请输入 Token';
+
+  @override
+  String get tasksInProgress => '进行中';
+
+  @override
+  String get tasksNoInProgress => '当前没有进行中的任务';
+
+  @override
+  String get tasksCompletedSection => '已完成';
+
+  @override
+  String get tasksRewardHint => '奖励需要手动领取 · 任务按周期刷新';
+
+  @override
+  String get tasksTodayGoal => '今日目标';
+
+  @override
+  String get tasksTodayGoalSubtitle => '完成社区任务，领取 ChengeCoin';
+
+  @override
+  String tasksProgressSummary(int completed) {
+    return '待完成 · $completed 已完成';
+  }
+
+  @override
+  String get taskClaimable => '可领取';
+
+  @override
+  String get taskCompletedBadge => '已完成';
+
+  @override
+  String taskCheckinStreak(int streak, int totalDays) {
+    return '已连续签到 $streak 天 · 累计 $totalDays 天';
+  }
+
+  @override
+  String get checkIn => '签到';
+
+  @override
+  String get claim => '领取';
+
+  @override
+  String get statusBarTopHideMask => '顶栏隐藏时状态栏遮罩';
+
+  @override
+  String get statusBarTopHideMaskDescription =>
+      '顶栏可自动隐藏时，状态栏使用半透明主题背景，避免内容顶到状态栏（默认开启）';
+
+  @override
+  String get siteAndToken => '站点与令牌';
+
+  @override
+  String get officialSite => '官网';
+
+  @override
+  String webViewInitFailed(String errorType, String error) {
+    return 'WebView 初始化失败（$errorType）：$error\nWindows 需安装 Edge WebView2 Runtime。';
+  }
 }
 
 /// The translations for English, as used in the United States (`en_US`).
@@ -1054,4 +1112,64 @@ class AppLocalizationsEnUs extends AppLocalizationsEn {
 
   @override
   String get enterToken => 'Please enter token';
+
+  @override
+  String get tasksInProgress => 'In progress';
+
+  @override
+  String get tasksNoInProgress => 'No tasks in progress';
+
+  @override
+  String get tasksCompletedSection => 'Completed';
+
+  @override
+  String get tasksRewardHint =>
+      'Rewards must be claimed manually · Tasks refresh by cycle';
+
+  @override
+  String get tasksTodayGoal => 'Today\'s goals';
+
+  @override
+  String get tasksTodayGoalSubtitle =>
+      'Complete community tasks and claim ChengeCoin';
+
+  @override
+  String tasksProgressSummary(int completed) {
+    return 'Pending · $completed completed';
+  }
+
+  @override
+  String get taskClaimable => 'Claimable';
+
+  @override
+  String get taskCompletedBadge => 'Done';
+
+  @override
+  String taskCheckinStreak(int streak, int totalDays) {
+    return 'Checked in $streak days in a row · $totalDays days total';
+  }
+
+  @override
+  String get checkIn => 'Check in';
+
+  @override
+  String get claim => 'Claim';
+
+  @override
+  String get statusBarTopHideMask => 'Status bar mask when top bar is hidden';
+
+  @override
+  String get statusBarTopHideMaskDescription =>
+      'When the top bar can auto-hide, use a translucent theme background for the status bar so content does not go under it (on by default)';
+
+  @override
+  String get siteAndToken => 'Site & token';
+
+  @override
+  String get officialSite => 'Official site';
+
+  @override
+  String webViewInitFailed(String errorType, String error) {
+    return 'WebView failed to initialize ($errorType): $error\nWindows requires Edge WebView2 Runtime.';
+  }
 }

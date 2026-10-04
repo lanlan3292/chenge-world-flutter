@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:chenge_world_app/screens/shop_page.dart';
 import 'package:chenge_world_app/services/chenge_api.dart';
 import 'package:flutter/material.dart';
+import 'package:chenge_world_app/l10n/generated/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -27,7 +28,10 @@ void main() {
     );
 
     await tester.pumpWidget(MaterialApp(
-      home: ShopPage(api: api, token: null, userId: null, onLoginRequested: () {}),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('zh', 'CN'),
+        home: ShopPage(api: api, token: null, userId: null, onLoginRequested: () {}),
     ));
     await tester.pumpAndSettle();
 
@@ -59,7 +63,10 @@ void main() {
       }),
     );
     await tester.pumpWidget(MaterialApp(
-      home: ShopPage(api: api, token: null, userId: null, onLoginRequested: () {}),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('zh', 'CN'),
+        home: ShopPage(api: api, token: null, userId: null, onLoginRequested: () {}),
     ));
     await tester.pumpAndSettle();
 
@@ -93,7 +100,10 @@ void main() {
     );
 
     await tester.pumpWidget(MaterialApp(
-      home: ShopPage(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('zh', 'CN'),
+        home: ShopPage(
         api: api,
         token: null,
         userId: null,
@@ -132,7 +142,10 @@ void main() {
     );
 
     await tester.pumpWidget(MaterialApp(
-      home: ShopPage(api: api, token: null, userId: null, onLoginRequested: () {}),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('zh', 'CN'),
+        home: ShopPage(api: api, token: null, userId: null, onLoginRequested: () {}),
     ));
     await tester.pumpAndSettle();
 
