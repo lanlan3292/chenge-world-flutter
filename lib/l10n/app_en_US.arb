@@ -538,5 +538,33 @@
   "postPublished": "Post published",
   "signInToCreatePost": "Sign in to create a post",
   "tagsOptional": "Tags (optional)",
-  "tagsHint": "Separate with commas or spaces"
+  "tagsHint": "Separate with commas or spaces",
+  "saveDraft": "Save draft",
+  "draftSaved": "Draft saved",
+  "draftAutoSaved": "Draft auto-saved at {time}",
+  "@draftAutoSaved": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreDraftTitle": "Restore draft?",
+  "restoreDraftMessage": "An unpublished draft was found. Restore it?",
+  "restoreDraft": "Restore",
+  "discardDraft": "Discard",
+  "hotTags": "Hot tags",
+  "attachmentUrls": "Attachment URLs",
+  "attachmentUrlsHint": "Any attachment URL; Bilibili video links are also supported",
+  "attachmentUrlHint": "https://…",
+  "addAttachmentUrl": "Add attachment URL",
+  "removeAttachment": "Remove attachment",
+  "maxImagesReached": "Up to {count} images",
+  "@maxImagesReached": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

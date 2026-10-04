@@ -2224,6 +2224,90 @@ abstract class AppLocalizations {
   /// In zh_CN, this message translates to:
   /// **'用逗号或空格分隔'**
   String get tagsHint;
+
+  /// No description provided for @saveDraft.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'存草稿'**
+  String get saveDraft;
+
+  /// No description provided for @draftSaved.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'草稿已保存'**
+  String get draftSaved;
+
+  /// No description provided for @draftAutoSaved.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'草稿已自动保存 {time}'**
+  String draftAutoSaved(String time);
+
+  /// No description provided for @restoreDraftTitle.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'恢复草稿？'**
+  String get restoreDraftTitle;
+
+  /// No description provided for @restoreDraftMessage.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'检测到未发布的草稿，是否恢复？'**
+  String get restoreDraftMessage;
+
+  /// No description provided for @restoreDraft.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'恢复'**
+  String get restoreDraft;
+
+  /// No description provided for @discardDraft.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'丢弃'**
+  String get discardDraft;
+
+  /// No description provided for @hotTags.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'热门标签'**
+  String get hotTags;
+
+  /// No description provided for @attachmentUrls.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'附件 URL'**
+  String get attachmentUrls;
+
+  /// No description provided for @attachmentUrlsHint.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'支持任意附件链接；也可填写 B 站视频链接'**
+  String get attachmentUrlsHint;
+
+  /// No description provided for @attachmentUrlHint.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'https://…'**
+  String get attachmentUrlHint;
+
+  /// No description provided for @addAttachmentUrl.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'添加附件 URL'**
+  String get addAttachmentUrl;
+
+  /// No description provided for @removeAttachment.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'移除附件'**
+  String get removeAttachment;
+
+  /// No description provided for @maxImagesReached.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'最多上传 {count} 张图片'**
+  String maxImagesReached(int count);
 }
 
 class _AppLocalizationsDelegate

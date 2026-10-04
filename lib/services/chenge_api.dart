@@ -3,10 +3,12 @@ import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 import '../models/ai_session.dart';
 import '../models/blog_post.dart';
 import '../models/blog_category.dart';
+import '../models/blog_tag.dart';
 import '../models/blog_comment.dart';
 import '../models/chat_conversation.dart';
 import '../models/chat_message.dart';
@@ -289,7 +291,12 @@ class ChengeApi {
     request.headers['Authorization'] = 'Bearer $token';
     request.headers['Accept'] = 'application/json';
     request.files.add(
-      http.MultipartFile.fromBytes('file', bytes, filename: filename),
+      http.MultipartFile.fromBytes(
+        'file',
+        bytes,
+        filename: filename,
+        contentType: _guessImageMediaType(filename),
+      ),
     );
     late http.StreamedResponse streamed;
     try {
@@ -331,6 +338,7 @@ class ChengeApi {
     String? coverImage,
     String? summary,
     List<String>? images,
+    List<String>? media,
     List<String>? tags,
     String contentType = 'md',
   }) async {
@@ -342,10 +350,36 @@ class ChengeApi {
       if (coverImage != null && coverImage.isNotEmpty) 'coverImage': coverImage,
       if (summary != null && summary.isNotEmpty) 'summary': summary,
       if (images != null && images.isNotEmpty) 'images': images,
+      if (media != null && media.isNotEmpty) 'media': media,
       if (tags != null && tags.isNotEmpty) 'tags': tags,
     };
     final data = await _request('POST', '/blog/post/publish', body: body, token: token);
     return _integer(data);
+  }
+
+  Future<List<BlogTag>> hotTags({int limit = 15, String? token}) async {
+    final data = await _request(
+      'GET',
+      '/blog/tag/hot',
+      query: {'limit': '$limit'},
+      token: token,
+    );
+    if (data is! List) throw const ApiException('Invalid hot tags response');
+    return data.whereType<Map<String, dynamic>>().map(BlogTag.fromJson).toList();
+  }
+
+
+  static MediaType _guessImageMediaType(String filename) {
+    final name = filename.toLowerCase();
+    if (name.endsWith('.png')) return MediaType('image', 'png');
+    if (name.endsWith('.gif')) return MediaType('image', 'gif');
+    if (name.endsWith('.webp')) return MediaType('image', 'webp');
+    if (name.endsWith('.bmp')) return MediaType('image', 'bmp');
+    if (name.endsWith('.heic') || name.endsWith('.heif')) {
+      return MediaType('image', 'heic');
+    }
+    // Default JPEG — gallery picks often lack a reliable mime/extension.
+    return MediaType('image', 'jpeg');
   }
 
   /// Resolve relative file paths to absolute URLs under the API base.

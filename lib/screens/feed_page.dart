@@ -220,11 +220,18 @@ class _FeedPageState extends State<FeedPage> {
     final columns = responsive.clamp(minCols, maxCols);
     final isWide = MediaQuery.sizeOf(context).width >= 760;
     return Scaffold(
+      // Parent shell uses extendBody + bottom NavigationBar; lift FAB above it.
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: widget.token != null && widget.token!.isNotEmpty
-          ? FloatingActionButton.extended(
-              onPressed: _openCreatePost,
-              icon: const Icon(Icons.edit_rounded),
-              label: Text(AppLocalizations.of(context).createPost),
+          ? Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.paddingOf(context).bottom + kBottomNavigationBarHeight + 8,
+              ),
+              child: FloatingActionButton.extended(
+                onPressed: _openCreatePost,
+                icon: const Icon(Icons.edit_rounded),
+                label: Text(AppLocalizations.of(context).createPost),
+              ),
             )
           : null,
       body: Center(

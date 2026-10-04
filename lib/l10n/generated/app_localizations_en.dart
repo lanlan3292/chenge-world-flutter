@@ -1160,6 +1160,52 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tagsHint => '用逗号或空格分隔';
+
+  @override
+  String get saveDraft => '存草稿';
+
+  @override
+  String get draftSaved => '草稿已保存';
+
+  @override
+  String draftAutoSaved(String time) {
+    return '草稿已自动保存 $time';
+  }
+
+  @override
+  String get restoreDraftTitle => '恢复草稿？';
+
+  @override
+  String get restoreDraftMessage => '检测到未发布的草稿，是否恢复？';
+
+  @override
+  String get restoreDraft => '恢复';
+
+  @override
+  String get discardDraft => '丢弃';
+
+  @override
+  String get hotTags => '热门标签';
+
+  @override
+  String get attachmentUrls => '附件 URL';
+
+  @override
+  String get attachmentUrlsHint => '支持任意附件链接；也可填写 B 站视频链接';
+
+  @override
+  String get attachmentUrlHint => 'https://…';
+
+  @override
+  String get addAttachmentUrl => '添加附件 URL';
+
+  @override
+  String get removeAttachment => '移除附件';
+
+  @override
+  String maxImagesReached(int count) {
+    return '最多上传 $count 张图片';
+  }
 }
 
 /// The translations for English, as used in the United States (`en_US`).
@@ -2318,4 +2364,52 @@ class AppLocalizationsEnUs extends AppLocalizationsEn {
 
   @override
   String get tagsHint => 'Separate with commas or spaces';
+
+  @override
+  String get saveDraft => 'Save draft';
+
+  @override
+  String get draftSaved => 'Draft saved';
+
+  @override
+  String draftAutoSaved(String time) {
+    return 'Draft auto-saved at $time';
+  }
+
+  @override
+  String get restoreDraftTitle => 'Restore draft?';
+
+  @override
+  String get restoreDraftMessage =>
+      'An unpublished draft was found. Restore it?';
+
+  @override
+  String get restoreDraft => 'Restore';
+
+  @override
+  String get discardDraft => 'Discard';
+
+  @override
+  String get hotTags => 'Hot tags';
+
+  @override
+  String get attachmentUrls => 'Attachment URLs';
+
+  @override
+  String get attachmentUrlsHint =>
+      'Any attachment URL; Bilibili video links are also supported';
+
+  @override
+  String get attachmentUrlHint => 'https://…';
+
+  @override
+  String get addAttachmentUrl => 'Add attachment URL';
+
+  @override
+  String get removeAttachment => 'Remove attachment';
+
+  @override
+  String maxImagesReached(int count) {
+    return 'Up to $count images';
+  }
 }

@@ -538,5 +538,33 @@
   "postPublished": "發布成功",
   "signInToCreatePost": "登入後即可發文",
   "tagsOptional": "標籤（可選）",
-  "tagsHint": "用逗號或空格分隔"
+  "tagsHint": "用逗號或空格分隔",
+  "saveDraft": "存草稿",
+  "draftSaved": "草稿已儲存",
+  "draftAutoSaved": "草稿已自動儲存 {time}",
+  "@draftAutoSaved": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreDraftTitle": "恢復草稿？",
+  "restoreDraftMessage": "偵測到未發布的草稿，是否恢復？",
+  "restoreDraft": "恢復",
+  "discardDraft": "捨棄",
+  "hotTags": "熱門標籤",
+  "attachmentUrls": "附件 URL",
+  "attachmentUrlsHint": "支援任意附件連結；也可填寫 B 站影片連結",
+  "attachmentUrlHint": "https://…",
+  "addAttachmentUrl": "新增附件 URL",
+  "removeAttachment": "移除附件",
+  "maxImagesReached": "最多上傳 {count} 張圖片",
+  "@maxImagesReached": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

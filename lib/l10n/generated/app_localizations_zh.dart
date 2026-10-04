@@ -1134,6 +1134,52 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get tagsHint => '用逗号或空格分隔';
+
+  @override
+  String get saveDraft => '存草稿';
+
+  @override
+  String get draftSaved => '草稿已保存';
+
+  @override
+  String draftAutoSaved(String time) {
+    return '草稿已自动保存 $time';
+  }
+
+  @override
+  String get restoreDraftTitle => '恢复草稿？';
+
+  @override
+  String get restoreDraftMessage => '检测到未发布的草稿，是否恢复？';
+
+  @override
+  String get restoreDraft => '恢复';
+
+  @override
+  String get discardDraft => '丢弃';
+
+  @override
+  String get hotTags => '热门标签';
+
+  @override
+  String get attachmentUrls => '附件 URL';
+
+  @override
+  String get attachmentUrlsHint => '支持任意附件链接；也可填写 B 站视频链接';
+
+  @override
+  String get attachmentUrlHint => 'https://…';
+
+  @override
+  String get addAttachmentUrl => '添加附件 URL';
+
+  @override
+  String get removeAttachment => '移除附件';
+
+  @override
+  String maxImagesReached(int count) {
+    return '最多上传 $count 张图片';
+  }
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -2266,6 +2312,52 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get tagsHint => '用逗号或空格分隔';
+
+  @override
+  String get saveDraft => '存草稿';
+
+  @override
+  String get draftSaved => '草稿已保存';
+
+  @override
+  String draftAutoSaved(String time) {
+    return '草稿已自动保存 $time';
+  }
+
+  @override
+  String get restoreDraftTitle => '恢复草稿？';
+
+  @override
+  String get restoreDraftMessage => '检测到未发布的草稿，是否恢复？';
+
+  @override
+  String get restoreDraft => '恢复';
+
+  @override
+  String get discardDraft => '丢弃';
+
+  @override
+  String get hotTags => '热门标签';
+
+  @override
+  String get attachmentUrls => '附件 URL';
+
+  @override
+  String get attachmentUrlsHint => '支持任意附件链接；也可填写 B 站视频链接';
+
+  @override
+  String get attachmentUrlHint => 'https://…';
+
+  @override
+  String get addAttachmentUrl => '添加附件 URL';
+
+  @override
+  String get removeAttachment => '移除附件';
+
+  @override
+  String maxImagesReached(int count) {
+    return '最多上传 $count 张图片';
+  }
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -3398,4 +3490,50 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get tagsHint => '用逗號或空格分隔';
+
+  @override
+  String get saveDraft => '存草稿';
+
+  @override
+  String get draftSaved => '草稿已儲存';
+
+  @override
+  String draftAutoSaved(String time) {
+    return '草稿已自動儲存 $time';
+  }
+
+  @override
+  String get restoreDraftTitle => '恢復草稿？';
+
+  @override
+  String get restoreDraftMessage => '偵測到未發布的草稿，是否恢復？';
+
+  @override
+  String get restoreDraft => '恢復';
+
+  @override
+  String get discardDraft => '捨棄';
+
+  @override
+  String get hotTags => '熱門標籤';
+
+  @override
+  String get attachmentUrls => '附件 URL';
+
+  @override
+  String get attachmentUrlsHint => '支援任意附件連結；也可填寫 B 站影片連結';
+
+  @override
+  String get attachmentUrlHint => 'https://…';
+
+  @override
+  String get addAttachmentUrl => '新增附件 URL';
+
+  @override
+  String get removeAttachment => '移除附件';
+
+  @override
+  String maxImagesReached(int count) {
+    return '最多上傳 $count 張圖片';
+  }
 }

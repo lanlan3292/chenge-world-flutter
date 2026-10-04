@@ -607,5 +607,33 @@
   "postPublished": "发布成功",
   "signInToCreatePost": "登录后即可发帖",
   "tagsOptional": "标签（可选）",
-  "tagsHint": "用逗号或空格分隔"
+  "tagsHint": "用逗号或空格分隔",
+  "saveDraft": "存草稿",
+  "draftSaved": "草稿已保存",
+  "draftAutoSaved": "草稿已自动保存 {time}",
+  "@draftAutoSaved": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreDraftTitle": "恢复草稿？",
+  "restoreDraftMessage": "检测到未发布的草稿，是否恢复？",
+  "restoreDraft": "恢复",
+  "discardDraft": "丢弃",
+  "hotTags": "热门标签",
+  "attachmentUrls": "附件 URL",
+  "attachmentUrlsHint": "支持任意附件链接；也可填写 B 站视频链接",
+  "attachmentUrlHint": "https://…",
+  "addAttachmentUrl": "添加附件 URL",
+  "removeAttachment": "移除附件",
+  "maxImagesReached": "最多上传 {count} 张图片",
+  "@maxImagesReached": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }
