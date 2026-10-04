@@ -586,5 +586,11 @@
   "passwordMinSix": "密码（至少 6 位）",
   "passwordTooShort": "密码至少 6 位",
   "register": "注册",
-  "registering": "注册中…"
+  "registering": "注册中…",
+  "clearCache": "清空缓存",
+  "clearCacheDescription": "清除图片等本地缓存，不影响登录状态",
+  "clearCacheConfirm": "确定清空本地缓存？",
+  "clearCacheDone": "缓存已清空",
+  "clearingCache": "正在清空…",
+  "accessTokenCleared": "访问令牌已清除"
 }

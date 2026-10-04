@@ -1071,6 +1071,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get registering => '注册中…';
+
+  @override
+  String get clearCache => '清空缓存';
+
+  @override
+  String get clearCacheDescription => '清除图片等本地缓存，不影响登录状态';
+
+  @override
+  String get clearCacheConfirm => '确定清空本地缓存？';
+
+  @override
+  String get clearCacheDone => '缓存已清空';
+
+  @override
+  String get clearingCache => '正在清空…';
+
+  @override
+  String get accessTokenCleared => '访问令牌已清除';
 }
 
 /// The translations for English, as used in the United States (`en_US`).
@@ -2165,4 +2183,23 @@ class AppLocalizationsEnUs extends AppLocalizationsEn {
 
   @override
   String get registering => 'Signing up…';
+
+  @override
+  String get clearCache => 'Clear cache';
+
+  @override
+  String get clearCacheDescription =>
+      'Clear local image cache without signing you out';
+
+  @override
+  String get clearCacheConfirm => 'Clear local cache?';
+
+  @override
+  String get clearCacheDone => 'Cache cleared';
+
+  @override
+  String get clearingCache => 'Clearing…';
+
+  @override
+  String get accessTokenCleared => 'Access token cleared';
 }

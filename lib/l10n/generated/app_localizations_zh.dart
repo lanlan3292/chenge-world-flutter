@@ -1071,6 +1071,24 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get registering => '注册中…';
+
+  @override
+  String get clearCache => '清空缓存';
+
+  @override
+  String get clearCacheDescription => '清除图片等本地缓存，不影响登录状态';
+
+  @override
+  String get clearCacheConfirm => '确定清空本地缓存？';
+
+  @override
+  String get clearCacheDone => '缓存已清空';
+
+  @override
+  String get clearingCache => '正在清空…';
+
+  @override
+  String get accessTokenCleared => '访问令牌已清除';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -2140,6 +2158,24 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get registering => '注册中…';
+
+  @override
+  String get clearCache => '清空缓存';
+
+  @override
+  String get clearCacheDescription => '清除图片等本地缓存，不影响登录状态';
+
+  @override
+  String get clearCacheConfirm => '确定清空本地缓存？';
+
+  @override
+  String get clearCacheDone => '缓存已清空';
+
+  @override
+  String get clearingCache => '正在清空…';
+
+  @override
+  String get accessTokenCleared => '访问令牌已清除';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -3209,4 +3245,22 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get registering => '註冊中…';
+
+  @override
+  String get clearCache => '清空快取';
+
+  @override
+  String get clearCacheDescription => '清除圖片等本機快取，不影響登入狀態';
+
+  @override
+  String get clearCacheConfirm => '確定清空本機快取？';
+
+  @override
+  String get clearCacheDone => '快取已清空';
+
+  @override
+  String get clearingCache => '正在清空…';
+
+  @override
+  String get accessTokenCleared => '存取權杖已清除';
 }

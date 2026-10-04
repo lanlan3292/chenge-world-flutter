@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import 'package:flutter/services.dart';
@@ -452,6 +453,22 @@ class _SettingsPageState extends State<SettingsPage> {
                       AppLocalizations.of(context).accountSettingsSignIn,
                     ),
                   ),
+                const Divider(height: 28),
+                ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+                  leading: Icon(
+                    Icons.cleaning_services_outlined,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  title: Text(
+                    AppLocalizations.of(context).clearCache,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  subtitle: Text(
+                    AppLocalizations.of(context).clearCacheDescription,
+                  ),
+                  onTap: _confirmClearCache,
+                ),
               ],
             ),
           ),
@@ -552,6 +569,46 @@ class _SettingsPageState extends State<SettingsPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(AppLocalizations.of(context).signedOut)),
     );
+  }
+
+  Future<void> _confirmClearCache() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder:
+          (dialogContext) => AlertDialog(
+            title: Text(AppLocalizations.of(context).clearCache),
+            content: Text(AppLocalizations.of(context).clearCacheConfirm),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, false),
+                child: Text(AppLocalizations.of(context).cancel),
+              ),
+              FilledButton.tonal(
+                onPressed: () => Navigator.pop(dialogContext, true),
+                child: Text(AppLocalizations.of(context).confirm),
+              ),
+            ],
+          ),
+    );
+    if (confirmed != true) return;
+
+    try {
+      await DefaultCacheManager().emptyCache();
+      final imageCache = PaintingBinding.instance.imageCache;
+      imageCache.clear();
+      imageCache.clearLiveImages();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context).clearCacheDone)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
+      }
+    }
   }
 
   Widget _selectionTile<T>({

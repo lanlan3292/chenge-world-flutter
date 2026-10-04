@@ -517,5 +517,11 @@
   "passwordMinSix": "密碼（至少 6 位）",
   "passwordTooShort": "密碼至少 6 位",
   "register": "註冊",
-  "registering": "註冊中…"
+  "registering": "註冊中…",
+  "clearCache": "清空快取",
+  "clearCacheDescription": "清除圖片等本機快取，不影響登入狀態",
+  "clearCacheConfirm": "確定清空本機快取？",
+  "clearCacheDone": "快取已清空",
+  "clearingCache": "正在清空…",
+  "accessTokenCleared": "存取權杖已清除"
 }

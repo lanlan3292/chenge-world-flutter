@@ -517,5 +517,11 @@
   "passwordMinSix": "Password (min 6 characters)",
   "passwordTooShort": "Password must be at least 6 characters",
   "register": "Sign up",
-  "registering": "Signing up…"
+  "registering": "Signing up…",
+  "clearCache": "Clear cache",
+  "clearCacheDescription": "Clear local image cache without signing you out",
+  "clearCacheConfirm": "Clear local cache?",
+  "clearCacheDone": "Cache cleared",
+  "clearingCache": "Clearing…",
+  "accessTokenCleared": "Access token cleared"
 }

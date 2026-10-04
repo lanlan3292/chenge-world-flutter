@@ -2098,6 +2098,42 @@ abstract class AppLocalizations {
   /// In zh_CN, this message translates to:
   /// **'注册中…'**
   String get registering;
+
+  /// No description provided for @clearCache.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'清空缓存'**
+  String get clearCache;
+
+  /// No description provided for @clearCacheDescription.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'清除图片等本地缓存，不影响登录状态'**
+  String get clearCacheDescription;
+
+  /// No description provided for @clearCacheConfirm.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'确定清空本地缓存？'**
+  String get clearCacheConfirm;
+
+  /// No description provided for @clearCacheDone.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'缓存已清空'**
+  String get clearCacheDone;
+
+  /// No description provided for @clearingCache.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'正在清空…'**
+  String get clearingCache;
+
+  /// No description provided for @accessTokenCleared.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'访问令牌已清除'**
+  String get accessTokenCleared;
 }
 
 class _AppLocalizationsDelegate
