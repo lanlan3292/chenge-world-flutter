@@ -1180,6 +1180,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String maxImagesReached(int count) {
     return '最多上传 $count 张图片';
   }
+
+  @override
+  String get articleImages => '文章图片';
+
+  @override
+  String get articleImagesHint => '最多 5 张，用于文章内容区展示（非 Markdown）；未设封面时默认用第一张作封面';
+
+  @override
+  String get deleteImage => '删除图片';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -2358,6 +2367,15 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String maxImagesReached(int count) {
     return '最多上传 $count 张图片';
   }
+
+  @override
+  String get articleImages => '文章图片';
+
+  @override
+  String get articleImagesHint => '最多 5 张，用于文章内容区展示（非 Markdown）；未设封面时默认用第一张作封面';
+
+  @override
+  String get deleteImage => '删除图片';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -3536,4 +3554,13 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String maxImagesReached(int count) {
     return '最多上傳 $count 張圖片';
   }
+
+  @override
+  String get articleImages => '文章圖片';
+
+  @override
+  String get articleImagesHint => '最多 5 張，用於文章內容區展示（非 Markdown）；未設封面時預設用第一張作封面';
+
+  @override
+  String get deleteImage => '刪除圖片';
 }

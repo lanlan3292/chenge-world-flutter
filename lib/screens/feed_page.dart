@@ -118,10 +118,8 @@ class _FeedPageState extends State<FeedPage> {
 
   void _setChromeVisible(bool visible) {
     if (_chromeVisible == visible) return;
-    _chromeVisible = visible;
-    // Do not setState: bottom padding stays fixed so the list does not reflow.
+    setState(() => _chromeVisible = visible);
     // Shell animates the bottom bar with a transform only.
-    // 顶栏隐藏也需要通知外壳，用于状态栏遮罩。
     if (widget.autoHideBottomBar || widget.autoHideTopBar) {
       widget.onChromeVisibilityChanged?.call(visible);
     }
@@ -188,7 +186,9 @@ class _FeedPageState extends State<FeedPage> {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).signInToCreatePost)),
+          SnackBar(
+            content: Text(AppLocalizations.of(context).signInToCreatePost),
+          ),
         );
       return;
     }
@@ -220,20 +220,15 @@ class _FeedPageState extends State<FeedPage> {
     final columns = responsive.clamp(minCols, maxCols);
     final isWide = MediaQuery.sizeOf(context).width >= 760;
     return Scaffold(
-      // Parent shell uses extendBody + bottom NavigationBar; lift FAB above it.
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: widget.token != null && widget.token!.isNotEmpty
-          ? Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.paddingOf(context).bottom + kBottomNavigationBarHeight + 8,
-              ),
-              child: FloatingActionButton.extended(
+      floatingActionButton:
+          widget.token != null && widget.token!.isNotEmpty
+              ? _CreatePostFab(
                 onPressed: _openCreatePost,
-                icon: const Icon(Icons.edit_rounded),
-                label: Text(AppLocalizations.of(context).createPost),
-              ),
-            )
-          : null,
+                // Dock to bottom nav when chrome is shown; sink to screen corner when hidden.
+                dockedToBottomBar: !widget.autoHideBottomBar || _chromeVisible,
+              )
+              : null,
       body: Center(
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: maxWidth),
@@ -279,9 +274,7 @@ class _FeedPageState extends State<FeedPage> {
                             ),
                           ),
                           Text(
-                            AppLocalizations.of(
-                              context,
-                            ).communityTitle,
+                            AppLocalizations.of(context).communityTitle,
                             style: TextStyle(
                               fontSize: 11,
                               color:
@@ -332,11 +325,12 @@ class _FeedPageState extends State<FeedPage> {
                       mainAxisSpacing: 14,
                       crossAxisSpacing: 14,
                       itemCount: _posts.length,
-                      itemBuilder: (context, index) => PostCard(
-                        post: _posts[index],
-                        featured: index == 0 && _page == 1,
-                        onTap: () => _openPost(_posts[index]),
-                      ),
+                      itemBuilder:
+                          (context, index) => PostCard(
+                            post: _posts[index],
+                            featured: index == 0 && _page == 1,
+                            onTap: () => _openPost(_posts[index]),
+                          ),
                     ),
                   ),
                   SliverToBoxAdapter(child: _buildPagination()),
@@ -540,6 +534,33 @@ class _EmptyFeed extends StatelessWidget {
           ),
         ],
       ),
+    ),
+  );
+}
+
+class _CreatePostFab extends StatelessWidget {
+  const _CreatePostFab({
+    required this.onPressed,
+    required this.dockedToBottomBar,
+  });
+
+  final VoidCallback onPressed;
+  final bool dockedToBottomBar;
+
+  @override
+  Widget build(BuildContext context) => AnimatedPadding(
+    duration: const Duration(milliseconds: 220),
+    curve: Curves.easeOut,
+    padding: EdgeInsets.only(
+      bottom:
+          MediaQuery.paddingOf(context).bottom +
+          // Material 3 NavigationBar is 80px tall; the old M2 constant is 56px.
+          (dockedToBottomBar ? 80 + 24 : 8),
+    ),
+    child: FloatingActionButton.extended(
+      onPressed: onPressed,
+      icon: const Icon(Icons.edit_rounded),
+      label: Text(AppLocalizations.of(context).createPost),
     ),
   );
 }

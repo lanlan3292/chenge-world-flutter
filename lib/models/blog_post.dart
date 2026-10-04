@@ -14,6 +14,7 @@ class BlogPost {
     this.categoryName,
     this.liked = false,
     this.tags = const [],
+    this.images = const [],
   });
 
   final int id;
@@ -30,11 +31,13 @@ class BlogPost {
   final String? categoryName;
   final bool liked;
   final List<String> tags;
+  final List<String> images;
 
   factory BlogPost.fromJson(Map<String, dynamic> json) {
     final content = _text(json['content']);
     final summary = _text(json['summary']);
     final tags = json['tags'];
+    final images = json['images'];
 
     return BlogPost(
       id: _integer(json['id']),
@@ -51,6 +54,9 @@ class BlogPost {
       categoryName: _nullableText(json['categoryName']),
       liked: _asBool(json['liked']),
       tags: tags is List ? tags.map((tag) => _text(tag)).where((tag) => tag.isNotEmpty).toList() : const [],
+      images: images is List
+          ? images.map((item) => _text(item)).where((item) => item.isNotEmpty).toList()
+          : const [],
     );
   }
 
@@ -77,6 +83,7 @@ class BlogPost {
     String? categoryName,
     bool? liked,
     List<String>? tags,
+    List<String>? images,
   }) {
     return BlogPost(
       id: id ?? this.id,
@@ -93,6 +100,7 @@ class BlogPost {
       categoryName: categoryName ?? this.categoryName,
       liked: liked ?? this.liked,
       tags: tags ?? this.tags,
+      images: images ?? this.images,
     );
   }
 

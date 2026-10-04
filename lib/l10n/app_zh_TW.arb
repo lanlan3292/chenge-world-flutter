@@ -566,5 +566,8 @@
         "type": "int"
       }
     }
-  }
+  },
+  "articleImages": "文章圖片",
+  "articleImagesHint": "最多 5 張，用於文章內容區展示（非 Markdown）；未設封面時預設用第一張作封面",
+  "deleteImage": "刪除圖片"
 }

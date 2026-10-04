@@ -635,5 +635,8 @@
         "type": "int"
       }
     }
-  }
+  },
+  "articleImages": "文章图片",
+  "articleImagesHint": "最多 5 张，用于文章内容区展示（非 Markdown）；未设封面时默认用第一张作封面",
+  "deleteImage": "删除图片"
 }

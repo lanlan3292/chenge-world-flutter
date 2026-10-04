@@ -53,8 +53,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
   Timer? _draftTimer;
   bool _restoringDraft = false;
 
-  String get _draftKey =>
-      '$_draftPrefix${widget.editPostId == null ? 'new' : widget.editPostId}';
+  String get _draftKey => '$_draftPrefix${widget.editPostId ?? 'new'}';
 
   @override
   void initState() {
@@ -121,11 +120,12 @@ class _CreatePostPageState extends State<CreatePostPage> {
   void _addTag(String name) {
     final value = name.trim();
     if (value.isEmpty) return;
-    final existing = _tagsController.text
-        .split(RegExp(r'[,，\s]+'))
-        .map((s) => s.trim())
-        .where((s) => s.isNotEmpty)
-        .toList();
+    final existing =
+        _tagsController.text
+            .split(RegExp(r'[,，\s]+'))
+            .map((s) => s.trim())
+            .where((s) => s.isNotEmpty)
+            .toList();
     if (existing.any((t) => t.toLowerCase() == value.toLowerCase())) return;
     existing.add(value);
     _tagsController.text = existing.join(', ');
@@ -146,23 +146,24 @@ class _CreatePostPageState extends State<CreatePostPage> {
     _scheduleDraftSave();
   }
 
-  List<String> _mediaUrls() => _mediaControllers
-      .map((c) => c.text.trim())
-      .where((u) => u.isNotEmpty)
-      .toList();
+  List<String> _mediaUrls() =>
+      _mediaControllers
+          .map((c) => c.text.trim())
+          .where((u) => u.isNotEmpty)
+          .toList();
 
   Map<String, dynamic> _snapshot() => {
-        'at': DateTime.now().toIso8601String(),
-        'form': {
-          'categoryId': _selectedCategory?.id,
-          'title': _titleController.text,
-          'coverImage': _coverUrl ?? '',
-          'content': _contentController.text,
-          'media': _mediaUrls(),
-          'images': List<String>.from(_uploadedImages),
-        },
-        'tagText': _tagsController.text,
-      };
+    'at': DateTime.now().toIso8601String(),
+    'form': {
+      'categoryId': _selectedCategory?.id,
+      'title': _titleController.text,
+      'coverImage': _coverUrl ?? '',
+      'content': _contentController.text,
+      'media': _mediaUrls(),
+      'images': List<String>.from(_uploadedImages),
+    },
+    'tagText': _tagsController.text,
+  };
 
   void _scheduleDraftSave() {
     if (_restoringDraft) return;
@@ -171,7 +172,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
   }
 
   Future<void> _saveDraftNow() async {
-    final hasContent = _titleController.text.trim().isNotEmpty ||
+    final hasContent =
+        _titleController.text.trim().isNotEmpty ||
         _contentController.text.trim().isNotEmpty ||
         _mediaUrls().isNotEmpty ||
         _uploadedImages.isNotEmpty ||
@@ -216,7 +218,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
       if (data is! Map) return;
       final form = data['form'];
       if (form is! Map) return;
-      final hasContent = '${form['title'] ?? ''}'.trim().isNotEmpty ||
+      final hasContent =
+          '${form['title'] ?? ''}'.trim().isNotEmpty ||
           '${form['content'] ?? ''}'.trim().isNotEmpty ||
           (form['media'] is List && (form['media'] as List).isNotEmpty) ||
           (form['images'] is List && (form['images'] as List).isNotEmpty);
@@ -226,20 +229,21 @@ class _CreatePostPageState extends State<CreatePostPage> {
       final l10n = AppLocalizations.of(context);
       final action = await showDialog<String>(
         context: context,
-        builder: (ctx) => AlertDialog(
-          title: Text(l10n.restoreDraftTitle),
-          content: Text(l10n.restoreDraftMessage),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx, 'discard'),
-              child: Text(l10n.discardDraft),
+        builder:
+            (ctx) => AlertDialog(
+              title: Text(l10n.restoreDraftTitle),
+              content: Text(l10n.restoreDraftMessage),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx, 'discard'),
+                  child: Text(l10n.discardDraft),
+                ),
+                FilledButton(
+                  onPressed: () => Navigator.pop(ctx, 'restore'),
+                  child: Text(l10n.restoreDraft),
+                ),
+              ],
             ),
-            FilledButton(
-              onPressed: () => Navigator.pop(ctx, 'restore'),
-              child: Text(l10n.restoreDraft),
-            ),
-          ],
-        ),
       );
       if (!mounted) return;
       if (action == 'discard') {
@@ -265,7 +269,9 @@ class _CreatePostPageState extends State<CreatePostPage> {
         ..clear()
         ..addAll(
           (form['images'] is List)
-              ? (form['images'] as List).map((e) => '$e').where((e) => e.isNotEmpty)
+              ? (form['images'] as List)
+                  .map((e) => '$e')
+                  .where((e) => e.isNotEmpty)
               : const [],
         );
       for (final c in _mediaControllers) {
@@ -319,8 +325,19 @@ class _CreatePostPageState extends State<CreatePostPage> {
   static String _ensureImageFilename(String name) {
     final trimmed = name.trim();
     final lower = trimmed.toLowerCase();
-    const exts = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.heic', '.heif'];
-    if (exts.any(lower.endsWith)) return trimmed.isEmpty ? 'image.jpg' : trimmed;
+    const exts = [
+      '.jpg',
+      '.jpeg',
+      '.png',
+      '.gif',
+      '.webp',
+      '.bmp',
+      '.heic',
+      '.heif',
+    ];
+    if (exts.any(lower.endsWith)) {
+      return trimmed.isEmpty ? 'image.jpg' : trimmed;
+    }
     if (trimmed.isEmpty) return 'image.jpg';
     return '$trimmed.jpg';
   }
@@ -330,7 +347,11 @@ class _CreatePostPageState extends State<CreatePostPage> {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).maxImagesReached(_maxImages))),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context).maxImagesReached(_maxImages),
+            ),
+          ),
         );
       return;
     }
@@ -346,7 +367,6 @@ class _CreatePostPageState extends State<CreatePostPage> {
     final url = await _uploadBytes(bytes, name, type: 'post_image');
     if (url == null || !mounted) return;
     setState(() => _uploadedImages.add(url));
-    _insertAtCursor('![image]($url)\n');
     _scheduleDraftSave();
   }
 
@@ -364,19 +384,6 @@ class _CreatePostPageState extends State<CreatePostPage> {
     if (url == null || !mounted) return;
     setState(() => _coverUrl = url);
     _scheduleDraftSave();
-  }
-
-  void _insertAtCursor(String markdown) {
-    final text = _contentController.text;
-    final selection = _contentController.selection;
-    final start = selection.isValid ? selection.start : text.length;
-    final end = selection.isValid ? selection.end : text.length;
-    final next = text.replaceRange(start, end, markdown);
-    _contentController.value = TextEditingValue(
-      text: next,
-      selection: TextSelection.collapsed(offset: start + markdown.length),
-    );
-    _contentFocus.requestFocus();
   }
 
   Future<void> _publish() async {
@@ -402,11 +409,12 @@ class _CreatePostPageState extends State<CreatePostPage> {
       _error = null;
     });
     try {
-      final tags = _tagsController.text
-          .split(RegExp(r'[,，\s]+'))
-          .map((t) => t.trim())
-          .where((t) => t.isNotEmpty)
-          .toList();
+      final tags =
+          _tagsController.text
+              .split(RegExp(r'[,，\s]+'))
+              .map((t) => t.trim())
+              .where((t) => t.isNotEmpty)
+              .toList();
       final media = _mediaUrls();
       final id = await widget.api.publishPost(
         token: widget.token,
@@ -414,7 +422,8 @@ class _CreatePostPageState extends State<CreatePostPage> {
         title: title,
         content: content,
         coverImage: _coverUrl,
-        images: _uploadedImages.isEmpty ? null : List<String>.from(_uploadedImages),
+        images:
+            _uploadedImages.isEmpty ? null : List<String>.from(_uploadedImages),
         media: media.isEmpty ? null : media,
         tags: tags.isEmpty ? null : tags,
       );
@@ -459,226 +468,353 @@ class _CreatePostPageState extends State<CreatePostPage> {
           Padding(
             padding: const EdgeInsets.only(right: 12),
             child: FilledButton(
-              onPressed: (_publishing || _uploading || _loadingCategories) ? null : _publish,
-              child: _publishing
-                  ? const SizedBox.square(
-                      dimension: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Text(l10n.publishPost),
+              onPressed:
+                  (_publishing || _uploading || _loadingCategories)
+                      ? null
+                      : _publish,
+              child:
+                  _publishing
+                      ? const SizedBox.square(
+                        dimension: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                      : Text(l10n.publishPost),
             ),
           ),
         ],
       ),
-      body: _loadingCategories
-          ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
-              children: [
-                if (_error != null) ...[
-                  Material(
-                    color: scheme.errorContainer,
-                    borderRadius: BorderRadius.circular(12),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
+      body:
+          _loadingCategories
+              ? const Center(child: CircularProgressIndicator())
+              : ListView(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+                children: [
+                  if (_error != null) ...[
+                    Material(
+                      color: scheme.errorContainer,
+                      borderRadius: BorderRadius.circular(12),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Text(
+                          _error!,
+                          style: TextStyle(color: scheme.onErrorContainer),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                  if (_draftSavedAt != null && _draftSavedAt!.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
                       child: Text(
-                        _error!,
-                        style: TextStyle(color: scheme.onErrorContainer),
+                        l10n.draftAutoSaved(_formatDraftTime(_draftSavedAt!)),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: scheme.onSurfaceVariant,
+                        ),
                       ),
                     ),
+                  Text(
+                    l10n.category,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
-                  const SizedBox(height: 12),
-                ],
-                if (_draftSavedAt != null && _draftSavedAt!.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: Text(
-                      l10n.draftAutoSaved(_formatDraftTime(_draftSavedAt!)),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: scheme.onSurfaceVariant,
+                  const SizedBox(height: 8),
+                  if (_categories.isEmpty)
+                    Text(
+                      l10n.noCategories,
+                      style: TextStyle(color: scheme.onSurfaceVariant),
+                    )
+                  else
+                    DropdownButtonFormField<BlogCategory>(
+                      initialValue: _selectedCategory,
+                      items:
+                          _categories
+                              .map(
+                                (c) => DropdownMenuItem(
+                                  value: c,
+                                  child: Text(
+                                    c.name,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                      onChanged: (c) {
+                        setState(() => _selectedCategory = c);
+                        _scheduleDraftSave();
+                      },
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
                       ),
                     ),
-                  ),
-                Text(l10n.category, style: const TextStyle(fontWeight: FontWeight.w700)),
-                const SizedBox(height: 8),
-                if (_categories.isEmpty)
-                  Text(l10n.noCategories, style: TextStyle(color: scheme.onSurfaceVariant))
-                else
-                  DropdownButtonFormField<BlogCategory>(
-                    value: _selectedCategory,
-                    items: _categories
-                        .map(
-                          (c) => DropdownMenuItem(
-                            value: c,
-                            child: Text(c.name, overflow: TextOverflow.ellipsis),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (c) {
-                      setState(() => _selectedCategory = c);
-                      _scheduleDraftSave();
-                    },
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _titleController,
+                    textInputAction: TextInputAction.next,
+                    maxLength: 120,
                     decoration: InputDecoration(
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                    ),
-                  ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _titleController,
-                  textInputAction: TextInputAction.next,
-                  maxLength: 120,
-                  decoration: InputDecoration(
-                    labelText: l10n.postTitle,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(l10n.coverImage, style: const TextStyle(fontWeight: FontWeight.w700)),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    OutlinedButton.icon(
-                      onPressed: _uploading ? null : _pickCover,
-                      icon: const Icon(Icons.image_outlined),
-                      label: Text(l10n.chooseCover),
-                    ),
-                    if (_coverUrl != null) ...[
-                      const SizedBox(width: 12),
-                      TextButton(
-                        onPressed: () {
-                          setState(() => _coverUrl = null);
-                          _scheduleDraftSave();
-                        },
-                        child: Text(l10n.removeCover),
-                      ),
-                    ],
-                  ],
-                ),
-                if (_coverUrl != null) ...[
-                  const SizedBox(height: 10),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: AspectRatio(
-                      aspectRatio: 16 / 9,
-                      child: Image.network(
-                        _coverUrl!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => ColoredBox(
-                          color: scheme.surfaceContainerHighest,
-                          child: const Icon(Icons.broken_image_outlined),
-                        ),
+                      labelText: l10n.postTitle,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                   ),
-                ],
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Text(l10n.postContent, style: const TextStyle(fontWeight: FontWeight.w700)),
-                    const Spacer(),
-                    if (_uploading)
-                      const SizedBox.square(
-                        dimension: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    else
-                      IconButton(
-                        tooltip: l10n.insertImage,
-                        onPressed: _pickAndInsertImage,
-                        icon: const Icon(Icons.add_photo_alternate_outlined),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: _contentController,
-                  focusNode: _contentFocus,
-                  minLines: 12,
-                  maxLines: 24,
-                  keyboardType: TextInputType.multiline,
-                  decoration: InputDecoration(
-                    hintText: l10n.markdownHint,
-                    alignLabelWithHint: true,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n.coverImage,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
-                ),
-                const SizedBox(height: 16),
-                Text(l10n.attachmentUrls, style: const TextStyle(fontWeight: FontWeight.w700)),
-                const SizedBox(height: 4),
-                Text(
-                  l10n.attachmentUrlsHint,
-                  style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
-                ),
-                const SizedBox(height: 8),
-                ...List.generate(_mediaControllers.length, (index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _mediaControllers[index],
-                            decoration: InputDecoration(
-                              hintText: l10n.attachmentUrlHint,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 12,
-                              ),
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          tooltip: l10n.removeAttachment,
-                          onPressed: () => _removeMediaField(index),
-                          icon: const Icon(Icons.close_rounded),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      OutlinedButton.icon(
+                        onPressed: _uploading ? null : _pickCover,
+                        icon: const Icon(Icons.image_outlined),
+                        label: Text(l10n.chooseCover),
+                      ),
+                      if (_coverUrl != null) ...[
+                        const SizedBox(width: 12),
+                        TextButton(
+                          onPressed: () {
+                            setState(() => _coverUrl = null);
+                            _scheduleDraftSave();
+                          },
+                          child: Text(l10n.removeCover),
                         ),
                       ],
+                    ],
+                  ),
+                  if (_coverUrl != null) ...[
+                    const SizedBox(height: 10),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: AspectRatio(
+                        aspectRatio: 16 / 9,
+                        child: Image.network(
+                          _coverUrl!,
+                          fit: BoxFit.cover,
+                          errorBuilder:
+                              (_, __, ___) => ColoredBox(
+                                color: scheme.surfaceContainerHighest,
+                                child: const Icon(Icons.broken_image_outlined),
+                              ),
+                        ),
+                      ),
                     ),
-                  );
-                }),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: OutlinedButton.icon(
-                    onPressed: () => _addMediaField(),
-                    icon: const Icon(Icons.link_rounded),
-                    label: Text(l10n.addAttachmentUrl),
+                  ],
+                  const SizedBox(height: 16),
+                  Text(
+                    l10n.articleImages,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _tagsController,
-                  decoration: InputDecoration(
-                    labelText: l10n.tagsOptional,
-                    hintText: l10n.tagsHint,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  const SizedBox(height: 4),
+                  Text(
+                    l10n.articleImagesHint,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: scheme.onSurfaceVariant,
+                    ),
                   ),
-                ),
-                if (_hotTags.isNotEmpty) ...[
-                  const SizedBox(height: 10),
-                  Text(l10n.hotTags, style: const TextStyle(fontWeight: FontWeight.w700)),
                   const SizedBox(height: 8),
                   Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: _hotTags
-                        .map(
-                          (tag) => ActionChip(
-                            label: Text(
-                              tag.postCount > 0 ? '${tag.name} (${tag.postCount})' : tag.name,
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: [
+                      ...List.generate(_uploadedImages.length, (index) {
+                        final url = _uploadedImages[index];
+                        return Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.network(
+                                url,
+                                width: 88,
+                                height: 88,
+                                fit: BoxFit.cover,
+                                errorBuilder:
+                                    (_, __, ___) => Container(
+                                      width: 88,
+                                      height: 88,
+                                      color: scheme.surfaceContainerHighest,
+                                      child: const Icon(
+                                        Icons.broken_image_outlined,
+                                      ),
+                                    ),
+                              ),
                             ),
-                            onPressed: () => _addTag(tag.name),
+                            Positioned(
+                              top: -6,
+                              right: -6,
+                              child: Material(
+                                color: scheme.error,
+                                shape: const CircleBorder(),
+                                child: InkWell(
+                                  customBorder: const CircleBorder(),
+                                  onTap: () {
+                                    setState(
+                                      () => _uploadedImages.removeAt(index),
+                                    );
+                                    _scheduleDraftSave();
+                                  },
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(4),
+                                    child: Icon(
+                                      Icons.close,
+                                      size: 14,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }),
+                      if (_uploadedImages.length < _maxImages)
+                        Material(
+                          color: scheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(10),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(10),
+                            onTap: _uploading ? null : _pickAndInsertImage,
+                            child: SizedBox(
+                              width: 88,
+                              height: 88,
+                              child:
+                                  _uploading
+                                      ? const Center(
+                                        child: SizedBox.square(
+                                          dimension: 22,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                          ),
+                                        ),
+                                      )
+                                      : Icon(
+                                        Icons.add_rounded,
+                                        color: scheme.onSurfaceVariant,
+                                      ),
+                            ),
                           ),
-                        )
-                        .toList(),
+                        ),
+                    ],
                   ),
+                  const SizedBox(height: 16),
+                  Text(
+                    l10n.postContent,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _contentController,
+                    focusNode: _contentFocus,
+                    minLines: 12,
+                    maxLines: 24,
+                    keyboardType: TextInputType.multiline,
+                    decoration: InputDecoration(
+                      hintText: l10n.markdownHint,
+                      alignLabelWithHint: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    l10n.attachmentUrls,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    l10n.attachmentUrlsHint,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  ...List.generate(_mediaControllers.length, (index) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _mediaControllers[index],
+                              decoration: InputDecoration(
+                                hintText: l10n.attachmentUrlHint,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 12,
+                                ),
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            tooltip: l10n.removeAttachment,
+                            onPressed: () => _removeMediaField(index),
+                            icon: const Icon(Icons.close_rounded),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: OutlinedButton.icon(
+                      onPressed: () => _addMediaField(),
+                      icon: const Icon(Icons.link_rounded),
+                      label: Text(l10n.addAttachmentUrl),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _tagsController,
+                    decoration: InputDecoration(
+                      labelText: l10n.tagsOptional,
+                      hintText: l10n.tagsHint,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                  if (_hotTags.isNotEmpty) ...[
+                    const SizedBox(height: 10),
+                    Text(
+                      l10n.hotTags,
+                      style: const TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children:
+                          _hotTags
+                              .map(
+                                (tag) => ActionChip(
+                                  label: Text(
+                                    tag.postCount > 0
+                                        ? '${tag.name} (${tag.postCount})'
+                                        : tag.name,
+                                  ),
+                                  onPressed: () => _addTag(tag.name),
+                                ),
+                              )
+                              .toList(),
+                    ),
+                  ],
                 ],
-              ],
-            ),
+              ),
     );
   }
 }

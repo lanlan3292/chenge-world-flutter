@@ -7,6 +7,7 @@ import '../models/blog_post.dart';
 import '../services/chenge_api.dart';
 import '../theme/app_theme.dart';
 import '../widgets/image_viewer_page.dart';
+import '../widgets/post_images_carousel.dart';
 
 class PostDetailPage extends StatefulWidget {
   const PostDetailPage({
@@ -159,9 +160,12 @@ class _PostDetailPageState extends State<PostDetailPage> {
     try {
       // Nested reply: attach under the root parent so the UI (2-level) can show it.
       final replyTarget = _replyTo;
-      final parentId = replyTarget == null
-          ? 0
-          : (replyTarget.parentId != 0 ? replyTarget.parentId : replyTarget.id);
+      final parentId =
+          replyTarget == null
+              ? 0
+              : (replyTarget.parentId != 0
+                  ? replyTarget.parentId
+                  : replyTarget.id);
       await widget.api.addPostComment(
         blogId: widget.post.id,
         content: content,
@@ -229,24 +233,24 @@ class _PostDetailPageState extends State<PostDetailPage> {
         }
       },
       child: Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          tooltip: AppLocalizations.of(context).back,
-          onPressed: () => Navigator.pop(context, result),
-          icon: const Icon(Icons.arrow_back_rounded),
+        appBar: AppBar(
+          leading: IconButton(
+            tooltip: AppLocalizations.of(context).back,
+            onPressed: () => Navigator.pop(context, result),
+            icon: const Icon(Icons.arrow_back_rounded),
+          ),
+          title: Text(
+            AppLocalizations.of(context).post,
+            style: const TextStyle(fontWeight: FontWeight.w800),
+          ),
         ),
-        title: Text(
-          AppLocalizations.of(context).post,
-          style: const TextStyle(fontWeight: FontWeight.w800),
+        body: FutureBuilder<BlogPost>(
+          future: _detail,
+          builder:
+              (context, snapshot) =>
+                  _body(snapshot.data ?? widget.post, bottomInset),
         ),
       ),
-      body: FutureBuilder<BlogPost>(
-        future: _detail,
-        builder:
-            (context, snapshot) =>
-                _body(snapshot.data ?? widget.post, bottomInset),
-      ),
-    ),
     );
   }
 
@@ -367,11 +371,12 @@ class _PostDetailPageState extends State<PostDetailPage> {
             if (post.coverImage != null) ...[
               const SizedBox(height: 18),
               GestureDetector(
-                onTap: () => ImageViewerPage.open(
-                  context,
-                  imageUrl: widget.api.resolveMediaUrl(post.coverImage!),
-                  heroTag: "post-cover-${post.id}",
-                ),
+                onTap:
+                    () => ImageViewerPage.open(
+                      context,
+                      imageUrl: widget.api.resolveMediaUrl(post.coverImage!),
+                      heroTag: "post-cover-${post.id}",
+                    ),
                 child: Hero(
                   tag: "post-cover-${post.id}",
                   child: ClipRRect(
@@ -405,6 +410,11 @@ class _PostDetailPageState extends State<PostDetailPage> {
                         )
                         .toList(),
               ),
+            if (post.images.isNotEmpty)
+              PostImagesCarousel(
+                images: post.images,
+                resolveUrl: widget.api.resolveMediaUrl,
+              ),
             MarkdownBody(
               data: post.content.isNotEmpty ? post.content : post.summary,
               selectable: true,
@@ -421,7 +431,9 @@ class _PostDetailPageState extends State<PostDetailPage> {
                         width: image.width,
                         height: image.height,
                         fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => const Icon(Icons.broken_image_outlined),
+                        errorBuilder:
+                            (_, __, ___) =>
+                                const Icon(Icons.broken_image_outlined),
                       ),
                     ),
                   ),
@@ -501,7 +513,10 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 children: [
                   Expanded(
                     child: Text(
-                      AppLocalizations.of(context).replyToUser(_replyTo!.authorName ?? AppLocalizations.of(context).user),
+                      AppLocalizations.of(context).replyToUser(
+                        _replyTo!.authorName ??
+                            AppLocalizations.of(context).user,
+                      ),
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.primary,
                         fontSize: 12,
@@ -640,7 +655,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
                   children: [
                     Expanded(
                       child: Text(
-                        comment.authorName ?? AppLocalizations.of(context).anonymousUser,
+                        comment.authorName ??
+                            AppLocalizations.of(context).anonymousUser,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -661,7 +677,9 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 if (comment.replyToName?.isNotEmpty == true) ...[
                   const SizedBox(height: 3),
                   Text(
-                    AppLocalizations.of(context).replyToUser(comment.replyToName ?? ''),
+                    AppLocalizations.of(
+                      context,
+                    ).replyToUser(comment.replyToName ?? ''),
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.primary,
                       fontSize: 11,

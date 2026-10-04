@@ -2308,6 +2308,24 @@ abstract class AppLocalizations {
   /// In zh_CN, this message translates to:
   /// **'最多上传 {count} 张图片'**
   String maxImagesReached(int count);
+
+  /// No description provided for @articleImages.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'文章图片'**
+  String get articleImages;
+
+  /// No description provided for @articleImagesHint.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'最多 5 张，用于文章内容区展示（非 Markdown）；未设封面时默认用第一张作封面'**
+  String get articleImagesHint;
+
+  /// No description provided for @deleteImage.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'删除图片'**
+  String get deleteImage;
 }
 
 class _AppLocalizationsDelegate

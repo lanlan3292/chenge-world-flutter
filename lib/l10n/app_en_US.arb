@@ -566,5 +566,8 @@
         "type": "int"
       }
     }
-  }
+  },
+  "articleImages": "Article images",
+  "articleImagesHint": "Up to 5 images for the article gallery (not Markdown). First image is used as cover if none is set.",
+  "deleteImage": "Delete image"
 }
