@@ -165,8 +165,6 @@ class PostCard extends StatelessWidget {
     // 按展示宽度限制解码尺寸，避免瀑布流里按原图解码导致卡顿
     final dpr = MediaQuery.devicePixelRatioOf(context);
     final memW = (width * dpr).round().clamp(64, 720);
-    final memH = (memW * 9 / 16).round().clamp(36, 405);
-
     return CachedNetworkImage(
       imageUrl: imageUrl,
       width: double.infinity,
@@ -176,9 +174,7 @@ class PostCard extends StatelessWidget {
       fadeInDuration: Duration.zero,
       fadeOutDuration: Duration.zero,
       memCacheWidth: memW,
-      memCacheHeight: memH,
       maxWidthDiskCache: memW,
-      maxHeightDiskCache: memH,
       filterQuality: FilterQuality.low,
       // 静态占位，避免每张图一个转圈动画
       placeholder: (_, __) => _coverPlaceholder(context),
@@ -281,9 +277,7 @@ class PostCard extends StatelessWidget {
           fadeInDuration: Duration.zero,
           fadeOutDuration: Duration.zero,
           memCacheWidth: px,
-          memCacheHeight: px,
           maxWidthDiskCache: px,
-          maxHeightDiskCache: px,
           filterQuality: FilterQuality.low,
           placeholder: (_, __) => Icon(
             Icons.person_rounded,
