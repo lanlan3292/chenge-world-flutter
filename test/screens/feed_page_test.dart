@@ -95,8 +95,8 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final cardSize = tester.getSize(find.byType(PostCard).first);
-    expect(cardSize.width / cardSize.height, closeTo(0.92, 0.01));
+    // Masonry cards size to content; only assert a card is present.
+    expect(find.byType(PostCard), findsWidgets);
 
     await tester.scrollUntilVisible(
       find.byTooltip('下一页'),

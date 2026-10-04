@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import '../l10n/app_localizations_text.dart';
 import '../models/blog_post.dart';
@@ -278,28 +279,17 @@ class _FeedPageState extends State<FeedPage> {
                 else ...[
                   SliverPadding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
-                    sliver: SliverGrid.builder(
-                      itemCount: _posts.length,
-                      gridDelegate: (() {
-                      // 1 列偏「扁」避免卡片过高；3 列偏「高」给窄卡片留正文高度
-                      final ratio = switch (columns) {
-                        1 => 1.28,
-                        2 => 0.92,
-                        _ => 0.72,
-                      };
-                      return SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: columns,
-                        crossAxisSpacing: 14,
-                        mainAxisSpacing: 14,
-                        childAspectRatio: ratio,
-                      );
-                    })(),
-                      itemBuilder:
-                          (context, index) => PostCard(
-                            post: _posts[index],
-                            featured: index == 0 && _page == 1,
-                            onTap: () => _openPost(_posts[index]),
-                          ),
+                    // Masonry: each card heights itself from content (no fixed aspect).
+                    sliver: SliverMasonryGrid.count(
+                      crossAxisCount: columns,
+                      mainAxisSpacing: 14,
+                      crossAxisSpacing: 14,
+                      childCount: _posts.length,
+                      itemBuilder: (context, index) => PostCard(
+                        post: _posts[index],
+                        featured: index == 0 && _page == 1,
+                        onTap: () => _openPost(_posts[index]),
+                      ),
                     ),
                   ),
                   SliverToBoxAdapter(child: _buildPagination()),
