@@ -6,6 +6,7 @@ import '../models/blog_post.dart';
 import '../services/chenge_api.dart';
 import '../widgets/post_card.dart';
 import 'post_detail_page.dart';
+import 'create_post_page.dart';
 
 class FeedPage extends StatefulWidget {
   const FeedPage({
@@ -157,10 +158,10 @@ class _FeedPageState extends State<FeedPage> {
     }
   }
 
-  void _openPost(BlogPost post) {
+  Future<void> _openPost(BlogPost post) async {
     _setChromeVisible(true);
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
+    final updated = await Navigator.of(context).push<BlogPost>(
+      MaterialPageRoute<BlogPost>(
         builder:
             (_) => PostDetailPage(
               api: widget.api,
@@ -169,6 +170,38 @@ class _FeedPageState extends State<FeedPage> {
             ),
       ),
     );
+    if (!mounted || updated == null) return;
+    final index = _posts.indexWhere((item) => item.id == updated.id);
+    if (index < 0) return;
+    setState(() {
+      _posts[index] = _posts[index].copyWith(
+        liked: updated.liked,
+        likeCount: updated.likeCount,
+        commentCount: updated.commentCount,
+      );
+    });
+  }
+
+  Future<void> _openCreatePost() async {
+    final token = widget.token;
+    if (token == null || token.isEmpty) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context).signInToCreatePost)),
+        );
+      return;
+    }
+    _setChromeVisible(true);
+    final createdId = await Navigator.of(context).push<int>(
+      MaterialPageRoute<int>(
+        builder: (_) => CreatePostPage(api: widget.api, token: token),
+      ),
+    );
+    if (!mounted) return;
+    if (createdId != null) {
+      await _loadPage(1);
+    }
   }
 
   @override
@@ -187,6 +220,13 @@ class _FeedPageState extends State<FeedPage> {
     final columns = responsive.clamp(minCols, maxCols);
     final isWide = MediaQuery.sizeOf(context).width >= 760;
     return Scaffold(
+      floatingActionButton: widget.token != null && widget.token!.isNotEmpty
+          ? FloatingActionButton.extended(
+              onPressed: _openCreatePost,
+              icon: const Icon(Icons.edit_rounded),
+              label: Text(AppLocalizations.of(context).createPost),
+            )
+          : null,
       body: Center(
         child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: maxWidth),

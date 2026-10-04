@@ -6,6 +6,7 @@ import '../models/blog_comment.dart';
 import '../models/blog_post.dart';
 import '../services/chenge_api.dart';
 import '../theme/app_theme.dart';
+import '../widgets/image_viewer_page.dart';
 
 class PostDetailPage extends StatefulWidget {
   const PostDetailPage({
@@ -42,7 +43,8 @@ class _PostDetailPageState extends State<PostDetailPage> {
   @override
   void initState() {
     super.initState();
-    _liked = widget.post.liked;
+    final cached = widget.api.cachedPostLiked(widget.post.id);
+    _liked = cached ?? widget.post.liked;
     _likeCount = widget.post.likeCount;
     _commentCount = widget.post.commentCount;
     _detail = _loadDetail();
@@ -64,8 +66,26 @@ class _PostDetailPageState extends State<PostDetailPage> {
       );
       if (mounted) {
         setState(() {
-          _liked = post.liked;
+          // Prefer server liked when token is present; otherwise keep cache / list state.
+          final cached = widget.api.cachedPostLiked(widget.post.id);
+          if (widget.token != null && widget.token!.isNotEmpty) {
+            if (post.liked) {
+              _liked = true;
+              widget.api.rememberPostLiked(widget.post.id, true);
+            } else if (cached != null) {
+              _liked = cached;
+            } else {
+              _liked = post.liked;
+            }
+          } else if (cached != null) {
+            _liked = cached;
+          } else {
+            _liked = post.liked;
+          }
           _likeCount = post.likeCount;
+          if (_liked && _likeCount <= 0) {
+            _likeCount = 1;
+          }
           _commentCount = post.commentCount;
         });
       }
@@ -116,6 +136,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
         }
         _liked = liked;
       });
+      widget.api.rememberPostLiked(widget.post.id, liked);
     } on ApiException catch (error) {
       if (mounted) _showMessage(error.message, isError: true);
     } finally {
@@ -195,11 +216,23 @@ class _PostDetailPageState extends State<PostDetailPage> {
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.paddingOf(context).bottom;
-    return Scaffold(
+    final result = widget.post.copyWith(
+      liked: _liked,
+      likeCount: _likeCount,
+      commentCount: _commentCount,
+    );
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) {
+          Navigator.pop(context, result);
+        }
+      },
+      child: Scaffold(
       appBar: AppBar(
         leading: IconButton(
           tooltip: AppLocalizations.of(context).back,
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.pop(context, result),
           icon: const Icon(Icons.arrow_back_rounded),
         ),
         title: Text(
@@ -213,6 +246,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
             (context, snapshot) =>
                 _body(snapshot.data ?? widget.post, bottomInset),
       ),
+    ),
     );
   }
 
@@ -331,13 +365,23 @@ class _PostDetailPageState extends State<PostDetailPage> {
               ],
             ),
             if (post.coverImage != null) ...[
-              const SizedBox(height: 22),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  post.coverImage!,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+              const SizedBox(height: 18),
+              GestureDetector(
+                onTap: () => ImageViewerPage.open(
+                  context,
+                  imageUrl: widget.api.resolveMediaUrl(post.coverImage!),
+                  heroTag: "post-cover-${post.id}",
+                ),
+                child: Hero(
+                  tag: "post-cover-${post.id}",
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      widget.api.resolveMediaUrl(post.coverImage!),
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -364,6 +408,25 @@ class _PostDetailPageState extends State<PostDetailPage> {
             MarkdownBody(
               data: post.content.isNotEmpty ? post.content : post.summary,
               selectable: true,
+              sizedImageBuilder: (image) {
+                final url = widget.api.resolveMediaUrl(image.uri.toString());
+                return GestureDetector(
+                  onTap: () => ImageViewerPage.open(context, imageUrl: url),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        url,
+                        width: image.width,
+                        height: image.height,
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, __, ___) => const Icon(Icons.broken_image_outlined),
+                      ),
+                    ),
+                  ),
+                );
+              },
               styleSheet: MarkdownStyleSheet(
                 p: TextStyle(
                   fontSize: 16,

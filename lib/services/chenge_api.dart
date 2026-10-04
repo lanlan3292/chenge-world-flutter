@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 
 import '../models/ai_session.dart';
 import '../models/blog_post.dart';
+import '../models/blog_category.dart';
 import '../models/blog_comment.dart';
 import '../models/chat_conversation.dart';
 import '../models/chat_message.dart';
@@ -100,6 +101,8 @@ class ChengeApi {
 
   final http.Client _client;
   final String _baseUrl;
+  /// Session-local post like flags (detail API may omit liked for guests/filters).
+  final Map<int, bool> _likedPostCache = {};
   static const _timeout = Duration(seconds: 25);
   static const _streamTimeout = Duration(minutes: 3);
 
@@ -229,10 +232,135 @@ class ChengeApi {
       query: {'targetType': 'POST', 'targetId': '$blogId'},
       token: token,
     );
-    if (data is! Map<String, dynamic> || data['liked'] is! bool) {
-      throw const ApiException('点赞响应格式不正确');
+    if (data is! Map<String, dynamic>) {
+      throw const ApiException('Invalid like response');
     }
-    return data['liked'] as bool;
+    final liked = data['liked'];
+    bool? resolved;
+    if (liked is bool) {
+      resolved = liked;
+    } else if (liked is num) {
+      resolved = liked != 0;
+    } else {
+      final text = liked?.toString().trim().toLowerCase() ?? '';
+      if (text == 'true' || text == '1') resolved = true;
+      if (text == 'false' || text == '0') resolved = false;
+    }
+    if (resolved == null) throw const ApiException('Invalid like response');
+    _likedPostCache[blogId] = resolved;
+    return resolved;
+  }
+
+  bool? cachedPostLiked(int blogId) => _likedPostCache[blogId];
+
+  void rememberPostLiked(int blogId, bool liked) {
+    _likedPostCache[blogId] = liked;
+  }
+
+  Future<List<BlogCategory>> listCategories({String? token, bool onlyPublic = true}) async {
+    final data = await _request(
+      'GET',
+      '/blog/category/list',
+      query: {'onlyPublic': onlyPublic ? 'true' : 'false'},
+      token: token,
+    );
+    if (data is! List) throw const ApiException('Invalid category list');
+    return data
+        .whereType<Map<String, dynamic>>()
+        .map(BlogCategory.fromJson)
+        .toList();
+  }
+
+  /// Upload a file to the file module. Returns the public URL.
+  Future<String> uploadFile({
+    required List<int> bytes,
+    required String filename,
+    required String token,
+    String businessType = 'post_image',
+    String? businessId,
+  }) async {
+    final uri = Uri.parse('$_baseUrl/file-module/files/upload').replace(
+      queryParameters: {
+        'businessType': businessType,
+        if (businessId != null && businessId.isNotEmpty) 'businessId': businessId,
+      },
+    );
+    final request = http.MultipartRequest('POST', uri);
+    request.headers['Authorization'] = 'Bearer $token';
+    request.headers['Accept'] = 'application/json';
+    request.files.add(
+      http.MultipartFile.fromBytes('file', bytes, filename: filename),
+    );
+    late http.StreamedResponse streamed;
+    try {
+      streamed = await _client.send(request).timeout(_timeout);
+    } on Exception catch (error) {
+      throw ApiException('Upload failed: $error');
+    }
+    final response = await http.Response.fromStream(streamed);
+    final decoded = utf8.decode(response.bodyBytes, allowMalformed: true);
+    dynamic payload;
+    try {
+      payload = jsonDecode(decoded);
+    } on FormatException {
+      throw const ApiException('Invalid upload response');
+    }
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      final message = payload is Map ? payload['msg'] : null;
+      throw ApiException(
+        message?.toString() ?? 'Upload failed (${response.statusCode})',
+        statusCode: response.statusCode,
+      );
+    }
+    if (payload is! Map<String, dynamic> || payload['code'] != 200) {
+      throw ApiException(payload is Map ? (payload['msg']?.toString() ?? 'Upload failed') : 'Upload failed');
+    }
+    final data = payload['data'];
+    if (data is Map && data['url'] != null) {
+      final url = data['url'].toString().trim();
+      if (url.isNotEmpty) return _resolveMediaUrl(url);
+    }
+    throw const ApiException('Upload response missing url');
+  }
+
+  Future<int> publishPost({
+    required String token,
+    required int categoryId,
+    required String title,
+    required String content,
+    String? coverImage,
+    String? summary,
+    List<String>? images,
+    List<String>? tags,
+    String contentType = 'md',
+  }) async {
+    final body = <String, dynamic>{
+      'categoryId': categoryId,
+      'title': title,
+      'content': content,
+      'contentType': contentType,
+      if (coverImage != null && coverImage.isNotEmpty) 'coverImage': coverImage,
+      if (summary != null && summary.isNotEmpty) 'summary': summary,
+      if (images != null && images.isNotEmpty) 'images': images,
+      if (tags != null && tags.isNotEmpty) 'tags': tags,
+    };
+    final data = await _request('POST', '/blog/post/publish', body: body, token: token);
+    return _integer(data);
+  }
+
+  /// Resolve relative file paths to absolute URLs under the API base.
+  String resolveMediaUrl(String url) => _resolveMediaUrl(url);
+
+  String _resolveMediaUrl(String url) {
+    final trimmed = url.trim();
+    if (trimmed.isEmpty) return trimmed;
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      return trimmed;
+    }
+    if (trimmed.startsWith('/')) {
+      return '$_baseUrl$trimmed';
+    }
+    return '$_baseUrl/$trimmed';
   }
 
   Future<List<FriendUser>> friends(String token) => _friendList('/friend/list', token: token);

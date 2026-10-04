@@ -173,24 +173,6 @@ abstract class AppLocalizations {
   /// **'语言'**
   String get language;
 
-  /// No description provided for @localeZhCn.
-  ///
-  /// In zh_CN, this message translates to:
-  /// **'中文（中国）'**
-  String get localeZhCn;
-
-  /// No description provided for @localeZhTw.
-  ///
-  /// In zh_CN, this message translates to:
-  /// **'中文（台湾）'**
-  String get localeZhTw;
-
-  /// No description provided for @localeEnUs.
-  ///
-  /// In zh_CN, this message translates to:
-  /// **'英语（美国）'**
-  String get localeEnUs;
-
   /// No description provided for @dynamicColor.
   ///
   /// In zh_CN, this message translates to:
@@ -2134,6 +2116,114 @@ abstract class AppLocalizations {
   /// In zh_CN, this message translates to:
   /// **'访问令牌已清除'**
   String get accessTokenCleared;
+
+  /// No description provided for @createPost.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'发帖'**
+  String get createPost;
+
+  /// No description provided for @publishPost.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'发布'**
+  String get publishPost;
+
+  /// No description provided for @postTitle.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'标题'**
+  String get postTitle;
+
+  /// No description provided for @postContent.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'正文（Markdown）'**
+  String get postContent;
+
+  /// No description provided for @markdownHint.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'支持 Markdown，可插入图片'**
+  String get markdownHint;
+
+  /// No description provided for @insertImage.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'插入图片'**
+  String get insertImage;
+
+  /// No description provided for @coverImage.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'封面图'**
+  String get coverImage;
+
+  /// No description provided for @chooseCover.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'选择封面'**
+  String get chooseCover;
+
+  /// No description provided for @removeCover.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'移除封面'**
+  String get removeCover;
+
+  /// No description provided for @category.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'板块'**
+  String get category;
+
+  /// No description provided for @selectCategoryHint.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'请选择板块'**
+  String get selectCategoryHint;
+
+  /// No description provided for @noCategories.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'暂无可用板块'**
+  String get noCategories;
+
+  /// No description provided for @titleRequired.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'请填写标题'**
+  String get titleRequired;
+
+  /// No description provided for @contentRequired.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'请填写正文'**
+  String get contentRequired;
+
+  /// No description provided for @postPublished.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'发布成功'**
+  String get postPublished;
+
+  /// No description provided for @signInToCreatePost.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'登录后即可发帖'**
+  String get signInToCreatePost;
+
+  /// No description provided for @tagsOptional.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'标签（可选）'**
+  String get tagsOptional;
+
+  /// No description provided for @tagsHint.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'用逗号或空格分隔'**
+  String get tagsHint;
 }
 
 class _AppLocalizationsDelegate

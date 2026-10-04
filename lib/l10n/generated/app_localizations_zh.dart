@@ -45,15 +45,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get language => '语言';
 
   @override
-  String get localeZhCn => '中文（中国）';
-
-  @override
-  String get localeZhTw => '中文（台湾）';
-
-  @override
-  String get localeEnUs => '英语（美国）';
-
-  @override
   String get dynamicColor => '动态取色';
 
   @override
@@ -1089,6 +1080,60 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get accessTokenCleared => '访问令牌已清除';
+
+  @override
+  String get createPost => '发帖';
+
+  @override
+  String get publishPost => '发布';
+
+  @override
+  String get postTitle => '标题';
+
+  @override
+  String get postContent => '正文（Markdown）';
+
+  @override
+  String get markdownHint => '支持 Markdown，可插入图片';
+
+  @override
+  String get insertImage => '插入图片';
+
+  @override
+  String get coverImage => '封面图';
+
+  @override
+  String get chooseCover => '选择封面';
+
+  @override
+  String get removeCover => '移除封面';
+
+  @override
+  String get category => '板块';
+
+  @override
+  String get selectCategoryHint => '请选择板块';
+
+  @override
+  String get noCategories => '暂无可用板块';
+
+  @override
+  String get titleRequired => '请填写标题';
+
+  @override
+  String get contentRequired => '请填写正文';
+
+  @override
+  String get postPublished => '发布成功';
+
+  @override
+  String get signInToCreatePost => '登录后即可发帖';
+
+  @override
+  String get tagsOptional => '标签（可选）';
+
+  @override
+  String get tagsHint => '用逗号或空格分隔';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -1132,15 +1177,6 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get language => '语言';
 
   @override
-  String get localeZhCn => '中文（中国）';
-
-  @override
-  String get localeZhTw => '中文（台湾）';
-
-  @override
-  String get localeEnUs => '英语（美国）';
-
-  @override
   String get dynamicColor => '动态取色';
 
   @override
@@ -2176,6 +2212,60 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get accessTokenCleared => '访问令牌已清除';
+
+  @override
+  String get createPost => '发帖';
+
+  @override
+  String get publishPost => '发布';
+
+  @override
+  String get postTitle => '标题';
+
+  @override
+  String get postContent => '正文（Markdown）';
+
+  @override
+  String get markdownHint => '支持 Markdown，可插入图片';
+
+  @override
+  String get insertImage => '插入图片';
+
+  @override
+  String get coverImage => '封面图';
+
+  @override
+  String get chooseCover => '选择封面';
+
+  @override
+  String get removeCover => '移除封面';
+
+  @override
+  String get category => '板块';
+
+  @override
+  String get selectCategoryHint => '请选择板块';
+
+  @override
+  String get noCategories => '暂无可用板块';
+
+  @override
+  String get titleRequired => '请填写标题';
+
+  @override
+  String get contentRequired => '请填写正文';
+
+  @override
+  String get postPublished => '发布成功';
+
+  @override
+  String get signInToCreatePost => '登录后即可发帖';
+
+  @override
+  String get tagsOptional => '标签（可选）';
+
+  @override
+  String get tagsHint => '用逗号或空格分隔';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -2217,15 +2307,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get language => '語言';
-
-  @override
-  String get localeZhCn => '中文（中國）';
-
-  @override
-  String get localeZhTw => '中文（台灣）';
-
-  @override
-  String get localeEnUs => '英文（美國）';
 
   @override
   String get dynamicColor => '動態取色';
@@ -3263,4 +3344,58 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get accessTokenCleared => '存取權杖已清除';
+
+  @override
+  String get createPost => '發文';
+
+  @override
+  String get publishPost => '發布';
+
+  @override
+  String get postTitle => '標題';
+
+  @override
+  String get postContent => '正文（Markdown）';
+
+  @override
+  String get markdownHint => '支援 Markdown，可插入圖片';
+
+  @override
+  String get insertImage => '插入圖片';
+
+  @override
+  String get coverImage => '封面圖';
+
+  @override
+  String get chooseCover => '選擇封面';
+
+  @override
+  String get removeCover => '移除封面';
+
+  @override
+  String get category => '板塊';
+
+  @override
+  String get selectCategoryHint => '請選擇板塊';
+
+  @override
+  String get noCategories => '暫無可用板塊';
+
+  @override
+  String get titleRequired => '請填寫標題';
+
+  @override
+  String get contentRequired => '請填寫正文';
+
+  @override
+  String get postPublished => '發布成功';
+
+  @override
+  String get signInToCreatePost => '登入後即可發文';
+
+  @override
+  String get tagsOptional => '標籤（可選）';
+
+  @override
+  String get tagsHint => '用逗號或空格分隔';
 }

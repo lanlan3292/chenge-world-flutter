@@ -255,9 +255,9 @@ class _SettingsPageState extends State<SettingsPage> {
                   value: _localeCode,
                   items: {
                     'system': AppLocalizations.of(context).followSystem,
-                    'zh_CN': AppLocalizations.of(context).localeZhCn,
-                    'zh_TW': AppLocalizations.of(context).localeZhTw,
-                    'en_US': AppLocalizations.of(context).localeEnUs,
+                    'zh_CN': "中文 (中国)",
+                    'zh_TW': "中文 (台灣)",
+                    'en_US': "English (United States)",
                   },
                   onChanged: (value) async {
                     setState(() => _localeCode = value);

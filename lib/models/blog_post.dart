@@ -49,8 +49,50 @@ class BlogPost {
       coverImage: _nullableText(json['coverImage']),
       authorAvatar: _nullableText(json['authorAvatar']),
       categoryName: _nullableText(json['categoryName']),
-      liked: json['liked'] == true,
+      liked: _asBool(json['liked']),
       tags: tags is List ? tags.map((tag) => _text(tag)).where((tag) => tag.isNotEmpty).toList() : const [],
+    );
+  }
+
+
+  static bool _asBool(Object? value) {
+    if (value is bool) return value;
+    if (value is num) return value != 0;
+    final text = value?.toString().trim().toLowerCase() ?? '';
+    return text == 'true' || text == '1' || text == 'yes';
+  }
+
+  BlogPost copyWith({
+    int? id,
+    String? title,
+    String? summary,
+    String? content,
+    String? authorName,
+    DateTime? createdAt,
+    int? viewCount,
+    int? likeCount,
+    int? commentCount,
+    String? coverImage,
+    String? authorAvatar,
+    String? categoryName,
+    bool? liked,
+    List<String>? tags,
+  }) {
+    return BlogPost(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      summary: summary ?? this.summary,
+      content: content ?? this.content,
+      authorName: authorName ?? this.authorName,
+      createdAt: createdAt ?? this.createdAt,
+      viewCount: viewCount ?? this.viewCount,
+      likeCount: likeCount ?? this.likeCount,
+      commentCount: commentCount ?? this.commentCount,
+      coverImage: coverImage ?? this.coverImage,
+      authorAvatar: authorAvatar ?? this.authorAvatar,
+      categoryName: categoryName ?? this.categoryName,
+      liked: liked ?? this.liked,
+      tags: tags ?? this.tags,
     );
   }
 
