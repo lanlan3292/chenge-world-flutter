@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../models/blog_post.dart';
 
-/// Feed card with **intrinsic height** (cover 16:9 + content).
-/// Designed for masonry / staggered grids so short posts stay short.
+/// Feed card.
+///
+/// Reports an intrinsic height from cover (16:9) + content so a row-aligned
+/// grid can size each row to the tallest card. When the parent gives more
+/// height than intrinsic, the body expands and the footer stays at the bottom.
 class PostCard extends StatelessWidget {
   const PostCard({
     super.key,
@@ -22,6 +25,8 @@ class PostCard extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final w = constraints.maxWidth;
+        final hasBoundedHeight =
+            constraints.maxHeight.isFinite && constraints.maxHeight < double.infinity;
         final narrow = w < 200;
         final veryNarrow = w < 150;
         final padH = narrow ? 10.0 : 14.0;
@@ -30,88 +35,83 @@ class PostCard extends StatelessWidget {
         final summary = post.summary.trim();
         final showSummary = summary.isNotEmpty;
 
+        final body = Padding(
+          padding: EdgeInsets.fromLTRB(padH, padV, padH, padV),
+          child: Column(
+            mainAxisSize: hasBoundedHeight ? MainAxisSize.max : MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (hasTag)
+                Row(
+                  children: [
+                    if (post.categoryName != null)
+                      Flexible(
+                        child: _label(
+                          post.categoryName!,
+                          theme.colorScheme.primaryContainer,
+                          theme.colorScheme.onPrimaryContainer,
+                          maxWidth: veryNarrow ? 72 : (narrow ? 100 : 140),
+                          compact: narrow,
+                        ),
+                      ),
+                    if (post.tags.isNotEmpty) ...[
+                      if (post.categoryName != null) const SizedBox(width: 6),
+                      Flexible(
+                        child: _label(
+                          '#${post.tags.first}',
+                          theme.colorScheme.secondaryContainer,
+                          theme.colorScheme.onSecondaryContainer,
+                          maxWidth: veryNarrow ? 72 : (narrow ? 100 : 140),
+                          compact: narrow,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              if (hasTag) SizedBox(height: narrow ? 5 : 7),
+              Text(
+                post.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  height: 1.2,
+                  fontSize: veryNarrow ? 13.0 : (narrow ? 14.0 : null),
+                ),
+              ),
+              if (showSummary) ...[
+                SizedBox(height: narrow ? 4 : 6),
+                Text(
+                  summary,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    height: 1.35,
+                    fontSize: narrow ? 11.5 : null,
+                  ),
+                ),
+              ],
+              if (hasBoundedHeight) const Spacer(),
+              SizedBox(height: narrow ? 8 : 10),
+              _footer(context, theme, narrow: narrow, veryNarrow: veryNarrow),
+            ],
+          ),
+        );
+
         return Card(
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: onTap,
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: hasBoundedHeight ? MainAxisSize.max : MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AspectRatio(
                   aspectRatio: 16 / 9,
                   child: _cover(context),
                 ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(padH, padV, padH, padV),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (hasTag)
-                        Row(
-                          children: [
-                            if (post.categoryName != null)
-                              Flexible(
-                                child: _label(
-                                  post.categoryName!,
-                                  theme.colorScheme.primaryContainer,
-                                  theme.colorScheme.onPrimaryContainer,
-                                  maxWidth: veryNarrow ? 72 : (narrow ? 100 : 140),
-                                  compact: narrow,
-                                ),
-                              ),
-                            if (post.tags.isNotEmpty) ...[
-                              if (post.categoryName != null)
-                                const SizedBox(width: 6),
-                              Flexible(
-                                child: _label(
-                                  '#${post.tags.first}',
-                                  theme.colorScheme.secondaryContainer,
-                                  theme.colorScheme.onSecondaryContainer,
-                                  maxWidth: veryNarrow ? 72 : (narrow ? 100 : 140),
-                                  compact: narrow,
-                                ),
-                              ),
-                            ],
-                          ],
-                        ),
-                      if (hasTag) SizedBox(height: narrow ? 5 : 7),
-                      Text(
-                        post.title,
-                        maxLines: narrow ? 2 : 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w800,
-                          height: 1.2,
-                          fontSize: veryNarrow
-                              ? 13.0
-                              : (narrow ? 14.0 : null),
-                        ),
-                      ),
-                      if (showSummary) ...[
-                        SizedBox(height: narrow ? 4 : 6),
-                        Text(
-                          summary,
-                          maxLines: narrow ? 2 : 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                            height: 1.35,
-                            fontSize: narrow ? 11.5 : null,
-                          ),
-                        ),
-                      ],
-                      SizedBox(height: narrow ? 8 : 10),
-                      _footer(
-                        context,
-                        theme,
-                        narrow: narrow,
-                        veryNarrow: veryNarrow,
-                      ),
-                    ],
-                  ),
-                ),
+                if (hasBoundedHeight) Expanded(child: body) else body,
               ],
             ),
           ),
@@ -139,18 +139,13 @@ class PostCard extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: veryNarrow ? 10 : (narrow ? 11 : 11),
+              fontSize: veryNarrow ? 10 : 11,
               color: theme.colorScheme.onSurfaceVariant,
               height: 1.1,
             ),
           ),
         ),
-        _metric(
-          context,
-          Icons.visibility_outlined,
-          post.viewCount,
-          compact: narrow,
-        ),
+        _metric(context, Icons.visibility_outlined, post.viewCount, compact: narrow),
         SizedBox(width: narrow ? 5 : 8),
         _metric(
           context,
@@ -200,18 +195,12 @@ class PostCard extends StatelessWidget {
             Positioned(
               right: -18,
               top: -34,
-              child: _shape(
-                125,
-                Theme.of(context).colorScheme.surfaceContainerHigh,
-              ),
+              child: _shape(125, Theme.of(context).colorScheme.surfaceContainerHigh),
             ),
             Positioned(
               left: 24,
               bottom: -45,
-              child: _shape(
-                110,
-                Theme.of(context).colorScheme.tertiaryContainer,
-              ),
+              child: _shape(110, Theme.of(context).colorScheme.tertiaryContainer),
             ),
             Center(
               child: Icon(

@@ -89,13 +89,12 @@ void main() {
       }),
     );
 
-    // Default test surface is 800x600 → responsive columns == 2 → ratio 0.92
     await tester.pumpWidget(
       MaterialApp(theme: AppTheme.light, home: FeedPage(api: api, token: null)),
     );
     await tester.pumpAndSettle();
 
-    // Masonry cards size to content; only assert a card is present.
+    // Row-aligned grid: heights follow content; only assert cards render.
     expect(find.byType(PostCard), findsWidgets);
 
     await tester.scrollUntilVisible(

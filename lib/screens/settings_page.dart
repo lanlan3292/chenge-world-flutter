@@ -404,7 +404,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
                   subtitle: Text(
-                    AppLocalizations.of(context).text('自动写入登录状态与 aqua 主题'),
+                    AppLocalizations.of(context).text('并非所有操作系统都能够调用 WebView'),
                   ),
                   onTap: _openOfficialSite,
                 ),
@@ -416,11 +416,11 @@ class _SettingsPageState extends State<SettingsPage> {
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     title: Text(
-                      AppLocalizations.of(context).text('修改 Token'),
+                      AppLocalizations.of(context).text('访问令牌'),
                       style: const TextStyle(fontWeight: FontWeight.w700),
                     ),
                     subtitle: Text(
-                      AppLocalizations.of(context).text('查看、编辑并保存登录令牌'),
+                      AppLocalizations.of(context).text('用于校验身份的访问令牌'),
                     ),
                     onTap: _showTokenDialog,
                   ),
@@ -505,7 +505,7 @@ class _SettingsPageState extends State<SettingsPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context).text('Token 已更新')),
+            content: Text(AppLocalizations.of(context).text('访问令牌 已更新')),
           ),
         );
       }
@@ -703,7 +703,7 @@ class _EditTokenDialogState extends State<_EditTokenDialog> {
     final l10n = AppLocalizations.of(context);
     return AlertDialog(
       title: Text(
-        l10n.text('修改 Token'),
+        l10n.text('访问令牌'),
         style: const TextStyle(fontWeight: FontWeight.w800),
       ),
       content: SizedBox(
@@ -730,19 +730,13 @@ class _EditTokenDialogState extends State<_EditTokenDialog> {
                       );
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(l10n.text('Token 已复制'))),
+                          SnackBar(content: Text(l10n.text('访问令牌 已复制'))),
                         );
                       }
                     },
                     icon: const Icon(Icons.copy_rounded),
                   ),
                 ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return l10n.text('请输入 Token');
-                  }
-                  return null;
-                },
               ),
               if (_error != null) ...[
                 const SizedBox(height: 10),

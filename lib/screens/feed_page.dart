@@ -279,12 +279,12 @@ class _FeedPageState extends State<FeedPage> {
                 else ...[
                   SliverPadding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
-                    // Masonry: each card heights itself from content (no fixed aspect).
-                    sliver: SliverMasonryGrid.count(
+                    // 同行等高：每行高度取该行卡片内容最高者，水平对齐。
+                    sliver: SliverAlignedGrid.count(
                       crossAxisCount: columns,
                       mainAxisSpacing: 14,
                       crossAxisSpacing: 14,
-                      childCount: _posts.length,
+                      itemCount: _posts.length,
                       itemBuilder: (context, index) => PostCard(
                         post: _posts[index],
                         featured: index == 0 && _page == 1,
