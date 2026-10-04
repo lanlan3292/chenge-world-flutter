@@ -317,7 +317,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                                 : Icons.thumb_up_alt_outlined,
                           ),
                   label: Text(
-                    '${_liked ? AppLocalizations.of(context)!.liked : AppLocalizations.of(context)!.like} · $_likeCount',
+                    '${_liked ? AppLocalizations.of(context).liked : AppLocalizations.of(context).like} · $_likeCount',
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -491,9 +491,9 @@ class _PostDetailPageState extends State<PostDetailPage> {
                         )
                         : const Icon(Icons.send_rounded),
                 label: Text(
-                  AppLocalizations.of(
-                    context,
-                  (_commentPosting ? ).publishing : ).publishComment),
+                  _commentPosting
+                      ? AppLocalizations.of(context).publishing
+                      : AppLocalizations.of(context).publishComment,
                 ),
               ),
             ),

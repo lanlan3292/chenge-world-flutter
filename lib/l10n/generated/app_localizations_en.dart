@@ -1,3 +1,10 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for English (`en`).
 class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
@@ -450,73 +457,72 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get signInToStartChat => '登录后开始聊天';
-}
-
-/// The translations for English, as used in the United States (`en_US`).
 
   @override
   String get chengeCore => 'ChengeCore';
 
   @override
-  String get signInWithToken => 'Sign in with Token';
+  String get signInWithToken => '使用 Token 登录';
 
   @override
-  String get openOfficialSiteWithWebView => 'Open official site with WebView';
+  String get openOfficialSiteWithWebView => '使用 WebView 打开官网';
 
   @override
-  String get close => 'Close';
+  String get close => '关闭';
 
   @override
-  String get raising => 'Raising';
+  String get raising => '养成';
 
   @override
-  String get copy => 'Copy';
+  String get copy => '复制';
 
   @override
-  String get webViewNotSupportedOnAllOs => 'Not all operating systems support WebView';
+  String get webViewNotSupportedOnAllOs => '并非所有操作系统都能够调用 WebView';
 
   @override
-  String get platformWebViewNotSupported => 'Built-in web view is not supported on this platform';
+  String get platformWebViewNotSupported => '当前平台暂不支持内置网页';
 
   @override
-  String get openCoreEcosystem => 'Open core ecosystem';
+  String get openCoreEcosystem => '打开核心生态';
 
   @override
-  String get openRaisingSystem => 'Open raising system';
+  String get openRaisingSystem => '打开站娘养成系统';
 
   @override
-  String get cannotOpenSiteMissingConfig => 'Cannot open site: missing service configuration';
+  String get cannotOpenSiteMissingConfig => '无法打开官网：缺少服务配置';
 
   @override
-  String get accessTokenDescription => 'Access token used for identity verification';
+  String get accessTokenDescription => '用于校验身份的访问令牌';
 
   @override
-  String get confirm => 'OK';
+  String get confirm => '确定';
 
   @override
-  String get confirmSignIn => 'Confirm sign in';
+  String get confirmSignIn => '确认登录';
 
   @override
-  String get pasteJwtToken => 'Paste JWT Token';
+  String get pasteJwtToken => '粘贴 JWT Token';
 
   @override
-  String get accessToken => 'Access token';
+  String get accessToken => '访问令牌';
 
   @override
-  String get accessTokenCopied => 'Access token copied';
+  String get accessTokenCopied => '访问令牌 已复制';
 
   @override
-  String get accessTokenUpdated => 'Access token updated';
+  String get accessTokenUpdated => '访问令牌 已更新';
 
   @override
-  String get signInToUseChengeCore => 'Please sign in to use ChengeCore';
+  String get signInToUseChengeCore => '请先登录后再使用 ChengeCore';
 
   @override
-  String get signInToUseRaising => 'Please sign in to use raising';
+  String get signInToUseRaising => '请先登录后再使用养成';
 
   @override
-  String get enterToken => 'Please enter token';
+  String get enterToken => '请输入 Token';
+}
 
+/// The translations for English, as used in the United States (`en_US`).
 class AppLocalizationsEnUs extends AppLocalizationsEn {
   AppLocalizationsEnUs() : super('en_US');
 
@@ -981,7 +987,6 @@ class AppLocalizationsEnUs extends AppLocalizationsEn {
 
   @override
   String get signInToStartChat => 'Sign in to start chatting';
-}
 
   @override
   String get chengeCore => 'ChengeCore';
@@ -1002,10 +1007,12 @@ class AppLocalizationsEnUs extends AppLocalizationsEn {
   String get copy => 'Copy';
 
   @override
-  String get webViewNotSupportedOnAllOs => 'Not all operating systems support WebView';
+  String get webViewNotSupportedOnAllOs =>
+      'Not all operating systems support WebView';
 
   @override
-  String get platformWebViewNotSupported => 'Built-in web view is not supported on this platform';
+  String get platformWebViewNotSupported =>
+      'Built-in web view is not supported on this platform';
 
   @override
   String get openCoreEcosystem => 'Open core ecosystem';
@@ -1014,10 +1021,12 @@ class AppLocalizationsEnUs extends AppLocalizationsEn {
   String get openRaisingSystem => 'Open raising system';
 
   @override
-  String get cannotOpenSiteMissingConfig => 'Cannot open site: missing service configuration';
+  String get cannotOpenSiteMissingConfig =>
+      'Cannot open site: missing service configuration';
 
   @override
-  String get accessTokenDescription => 'Access token used for identity verification';
+  String get accessTokenDescription =>
+      'Access token used for identity verification';
 
   @override
   String get confirm => 'OK';
@@ -1045,4 +1054,4 @@ class AppLocalizationsEnUs extends AppLocalizationsEn {
 
   @override
   String get enterToken => 'Please enter token';
-
+}

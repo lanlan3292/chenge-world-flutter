@@ -1,4 +1,4 @@
-import 'package:chenge_world_app/l10n/app_localizations_text.dart';
+import 'package:chenge_world_app/l10n/generated/app_localizations.dart';
 import 'package:chenge_world_app/services/settings_store.dart';
 import 'package:chenge_world_app/theme/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -27,8 +27,8 @@ void main() {
         final english = await AppLocalizations.delegate.load(
           const Locale('en', 'US'),
         );
-        expect(taiwanese.text('热门'), '熱門');
-        expect(english.text('热门'), 'Popular');
+        expect(taiwanese.popular, '熱門');
+        expect(english.popular, 'Popular');
       },
     );
   });

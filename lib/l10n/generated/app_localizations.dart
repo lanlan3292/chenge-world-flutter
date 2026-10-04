@@ -67,8 +67,8 @@ abstract class AppLocalizations {
 
   final String localeName;
 
-  static AppLocalizations? of(BuildContext context) {
-    return Localizations.of<AppLocalizations>(context, AppLocalizations);
+  static AppLocalizations of(BuildContext context) {
+    return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
   }
 
   static const LocalizationsDelegate<AppLocalizations> delegate =
@@ -1090,7 +1090,6 @@ abstract class AppLocalizations {
   /// In zh_CN, this message translates to:
   /// **'请输入 Token'**
   String get enterToken;
-
 }
 
 class _AppLocalizationsDelegate

@@ -1,3 +1,10 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Chinese (`zh`).
 class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
@@ -450,9 +457,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get signInToStartChat => '登录后开始聊天';
-}
-
-/// The translations for Chinese, as used in China (`zh_CN`).
 
   @override
   String get chengeCore => 'ChengeCore';
@@ -516,7 +520,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get enterToken => '请输入 Token';
+}
 
+/// The translations for Chinese, as used in China (`zh_CN`).
 class AppLocalizationsZhCn extends AppLocalizationsZh {
   AppLocalizationsZhCn() : super('zh_CN');
 
@@ -969,9 +975,6 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get signInToStartChat => '登录后开始聊天';
-}
-
-/// The translations for Chinese, as used in Taiwan (`zh_TW`).
 
   @override
   String get chengeCore => 'ChengeCore';
@@ -1035,7 +1038,9 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get enterToken => '请输入 Token';
+}
 
+/// The translations for Chinese, as used in Taiwan (`zh_TW`).
 class AppLocalizationsZhTw extends AppLocalizationsZh {
   AppLocalizationsZhTw() : super('zh_TW');
 
@@ -1488,7 +1493,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get signInToStartChat => '登入後開始聊天';
-}
 
   @override
   String get chengeCore => 'ChengeCore';
@@ -1552,4 +1556,4 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get enterToken => '請輸入 Token';
-
+}

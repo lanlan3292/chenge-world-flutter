@@ -222,7 +222,7 @@ class _AccountPageState extends State<AccountPage> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            signedIn ? AppLocalizations.of(context)!.accountConnected : AppLocalizations.of(context)!.signInForPersonalized,
+                            signedIn ? AppLocalizations.of(context).accountConnected : AppLocalizations.of(context).signInForPersonalized,
                             style: TextStyle(
                               color:
                                   Theme.of(
@@ -551,8 +551,8 @@ class _LoginDialogState extends State<_LoginDialog> {
                 prefixIcon: const Icon(Icons.lock_outline_rounded),
                 suffixIcon: IconButton(
                   tooltip: _obscurePassword
-                      ? AppLocalizations.of(context)!.showPassword
-                      : AppLocalizations.of(context)!.hidePassword,
+                      ? AppLocalizations.of(context).showPassword
+                      : AppLocalizations.of(context).hidePassword,
                   onPressed:
                       () =>
                           setState(() => _obscurePassword = !_obscurePassword),
@@ -601,7 +601,7 @@ class _LoginDialogState extends State<_LoginDialog> {
                 )
                 : const Icon(Icons.login_rounded),
         label: Text(
-          _loading ? AppLocalizations.of(context)!.signingIn : AppLocalizations.of(context)!.signIn,
+          _loading ? AppLocalizations.of(context).signingIn : AppLocalizations.of(context).signIn,
         ),
       ),
     ],
