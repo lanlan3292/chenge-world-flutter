@@ -154,9 +154,9 @@ class _ChengeWorldAppState extends State<ChengeWorldApp>
           darkTheme: darkTheme,
           themeMode: _settings.themeMode,
           locale: switch (_settings.localeCode) {
+            'en_US' => const Locale('en', 'US'),
             'zh_CN' => const Locale('zh', 'CN'),
             'zh_TW' => const Locale('zh', 'TW'),
-            'en_US' => const Locale('en', 'US'),
             'zh_Hans' => const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
             'zh_Hant' => const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
             'ko_KR' => const Locale('ko', 'KR'),
@@ -172,6 +172,20 @@ class _ChengeWorldAppState extends State<ChengeWorldApp>
             Locale('ko', 'KR'),
             Locale('ja', 'JP')
           ],
+          localeResolutionCallback: (Locale? locale, Iterable<Locale> supportedLocales) {
+            if (locale == null) {
+              return supportedLocales.first;
+            }
+
+            for (final supported in supportedLocales) {
+              if (supported.languageCode == locale.languageCode &&
+                  supported.countryCode == locale.countryCode) {
+                return supported;
+              }
+            }
+
+            return supportedLocales.first;
+          },
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           home: AppShell(
             settings: _settings,
