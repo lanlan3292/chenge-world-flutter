@@ -24,6 +24,7 @@ class ChengeCorePage extends StatelessWidget {
       title: AppLocalizations.of(context).chengeCore,
       hashRoute: '#/chengecore',
       themeSkin: 'aqua',
+      hideSiteChrome: true,
     );
   }
 }
@@ -97,6 +98,7 @@ class _SiteWebViewPage extends StatefulWidget {
     required this.title,
     required this.hashRoute,
     required this.themeSkin,
+    this.hideSiteChrome = false,
   });
 
   final String baseUrl;
@@ -106,6 +108,10 @@ class _SiteWebViewPage extends StatefulWidget {
 
   /// Client-fixed skin for this page (`aqua` or `cute`).
   final String themeSkin;
+
+  /// When true (ChengeCore only), remove site `nav` and layout `aside`
+  /// matching the XPaths under `#app`.
+  final bool hideSiteChrome;
 
   @override
   State<_SiteWebViewPage> createState() => _SiteWebViewPageState();
@@ -263,12 +269,62 @@ class _SiteWebViewPageState extends State<_SiteWebViewPage> {
     final skinLiteral = jsonEncode(_skin);
     // Double-encode → JS string value is the JSON object {"skin":"..."}.
     final themeLiteral = jsonEncode(jsonEncode({'skin': _skin}));
+    final hideChromeLiteral = widget.hideSiteChrome ? 'true' : 'false';
 
     final script = """
 (function() {
   var SKIN = $skinLiteral;
   var THEME_JSON = $themeLiteral;
   var TOKEN = $tokenLiteral;
+  var HIDE_CHROME = $hideChromeLiteral;
+
+  // ChengeCore only: drop site chrome nodes
+  // /html/body/div[1]/div/div[6]/aside
+  // /html/body/div[1]/div/nav
+  function removeSiteChrome() {
+    if (!HIDE_CHROME) return;
+    try {
+      var paths = [
+        '/html/body/div[1]/div/div[6]/aside',
+        '/html/body/div[1]/div/nav'
+      ];
+      for (var i = 0; i < paths.length; i++) {
+        var node = document.evaluate(
+          paths[i],
+          document,
+          null,
+          XPathResult.FIRST_ORDERED_NODE_TYPE,
+          null
+        ).singleNodeValue;
+        if (node && node.parentNode) {
+          node.parentNode.removeChild(node);
+        }
+      }
+    } catch (e) {}
+  }
+
+  function installChromeObserver() {
+    if (!HIDE_CHROME) return;
+    if (window.__chengeChromeObserverInstalled) {
+      removeSiteChrome();
+      return;
+    }
+    window.__chengeChromeObserverInstalled = true;
+    removeSiteChrome();
+    try {
+      var root = document.body || document.documentElement;
+      var obs = new MutationObserver(function() {
+        removeSiteChrome();
+      });
+      obs.observe(root, { childList: true, subtree: true });
+    } catch (e) {}
+    try {
+      setTimeout(removeSiteChrome, 0);
+      setTimeout(removeSiteChrome, 300);
+      setTimeout(removeSiteChrome, 1000);
+      setTimeout(removeSiteChrome, 2500);
+    } catch (e) {}
+  }
 
   function applyDomSkin(skin) {
     try {
@@ -298,6 +354,7 @@ class _SiteWebViewPageState extends State<_SiteWebViewPage> {
   }
 
   writeTheme();
+  installChromeObserver();
 
   // Re-apply if SPA mutates theme key after load.
   try {
@@ -408,9 +465,9 @@ class _SiteWebViewPageState extends State<_SiteWebViewPage> {
 
   // Keep DOM skin aligned after SPA settles.
   try {
-    setTimeout(function() { writeTheme(); }, 0);
-    setTimeout(function() { writeTheme(); }, 300);
-    setTimeout(function() { writeTheme(); }, 1000);
+    setTimeout(function() { writeTheme(); removeSiteChrome(); }, 0);
+    setTimeout(function() { writeTheme(); removeSiteChrome(); }, 300);
+    setTimeout(function() { writeTheme(); removeSiteChrome(); }, 1000);
   } catch (e) {}
 })();
 """;
