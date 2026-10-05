@@ -583,27 +583,66 @@ class _CreatePostFab extends StatelessWidget {
   final bool dockedToBottomBar;
   final bool expanded;
 
-  /// M3 NavigationBar height excluding system inset.
+  /// M3 [NavigationBar] material height (destinations row), excluding system inset.
   static const double _shellNavBarHeight = 80;
+
+  /// Bottom offset so the FAB clears the shell bottom bar / screen edge.
+  ///
+  /// Platform differences matter:
+  /// - Android edge-to-edge: system gesture inset + nav bar stack; needs more clearance.
+  /// - Desktop (Windows/macOS/Linux): no gesture inset overlap; nav height alone is enough.
+  /// - Always use [MediaQueryData.viewPadding] (not padding) so the IME cannot lift the FAB.
+  static double _bottomInset(BuildContext context, {required bool docked}) {
+    final mq = MediaQuery.of(context);
+    // Ignore keyboard / viewInsets entirely.
+    final systemBottom = mq.viewPadding.bottom;
+    final platform = Theme.of(context).platform;
+
+    if (!docked) {
+      // Bar hidden or wide layout: rest near the physical bottom.
+      switch (platform) {
+        case TargetPlatform.windows:
+        case TargetPlatform.linux:
+        case TargetPlatform.macOS:
+          return 12;
+        default:
+          return systemBottom + 12;
+      }
+    }
+
+    switch (platform) {
+      case TargetPlatform.android:
+        // Gesture/nav inset + NavigationBar; extra gap avoids occlusion on tall safe areas.
+        return systemBottom + _shellNavBarHeight + 20;
+      case TargetPlatform.iOS:
+        return systemBottom + _shellNavBarHeight + 12;
+      case TargetPlatform.windows:
+      case TargetPlatform.linux:
+      case TargetPlatform.macOS:
+        // Desktop client area already excludes OS taskbar; only clear the in-app nav.
+        return _shellNavBarHeight + 4;
+      default:
+        return systemBottom + _shellNavBarHeight + 12;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    // viewPadding ignores the IME; Scaffold also has resizeToAvoidBottomInset: false.
-    final systemBottom = MediaQuery.viewPaddingOf(context).bottom;
-    // Docked (narrow + bar shown): clear nav bar.
-    // Undocked (wide / bar hidden): sit near the physical bottom edge.
-    final bottom = dockedToBottomBar
-        ? systemBottom + _shellNavBarHeight + 12
-        : systemBottom + 12;
-    return AnimatedPadding(
-      duration: const Duration(milliseconds: 280),
-      curve: Curves.easeOutCubic,
-      padding: EdgeInsets.only(bottom: bottom),
-      child: _AnimatedExtendedFab(
-        onPressed: onPressed,
-        expanded: expanded,
-        icon: const Icon(Icons.edit_rounded),
-        label: AppLocalizations.of(context).createPost,
+    final bottom = _bottomInset(context, docked: dockedToBottomBar);
+    final mq = MediaQuery.of(context);
+    // Strip viewInsets so any ancestor keyboard inset cannot nudge the FAB.
+    return MediaQuery(
+      data: mq.copyWith(viewInsets: EdgeInsets.zero),
+      child: AnimatedPadding(
+        duration: const Duration(milliseconds: 280),
+        curve: Curves.easeOutCubic,
+        padding: EdgeInsets.only(bottom: bottom),
+        child: _AnimatedExtendedFab(
+          onPressed: onPressed,
+          expanded: expanded,
+          icon: const Icon(Icons.edit_rounded),
+          label: AppLocalizations.of(context).createPost,
+        ),
       ),
     );
   }
