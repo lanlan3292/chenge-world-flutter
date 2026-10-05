@@ -293,7 +293,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     onChanged: (value) async {
                       setState(() => _appIcon = value);
                       await AppIconService.setIcon(value);
-                      if (mounted) {
+                      if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text(

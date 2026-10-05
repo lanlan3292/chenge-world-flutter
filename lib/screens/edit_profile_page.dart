@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -128,7 +126,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       final bytes = await file.readAsBytes();
       final name = file.name.isNotEmpty ? file.name : 'avatar.jpg';
       final url = await widget.api.uploadFile(
-        bytes: bytes is Uint8List ? bytes : Uint8List.fromList(bytes),
+        bytes: bytes,
         filename: name,
         token: widget.token,
         businessType: 'person_avatar',
