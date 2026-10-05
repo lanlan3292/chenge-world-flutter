@@ -259,8 +259,9 @@ class _SettingsPageState extends State<SettingsPage> {
                     'zh_TW': "中文 (台灣)",
                     'zh_Hans': "中文 (简体)",
                     'zh_Hant': "中文 (繁體)",
-                    'ko_KR': "한국어 (대한민국)",
                     'en_US': "English (United States)",
+                    'ko_KR': "한국어 (대한민국)",
+                    'ja_JP': "日本語 (日本)",
                   },
                   onChanged: (value) async {
                     setState(() => _localeCode = value);
@@ -412,22 +413,21 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   onTap: _openOfficialSite,
                 ),
-                if (widget.signedIn && widget.token != null)
-                  ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-                    leading: Icon(
-                      Icons.key_rounded,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    title: Text(
-                      AppLocalizations.of(context).accessToken,
-                      style: const TextStyle(fontWeight: FontWeight.w700),
-                    ),
-                    subtitle: Text(
-                      AppLocalizations.of(context).accessTokenDescription,
-                    ),
-                    onTap: _showTokenDialog,
+                ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 4),
+                  leading: Icon(
+                    Icons.key_rounded,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
+                  title: Text(
+                    AppLocalizations.of(context).accessToken,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  subtitle: Text(
+                    AppLocalizations.of(context).accessTokenDescription,
+                  ),
+                  onTap: _showTokenDialog,
+                ),
                 const Divider(height: 28),
                 ListTile(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 4),
@@ -503,8 +503,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _showTokenDialog() async {
-    final current = widget.token;
-    if (current == null || current.isEmpty) return;
+    final current = widget.token ?? '';
 
     final result = await showDialog<String>(
       context: context,

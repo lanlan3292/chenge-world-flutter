@@ -81,7 +81,7 @@ class _AccountPageState extends State<AccountPage> {
       height: 60,
       decoration: BoxDecoration(
         color: scheme.tertiaryContainer,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(6),
       ),
       clipBehavior: Clip.antiAlias,
       child:

@@ -1,0 +1,642 @@
+{
+  "@@locale": "ja_JP",
+  "communityTitle": "ChengeWorld コミュニティ",
+  "discover": "発見",
+  "social": "ソーシャル",
+  "store": "ストア",
+  "account": "アカウント",
+  "settings": "設定",
+  "appearance": "外観",
+  "themeMode": "テーマモード",
+  "followSystem": "システムに従う",
+  "light": "ライト",
+  "dark": "ダーク",
+  "language": "言語",
+  "dynamicColor": "ダイナミックカラー",
+  "dynamicColorDescription": "Android 12+ の壁紙の色を使用（Material You）",
+  "themeColor": "テーマカラー",
+  "systemBars": "システムバー",
+  "statusBarImmersive": "ステータスバーを透過",
+  "statusBarDescription": "コンテンツを透過ステータスバーの背後まで拡張します",
+  "navigationBarImmersive": "ナビゲーションバーを透過",
+  "navigationBarDescription": "コンテンツを透過ナビゲーションバーの背後まで拡張します",
+  "scrollBehavior": "スクロール動作",
+  "autoHideTopBar": "トップバーを自動非表示",
+  "autoHideTopDescription": "発見/ストアで下にスクロールするとアプリバーを非表示にします（既定でオン）",
+  "autoHideBottomBar": "ボトムバーを自動非表示",
+  "autoHideBottomDescription": "下にスクロールするとボトムナビゲーションを非表示にします。ワイド画面ではレールは表示されたままです",
+  "chat": "チャット",
+  "showSelfAvatar": "チャットで自分のアバターを表示",
+  "showSelfAvatarDescription": "送信メッセージの横に自分のアバターを表示します（既定でオフ）",
+  "showPeerAvatar": "個人チャットで相手のアバターを表示",
+  "showPeerAvatarDescription": "個人メッセージの横に相手のアバターを表示します。グループのアバターは常に表示されます（既定でオフ）",
+  "systemGestures": "システムジェスチャー",
+  "predictiveBack": "予測型戻る",
+  "predictiveBackDescription": "Android 13+ で予測型戻るアニメーションを使用します（既定でオフ）",
+  "layout": "レイアウト",
+  "feedColumns": "発見グリッドの列数",
+  "shopColumns": "ストアグリッドの列数",
+  "columnRange": "現在: {min}～{max} 列（スペースがある場合はこの範囲内で自動調整）",
+  "@columnRange": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "minimumColumns": "最小 {count}",
+  "@minimumColumns": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "maximumColumns": "最大 {count}",
+  "@maximumColumns": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "postCount": "投稿 {count} 件",
+  "@postCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pageCount": "{total} ページ中 {page} ページ",
+  "@pageCount": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "itemCount": "商品 {count} 件",
+  "@itemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rightNow": "今話していること",
+  "freshDiscussions": "コミュニティの新しい話題をチェック",
+  "searchPostsAndTopics": "投稿とトピックを検索",
+  "search": "検索",
+  "refreshPosts": "投稿を更新",
+  "latest": "最新",
+  "popular": "人気",
+  "featured": "注目",
+  "noPosts": "まだ投稿がありません",
+  "noPostsHint": "別のキーワードを試すか、後でもう一度確認してください",
+  "retry": "再試行",
+  "previousPage": "前のページ",
+  "nextPage": "次のページ",
+  "signOut": "ログアウト",
+  "confirmSignOut": "ChengeWorld からログアウトしてもよろしいですか？",
+  "cancel": "キャンセル",
+  "exit": "ログアウト",
+  "signedOut": "ログアウトしました",
+  "accountSettingsSignIn": "アカウント設定を管理するにはログインしてください",
+  "signedIn": "ログイン済み",
+  "welcome": "コミュニティへようこそ",
+  "accountConnected": "アカウントは ChengeWorld に接続されています",
+  "signInForPersonalized": "ログインしてパーソナライズされたコンテンツを探索",
+  "taskCenter": "タスクセンター",
+  "taskCenterDescription": "チェックイン、タスク完了で ChengeCoin を獲得",
+  "signIn": "ログイン",
+  "signInAccount": "ログイン",
+  "signInSuccess": "ログインに成功しました",
+  "signInToChengeWorld": "ChengeWorld にログイン",
+  "username": "ユーザー名",
+  "enterUsername": "ユーザー名を入力",
+  "password": "パスワード",
+  "showPassword": "パスワードを表示",
+  "hidePassword": "パスワードを非表示",
+  "enterPassword": "パスワードを入力",
+  "signingIn": "ログイン中…",
+  "contacts": "連絡先",
+  "productDetails": "商品詳細",
+  "post": "投稿",
+  "shopNow": "ストア",
+  "myAssets": "マイ資産",
+  "orders": "注文",
+  "discoverItems": "商品を発見",
+  "searchProducts": "商品を検索",
+  "sortProducts": "商品を並べ替え",
+  "newestArrivals": "新着",
+  "popularProducts": "人気商品",
+  "priceLowToHigh": "価格: 安い順",
+  "priceHighToLow": "価格: 高い順",
+  "ratingFirst": "評価が高い順",
+  "all": "すべて",
+  "files": "ファイル",
+  "emojiPacks": "絵文字パック",
+  "components": "コンポーネント",
+  "applications": "アプリケーション",
+  "executables": "実行ファイル",
+  "libraries": "ライブラリ",
+  "functionLibraries": "関数ライブラリ",
+  "noAssetsOrOrdersSignIn": "資産と注文を表示するにはログインしてください",
+  "goSignIn": "ログイン",
+  "shopUnavailable": "ストアは一時的に利用できません",
+  "checkNetworkAndRetry": "接続を確認して再試行してください",
+  "noProducts": "まだ商品がありません",
+  "tryOtherSearch": "別のキーワードやカテゴリを試してください",
+  "noAssets": "まだ資産がありません",
+  "noOrders": "まだ注文がありません",
+  "purchasesShowHere": "ストアでの購入内容がここに表示されます",
+  "refresh": "更新",
+  "refreshTasks": "タスクを更新",
+  "claimComplete": "完了する",
+  "rewardClaimed": "報酬を受け取りました: +{coins} CC",
+  "@rewardClaimed": {
+    "placeholders": {
+      "coins": {
+        "type": "String"
+      }
+    }
+  },
+  "productPurchaseSuccess": "購入が完了しました。資産に追加されました",
+  "signInToLike": "この投稿にいいねするにはログインしてください",
+  "signInToComment": "コメントするにはログインしてください",
+  "commentPublished": "コメントを投稿しました",
+  "noComments": "まだコメントがありません",
+  "back": "戻る",
+  "commentCount": "コメント · {count}",
+  "@commentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "refreshComments": "コメントを更新",
+  "cancelReply": "返信をキャンセル",
+  "writeComment": "コメントを書く…",
+  "reply": "返信",
+  "publishing": "投稿中…",
+  "publishComment": "コメントを投稿",
+  "liked": "いいね済み",
+  "like": "いいね",
+  "commentsWithCount": "コメント ({count})",
+  "@commentsWithCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noMessages": "まだメッセージがありません。挨拶してみましょう！",
+  "online": "オンライン",
+  "offline": "オフライン",
+  "groupChat": "グループチャット",
+  "loadOlderMessages": "以前のメッセージを読み込む",
+  "backToConversations": "会話一覧に戻る",
+  "searchConversation": "会話を検索",
+  "addressBook": "連絡先",
+  "noFriendsToInvite": "招待できる友達がまだいません",
+  "selectConversation": "会話を選択してチャットを開始",
+  "refreshConversations": "会話を更新",
+  "signInToStartChat": "チャットを開始するにはログインしてください",
+  "chengeCore": "ChengeCore",
+  "signInWithToken": "Token でログイン",
+  "openOfficialSiteWithWebView": "WebView で公式サイトを開く",
+  "close": "閉じる",
+  "raising": "育成",
+  "copy": "コピー",
+  "webViewNotSupportedOnAllOs": "すべての OS で WebView がサポートされているわけではありません",
+  "platformWebViewNotSupported": "このプラットフォームでは内蔵 Web ビューはサポートされていません",
+  "openCoreEcosystem": "コアエコシステムを開く",
+  "openRaisingSystem": "育成システムを開く",
+  "cannotOpenSiteMissingConfig": "サイトを開けません: サービス設定がありません",
+  "accessTokenDescription": "本人確認に使用するアクセストークン",
+  "confirm": "OK",
+  "confirmSignIn": "ログインを確認",
+  "pasteJwtToken": "JWT Token を貼り付け",
+  "accessToken": "アクセストークン",
+  "accessTokenCopied": "アクセストークンをコピーしました",
+  "accessTokenUpdated": "アクセストークンを更新しました",
+  "signInToUseChengeCore": "ChengeCore を使用するにはログインしてください",
+  "signInToUseRaising": "育成を使用するにはログインしてください",
+  "enterToken": "Token を入力してください",
+  "communityMerchant": "コミュニティ販売者",
+  "product": "商品",
+  "productInitial": "商",
+  "stockCount": "在庫 {count}",
+  "@stockCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "soldCount": "販売済み {count}",
+  "@soldCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "ratingReviews": "{rating} · {count} 件のレビュー",
+  "@ratingReviews": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "productDescription": "説明",
+  "purchasedContent": "購入済みコンテンツ",
+  "purchaseToViewContent": "完全なコンテンツを表示するには購入してください",
+  "openOrDownloadFile": "ファイルを開く/ダウンロード",
+  "balanceCc": "残高 {amount} CC",
+  "@balanceCc": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buying": "購入中…",
+  "buy": "購入",
+  "yourListedProduct": "これはあなたが出品した商品です",
+  "backToShop": "ストアに戻る",
+  "holdingQuantityType": "所持 {quantity} 件 · {type}",
+  "@holdingQuantityType": {
+    "placeholders": {
+      "quantity": {
+        "type": "Object"
+      },
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "orderPending": "支払い待ち",
+  "orderPaid": "支払い済み",
+  "orderRefunded": "返金済み",
+  "statusUnknown": "不明なステータス",
+  "conversationNotFound": "会話が見つかりません。更新して再試行してください",
+  "noMatchingConversations": "一致する会話がありません",
+  "noConversationsYet": "まだ会話がありません",
+  "goContactsToChat": "連絡先に移動してチャットを開始",
+  "friendInitial": "友",
+  "noMessagesYetShort": "まだメッセージがありません",
+  "previewEmoji": "[絵文字] {key}",
+  "@previewEmoji": {
+    "placeholders": {
+      "key": {
+        "type": "String"
+      }
+    }
+  },
+  "previewSharedPost": "[共有投稿]",
+  "previewOrder": "[商品注文]",
+  "emojiMessage": "絵文字メッセージ",
+  "me": "自分",
+  "sharedPost": "共有投稿",
+  "productOrder": "商品注文",
+  "cannotOpenPostMissingId": "投稿を開けません: 共有に投稿 ID がありません",
+  "cannotOpenProductMissingId": "商品を開けません: 共有に商品 ID がありません",
+  "chengeUser": "Chenge ユーザー",
+  "signInToPurchase": "購入するにはログインしてください",
+  "typeMessage": "メッセージを入力…",
+  "sendMessage": "メッセージを送信",
+  "emoji": "絵文字",
+  "previewEmojiOnly": "[絵文字]",
+  "enterGroupNameKeyword": "グループ名のキーワードを入力",
+  "enterUserSearchHint": "ユーザー名、ニックネーム、またはメールを入力",
+  "friendAddedBack": "追加し返しました — これで友達です",
+  "friendRequestSent": "友達リクエストを送信しました",
+  "rejectFriendRequest": "友達リクエストを拒否",
+  "removeFriend": "友達を削除",
+  "confirmRejectFriendRequest": "{name} からの友達リクエストを拒否しますか？",
+  "@confirmRejectFriendRequest": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmRemoveFriend": "{name} を友達から削除しますか？",
+  "@confirmRemoveFriend": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reject": "拒否",
+  "remove": "削除",
+  "friendRequestRejected": "友達リクエストを拒否しました",
+  "friendRemoved": "友達を削除しました",
+  "remarkCleared": "メモをクリアしました",
+  "remarkSaved": "メモを保存しました",
+  "joinedGroup": "「{name}」に参加しました",
+  "@joinedGroup": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "enterGroupName": "グループ名を入力してください",
+  "groupCreated": "グループチャット「{name}」を作成しました",
+  "@groupCreated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "createGroupChat": "グループチャットを作成",
+  "signInToManageContacts": "連絡先を管理するにはログインしてください",
+  "contactsSubtitle": "ユーザー検索、グループ参加、友達リクエストの管理",
+  "friendsTab": "友達 {count}",
+  "@friendsTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupsTab": "グループ {count}",
+  "@groupsTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "requestsTab": "リクエスト {count}",
+  "@requestsTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchUsers": "ユーザー",
+  "searchGroups": "グループ",
+  "groupNameKeyword": "グループ名キーワード",
+  "userSearchHint": "ユーザー名、ニックネーム、またはメール",
+  "searchGroupsTooltip": "グループを検索",
+  "searchUsersTooltip": "ユーザーを検索",
+  "searchPublicGroups": "公開グループを検索",
+  "searchChengeUsers": "ChengeWorld ユーザーを検索",
+  "searchPublicGroupsHint": "グループ名を入力して、気になるグループに参加",
+  "searchUsersHint": "ユーザー名、ニックネーム、またはメールに対応",
+  "noMatchingGroups": "一致するグループがありません",
+  "noMatchingPeople": "一致する人がいません",
+  "tryOtherKeywords": "別のキーワードを試してください",
+  "noGroupsYet": "まだグループがありません",
+  "noGroupsHint": "グループを作成するか、検索から公開グループに参加してください",
+  "noFriendsYet": "まだ友達がいません",
+  "noFriendsHint": "ユーザー名やニックネームで検索して新しい人と出会いましょう",
+  "noPendingRequests": "保留中のリクエストはありません",
+  "noPendingRequestsHint": "新しい友達リクエストはここに表示されます",
+  "groupTapToJoin": "グループ · タップして参加",
+  "join": "参加",
+  "enterGroup": "グループに入る",
+  "requestAddYou": "@{username} · 友達追加をリクエスト",
+  "@requestAddYou": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "onlineWithRemark": "{status} · メモ: {remark} · @{username}",
+  "@onlineWithRemark": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "remark": {
+        "type": "String"
+      },
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "friend": "友達",
+  "addBack": "追加し返す",
+  "requested": "リクエスト済み",
+  "add": "追加",
+  "acceptAndAddBack": "承認して追加し返す",
+  "rejectRequest": "リクエストを拒否",
+  "friendActions": "友達操作",
+  "sendMessageAction": "メッセージ",
+  "editRemark": "メモを編集",
+  "setRemark": "メモを設定",
+  "removeFriendRelation": "友達を削除",
+  "setFriendRemark": "友達メモを設定",
+  "remarkName": "メモ名",
+  "remarkHintClear": "空欄にするとメモをクリアします",
+  "save": "保存",
+  "groupName": "グループ名",
+  "groupNameHint": "グループに名前を付けてください",
+  "selectMembersOptional": "メンバーを選択（任意）",
+  "create": "作成",
+  "newConversation": "新しいチャット",
+  "deleteSession": "セッションを削除",
+  "confirmDeleteSession": "「{name}」を削除しますか？チャット履歴も削除されます。",
+  "@confirmDeleteSession": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "delete": "削除",
+  "newChat": "新しいチャット",
+  "refreshSessions": "セッションを更新",
+  "signInToUseAiAgent": "AI Agent を使用するにはログインしてください",
+  "aiAgentSubtitle": "マルチセッション、ストリーミング返信、MCP ツール",
+  "selectOrCreateAiSession": "AI セッションを選択または作成",
+  "aiSessions": "AI セッション",
+  "noAiChatsYet": "まだ AI チャットがありません",
+  "tapNewToStartChat": "下の新規をタップしてチャットを開始",
+  "thinking": "考え中…",
+  "aiRequestFailed": "AI リクエストに失敗しました",
+  "noTextReply": "（テキスト返信なし）",
+  "waitingConfirm": "確認待ち…",
+  "receivedType": "{type} を受信",
+  "@receivedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "backToSessionList": "セッション一覧に戻る",
+  "sendMessageToStart": "メッセージを送信してチャットを開始",
+  "askAiAgent": "AI Agent に質問…",
+  "emojiPackTitle": "絵文字パック {id}",
+  "@emojiPackTitle": {
+    "placeholders": {
+      "id": {
+        "type": "Object"
+      }
+    }
+  },
+  "noEmojiPacksBuyInShop": "まだ絵文字パックがありません — ストアで購入してください",
+  "replyToUser": "@{name} に返信",
+  "@replyToUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "user": "ユーザー",
+  "anonymousUser": "匿名",
+  "timeUnknown": "不明な時刻",
+  "dateYmd": "{year}年{month}月{day}日",
+  "@dateYmd": {
+    "placeholders": {
+      "year": {
+        "type": "int"
+      },
+      "month": {
+        "type": "int"
+      },
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "tasksInProgress": "進行中",
+  "tasksNoInProgress": "進行中のタスクはありません",
+  "tasksCompletedSection": "完了",
+  "tasksRewardHint": "報酬は手動で受け取る必要があります · タスクは周期ごとに更新されます",
+  "tasksTodayGoal": "今日の目標",
+  "tasksTodayGoalSubtitle": "コミュニティタスクを完了して ChengeCoin を獲得",
+  "tasksProgressSummary": "保留中 · {completed} 完了",
+  "@tasksProgressSummary": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      }
+    }
+  },
+  "taskClaimable": "受け取り可能",
+  "taskCompletedBadge": "完了",
+  "taskCheckinStreak": "{streak} 日連続チェックイン · 合計 {totalDays} 日",
+  "@taskCheckinStreak": {
+    "placeholders": {
+      "streak": {
+        "type": "int"
+      },
+      "totalDays": {
+        "type": "int"
+      }
+    }
+  },
+  "checkIn": "チェックイン",
+  "claim": "受け取る",
+  "statusBarTopHideMask": "トップバー非表示時のステータスバーマスク",
+  "statusBarTopHideMaskDescription": "トップバーが自動非表示になる場合、コンテンツがステータスバーに重ならないよう半透明のテーマ背景をステータスバーに使用します（既定でオン）",
+  "siteAndToken": "サイトとトークン",
+  "officialSite": "公式サイト",
+  "webViewInitFailed": "WebView の初期化に失敗しました（{errorType}）: {error}\nWindows には Edge WebView2 Runtime が必要です。",
+  "@webViewInitFailed": {
+    "placeholders": {
+      "errorType": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "registerAccount": "アカウント作成",
+  "registerTitle": "ChengeWorld に登録",
+  "registerSuccess": "登録に成功しました。ログインしてください。",
+  "nicknameOptional": "ニックネーム（任意）",
+  "email": "メール",
+  "enterEmail": "メールを入力",
+  "invalidEmail": "メール形式が正しくありません",
+  "emailCode": "メール認証コード",
+  "enterEmailCode": "認証コードを入力",
+  "getEmailCode": "コードを取得",
+  "sendingCode": "送信中",
+  "emailCodeSent": "コードを送信しました（開発環境ではバックエンドログを確認してください）",
+  "fillEmailFirst": "先にメールを入力してください",
+  "passwordMinSix": "パスワード（6文字以上）",
+  "passwordTooShort": "パスワードは6文字以上である必要があります",
+  "register": "登録",
+  "registering": "登録中…",
+  "clearCache": "キャッシュをクリア",
+  "clearCacheDescription": "ログアウトせずにローカル画像キャッシュをクリアします",
+  "clearCacheConfirm": "ローカルキャッシュをクリアしますか？",
+  "clearCacheDone": "キャッシュをクリアしました",
+  "clearingCache": "クリア中…",
+  "accessTokenCleared": "アクセストークンをクリアしました",
+  "createPost": "新規投稿",
+  "publishPost": "公開",
+  "postTitle": "タイトル",
+  "postContent": "本文（Markdown）",
+  "markdownHint": "Markdown に対応。画像を挿入できます。",
+  "insertImage": "画像を挿入",
+  "coverImage": "カバー画像",
+  "chooseCover": "カバーを選択",
+  "removeCover": "カバーを削除",
+  "category": "カテゴリ",
+  "selectCategoryHint": "カテゴリを選択してください",
+  "noCategories": "利用可能なカテゴリがありません",
+  "titleRequired": "タイトルを入力してください",
+  "contentRequired": "本文を入力してください",
+  "postPublished": "投稿しました",
+  "signInToCreatePost": "投稿を作成するにはログインしてください",
+  "tagsOptional": "タグ（任意）",
+  "tagsHint": "カンマまたはスペースで区切る",
+  "saveDraft": "下書きを保存",
+  "draftSaved": "下書きを保存しました",
+  "draftAutoSaved": "{time} に下書きを自動保存しました",
+  "@draftAutoSaved": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreDraftTitle": "下書きを復元しますか？",
+  "restoreDraftMessage": "未公開の下書きが見つかりました。復元しますか？",
+  "restoreDraft": "復元",
+  "discardDraft": "破棄",
+  "hotTags": "人気タグ",
+  "attachmentUrls": "添付ファイル URL",
+  "attachmentUrlsHint": "任意の添付ファイル URL。Bilibili 動画リンクも対応",
+  "attachmentUrlHint": "https://…",
+  "addAttachmentUrl": "添付 URL を追加",
+  "removeAttachment": "添付を削除",
+  "maxImagesReached": "画像は最大 {count} 枚までです",
+  "@maxImagesReached": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "articleImages": "記事画像",
+  "articleImagesHint": "記事ギャラリー用に最大5枚（Markdown ではありません）。カバー未設定の場合は最初の画像がカバーとして使用されます。",
+  "deleteImage": "画像を削除"
+}
