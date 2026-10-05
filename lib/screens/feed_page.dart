@@ -68,6 +68,11 @@ class _FeedPageState extends State<FeedPage> {
     if (!widget.autoHideBottomBar && !_chromeVisible) {
       _setChromeVisible(true);
     }
+    // After wide→narrow, re-push chrome state so the shell bar is not stuck hidden.
+    if (widget.autoHideBottomBar && !oldWidget.autoHideBottomBar) {
+      // Always show chrome when returning to a layout that has a bottom bar.
+      _setChromeVisible(true);
+    }
   }
 
   @override
@@ -245,8 +250,10 @@ void _onScroll() {
           widget.token != null && widget.token!.isNotEmpty
               ? _CreatePostFab(
                 onPressed: _openCreatePost,
-                // Dock to bottom nav when chrome is shown; sink to screen corner when hidden.
-                dockedToBottomBar: !widget.autoHideBottomBar || _chromeVisible,
+                // Wide layout has no shell bottom bar — never reserve nav height.
+                dockedToBottomBar:
+                    MediaQuery.sizeOf(context).width < 760 &&
+                    (!widget.autoHideBottomBar || _chromeVisible),
                 expanded: _fabExpanded
               )
               : null,
@@ -570,16 +577,20 @@ class _CreatePostFab extends StatelessWidget {
   final bool dockedToBottomBar;
   final bool expanded;
 
+  /// M3 NavigationBar height excluding system inset.
+  static const double _shellNavBarHeight = 80;
+
   @override
   Widget build(BuildContext context) {
+    // viewPadding ignores the IME; padding.bottom would jump with the keyboard.
+    final systemBottom = MediaQuery.viewPaddingOf(context).bottom;
+    final bottom = dockedToBottomBar
+        ? systemBottom + _shellNavBarHeight + 8
+        : systemBottom + 12;
     return AnimatedPadding(
-      duration: const Duration(milliseconds: 220),
-      curve: Curves.easeOut,
-      padding: EdgeInsets.only(
-        bottom:
-            MediaQuery.paddingOf(context).bottom +
-            (dockedToBottomBar ? 80 + 24 : 8),
-      ),
+      duration: const Duration(milliseconds: 280),
+      curve: Curves.easeOutCubic,
+      padding: EdgeInsets.only(bottom: bottom),
       child: _AnimatedExtendedFab(
         onPressed: onPressed,
         expanded: expanded,

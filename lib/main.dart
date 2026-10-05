@@ -328,12 +328,22 @@ class _AppShellState extends State<AppShell> {
     final wide = MediaQuery.sizeOf(context).width >= 760;
     final hideBottomBar = !wide && widget.settings.autoHideBottomBar;
 
+    // Wide layout has no bottom bar; reset chrome so returning to narrow shows it.
+    if (wide && !_chromeVisible.value) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && !_chromeVisible.value) {
+          _chromeVisible.value = true;
+        }
+      });
+    }
+
     void onChromeVisibilityChanged(bool visible) {
-      if (wide) return;
+      // Keep notifier in sync even on wide layout so narrow↔wide transitions
+      // do not leave the bottom bar stuck hidden.
       if (_selectedIndex != 0 && _selectedIndex != 2) return;
       final trackTop = widget.settings.autoHideTopBar;
       final trackBottom = hideBottomBar;
-      // 顶栏或底栏任一需要跟随时都更新，供状态栏遮罩与底栏动画使用。
+      // When neither bar tracks scroll, force chrome visible.
       if (!trackTop && !trackBottom) {
         if (!_chromeVisible.value) _chromeVisible.value = true;
         return;
@@ -392,6 +402,8 @@ class _AppShellState extends State<AppShell> {
     ];
 
     return Scaffold(
+      // Keep shell chrome fixed; do not lift the bottom bar with the keyboard.
+      resizeToAvoidBottomInset: false,
       extendBody: !wide,
       body: Stack(
         fit: StackFit.expand,
