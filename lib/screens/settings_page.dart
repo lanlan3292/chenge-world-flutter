@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 
 import '../services/chenge_api.dart';
 import '../services/settings_store.dart';
+import '../services/app_icon_service.dart';
 import 'chenge_core_page.dart';
 import '../theme/app_theme.dart';
 
@@ -51,6 +52,7 @@ class _SettingsPageState extends State<SettingsPage> {
   late bool _chatShowPeerAvatar;
   late ThemeMode _themeMode;
   late String _localeCode;
+  late String _appIcon;
 
   @override
   void initState() {
@@ -71,6 +73,15 @@ class _SettingsPageState extends State<SettingsPage> {
     _shopMaxColumns = widget.settings.shopMaxColumns;
     _chatShowSelfAvatar = widget.settings.chatShowSelfAvatar;
     _chatShowPeerAvatar = widget.settings.chatShowPeerAvatar;
+    _appIcon = AppIconService.defaultIcon;
+    _loadAppIcon();
+  }
+
+  Future<void> _loadAppIcon() async {
+    final icon = await AppIconService.getIcon();
+    if (mounted) {
+      setState(() => _appIcon = icon);
+    }
   }
 
   Future<void> _updateSetting(Future<void> Function() update) async {
@@ -270,6 +281,30 @@ class _SettingsPageState extends State<SettingsPage> {
                     );
                   },
                 ),
+                // App icon selection (Android only, uses Activity Alias)
+                if (Theme.of(context).platform == TargetPlatform.android)
+                  _selectionTile<String>(
+                    title: '应用图标 / App Icon',
+                    value: _appIcon,
+                    items: {
+                      for (final name in AppIconService.availableIcons)
+                        name: AppIconService.labelOf(name),
+                    },
+                    onChanged: (value) async {
+                      setState(() => _appIcon = value);
+                      await AppIconService.setIcon(value);
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              '图标已切换。可能需要退出应用或重启桌面启动器后才能看到新图标。',
+                            ),
+                            duration: Duration(seconds: 4),
+                          ),
+                        );
+                      }
+                    },
+                  ),
                 _switchTile(
                   icon: Icons.wallpaper_rounded,
                   title: AppLocalizations.of(context).dynamicColor,
