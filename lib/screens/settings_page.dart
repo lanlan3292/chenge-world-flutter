@@ -257,6 +257,9 @@ class _SettingsPageState extends State<SettingsPage> {
                     'system': AppLocalizations.of(context).followSystem,
                     'zh_CN': "中文 (中国)",
                     'zh_TW': "中文 (台灣)",
+                    'zh_hans': "中文 (简体)",
+                    'zh_hant': "中文 (繁體)",
+                    'ko_KR': "한국어 (대한민국)",
                     'en_US': "English (United States)",
                   },
                   onChanged: (value) async {

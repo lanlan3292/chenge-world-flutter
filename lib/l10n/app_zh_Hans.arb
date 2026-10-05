@@ -1,0 +1,642 @@
+{
+  "@@locale": "zh_Hans",
+  "communityTitle": "ChengeWorld 社区广场",
+  "discover": "发现",
+  "social": "社交",
+  "store": "商城",
+  "account": "我的",
+  "settings": "设置",
+  "appearance": "外观",
+  "themeMode": "主题模式",
+  "followSystem": "跟随系统",
+  "light": "浅色",
+  "dark": "深色",
+  "language": "语言",
+  "dynamicColor": "动态取色",
+  "dynamicColorDescription": "使用 Android 12+ 壁纸配色（Material You）",
+  "themeColor": "主题色",
+  "systemBars": "系统栏",
+  "statusBarImmersive": "状态栏沉浸",
+  "statusBarDescription": "内容延伸至状态栏下方，状态栏透明",
+  "navigationBarImmersive": "导航栏沉浸",
+  "navigationBarDescription": "内容延伸至导航栏下方，导航栏透明",
+  "scrollBehavior": "滚动行为",
+  "autoHideTopBar": "自动隐藏顶栏",
+  "autoHideTopDescription": "在发现 / 商城向下滚动时收起页面顶栏（默认开启）",
+  "autoHideBottomBar": "自动隐藏底栏",
+  "autoHideBottomDescription": "在发现 / 商城向下滚动时收起底部导航；宽屏侧边栏不会隐藏",
+  "chat": "聊天",
+  "showSelfAvatar": "在会话聊天显示自己的头像",
+  "showSelfAvatarDescription": "自己发送的消息右侧显示头像（默认关闭）",
+  "showPeerAvatar": "在私人会话聊天显示对方的头像",
+  "showPeerAvatarDescription": "私聊中对方消息左侧显示头像；群聊始终显示成员头像（默认关闭）",
+  "systemGestures": "系统手势",
+  "predictiveBack": "预见式返回",
+  "predictiveBackDescription": "Android 13+ 页面过渡使用预见式返回动画（默认关闭）",
+  "layout": "布局",
+  "feedColumns": "发现页列数范围",
+  "shopColumns": "商店页列数范围",
+  "columnRange": "当前：{min} – {max} 列（宽度足够时在此范围内自适应）",
+  "@columnRange": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "minimumColumns": "最小 {count}",
+  "@minimumColumns": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "maximumColumns": "最大 {count}",
+  "@maximumColumns": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "postCount": "{count} 篇",
+  "@postCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pageCount": "第 {page} / {total} 页",
+  "@pageCount": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "itemCount": "{count} 件商品",
+  "@itemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rightNow": "此刻在聊",
+  "freshDiscussions": "看看社区里的新鲜讨论",
+  "searchPostsAndTopics": "搜索帖子和话题",
+  "search": "搜索",
+  "refreshPosts": "刷新帖子",
+  "latest": "最新",
+  "popular": "热门",
+  "featured": "精华",
+  "noPosts": "暂时没有帖子",
+  "noPostsHint": "换个关键词或稍后再来看看",
+  "retry": "重试",
+  "previousPage": "上一页",
+  "nextPage": "下一页",
+  "signOut": "退出登录",
+  "confirmSignOut": "确定退出当前 ChengeWorld 账户？",
+  "cancel": "取消",
+  "exit": "退出",
+  "signedOut": "已退出登录",
+  "accountSettingsSignIn": "登录后可管理账户设置",
+  "signedIn": "已登录",
+  "welcome": "欢迎来到社区",
+  "accountConnected": "账户已连接到 ChengeWorld",
+  "signInForPersonalized": "登录后浏览个性化内容",
+  "taskCenter": "任务中心",
+  "taskCenterDescription": "签到、完成任务并领取 ChengeCoin",
+  "signIn": "登录",
+  "signInAccount": "登录账户",
+  "signInSuccess": "登录成功",
+  "signInToChengeWorld": "登录 ChengeWorld",
+  "username": "用户名",
+  "enterUsername": "请输入用户名",
+  "password": "密码",
+  "showPassword": "显示密码",
+  "hidePassword": "隐藏密码",
+  "enterPassword": "请输入密码",
+  "signingIn": "正在登录",
+  "contacts": "通讯录",
+  "productDetails": "商品详情",
+  "post": "帖子",
+  "shopNow": "逛商城",
+  "myAssets": "我的资产",
+  "orders": "订单",
+  "discoverItems": "发现好物",
+  "searchProducts": "搜索商品",
+  "sortProducts": "排序商品",
+  "newestArrivals": "最新上架",
+  "popularProducts": "热门商品",
+  "priceLowToHigh": "价格从低到高",
+  "priceHighToLow": "价格从高到低",
+  "ratingFirst": "评分优先",
+  "all": "全部",
+  "files": "文件",
+  "emojiPacks": "表情包",
+  "components": "组件",
+  "applications": "应用",
+  "executables": "可执行",
+  "libraries": "类库",
+  "functionLibraries": "函数库",
+  "noAssetsOrOrdersSignIn": "登录后查看资产与订单",
+  "goSignIn": "前往登录",
+  "shopUnavailable": "商城暂时不可用",
+  "checkNetworkAndRetry": "检查网络后重试",
+  "noProducts": "暂时没有商品",
+  "tryOtherSearch": "试试其他关键词或分类",
+  "noAssets": "还没有资产",
+  "noOrders": "还没有订单",
+  "purchasesShowHere": "在商城购买的内容会显示在这里",
+  "refresh": "刷新",
+  "refreshTasks": "刷新任务",
+  "claimComplete": "去完成",
+  "rewardClaimed": "奖励已领取，+{coins} CC",
+  "@rewardClaimed": {
+    "placeholders": {
+      "coins": {
+        "type": "String"
+      }
+    }
+  },
+  "productPurchaseSuccess": "购买成功，已加入资产清单",
+  "signInToLike": "登录后即可点赞",
+  "signInToComment": "登录后即可发表评论",
+  "commentPublished": "评论已发表",
+  "noComments": "还没有评论",
+  "back": "返回",
+  "commentCount": "评论 · {count}",
+  "@commentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "refreshComments": "刷新评论",
+  "cancelReply": "取消回复",
+  "writeComment": "写下你的评论…",
+  "reply": "回复",
+  "publishing": "正在发表",
+  "publishComment": "发表评论",
+  "liked": "已点赞",
+  "like": "点赞",
+  "commentsWithCount": "评论 ({count})",
+  "@commentsWithCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noMessages": "还没有消息，打个招呼吧",
+  "online": "在线",
+  "offline": "离线",
+  "groupChat": "群聊",
+  "loadOlderMessages": "加载更早消息",
+  "backToConversations": "返回会话列表",
+  "searchConversation": "搜索会话",
+  "addressBook": "通讯录",
+  "noFriendsToInvite": "暂无好友可邀请",
+  "selectConversation": "选择一个会话，开始聊天",
+  "refreshConversations": "刷新会话",
+  "signInToStartChat": "登录后开始聊天",
+  "chengeCore": "ChengeCore",
+  "signInWithToken": "使用 Token 登录",
+  "openOfficialSiteWithWebView": "使用 WebView 打开官网",
+  "close": "关闭",
+  "raising": "养成",
+  "copy": "复制",
+  "webViewNotSupportedOnAllOs": "并非所有操作系统都能够调用 WebView",
+  "platformWebViewNotSupported": "当前平台暂不支持内置网页",
+  "openCoreEcosystem": "打开核心生态",
+  "openRaisingSystem": "打开站娘养成系统",
+  "cannotOpenSiteMissingConfig": "无法打开官网：缺少服务配置",
+  "accessTokenDescription": "用于校验身份的访问令牌",
+  "confirm": "确定",
+  "confirmSignIn": "确认登录",
+  "pasteJwtToken": "粘贴 JWT Token",
+  "accessToken": "访问令牌",
+  "accessTokenCopied": "访问令牌 已复制",
+  "accessTokenUpdated": "访问令牌 已更新",
+  "signInToUseChengeCore": "请先登录后再使用 ChengeCore",
+  "signInToUseRaising": "请先登录后再使用养成",
+  "enterToken": "请输入 Token",
+  "communityMerchant": "社区商家",
+  "product": "商品",
+  "productInitial": "商",
+  "stockCount": "库存 {count}",
+  "@stockCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "soldCount": "已售 {count}",
+  "@soldCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "ratingReviews": "{rating} · {count} 评价",
+  "@ratingReviews": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "productDescription": "商品介绍",
+  "purchasedContent": "已购内容",
+  "purchaseToViewContent": "购买后可查看完整内容",
+  "openOrDownloadFile": "打开/下载文件",
+  "balanceCc": "余额 {amount} CC",
+  "@balanceCc": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buying": "购买中…",
+  "buy": "购买",
+  "yourListedProduct": "这是你上架的商品",
+  "backToShop": "返回商城",
+  "holdingQuantityType": "持有 {quantity} 件 · {type}",
+  "@holdingQuantityType": {
+    "placeholders": {
+      "quantity": {
+        "type": "Object"
+      },
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "orderPending": "待支付",
+  "orderPaid": "已支付",
+  "orderRefunded": "已退款",
+  "statusUnknown": "状态未知",
+  "conversationNotFound": "未找到该会话，请刷新后重试",
+  "noMatchingConversations": "没有匹配的会话",
+  "noConversationsYet": "还没有会话",
+  "goContactsToChat": "去通讯录发起聊天",
+  "friendInitial": "友",
+  "noMessagesYetShort": "还没有消息",
+  "previewEmoji": "[表情] {key}",
+  "@previewEmoji": {
+    "placeholders": {
+      "key": {
+        "type": "String"
+      }
+    }
+  },
+  "previewSharedPost": "[分享帖子]",
+  "previewOrder": "[商品订单]",
+  "emojiMessage": "表情消息",
+  "me": "我",
+  "sharedPost": "分享帖子",
+  "productOrder": "商品订单",
+  "cannotOpenPostMissingId": "无法打开帖子：分享内容缺少帖子编号",
+  "cannotOpenProductMissingId": "无法打开商品：分享内容缺少商品编号",
+  "chengeUser": "Chenge 用户",
+  "signInToPurchase": "登录后才能购买",
+  "typeMessage": "输入消息…",
+  "sendMessage": "发送消息",
+  "emoji": "表情",
+  "previewEmojiOnly": "[表情]",
+  "enterGroupNameKeyword": "请输入群名称关键词",
+  "enterUserSearchHint": "请输入用户名、昵称或邮箱",
+  "friendAddedBack": "已回加，现在你们是好友了",
+  "friendRequestSent": "好友申请已发送",
+  "rejectFriendRequest": "拒绝好友申请",
+  "removeFriend": "解除好友",
+  "confirmRejectFriendRequest": "确定拒绝 {name} 的好友申请？",
+  "@confirmRejectFriendRequest": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmRemoveFriend": "确定与 {name} 解除好友关系？",
+  "@confirmRemoveFriend": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reject": "拒绝",
+  "remove": "解除",
+  "friendRequestRejected": "已拒绝好友申请",
+  "friendRemoved": "已解除好友关系",
+  "remarkCleared": "备注已清除",
+  "remarkSaved": "备注已保存",
+  "joinedGroup": "已加入「{name}」",
+  "@joinedGroup": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "enterGroupName": "请输入群名称",
+  "groupCreated": "群聊「{name}」已创建",
+  "@groupCreated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "createGroupChat": "创建群聊",
+  "signInToManageContacts": "登录后管理通讯录",
+  "contactsSubtitle": "搜索用户、加入群聊、处理好友申请",
+  "friendsTab": "好友 {count}",
+  "@friendsTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupsTab": "群聊 {count}",
+  "@groupsTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "requestsTab": "申请 {count}",
+  "@requestsTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchUsers": "搜用户",
+  "searchGroups": "搜群聊",
+  "groupNameKeyword": "群名称关键词",
+  "userSearchHint": "用户名、昵称或邮箱",
+  "searchGroupsTooltip": "搜索群聊",
+  "searchUsersTooltip": "搜索用户",
+  "searchPublicGroups": "搜索公开群聊",
+  "searchChengeUsers": "搜索 ChengeWorld 用户",
+  "searchPublicGroupsHint": "输入群名称关键词，加入感兴趣的群",
+  "searchUsersHint": "支持用户名、昵称或邮箱",
+  "noMatchingGroups": "没有找到匹配的群",
+  "noMatchingPeople": "没有找到匹配的人",
+  "tryOtherKeywords": "试试其他关键词",
+  "noGroupsYet": "还没有群聊",
+  "noGroupsHint": "创建群聊，或在搜索里加入公开群",
+  "noFriendsYet": "还没有好友",
+  "noFriendsHint": "搜索用户名或昵称，认识新朋友",
+  "noPendingRequests": "没有待处理的申请",
+  "noPendingRequestsHint": "新的好友申请会显示在这里",
+  "groupTapToJoin": "群聊 · 点击加入",
+  "join": "加入",
+  "enterGroup": "进入群聊",
+  "requestAddYou": "@{username} · 申请添加你",
+  "@requestAddYou": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "onlineWithRemark": "{status} · 备注：{remark} · @{username}",
+  "@onlineWithRemark": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "remark": {
+        "type": "String"
+      },
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "friend": "好友",
+  "addBack": "回加",
+  "requested": "已申请",
+  "add": "添加",
+  "acceptAndAddBack": "回加并接受",
+  "rejectRequest": "拒绝申请",
+  "friendActions": "好友操作",
+  "sendMessageAction": "发消息",
+  "editRemark": "修改备注",
+  "setRemark": "设置备注",
+  "removeFriendRelation": "解除好友关系",
+  "setFriendRemark": "设置好友备注",
+  "remarkName": "备注名称",
+  "remarkHintClear": "留空以清除备注",
+  "save": "保存",
+  "groupName": "群名称",
+  "groupNameHint": "给群聊起个名字",
+  "selectMembersOptional": "选择成员（可选）",
+  "create": "创建",
+  "newConversation": "新对话",
+  "deleteSession": "删除会话",
+  "confirmDeleteSession": "确定删除「{name}」？聊天记录将一并清除。",
+  "@confirmDeleteSession": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "delete": "删除",
+  "newChat": "新建对话",
+  "refreshSessions": "刷新会话",
+  "signInToUseAiAgent": "登录后使用 AI Agent",
+  "aiAgentSubtitle": "支持多会话、流式回复与 MCP 工具",
+  "selectOrCreateAiSession": "选择或新建一个 AI 会话",
+  "aiSessions": "AI 会话",
+  "noAiChatsYet": "还没有 AI 对话",
+  "tapNewToStartChat": "点下方新建开始对话",
+  "thinking": "思考中…",
+  "aiRequestFailed": "AI 请求失败",
+  "noTextReply": "（无文本回复）",
+  "waitingConfirm": "等待确认…",
+  "receivedType": "收到 {type}",
+  "@receivedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "backToSessionList": "返回会话列表",
+  "sendMessageToStart": "发一条消息开始对话",
+  "askAiAgent": "向 AI Agent 提问…",
+  "emojiPackTitle": "表情包 {id}",
+  "@emojiPackTitle": {
+    "placeholders": {
+      "id": {
+        "type": "Object"
+      }
+    }
+  },
+  "noEmojiPacksBuyInShop": "暂无表情包，可在商店购买",
+  "replyToUser": "回复 @{name}",
+  "@replyToUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "user": "用户",
+  "anonymousUser": "匿名用户",
+  "timeUnknown": "时间未知",
+  "dateYmd": "{year}年{month}月{day}日",
+  "@dateYmd": {
+    "placeholders": {
+      "year": {
+        "type": "int"
+      },
+      "month": {
+        "type": "int"
+      },
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "tasksInProgress": "进行中",
+  "tasksNoInProgress": "当前没有进行中的任务",
+  "tasksCompletedSection": "已完成",
+  "tasksRewardHint": "奖励需要手动领取 · 任务按周期刷新",
+  "tasksTodayGoal": "今日目标",
+  "tasksTodayGoalSubtitle": "完成社区任务，领取 ChengeCoin",
+  "tasksProgressSummary": "待完成 · {completed} 已完成",
+  "@tasksProgressSummary": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      }
+    }
+  },
+  "taskClaimable": "可领取",
+  "taskCompletedBadge": "已完成",
+  "taskCheckinStreak": "已连续签到 {streak} 天 · 累计 {totalDays} 天",
+  "@taskCheckinStreak": {
+    "placeholders": {
+      "streak": {
+        "type": "int"
+      },
+      "totalDays": {
+        "type": "int"
+      }
+    }
+  },
+  "checkIn": "签到",
+  "claim": "领取",
+  "statusBarTopHideMask": "顶栏隐藏时状态栏遮罩",
+  "statusBarTopHideMaskDescription": "顶栏可自动隐藏时，状态栏使用半透明主题背景，避免内容顶到状态栏（默认开启）",
+  "siteAndToken": "站点与令牌",
+  "officialSite": "官网",
+  "webViewInitFailed": "WebView 初始化失败（{errorType}）：{error}\nWindows 需安装 Edge WebView2 Runtime。",
+  "@webViewInitFailed": {
+    "placeholders": {
+      "errorType": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "registerAccount": "注册账号",
+  "registerTitle": "注册 ChengeWorld",
+  "registerSuccess": "注册成功，请登录",
+  "nicknameOptional": "昵称（可选）",
+  "email": "邮箱",
+  "enterEmail": "请输入邮箱",
+  "invalidEmail": "邮箱格式不正确",
+  "emailCode": "邮箱验证码",
+  "enterEmailCode": "请输入验证码",
+  "getEmailCode": "获取验证码",
+  "sendingCode": "发送中",
+  "emailCodeSent": "验证码已发送（开发环境可查看后端日志）",
+  "fillEmailFirst": "请先填写邮箱",
+  "passwordMinSix": "密码（至少 6 位）",
+  "passwordTooShort": "密码至少 6 位",
+  "register": "注册",
+  "registering": "注册中…",
+  "clearCache": "清空缓存",
+  "clearCacheDescription": "清除图片等本地缓存，不影响登录状态",
+  "clearCacheConfirm": "确定清空本地缓存？",
+  "clearCacheDone": "缓存已清空",
+  "clearingCache": "正在清空…",
+  "accessTokenCleared": "访问令牌已清除",
+  "createPost": "发帖",
+  "publishPost": "发布",
+  "postTitle": "标题",
+  "postContent": "正文（Markdown）",
+  "markdownHint": "支持 Markdown，可插入图片",
+  "insertImage": "插入图片",
+  "coverImage": "封面图",
+  "chooseCover": "选择封面",
+  "removeCover": "移除封面",
+  "category": "板块",
+  "selectCategoryHint": "请选择板块",
+  "noCategories": "暂无可用板块",
+  "titleRequired": "请填写标题",
+  "contentRequired": "请填写正文",
+  "postPublished": "发布成功",
+  "signInToCreatePost": "登录后即可发帖",
+  "tagsOptional": "标签（可选）",
+  "tagsHint": "用逗号或空格分隔",
+  "saveDraft": "存草稿",
+  "draftSaved": "草稿已保存",
+  "draftAutoSaved": "草稿已自动保存 {time}",
+  "@draftAutoSaved": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreDraftTitle": "恢复草稿？",
+  "restoreDraftMessage": "检测到未发布的草稿，是否恢复？",
+  "restoreDraft": "恢复",
+  "discardDraft": "丢弃",
+  "hotTags": "热门标签",
+  "attachmentUrls": "附件 URL",
+  "attachmentUrlsHint": "支持任意附件链接；也可填写 B 站视频链接",
+  "attachmentUrlHint": "https://…",
+  "addAttachmentUrl": "添加附件 URL",
+  "removeAttachment": "移除附件",
+  "maxImagesReached": "最多上传 {count} 张图片",
+  "@maxImagesReached": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "articleImages": "文章图片",
+  "articleImagesHint": "最多 5 张，用于文章内容区展示（非 Markdown）；未设封面时默认用第一张作封面",
+  "deleteImage": "删除图片"
+}

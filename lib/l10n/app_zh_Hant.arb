@@ -1,0 +1,573 @@
+{
+  "@@locale": "zh_Hant",
+  "communityTitle": "ChengeWorld 社群廣場",
+  "discover": "發現",
+  "social": "社交",
+  "store": "商城",
+  "account": "我的",
+  "settings": "設定",
+  "appearance": "外觀",
+  "themeMode": "主題模式",
+  "followSystem": "跟隨系統",
+  "light": "淺色",
+  "dark": "深色",
+  "language": "語言",
+  "dynamicColor": "動態取色",
+  "dynamicColorDescription": "使用 Android 12+ 桌布配色（Material You）",
+  "themeColor": "主題色",
+  "systemBars": "系統列",
+  "statusBarImmersive": "狀態列沉浸",
+  "statusBarDescription": "內容延伸至狀態列下方，狀態列透明",
+  "navigationBarImmersive": "導覽列沉浸",
+  "navigationBarDescription": "內容延伸至導覽列下方，導覽列透明",
+  "scrollBehavior": "捲動行為",
+  "autoHideTopBar": "自動隱藏頂端列",
+  "autoHideTopDescription": "在探索／商城向下捲動時收合頁面頂端列（預設開啟）",
+  "autoHideBottomBar": "自動隱藏底部列",
+  "autoHideBottomDescription": "在探索／商城向下捲動時收合底部導覽列；寬螢幕側邊列不會隱藏",
+  "chat": "聊天",
+  "showSelfAvatar": "在對話中顯示自己的頭像",
+  "showSelfAvatarDescription": "自己傳送的訊息右側顯示頭像（預設關閉）",
+  "showPeerAvatar": "在私人對話中顯示對方頭像",
+  "showPeerAvatarDescription": "私聊中對方訊息左側顯示頭像；群聊始終顯示成員頭像（預設關閉）",
+  "systemGestures": "系統手勢",
+  "predictiveBack": "預測式返回",
+  "predictiveBackDescription": "Android 13+ 頁面轉場使用預測式返回動畫（預設關閉）",
+  "layout": "版面配置",
+  "feedColumns": "探索頁欄數範圍",
+  "shopColumns": "商店頁欄數範圍",
+  "columnRange": "目前：{min} – {max} 欄（空間足夠時會在此範圍內自動調整）",
+  "minimumColumns": "最少 {count}",
+  "maximumColumns": "最多 {count}",
+  "postCount": "{count} 篇貼文",
+  "pageCount": "第 {page} / {total} 頁",
+  "itemCount": "{count} 件商品",
+  "rightNow": "此刻熱聊",
+  "freshDiscussions": "看看社群裡的新鮮討論",
+  "searchPostsAndTopics": "搜尋貼文和話題",
+  "search": "搜尋",
+  "refreshPosts": "重新整理貼文",
+  "latest": "最新",
+  "popular": "熱門",
+  "featured": "精選",
+  "noPosts": "暫時沒有貼文",
+  "noPostsHint": "換個關鍵字或稍後再來看看",
+  "retry": "重試",
+  "previousPage": "上一頁",
+  "nextPage": "下一頁",
+  "signOut": "登出",
+  "confirmSignOut": "確定要登出目前的 ChengeWorld 帳戶嗎？",
+  "cancel": "取消",
+  "exit": "登出",
+  "signedOut": "已登出",
+  "accountSettingsSignIn": "登入後可管理帳戶設定",
+  "signedIn": "已登入",
+  "welcome": "歡迎來到社群",
+  "accountConnected": "帳戶已連線至 ChengeWorld",
+  "signInForPersonalized": "登入後瀏覽個人化內容",
+  "taskCenter": "任務中心",
+  "taskCenterDescription": "簽到、完成任務並領取 ChengeCoin",
+  "signIn": "登入",
+  "signInAccount": "登入帳戶",
+  "signInSuccess": "登入成功",
+  "signInToChengeWorld": "登入 ChengeWorld",
+  "username": "使用者名稱",
+  "enterUsername": "請輸入使用者名稱",
+  "password": "密碼",
+  "showPassword": "顯示密碼",
+  "hidePassword": "隱藏密碼",
+  "enterPassword": "請輸入密碼",
+  "signingIn": "正在登入",
+  "contacts": "通訊錄",
+  "productDetails": "商品詳細資料",
+  "post": "貼文",
+  "shopNow": "逛商城",
+  "myAssets": "我的資產",
+  "orders": "訂單",
+  "discoverItems": "發現好物",
+  "searchProducts": "搜尋商品",
+  "sortProducts": "排序商品",
+  "newestArrivals": "最新上架",
+  "popularProducts": "熱門商品",
+  "priceLowToHigh": "價格由低至高",
+  "priceHighToLow": "價格由高至低",
+  "ratingFirst": "評分優先",
+  "all": "全部",
+  "files": "檔案",
+  "emojiPacks": "表情包",
+  "components": "元件",
+  "applications": "應用程式",
+  "executables": "可執行檔",
+  "libraries": "類別庫",
+  "functionLibraries": "函式庫",
+  "noAssetsOrOrdersSignIn": "登入後查看資產與訂單",
+  "goSignIn": "前往登入",
+  "shopUnavailable": "商城暫時無法使用",
+  "checkNetworkAndRetry": "檢查網路後重試",
+  "noProducts": "暫時沒有商品",
+  "tryOtherSearch": "試試其他關鍵字或分類",
+  "noAssets": "還沒有資產",
+  "noOrders": "還沒有訂單",
+  "purchasesShowHere": "在商城購買的內容會顯示在這裡",
+  "refresh": "重新整理",
+  "refreshTasks": "重新整理任務",
+  "claimComplete": "前往完成",
+  "rewardClaimed": "已領取獎勵，+{coins} CC",
+  "productPurchaseSuccess": "購買成功，已加入資產清單",
+  "signInToLike": "登入後即可按讚",
+  "signInToComment": "登入後即可發表評論",
+  "commentPublished": "已發表評論",
+  "noComments": "還沒有留言",
+  "back": "返回",
+  "commentCount": "評論 · {count}",
+  "refreshComments": "重新整理評論",
+  "cancelReply": "取消回覆",
+  "writeComment": "寫下你的評論…",
+  "reply": "回覆",
+  "publishing": "正在發表",
+  "publishComment": "發表評論",
+  "liked": "已按讚",
+  "like": "按讚",
+  "commentsWithCount": "評論（{count}）",
+  "noMessages": "還沒有訊息，打個招呼吧",
+  "online": "在線",
+  "offline": "離線",
+  "groupChat": "群聊",
+  "loadOlderMessages": "載入較早的訊息",
+  "backToConversations": "返回對話列表",
+  "searchConversation": "搜尋對話",
+  "addressBook": "通訊錄",
+  "noFriendsToInvite": "目前沒有好友可邀請",
+  "selectConversation": "選擇一個對話，開始聊天",
+  "refreshConversations": "重新整理對話",
+  "signInToStartChat": "登入後開始聊天",
+  "chengeCore": "ChengeCore",
+  "signInWithToken": "使用 Token 登入",
+  "openOfficialSiteWithWebView": "使用 WebView 開啟官網",
+  "close": "關閉",
+  "raising": "養成",
+  "copy": "複製",
+  "webViewNotSupportedOnAllOs": "並非所有作業系統都能呼叫 WebView",
+  "platformWebViewNotSupported": "目前平台暫不支援內建網頁",
+  "openCoreEcosystem": "開啟核心生態",
+  "openRaisingSystem": "開啟站娘養成系統",
+  "cannotOpenSiteMissingConfig": "無法開啟官網：缺少服務設定",
+  "accessTokenDescription": "用於驗證身分的存取權杖",
+  "confirm": "確定",
+  "confirmSignIn": "確認登入",
+  "pasteJwtToken": "貼上 JWT Token",
+  "accessToken": "存取權杖",
+  "accessTokenCopied": "存取權杖 已複製",
+  "accessTokenUpdated": "存取權杖 已更新",
+  "signInToUseChengeCore": "請先登入後再使用 ChengeCore",
+  "signInToUseRaising": "請先登入後再使用養成",
+  "enterToken": "請輸入 Token",
+  "communityMerchant": "社群商家",
+  "product": "商品",
+  "productInitial": "商",
+  "stockCount": "庫存 {count}",
+  "@stockCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "soldCount": "已售 {count}",
+  "@soldCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "ratingReviews": "{rating} · {count} 評價",
+  "@ratingReviews": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "productDescription": "商品介紹",
+  "purchasedContent": "已購內容",
+  "purchaseToViewContent": "購買後可查看完整內容",
+  "openOrDownloadFile": "開啟/下載檔案",
+  "balanceCc": "餘額 {amount} CC",
+  "@balanceCc": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buying": "購買中…",
+  "buy": "購買",
+  "yourListedProduct": "這是你上架的商品",
+  "backToShop": "返回商城",
+  "holdingQuantityType": "持有 {quantity} 件 · {type}",
+  "@holdingQuantityType": {
+    "placeholders": {
+      "quantity": {
+        "type": "Object"
+      },
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "orderPending": "待支付",
+  "orderPaid": "已支付",
+  "orderRefunded": "已退款",
+  "statusUnknown": "狀態未知",
+  "conversationNotFound": "找不到該對話，請重新整理後再試",
+  "noMatchingConversations": "沒有符合的對話",
+  "noConversationsYet": "還沒有對話",
+  "goContactsToChat": "前往通訊錄發起聊天",
+  "friendInitial": "友",
+  "noMessagesYetShort": "還沒有訊息",
+  "previewEmoji": "[表情] {key}",
+  "@previewEmoji": {
+    "placeholders": {
+      "key": {
+        "type": "String"
+      }
+    }
+  },
+  "previewSharedPost": "[分享貼文]",
+  "previewOrder": "[商品訂單]",
+  "emojiMessage": "表情訊息",
+  "me": "我",
+  "sharedPost": "分享貼文",
+  "productOrder": "商品訂單",
+  "cannotOpenPostMissingId": "無法開啟貼文：分享內容缺少貼文編號",
+  "cannotOpenProductMissingId": "無法開啟商品：分享內容缺少商品編號",
+  "chengeUser": "Chenge 使用者",
+  "signInToPurchase": "登入後才能購買",
+  "typeMessage": "輸入訊息…",
+  "sendMessage": "傳送訊息",
+  "emoji": "表情",
+  "previewEmojiOnly": "[表情]",
+  "enterGroupNameKeyword": "請輸入群名稱關鍵字",
+  "enterUserSearchHint": "請輸入使用者名稱、暱稱或電子郵件",
+  "friendAddedBack": "已回加，現在你們是好友了",
+  "friendRequestSent": "好友申請已送出",
+  "rejectFriendRequest": "拒絕好友申請",
+  "removeFriend": "解除好友",
+  "confirmRejectFriendRequest": "確定拒絕 {name} 的好友申請？",
+  "@confirmRejectFriendRequest": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmRemoveFriend": "確定與 {name} 解除好友關係？",
+  "@confirmRemoveFriend": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reject": "拒絕",
+  "remove": "解除",
+  "friendRequestRejected": "已拒絕好友申請",
+  "friendRemoved": "已解除好友關係",
+  "remarkCleared": "備註已清除",
+  "remarkSaved": "備註已儲存",
+  "joinedGroup": "已加入「{name}」",
+  "@joinedGroup": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "enterGroupName": "請輸入群名稱",
+  "groupCreated": "群聊「{name}」已建立",
+  "@groupCreated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "createGroupChat": "建立群聊",
+  "signInToManageContacts": "登入後管理通訊錄",
+  "contactsSubtitle": "搜尋使用者、加入群聊、處理好友申請",
+  "friendsTab": "好友 {count}",
+  "@friendsTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupsTab": "群聊 {count}",
+  "@groupsTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "requestsTab": "申請 {count}",
+  "@requestsTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchUsers": "搜使用者",
+  "searchGroups": "搜群聊",
+  "groupNameKeyword": "群名稱關鍵字",
+  "userSearchHint": "使用者名稱、暱稱或電子郵件",
+  "searchGroupsTooltip": "搜尋群聊",
+  "searchUsersTooltip": "搜尋使用者",
+  "searchPublicGroups": "搜尋公開群聊",
+  "searchChengeUsers": "搜尋 ChengeWorld 使用者",
+  "searchPublicGroupsHint": "輸入群名稱關鍵字，加入感興趣的群",
+  "searchUsersHint": "支援使用者名稱、暱稱或電子郵件",
+  "noMatchingGroups": "找不到符合的群",
+  "noMatchingPeople": "找不到符合的人",
+  "tryOtherKeywords": "試試其他關鍵字",
+  "noGroupsYet": "還沒有群聊",
+  "noGroupsHint": "建立群聊，或在搜尋中加入公開群",
+  "noFriendsYet": "還沒有好友",
+  "noFriendsHint": "搜尋使用者名稱或暱稱，認識新朋友",
+  "noPendingRequests": "沒有待處理的申請",
+  "noPendingRequestsHint": "新的好友申請會顯示在這裡",
+  "groupTapToJoin": "群聊 · 點擊加入",
+  "join": "加入",
+  "enterGroup": "進入群聊",
+  "requestAddYou": "@{username} · 申請加你為好友",
+  "@requestAddYou": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "onlineWithRemark": "{status} · 備註：{remark} · @{username}",
+  "@onlineWithRemark": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "remark": {
+        "type": "String"
+      },
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "friend": "好友",
+  "addBack": "回加",
+  "requested": "已申請",
+  "add": "新增",
+  "acceptAndAddBack": "回加並接受",
+  "rejectRequest": "拒絕申請",
+  "friendActions": "好友操作",
+  "sendMessageAction": "傳訊息",
+  "editRemark": "修改備註",
+  "setRemark": "設定備註",
+  "removeFriendRelation": "解除好友關係",
+  "setFriendRemark": "設定好友備註",
+  "remarkName": "備註名稱",
+  "remarkHintClear": "留空以清除備註",
+  "save": "儲存",
+  "groupName": "群名稱",
+  "groupNameHint": "幫群聊取個名字",
+  "selectMembersOptional": "選擇成員（可選）",
+  "create": "建立",
+  "newConversation": "新對話",
+  "deleteSession": "刪除對話",
+  "confirmDeleteSession": "確定刪除「{name}」？聊天紀錄將一併清除。",
+  "@confirmDeleteSession": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "delete": "刪除",
+  "newChat": "新建對話",
+  "refreshSessions": "重新整理對話",
+  "signInToUseAiAgent": "登入後使用 AI Agent",
+  "aiAgentSubtitle": "支援多對話、串流回覆與 MCP 工具",
+  "selectOrCreateAiSession": "選擇或新建一個 AI 對話",
+  "aiSessions": "AI 對話",
+  "noAiChatsYet": "還沒有 AI 對話",
+  "tapNewToStartChat": "點下方新建開始對話",
+  "thinking": "思考中…",
+  "aiRequestFailed": "AI 請求失敗",
+  "noTextReply": "（無文字回覆）",
+  "waitingConfirm": "等待確認…",
+  "receivedType": "收到 {type}",
+  "@receivedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "backToSessionList": "返回對話列表",
+  "sendMessageToStart": "發一則訊息開始對話",
+  "askAiAgent": "向 AI Agent 提問…",
+  "emojiPackTitle": "表情包 {id}",
+  "@emojiPackTitle": {
+    "placeholders": {
+      "id": {
+        "type": "Object"
+      }
+    }
+  },
+  "noEmojiPacksBuyInShop": "暫無表情包，可在商店購買",
+  "replyToUser": "回覆 @{name}",
+  "@replyToUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "user": "使用者",
+  "anonymousUser": "匿名使用者",
+  "timeUnknown": "時間未知",
+  "dateYmd": "{year}年{month}月{day}日",
+  "@dateYmd": {
+    "placeholders": {
+      "year": {
+        "type": "int"
+      },
+      "month": {
+        "type": "int"
+      },
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "tasksInProgress": "進行中",
+  "tasksNoInProgress": "目前沒有進行中的任務",
+  "tasksCompletedSection": "已完成",
+  "tasksRewardHint": "獎勵需手動領取 · 任務依週期刷新",
+  "tasksTodayGoal": "今日目標",
+  "tasksTodayGoalSubtitle": "完成社群任務，領取 ChengeCoin",
+  "tasksProgressSummary": "待完成 · {completed} 已完成",
+  "@tasksProgressSummary": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      }
+    }
+  },
+  "taskClaimable": "可領取",
+  "taskCompletedBadge": "已完成",
+  "taskCheckinStreak": "已連續簽到 {streak} 天 · 累計 {totalDays} 天",
+  "@taskCheckinStreak": {
+    "placeholders": {
+      "streak": {
+        "type": "int"
+      },
+      "totalDays": {
+        "type": "int"
+      }
+    }
+  },
+  "checkIn": "簽到",
+  "claim": "領取",
+  "statusBarTopHideMask": "頂欄隱藏時狀態列遮罩",
+  "statusBarTopHideMaskDescription": "頂欄可自動隱藏時，狀態列使用半透明主題背景，避免內容頂到狀態列（預設開啟）",
+  "siteAndToken": "站點與權杖",
+  "officialSite": "官網",
+  "webViewInitFailed": "WebView 初始化失敗（{errorType}）：{error}\nWindows 需安裝 Edge WebView2 Runtime。",
+  "@webViewInitFailed": {
+    "placeholders": {
+      "errorType": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "registerAccount": "註冊帳號",
+  "registerTitle": "註冊 ChengeWorld",
+  "registerSuccess": "註冊成功，請登入",
+  "nicknameOptional": "暱稱（可選）",
+  "email": "電子郵件",
+  "enterEmail": "請輸入電子郵件",
+  "invalidEmail": "電子郵件格式不正確",
+  "emailCode": "電子郵件驗證碼",
+  "enterEmailCode": "請輸入驗證碼",
+  "getEmailCode": "取得驗證碼",
+  "sendingCode": "傳送中",
+  "emailCodeSent": "驗證碼已傳送（開發環境可查看後端日誌）",
+  "fillEmailFirst": "請先填寫電子郵件",
+  "passwordMinSix": "密碼（至少 6 位）",
+  "passwordTooShort": "密碼至少 6 位",
+  "register": "註冊",
+  "registering": "註冊中…",
+  "clearCache": "清空快取",
+  "clearCacheDescription": "清除圖片等本機快取，不影響登入狀態",
+  "clearCacheConfirm": "確定清空本機快取？",
+  "clearCacheDone": "快取已清空",
+  "clearingCache": "正在清空…",
+  "accessTokenCleared": "存取權杖已清除",
+  "createPost": "發文",
+  "publishPost": "發布",
+  "postTitle": "標題",
+  "postContent": "正文（Markdown）",
+  "markdownHint": "支援 Markdown，可插入圖片",
+  "insertImage": "插入圖片",
+  "coverImage": "封面圖",
+  "chooseCover": "選擇封面",
+  "removeCover": "移除封面",
+  "category": "板塊",
+  "selectCategoryHint": "請選擇板塊",
+  "noCategories": "暫無可用板塊",
+  "titleRequired": "請填寫標題",
+  "contentRequired": "請填寫正文",
+  "postPublished": "發布成功",
+  "signInToCreatePost": "登入後即可發文",
+  "tagsOptional": "標籤（可選）",
+  "tagsHint": "用逗號或空格分隔",
+  "saveDraft": "存草稿",
+  "draftSaved": "草稿已儲存",
+  "draftAutoSaved": "草稿已自動儲存 {time}",
+  "@draftAutoSaved": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreDraftTitle": "恢復草稿？",
+  "restoreDraftMessage": "偵測到未發布的草稿，是否恢復？",
+  "restoreDraft": "恢復",
+  "discardDraft": "捨棄",
+  "hotTags": "熱門標籤",
+  "attachmentUrls": "附件 URL",
+  "attachmentUrlsHint": "支援任意附件連結；也可填寫 B 站影片連結",
+  "attachmentUrlHint": "https://…",
+  "addAttachmentUrl": "新增附件 URL",
+  "removeAttachment": "移除附件",
+  "maxImagesReached": "最多上傳 {count} 張圖片",
+  "@maxImagesReached": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "articleImages": "文章圖片",
+  "articleImagesHint": "最多 5 張，用於文章內容區展示（非 Markdown）；未設封面時預設用第一張作封面",
+  "deleteImage": "刪除圖片"
+}

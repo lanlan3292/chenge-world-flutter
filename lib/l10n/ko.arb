@@ -1,0 +1,642 @@
+{
+  "@@locale": "ko",
+  "communityTitle": "ChengeWorld 커뮤니티",
+  "discover": "둘러보기",
+  "social": "소셜",
+  "store": "스토어",
+  "account": "내 정보",
+  "settings": "설정",
+  "appearance": "화면 설정",
+  "themeMode": "테마 모드",
+  "followSystem": "시스템 설정 따르기",
+  "light": "라이트",
+  "dark": "다크",
+  "language": "언어",
+  "dynamicColor": "동적 색상",
+  "dynamicColorDescription": "Android 12+ 배경화면 색상 사용(Material You)",
+  "themeColor": "테마 색상",
+  "systemBars": "시스템 바",
+  "statusBarImmersive": "상태 표시줄 투명",
+  "statusBarDescription": "콘텐츠가 투명한 상태 표시줄 뒤까지 확장됩니다",
+  "navigationBarImmersive": "내비게이션 바 투명",
+  "navigationBarDescription": "콘텐츠가 투명한 내비게이션 바 뒤까지 확장됩니다",
+  "scrollBehavior": "스크롤 동작",
+  "autoHideTopBar": "상단 바 자동 숨기기",
+  "autoHideTopDescription": "둘러보기/스토어에서 아래로 스크롤할 때 앱 바를 숨깁니다(기본 켜짐)",
+  "autoHideBottomBar": "하단 바 자동 숨기기",
+  "autoHideBottomDescription": "아래로 스크롤할 때 하단 내비게이션을 숨깁니다. 넓은 화면에서는 레일이 계속 표시됩니다",
+  "chat": "채팅",
+  "showSelfAvatar": "채팅에서 내 아바타 표시",
+  "showSelfAvatarDescription": "보낸 메시지 옆에 내 아바타를 표시합니다(기본 꺼짐)",
+  "showPeerAvatar": "개인 채팅에서 상대방 아바타 표시",
+  "showPeerAvatarDescription": "개인 메시지 옆에 상대방 아바타를 표시합니다. 그룹 아바타는 항상 표시됩니다(기본 꺼짐)",
+  "systemGestures": "시스템 제스처",
+  "predictiveBack": "예측형 뒤로 가기",
+  "predictiveBackDescription": "Android 13+에서 예측형 뒤로 가기 애니메이션을 사용합니다(기본 꺼짐)",
+  "layout": "레이아웃",
+  "feedColumns": "둘러보기 그리드 열 수",
+  "shopColumns": "스토어 그리드 열 수",
+  "columnRange": "현재: {min}–{max}열(공간이 허용하면 이 범위 내에서 자동 조정)",
+  "@columnRange": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "minimumColumns": "최소 {count}",
+  "@minimumColumns": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "maximumColumns": "최대 {count}",
+  "@maximumColumns": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "postCount": "게시물 {count}개",
+  "@postCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pageCount": "{total}페이지 중 {page}페이지",
+  "@pageCount": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "itemCount": "상품 {count}개",
+  "@itemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rightNow": "지금 이야기 중",
+  "freshDiscussions": "커뮤니티의 새로운 이야기를 확인하세요",
+  "searchPostsAndTopics": "게시물 및 주제 검색",
+  "search": "검색",
+  "refreshPosts": "게시물 새로고침",
+  "latest": "최신",
+  "popular": "인기",
+  "featured": "추천",
+  "noPosts": "아직 게시물이 없습니다",
+  "noPostsHint": "다른 키워드를 입력하거나 나중에 다시 확인하세요",
+  "retry": "다시 시도",
+  "previousPage": "이전 페이지",
+  "nextPage": "다음 페이지",
+  "signOut": "로그아웃",
+  "confirmSignOut": "ChengeWorld에서 로그아웃하시겠습니까?",
+  "cancel": "취소",
+  "exit": "로그아웃",
+  "signedOut": "로그아웃되었습니다",
+  "accountSettingsSignIn": "계정 설정을 관리하려면 로그인하세요",
+  "signedIn": "로그인됨",
+  "welcome": "커뮤니티에 오신 것을 환영합니다",
+  "accountConnected": "계정이 ChengeWorld에 연결되었습니다",
+  "signInForPersonalized": "로그인하여 맞춤형 콘텐츠를 둘러보세요",
+  "taskCenter": "작업 센터",
+  "taskCenterDescription": "출석하고 작업을 완료하여 ChengeCoin을 받으세요",
+  "signIn": "로그인",
+  "signInAccount": "로그인",
+  "signInSuccess": "로그인 성공",
+  "signInToChengeWorld": "ChengeWorld에 로그인",
+  "username": "사용자 이름",
+  "enterUsername": "사용자 이름 입력",
+  "password": "비밀번호",
+  "showPassword": "비밀번호 표시",
+  "hidePassword": "비밀번호 숨기기",
+  "enterPassword": "비밀번호 입력",
+  "signingIn": "로그인 중…",
+  "contacts": "연락처",
+  "productDetails": "상품 상세",
+  "post": "게시물",
+  "shopNow": "스토어",
+  "myAssets": "내 자산",
+  "orders": "주문",
+  "discoverItems": "상품 둘러보기",
+  "searchProducts": "상품 검색",
+  "sortProducts": "상품 정렬",
+  "newestArrivals": "최신 등록",
+  "popularProducts": "인기 상품",
+  "priceLowToHigh": "가격: 낮은 순",
+  "priceHighToLow": "가격: 높은 순",
+  "ratingFirst": "평점 높은 순",
+  "all": "전체",
+  "files": "파일",
+  "emojiPacks": "이모티콘 팩",
+  "components": "컴포넌트",
+  "applications": "애플리케이션",
+  "executables": "실행 파일",
+  "libraries": "라이브러리",
+  "functionLibraries": "함수 라이브러리",
+  "noAssetsOrOrdersSignIn": "자산과 주문을 보려면 로그인하세요",
+  "goSignIn": "로그인",
+  "shopUnavailable": "스토어를 일시적으로 사용할 수 없습니다",
+  "checkNetworkAndRetry": "연결을 확인한 후 다시 시도하세요",
+  "noProducts": "아직 상품이 없습니다",
+  "tryOtherSearch": "다른 키워드나 카테고리를 시도해 보세요",
+  "noAssets": "아직 자산이 없습니다",
+  "noOrders": "아직 주문이 없습니다",
+  "purchasesShowHere": "스토어 구매 내역이 여기에 표시됩니다",
+  "refresh": "새로고침",
+  "refreshTasks": "작업 새로고침",
+  "claimComplete": "완료하기",
+  "rewardClaimed": "보상 수령: +{coins} CC",
+  "@rewardClaimed": {
+    "placeholders": {
+      "coins": {
+        "type": "String"
+      }
+    }
+  },
+  "productPurchaseSuccess": "구매 완료. 자산에 추가되었습니다",
+  "signInToLike": "이 게시물을 좋아하려면 로그인하세요",
+  "signInToComment": "댓글을 작성하려면 로그인하세요",
+  "commentPublished": "댓글이 게시되었습니다",
+  "noComments": "아직 댓글이 없습니다",
+  "back": "뒤로",
+  "commentCount": "댓글 · {count}",
+  "@commentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "refreshComments": "댓글 새로고침",
+  "cancelReply": "답글 취소",
+  "writeComment": "댓글을 작성하세요…",
+  "reply": "답글",
+  "publishing": "게시 중…",
+  "publishComment": "댓글 게시",
+  "liked": "좋아요함",
+  "like": "좋아요",
+  "commentsWithCount": "댓글 ({count})",
+  "@commentsWithCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noMessages": "아직 메시지가 없습니다. 인사해 보세요!",
+  "online": "온라인",
+  "offline": "오프라인",
+  "groupChat": "그룹 채팅",
+  "loadOlderMessages": "이전 메시지 불러오기",
+  "backToConversations": "대화 목록으로 돌아가기",
+  "searchConversation": "대화 검색",
+  "addressBook": "연락처",
+  "noFriendsToInvite": "초대할 친구가 아직 없습니다",
+  "selectConversation": "대화를 선택하여 채팅을 시작하세요",
+  "refreshConversations": "대화 새로고침",
+  "signInToStartChat": "채팅을 시작하려면 로그인하세요",
+  "chengeCore": "ChengeCore",
+  "signInWithToken": "Token으로 로그인",
+  "openOfficialSiteWithWebView": "WebView로 공식 사이트 열기",
+  "close": "닫기",
+  "raising": "육성",
+  "copy": "복사",
+  "webViewNotSupportedOnAllOs": "모든 운영 체제에서 WebView를 지원하는 것은 아닙니다",
+  "platformWebViewNotSupported": "이 플랫폼에서는 내장 웹 보기를 지원하지 않습니다",
+  "openCoreEcosystem": "핵심 생태계 열기",
+  "openRaisingSystem": "육성 시스템 열기",
+  "cannotOpenSiteMissingConfig": "사이트를 열 수 없음: 서비스 구성이 누락되었습니다",
+  "accessTokenDescription": "신원 확인에 사용되는 액세스 토큰",
+  "confirm": "확인",
+  "confirmSignIn": "로그인 확인",
+  "pasteJwtToken": "JWT Token 붙여넣기",
+  "accessToken": "액세스 토큰",
+  "accessTokenCopied": "액세스 토큰이 복사되었습니다",
+  "accessTokenUpdated": "액세스 토큰이 업데이트되었습니다",
+  "signInToUseChengeCore": "ChengeCore를 사용하려면 로그인하세요",
+  "signInToUseRaising": "육성을 사용하려면 로그인하세요",
+  "enterToken": "Token을 입력하세요",
+  "communityMerchant": "커뮤니티 판매자",
+  "product": "상품",
+  "productInitial": "상",
+  "stockCount": "재고 {count}",
+  "@stockCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "soldCount": "판매됨 {count}",
+  "@soldCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "ratingReviews": "{rating} · 리뷰 {count}개",
+  "@ratingReviews": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "productDescription": "설명",
+  "purchasedContent": "구매한 콘텐츠",
+  "purchaseToViewContent": "전체 콘텐츠를 보려면 구매하세요",
+  "openOrDownloadFile": "파일 열기/다운로드",
+  "balanceCc": "잔액 {amount} CC",
+  "@balanceCc": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "buying": "구매 중…",
+  "buy": "구매",
+  "yourListedProduct": "내가 등록한 상품입니다",
+  "backToShop": "스토어로 돌아가기",
+  "holdingQuantityType": "보유 {quantity}개 · {type}",
+  "@holdingQuantityType": {
+    "placeholders": {
+      "quantity": {
+        "type": "Object"
+      },
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "orderPending": "결제 대기",
+  "orderPaid": "결제 완료",
+  "orderRefunded": "환불됨",
+  "statusUnknown": "알 수 없는 상태",
+  "conversationNotFound": "대화를 찾을 수 없습니다. 새로고침 후 다시 시도하세요",
+  "noMatchingConversations": "일치하는 대화가 없습니다",
+  "noConversationsYet": "아직 대화가 없습니다",
+  "goContactsToChat": "연락처로 이동하여 채팅을 시작하세요",
+  "friendInitial": "친",
+  "noMessagesYetShort": "아직 메시지가 없습니다",
+  "previewEmoji": "[이모티콘] {key}",
+  "@previewEmoji": {
+    "placeholders": {
+      "key": {
+        "type": "String"
+      }
+    }
+  },
+  "previewSharedPost": "[공유 게시물]",
+  "previewOrder": "[상품 주문]",
+  "emojiMessage": "이모티콘 메시지",
+  "me": "나",
+  "sharedPost": "공유 게시물",
+  "productOrder": "상품 주문",
+  "cannotOpenPostMissingId": "게시물을 열 수 없음: 공유에 게시물 ID가 없습니다",
+  "cannotOpenProductMissingId": "상품을 열 수 없음: 공유에 상품 ID가 없습니다",
+  "chengeUser": "Chenge 사용자",
+  "signInToPurchase": "구매하려면 로그인하세요",
+  "typeMessage": "메시지를 입력하세요…",
+  "sendMessage": "메시지 보내기",
+  "emoji": "이모티콘",
+  "previewEmojiOnly": "[이모티콘]",
+  "enterGroupNameKeyword": "그룹 이름 키워드 입력",
+  "enterUserSearchHint": "사용자 이름, 닉네임 또는 이메일 입력",
+  "friendAddedBack": "맞추가됨 — 이제 친구입니다",
+  "friendRequestSent": "친구 요청을 보냈습니다",
+  "rejectFriendRequest": "친구 요청 거절",
+  "removeFriend": "친구 삭제",
+  "confirmRejectFriendRequest": "{name}님의 친구 요청을 거절하시겠습니까?",
+  "@confirmRejectFriendRequest": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "confirmRemoveFriend": "{name}님을 친구에서 삭제하시겠습니까?",
+  "@confirmRemoveFriend": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reject": "거절",
+  "remove": "삭제",
+  "friendRequestRejected": "친구 요청을 거절했습니다",
+  "friendRemoved": "친구를 삭제했습니다",
+  "remarkCleared": "메모가 지워졌습니다",
+  "remarkSaved": "메모가 저장되었습니다",
+  "joinedGroup": "「{name}」에 가입했습니다",
+  "@joinedGroup": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "enterGroupName": "그룹 이름을 입력하세요",
+  "groupCreated": "그룹 채팅 「{name}」이(가) 생성되었습니다",
+  "@groupCreated": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "createGroupChat": "그룹 채팅 만들기",
+  "signInToManageContacts": "연락처를 관리하려면 로그인하세요",
+  "contactsSubtitle": "사용자 검색, 그룹 가입, 친구 요청 관리",
+  "friendsTab": "친구 {count}",
+  "@friendsTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupsTab": "그룹 {count}",
+  "@groupsTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "requestsTab": "요청 {count}",
+  "@requestsTab": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchUsers": "사용자",
+  "searchGroups": "그룹",
+  "groupNameKeyword": "그룹 이름 키워드",
+  "userSearchHint": "사용자 이름, 닉네임 또는 이메일",
+  "searchGroupsTooltip": "그룹 검색",
+  "searchUsersTooltip": "사용자 검색",
+  "searchPublicGroups": "공개 그룹 검색",
+  "searchChengeUsers": "ChengeWorld 사용자 검색",
+  "searchPublicGroupsHint": "그룹 이름을 입력하여 원하는 그룹에 가입하세요",
+  "searchUsersHint": "사용자 이름, 닉네임 또는 이메일 지원",
+  "noMatchingGroups": "일치하는 그룹이 없습니다",
+  "noMatchingPeople": "일치하는 사람이 없습니다",
+  "tryOtherKeywords": "다른 키워드를 시도해 보세요",
+  "noGroupsYet": "아직 그룹이 없습니다",
+  "noGroupsHint": "그룹을 만들거나 검색에서 공개 그룹에 가입하세요",
+  "noFriendsYet": "아직 친구가 없습니다",
+  "noFriendsHint": "사용자 이름이나 닉네임으로 검색하여 새로운 사람을 만나보세요",
+  "noPendingRequests": "대기 중인 요청이 없습니다",
+  "noPendingRequestsHint": "새 친구 요청이 여기에 표시됩니다",
+  "groupTapToJoin": "그룹 · 탭하여 가입",
+  "join": "가입",
+  "enterGroup": "그룹 들어가기",
+  "requestAddYou": "@{username} · 친구 추가를 요청함",
+  "@requestAddYou": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "onlineWithRemark": "{status} · 메모: {remark} · @{username}",
+  "@onlineWithRemark": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      },
+      "remark": {
+        "type": "String"
+      },
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "friend": "친구",
+  "addBack": "맞추가",
+  "requested": "요청됨",
+  "add": "추가",
+  "acceptAndAddBack": "수락 및 맞추가",
+  "rejectRequest": "요청 거절",
+  "friendActions": "친구 작업",
+  "sendMessageAction": "메시지",
+  "editRemark": "메모 편집",
+  "setRemark": "메모 설정",
+  "removeFriendRelation": "친구 삭제",
+  "setFriendRemark": "친구 메모 설정",
+  "remarkName": "메모 이름",
+  "remarkHintClear": "비워 두면 메모가 지워집니다",
+  "save": "저장",
+  "groupName": "그룹 이름",
+  "groupNameHint": "그룹에 이름을 지정하세요",
+  "selectMembersOptional": "멤버 선택(선택 사항)",
+  "create": "만들기",
+  "newConversation": "새 채팅",
+  "deleteSession": "대화 삭제",
+  "confirmDeleteSession": "「{name}」을(를) 삭제하시겠습니까? 채팅 기록도 삭제됩니다.",
+  "@confirmDeleteSession": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "delete": "삭제",
+  "newChat": "새 채팅",
+  "refreshSessions": "대화 새로고침",
+  "signInToUseAiAgent": "AI Agent를 사용하려면 로그인하세요",
+  "aiAgentSubtitle": "다중 세션, 스트리밍 답변 및 MCP 도구",
+  "selectOrCreateAiSession": "AI 세션을 선택하거나 새로 만드세요",
+  "aiSessions": "AI 세션",
+  "noAiChatsYet": "아직 AI 채팅이 없습니다",
+  "tapNewToStartChat": "아래의 새로 만들기를 눌러 채팅을 시작하세요",
+  "thinking": "생각 중…",
+  "aiRequestFailed": "AI 요청 실패",
+  "noTextReply": "(텍스트 답변 없음)",
+  "waitingConfirm": "확인 대기 중…",
+  "receivedType": "{type} 수신",
+  "@receivedType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "backToSessionList": "세션 목록으로 돌아가기",
+  "sendMessageToStart": "메시지를 보내 대화를 시작하세요",
+  "askAiAgent": "AI Agent에게 질문…",
+  "emojiPackTitle": "이모티콘 팩 {id}",
+  "@emojiPackTitle": {
+    "placeholders": {
+      "id": {
+        "type": "Object"
+      }
+    }
+  },
+  "noEmojiPacksBuyInShop": "아직 이모티콘 팩이 없습니다 — 스토어에서 구매하세요",
+  "replyToUser": "@{name}에게 답글",
+  "@replyToUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "user": "사용자",
+  "anonymousUser": "익명",
+  "timeUnknown": "알 수 없는 시간",
+  "dateYmd": "{year}년 {month}월 {day}일",
+  "@dateYmd": {
+    "placeholders": {
+      "year": {
+        "type": "int"
+      },
+      "month": {
+        "type": "int"
+      },
+      "day": {
+        "type": "int"
+      }
+    }
+  },
+  "tasksInProgress": "진행 중",
+  "tasksNoInProgress": "진행 중인 작업이 없습니다",
+  "tasksCompletedSection": "완료됨",
+  "tasksRewardHint": "보상은 수동으로 수령해야 합니다 · 작업은 주기적으로 새로고침됩니다",
+  "tasksTodayGoal": "오늘의 목표",
+  "tasksTodayGoalSubtitle": "커뮤니티 작업을 완료하고 ChengeCoin을 받으세요",
+  "tasksProgressSummary": "대기 중 · {completed}개 완료",
+  "@tasksProgressSummary": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      }
+    }
+  },
+  "taskClaimable": "수령 가능",
+  "taskCompletedBadge": "완료",
+  "taskCheckinStreak": "{streak}일 연속 출석 · 총 {totalDays}일",
+  "@taskCheckinStreak": {
+    "placeholders": {
+      "streak": {
+        "type": "int"
+      },
+      "totalDays": {
+        "type": "int"
+      }
+    }
+  },
+  "checkIn": "출석",
+  "claim": "수령",
+  "statusBarTopHideMask": "상단 바 숨김 시 상태 표시줄 마스크",
+  "statusBarTopHideMaskDescription": "상단 바가 자동으로 숨겨질 수 있을 때 콘텐츠가 상태 표시줄 아래로 들어가지 않도록 반투명 테마 배경을 사용합니다(기본 켜짐)",
+  "siteAndToken": "사이트 및 토큰",
+  "officialSite": "공식 사이트",
+  "webViewInitFailed": "WebView 초기화 실패({errorType}): {error}\nWindows에는 Edge WebView2 Runtime이 필요합니다.",
+  "@webViewInitFailed": {
+    "placeholders": {
+      "errorType": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "registerAccount": "계정 만들기",
+  "registerTitle": "ChengeWorld 가입",
+  "registerSuccess": "가입 성공. 로그인해 주세요.",
+  "nicknameOptional": "닉네임(선택 사항)",
+  "email": "이메일",
+  "enterEmail": "이메일 입력",
+  "invalidEmail": "이메일 형식이 올바르지 않습니다",
+  "emailCode": "이메일 인증 코드",
+  "enterEmailCode": "인증 코드 입력",
+  "getEmailCode": "코드 받기",
+  "sendingCode": "전송 중",
+  "emailCodeSent": "코드가 전송되었습니다(개발 환경에서는 백엔드 로그를 확인하세요)",
+  "fillEmailFirst": "먼저 이메일을 입력하세요",
+  "passwordMinSix": "비밀번호(최소 6자)",
+  "passwordTooShort": "비밀번호는 최소 6자 이상이어야 합니다",
+  "register": "가입",
+  "registering": "가입 중…",
+  "clearCache": "캐시 지우기",
+  "clearCacheDescription": "로그아웃하지 않고 로컬 이미지 캐시를 지웁니다",
+  "clearCacheConfirm": "로컬 캐시를 지우시겠습니까?",
+  "clearCacheDone": "캐시가 지워졌습니다",
+  "clearingCache": "지우는 중…",
+  "accessTokenCleared": "액세스 토큰이 지워졌습니다",
+  "createPost": "새 게시물",
+  "publishPost": "게시",
+  "postTitle": "제목",
+  "postContent": "내용(Markdown)",
+  "markdownHint": "Markdown을 지원합니다. 이미지를 삽입할 수 있습니다.",
+  "insertImage": "이미지 삽입",
+  "coverImage": "커버 이미지",
+  "chooseCover": "커버 선택",
+  "removeCover": "커버 제거",
+  "category": "카테고리",
+  "selectCategoryHint": "카테고리를 선택하세요",
+  "noCategories": "사용 가능한 카테고리가 없습니다",
+  "titleRequired": "제목을 입력하세요",
+  "contentRequired": "내용을 입력하세요",
+  "postPublished": "게시물이 게시되었습니다",
+  "signInToCreatePost": "게시물을 작성하려면 로그인하세요",
+  "tagsOptional": "태그(선택 사항)",
+  "tagsHint": "쉼표 또는 공백으로 구분",
+  "saveDraft": "임시 저장",
+  "draftSaved": "임시 저장되었습니다",
+  "draftAutoSaved": "{time}에 임시 저장되었습니다",
+  "@draftAutoSaved": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreDraftTitle": "임시 저장 복원?",
+  "restoreDraftMessage": "게시되지 않은 임시 저장이 있습니다. 복원하시겠습니까?",
+  "restoreDraft": "복원",
+  "discardDraft": "버리기",
+  "hotTags": "인기 태그",
+  "attachmentUrls": "첨부 파일 URL",
+  "attachmentUrlsHint": "모든 첨부 파일 URL; Bilibili 동영상 링크도 지원",
+  "attachmentUrlHint": "https://…",
+  "addAttachmentUrl": "첨부 URL 추가",
+  "removeAttachment": "첨부 제거",
+  "maxImagesReached": "이미지는 최대 {count}장까지 가능합니다",
+  "@maxImagesReached": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "articleImages": "글 이미지",
+  "articleImagesHint": "글 갤러리에 최대 5장(Markdown 아님). 커버가 없으면 첫 번째 이미지가 커버로 사용됩니다.",
+  "deleteImage": "이미지 삭제"
+}

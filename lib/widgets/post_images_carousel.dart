@@ -1,8 +1,9 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import 'image_viewer_page.dart';
 
-/// Article-content image gallery with swipe paging (matches web PostImages).
+/// Article-content image gallery with swipe paging (touch + mouse).
 class PostImagesCarousel extends StatefulWidget {
   const PostImagesCarousel({
     super.key,
@@ -20,6 +21,9 @@ class PostImagesCarousel extends StatefulWidget {
 class _PostImagesCarouselState extends State<PostImagesCarousel> {
   late final PageController _controller;
   int _index = 0;
+
+  List<String> get _resolved =>
+      widget.images.map(widget.resolveUrl).where((u) => u.isNotEmpty).toList();
 
   @override
   void initState() {
@@ -45,7 +49,7 @@ class _PostImagesCarouselState extends State<PostImagesCarousel> {
   }
 
   void _go(int delta) {
-    final n = widget.images.length;
+    final n = _resolved.length;
     if (n <= 1) return;
     final next = (_index + delta + n) % n;
     _controller.animateToPage(
@@ -55,9 +59,19 @@ class _PostImagesCarouselState extends State<PostImagesCarousel> {
     );
   }
 
+  void _openViewer(int index) {
+    final urls = _resolved;
+    if (urls.isEmpty) return;
+    ImageViewerPage.open(
+      context,
+      imageUrls: urls,
+      initialIndex: index.clamp(0, urls.length - 1),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final images = widget.images;
+    final images = _resolved;
     if (images.isEmpty) return const SizedBox.shrink();
 
     final scheme = Theme.of(context).colorScheme;
@@ -71,26 +85,35 @@ class _PostImagesCarouselState extends State<PostImagesCarousel> {
             fit: StackFit.expand,
             children: [
               ColoredBox(color: scheme.surfaceContainerHighest),
-              PageView.builder(
-                controller: _controller,
-                itemCount: images.length,
-                onPageChanged: (i) => setState(() => _index = i),
-                itemBuilder: (context, i) {
-                  final url = widget.resolveUrl(images[i]);
-                  return GestureDetector(
-                    onTap: () => ImageViewerPage.open(context, imageUrl: url),
-                    child: Image.network(
-                      url,
-                      fit: BoxFit.contain,
-                      errorBuilder: (_, __, ___) => Center(
-                        child: Icon(
-                          Icons.broken_image_outlined,
-                          color: scheme.onSurfaceVariant,
+              ScrollConfiguration(
+                behavior: ScrollConfiguration.of(context).copyWith(
+                  dragDevices: {
+                    PointerDeviceKind.touch,
+                    PointerDeviceKind.mouse,
+                    PointerDeviceKind.trackpad,
+                    PointerDeviceKind.stylus,
+                  },
+                ),
+                child: PageView.builder(
+                  controller: _controller,
+                  itemCount: images.length,
+                  onPageChanged: (i) => setState(() => _index = i),
+                  itemBuilder: (context, i) {
+                    return GestureDetector(
+                      onTap: () => _openViewer(i),
+                      child: Image.network(
+                        images[i],
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, __, ___) => Center(
+                          child: Icon(
+                            Icons.broken_image_outlined,
+                            color: scheme.onSurfaceVariant,
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
               if (images.length > 1) ...[
                 Align(
@@ -116,7 +139,10 @@ class _PostImagesCarouselState extends State<PostImagesCarousel> {
                       borderRadius: BorderRadius.circular(999),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 3,
+                      ),
                       child: Text(
                         '${_index + 1} / ${images.length}',
                         style: const TextStyle(

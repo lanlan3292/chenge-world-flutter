@@ -287,6 +287,38 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 ),
               ),
             const SizedBox(height: 12),
+            if (post.coverImage != null) ...[
+              GestureDetector(
+                onTap: () => ImageViewerPage.openSingle(
+                  context,
+                  imageUrl: widget.api.resolveMediaUrl(post.coverImage!),
+                  heroTag: 'post-cover-${post.id}',
+                ),
+                child: Hero(
+                  tag: 'post-cover-${post.id}',
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: AspectRatio(
+                      aspectRatio: 16 / 9,
+                      child: Image.network(
+                        widget.api.resolveMediaUrl(post.coverImage!),
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => ColoredBox(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .surfaceContainerHighest,
+                          child: const Center(
+                            child: Icon(Icons.broken_image_outlined),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
             Text(
               post.title,
               style: const TextStyle(
@@ -368,28 +400,6 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 ),
               ],
             ),
-            if (post.coverImage != null) ...[
-              const SizedBox(height: 18),
-              GestureDetector(
-                onTap:
-                    () => ImageViewerPage.open(
-                      context,
-                      imageUrl: widget.api.resolveMediaUrl(post.coverImage!),
-                      heroTag: "post-cover-${post.id}",
-                    ),
-                child: Hero(
-                  tag: "post-cover-${post.id}",
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      widget.api.resolveMediaUrl(post.coverImage!),
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-                    ),
-                  ),
-                ),
-              ),
-            ],
             const SizedBox(height: 24),
             if (post.tags.isNotEmpty)
               Wrap(
@@ -421,7 +431,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
               sizedImageBuilder: (image) {
                 final url = widget.api.resolveMediaUrl(image.uri.toString());
                 return GestureDetector(
-                  onTap: () => ImageViewerPage.open(context, imageUrl: url),
+                  onTap: () => ImageViewerPage.openSingle(context, imageUrl: url),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: ClipRRect(

@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_en.dart';
+import 'app_localizations_ko.dart';
 import 'app_localizations_zh.dart';
 
 // ignore_for_file: type=lint
@@ -98,7 +99,11 @@ abstract class AppLocalizations {
     Locale('en', 'US'),
     Locale('zh'),
     Locale('zh', 'CN'),
+    Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
+    Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
     Locale('zh', 'TW'),
+    Locale('ko'),
+    Locale('ko', 'KR'),
   ];
 
   /// No description provided for @communityTitle.
@@ -2339,13 +2344,27 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['en', 'zh'].contains(locale.languageCode);
+      <String>['en', 'zh', 'ko'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+  // Lookup logic when language+script codes are specified.
+  switch (locale.languageCode) {
+    case 'zh':
+      {
+        switch (locale.scriptCode) {
+          case 'Hans':
+            return AppLocalizationsZhHans();
+          case 'Hant':
+            return AppLocalizationsZhHant();
+        }
+        break;
+      }
+  }
+
   // Lookup logic when language+country codes are specified.
   switch (locale.languageCode) {
     case 'en':
@@ -2366,6 +2385,14 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
         }
         break;
       }
+    case 'ko':
+      {
+        switch (locale.countryCode) {
+          case 'KR':
+            return AppLocalizationsKoKr();
+        }
+        break;
+      }
   }
 
   // Lookup logic when only language code is specified.
@@ -2374,6 +2401,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       return AppLocalizationsEn();
     case 'zh':
       return AppLocalizationsZh();
+    case 'ko':
+      return AppLocalizationsKo();
   }
 
   throw FlutterError(

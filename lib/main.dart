@@ -157,12 +157,18 @@ class _ChengeWorldAppState extends State<ChengeWorldApp>
             'zh_CN' => const Locale('zh', 'CN'),
             'zh_TW' => const Locale('zh', 'TW'),
             'en_US' => const Locale('en', 'US'),
+            'zh_hans' => const Locale('zh', 'Hans'),
+            'zh_hant' => const Locale('zh', 'Hant'),
+            'ko_KR' => const Locale('ko', 'KR'),
             _ => null,
           },
           supportedLocales: const [
             Locale('zh', 'CN'),
             Locale('zh', 'TW'),
             Locale('en', 'US'),
+            Locale('zh', 'Hans'),
+            Locale('zh', 'Hant'),
+            Locale('ko', 'KR')
           ],
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           home: AppShell(
