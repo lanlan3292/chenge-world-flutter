@@ -68,10 +68,14 @@ class _FeedPageState extends State<FeedPage> {
     if (!widget.autoHideBottomBar && !_chromeVisible) {
       _setChromeVisible(true);
     }
-    // After wide→narrow, re-push chrome state so the shell bar is not stuck hidden.
+    // After wide→narrow, force shell chrome visible.
+    // Must notify even when local state is already true (shell may still be hidden).
     if (widget.autoHideBottomBar && !oldWidget.autoHideBottomBar) {
-      // Always show chrome when returning to a layout that has a bottom bar.
-      _setChromeVisible(true);
+      if (!_chromeVisible) {
+        _setChromeVisible(true);
+      } else {
+        widget.onChromeVisibilityChanged?.call(true);
+      }
     }
   }
 
@@ -245,6 +249,8 @@ void _onScroll() {
     final columns = responsive.clamp(minCols, maxCols);
     final isWide = MediaQuery.sizeOf(context).width >= 760;
     return Scaffold(
+      // FAB must not ride the IME; shell already keeps the bottom bar fixed.
+      resizeToAvoidBottomInset: false,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton:
           widget.token != null && widget.token!.isNotEmpty
@@ -582,10 +588,12 @@ class _CreatePostFab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // viewPadding ignores the IME; padding.bottom would jump with the keyboard.
+    // viewPadding ignores the IME; Scaffold also has resizeToAvoidBottomInset: false.
     final systemBottom = MediaQuery.viewPaddingOf(context).bottom;
+    // Docked (narrow + bar shown): clear nav bar.
+    // Undocked (wide / bar hidden): sit near the physical bottom edge.
     final bottom = dockedToBottomBar
-        ? systemBottom + _shellNavBarHeight + 8
+        ? systemBottom + _shellNavBarHeight + 12
         : systemBottom + 12;
     return AnimatedPadding(
       duration: const Duration(milliseconds: 280),
@@ -718,13 +726,13 @@ class _AnimatedExtendedFabState extends State<_AnimatedExtendedFab>
             fillColor: backgroundColor,
             focusColor:
                 fabTheme.focusColor ??
-                colors.onPrimaryContainer.withOpacity(0.10),
+                colors.onPrimaryContainer.withValues(alpha: 0.10),
             hoverColor:
                 fabTheme.hoverColor ??
-                colors.onPrimaryContainer.withOpacity(0.08),
+                colors.onPrimaryContainer.withValues(alpha: 0.08),
             splashColor:
                 fabTheme.splashColor ??
-                colors.onPrimaryContainer.withOpacity(0.10),
+                colors.onPrimaryContainer.withValues(alpha: 0.10),
             shape: shape,
             clipBehavior: Clip.antiAlias,
             materialTapTargetSize: theme.materialTapTargetSize,

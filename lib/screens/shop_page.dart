@@ -80,8 +80,11 @@ class _ShopPageState extends State<ShopPage> {
       _setChromeVisible(true);
     }
     if (widget.autoHideBottomBar && !oldWidget.autoHideBottomBar) {
-      // Always show chrome when returning to a layout that has a bottom bar.
-      _setChromeVisible(true);
+      if (!_chromeVisible) {
+        _setChromeVisible(true);
+      } else {
+        widget.onChromeVisibilityChanged?.call(true);
+      }
     }
   }
 

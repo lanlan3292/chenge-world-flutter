@@ -201,6 +201,9 @@ class _AppShellState extends State<AppShell> {
   /// Bottom nav chrome visibility; driven by feed/shop scroll without full rebuilds.
   final ValueNotifier<bool> _chromeVisible = ValueNotifier<bool>(true);
 
+  /// Previous layout width mode; used to reset chrome on wide↔narrow flips.
+  bool? _wasWide;
+
   @override
   void initState() {
     super.initState();
@@ -328,12 +331,14 @@ class _AppShellState extends State<AppShell> {
     final wide = MediaQuery.sizeOf(context).width >= 760;
     final hideBottomBar = !wide && widget.settings.autoHideBottomBar;
 
-    // Wide layout has no bottom bar; reset chrome so returning to narrow shows it.
-    if (wide && !_chromeVisible.value) {
+    // Reset chrome across wide↔narrow flips so a bar hidden on narrow
+    // cannot remain hidden after returning from wide layout.
+    final wasWide = _wasWide;
+    if (wasWide != wide) {
+      _wasWide = wide;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && !_chromeVisible.value) {
-          _chromeVisible.value = true;
-        }
+        if (!mounted) return;
+        _chromeVisible.value = true;
       });
     }
 
