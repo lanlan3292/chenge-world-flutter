@@ -1195,64 +1195,64 @@ class AppLocalizationsKo extends AppLocalizations {
   String get deleteImage => '이미지 삭제';
 
   @override
-  String get bilibiliVideo => 'B 站视频';
+  String get bilibiliVideo => 'Bilibili video';
 
   @override
-  String get attachmentLink => '附件链接';
+  String get attachmentLink => 'Attachment link';
 
   @override
-  String get cannotOpenLink => '无法打开链接';
+  String get cannotOpenLink => 'Cannot open link';
 
   @override
-  String get editMarkdown => '编辑';
+  String get editMarkdown => 'Edit';
 
   @override
-  String get previewMarkdown => '预览';
+  String get previewMarkdown => 'Preview';
 
   @override
-  String get previewEmpty => '暂无内容可预览';
+  String get previewEmpty => 'Nothing to preview yet';
 
   @override
-  String get editProfile => '编辑资料';
+  String get editProfile => 'Edit profile';
 
   @override
-  String get editProfileDescription => '修改昵称、头像与个人简介';
+  String get editProfileDescription => 'Update nickname, avatar and bio';
 
   @override
-  String get saveProfile => '保存';
+  String get saveProfile => 'Save';
 
   @override
-  String get profileUpdated => '资料已更新';
+  String get profileUpdated => 'Profile updated';
 
   @override
-  String get changeAvatar => '更换头像';
+  String get changeAvatar => 'Change avatar';
 
   @override
-  String get nickname => '昵称';
+  String get nickname => 'Nickname';
 
   @override
-  String get gender => '性别';
+  String get gender => 'Gender';
 
   @override
-  String get genderSecret => '保密';
+  String get genderSecret => 'Private';
 
   @override
-  String get genderMale => '男';
+  String get genderMale => 'Male';
 
   @override
-  String get genderFemale => '女';
+  String get genderFemale => 'Female';
 
   @override
-  String get birthday => '生日';
+  String get birthday => 'Birthday';
 
   @override
-  String get bio => '简介';
+  String get bio => 'Bio';
 
   @override
-  String get website => '网站';
+  String get website => 'Website';
 
   @override
-  String get phone => '手机号';
+  String get phone => 'Phone';
 }
 
 /// The translations for Korean, as used in Republic of Korea (`ko_KR`).

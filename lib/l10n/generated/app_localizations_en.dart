@@ -1108,173 +1108,176 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accessTokenCleared => 'Access token cleared';
 
   @override
-  String get createPost => '发帖';
+  String get createPost => 'New post';
 
   @override
-  String get publishPost => '发布';
+  String get publishPost => 'Publish';
 
   @override
-  String get postTitle => '标题';
+  String get postTitle => 'Title';
 
   @override
-  String get postContent => '正文（Markdown）';
+  String get postContent => 'Content (Markdown)';
 
   @override
-  String get markdownHint => '支持 Markdown，可插入图片';
+  String get markdownHint => 'Markdown supported. You can insert images.';
 
   @override
-  String get insertImage => '插入图片';
+  String get insertImage => 'Insert image';
 
   @override
-  String get coverImage => '封面图';
+  String get coverImage => 'Cover image';
 
   @override
-  String get chooseCover => '选择封面';
+  String get chooseCover => 'Choose cover';
 
   @override
-  String get removeCover => '移除封面';
+  String get removeCover => 'Remove cover';
 
   @override
-  String get category => '板块';
+  String get category => 'Category';
 
   @override
-  String get selectCategoryHint => '请选择板块';
+  String get selectCategoryHint => 'Please select a category';
 
   @override
-  String get noCategories => '暂无可用板块';
+  String get noCategories => 'No categories available';
 
   @override
-  String get titleRequired => '请填写标题';
+  String get titleRequired => 'Title is required';
 
   @override
-  String get contentRequired => '请填写正文';
+  String get contentRequired => 'Content is required';
 
   @override
-  String get postPublished => '发布成功';
+  String get postPublished => 'Post published';
 
   @override
-  String get signInToCreatePost => '登录后即可发帖';
+  String get signInToCreatePost => 'Sign in to create a post';
 
   @override
-  String get tagsOptional => '标签（可选）';
+  String get tagsOptional => 'Tags (optional)';
 
   @override
-  String get tagsHint => '用逗号或空格分隔';
+  String get tagsHint => 'Separate with commas or spaces';
 
   @override
-  String get saveDraft => '存草稿';
+  String get saveDraft => 'Save draft';
 
   @override
-  String get draftSaved => '草稿已保存';
+  String get draftSaved => 'Draft saved';
 
   @override
   String draftAutoSaved(String time) {
-    return '草稿已自动保存 $time';
+    return 'Draft auto-saved at $time';
   }
 
   @override
-  String get restoreDraftTitle => '恢复草稿？';
+  String get restoreDraftTitle => 'Restore draft?';
 
   @override
-  String get restoreDraftMessage => '检测到未发布的草稿，是否恢复？';
+  String get restoreDraftMessage =>
+      'An unpublished draft was found. Restore it?';
 
   @override
-  String get restoreDraft => '恢复';
+  String get restoreDraft => 'Restore';
 
   @override
-  String get discardDraft => '丢弃';
+  String get discardDraft => 'Discard';
 
   @override
-  String get hotTags => '热门标签';
+  String get hotTags => 'Hot tags';
 
   @override
-  String get attachmentUrls => '附件 URL';
+  String get attachmentUrls => 'Attachment URLs';
 
   @override
-  String get attachmentUrlsHint => '支持任意附件链接；也可填写 B 站视频链接';
+  String get attachmentUrlsHint =>
+      'Any attachment URL; Bilibili video links are also supported';
 
   @override
   String get attachmentUrlHint => 'https://…';
 
   @override
-  String get addAttachmentUrl => '添加附件 URL';
+  String get addAttachmentUrl => 'Add attachment URL';
 
   @override
-  String get removeAttachment => '移除附件';
+  String get removeAttachment => 'Remove attachment';
 
   @override
   String maxImagesReached(int count) {
-    return '最多上传 $count 张图片';
+    return 'Up to $count images';
   }
 
   @override
-  String get articleImages => '文章图片';
+  String get articleImages => 'Article images';
 
   @override
-  String get articleImagesHint => '最多 5 张，用于文章内容区展示（非 Markdown）；未设封面时默认用第一张作封面';
+  String get articleImagesHint =>
+      'Up to 5 images for the article gallery (not Markdown). First image is used as cover if none is set.';
 
   @override
-  String get deleteImage => '删除图片';
+  String get deleteImage => 'Delete image';
 
   @override
-  String get bilibiliVideo => 'B 站视频';
+  String get bilibiliVideo => 'Bilibili video';
 
   @override
-  String get attachmentLink => '附件链接';
+  String get attachmentLink => 'Attachment link';
 
   @override
-  String get cannotOpenLink => '无法打开链接';
+  String get cannotOpenLink => 'Cannot open link';
 
   @override
-  String get editMarkdown => '编辑';
+  String get editMarkdown => 'Edit';
 
   @override
-  String get previewMarkdown => '预览';
+  String get previewMarkdown => 'Preview';
 
   @override
-  String get previewEmpty => '暂无内容可预览';
+  String get previewEmpty => 'Nothing to preview yet';
 
   @override
-  String get editProfile => '编辑资料';
+  String get editProfile => 'Edit profile';
 
   @override
-  String get editProfileDescription => '修改昵称、头像与个人简介';
+  String get editProfileDescription => 'Update nickname, avatar and bio';
 
   @override
-  String get saveProfile => '保存';
+  String get saveProfile => 'Save';
 
   @override
-  String get profileUpdated => '资料已更新';
+  String get profileUpdated => 'Profile updated';
 
   @override
-  String get changeAvatar => '更换头像';
+  String get changeAvatar => 'Change avatar';
 
   @override
-  String get nickname => '昵称';
+  String get nickname => 'Nickname';
 
   @override
-  String get gender => '性别';
+  String get gender => 'Gender';
 
   @override
-  String get genderSecret => '保密';
+  String get genderSecret => 'Private';
 
   @override
-  String get genderMale => '男';
+  String get genderMale => 'Male';
 
   @override
-  String get genderFemale => '女';
+  String get genderFemale => 'Female';
 
   @override
-  String get birthday => '生日';
+  String get birthday => 'Birthday';
 
   @override
-  String get bio => '简介';
+  String get bio => 'Bio';
 
   @override
-  String get website => '网站';
+  String get website => 'Website';
 
   @override
-  String get phone => '手机号';
+  String get phone => 'Phone';
 }
 
 /// The translations for English, as used in the United States (`en_US`).

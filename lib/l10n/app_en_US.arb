@@ -37,11 +37,59 @@
   "feedColumns": "Discover grid columns",
   "shopColumns": "Store grid columns",
   "columnRange": "Current: {min}–{max} columns (adapts within this range when space allows)",
+  "@columnRange": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
   "minimumColumns": "Min {count}",
+  "@minimumColumns": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "maximumColumns": "Max {count}",
+  "@maximumColumns": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "postCount": "{count} posts",
+  "@postCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "pageCount": "Page {page} of {total}",
+  "@pageCount": {
+    "placeholders": {
+      "page": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "itemCount": "{count} products",
+  "@itemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "rightNow": "What people are discussing",
   "freshDiscussions": "See what is new in the community",
   "searchPostsAndTopics": "Search posts and topics",
@@ -113,6 +161,13 @@
   "refreshTasks": "Refresh tasks",
   "claimComplete": "Continue",
   "rewardClaimed": "Reward claimed: +{coins} CC",
+  "@rewardClaimed": {
+    "placeholders": {
+      "coins": {
+        "type": "String"
+      }
+    }
+  },
   "productPurchaseSuccess": "Purchase complete; added to your assets",
   "signInToLike": "Sign in to like this post",
   "signInToComment": "Sign in to comment",
@@ -120,6 +175,13 @@
   "noComments": "No comments yet",
   "back": "Back",
   "commentCount": "Comments · {count}",
+  "@commentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "refreshComments": "Refresh comments",
   "cancelReply": "Cancel reply",
   "writeComment": "Write a comment…",
@@ -129,6 +191,13 @@
   "liked": "Liked",
   "like": "Like",
   "commentsWithCount": "Comments ({count})",
+  "@commentsWithCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "noMessages": "No messages yet. Say hello!",
   "online": "Online",
   "offline": "Offline",

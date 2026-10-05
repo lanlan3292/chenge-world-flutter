@@ -111,2348 +111,2348 @@ abstract class AppLocalizations {
 
   /// No description provided for @communityTitle.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'ChengeWorld 社区广场'**
+  /// In en_US, this message translates to:
+  /// **'ChengeWorld Community'**
   String get communityTitle;
 
   /// No description provided for @discover.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'发现'**
+  /// In en_US, this message translates to:
+  /// **'Discover'**
   String get discover;
 
   /// No description provided for @social.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'社交'**
+  /// In en_US, this message translates to:
+  /// **'Social'**
   String get social;
 
   /// No description provided for @store.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'商城'**
+  /// In en_US, this message translates to:
+  /// **'Store'**
   String get store;
 
   /// No description provided for @account.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'我的'**
+  /// In en_US, this message translates to:
+  /// **'Account'**
   String get account;
 
   /// No description provided for @settings.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'设置'**
+  /// In en_US, this message translates to:
+  /// **'Settings'**
   String get settings;
 
   /// No description provided for @appearance.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'外观'**
+  /// In en_US, this message translates to:
+  /// **'Appearance'**
   String get appearance;
 
   /// No description provided for @themeMode.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'主题模式'**
+  /// In en_US, this message translates to:
+  /// **'Theme mode'**
   String get themeMode;
 
   /// No description provided for @followSystem.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'跟随系统'**
+  /// In en_US, this message translates to:
+  /// **'Follow system'**
   String get followSystem;
 
   /// No description provided for @light.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'浅色'**
+  /// In en_US, this message translates to:
+  /// **'Light'**
   String get light;
 
   /// No description provided for @dark.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'深色'**
+  /// In en_US, this message translates to:
+  /// **'Dark'**
   String get dark;
 
   /// No description provided for @language.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'语言'**
+  /// In en_US, this message translates to:
+  /// **'Language'**
   String get language;
 
   /// No description provided for @dynamicColor.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'动态取色'**
+  /// In en_US, this message translates to:
+  /// **'Dynamic color'**
   String get dynamicColor;
 
   /// No description provided for @dynamicColorDescription.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'使用 Android 12+ 壁纸配色（Material You）'**
+  /// In en_US, this message translates to:
+  /// **'Use Android 12+ wallpaper colors (Material You)'**
   String get dynamicColorDescription;
 
   /// No description provided for @themeColor.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'主题色'**
+  /// In en_US, this message translates to:
+  /// **'Theme color'**
   String get themeColor;
 
   /// No description provided for @systemBars.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'系统栏'**
+  /// In en_US, this message translates to:
+  /// **'System bars'**
   String get systemBars;
 
   /// No description provided for @statusBarImmersive.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'状态栏沉浸'**
+  /// In en_US, this message translates to:
+  /// **'Transparent status bar'**
   String get statusBarImmersive;
 
   /// No description provided for @statusBarDescription.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'内容延伸至状态栏下方，状态栏透明'**
+  /// In en_US, this message translates to:
+  /// **'Extend content behind the transparent status bar'**
   String get statusBarDescription;
 
   /// No description provided for @navigationBarImmersive.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'导航栏沉浸'**
+  /// In en_US, this message translates to:
+  /// **'Transparent navigation bar'**
   String get navigationBarImmersive;
 
   /// No description provided for @navigationBarDescription.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'内容延伸至导航栏下方，导航栏透明'**
+  /// In en_US, this message translates to:
+  /// **'Extend content behind the transparent navigation bar'**
   String get navigationBarDescription;
 
   /// No description provided for @scrollBehavior.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'滚动行为'**
+  /// In en_US, this message translates to:
+  /// **'Scrolling'**
   String get scrollBehavior;
 
   /// No description provided for @autoHideTopBar.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'自动隐藏顶栏'**
+  /// In en_US, this message translates to:
+  /// **'Auto-hide top bar'**
   String get autoHideTopBar;
 
   /// No description provided for @autoHideTopDescription.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'在发现 / 商城向下滚动时收起页面顶栏（默认开启）'**
+  /// In en_US, this message translates to:
+  /// **'Hide the app bar when scrolling down in Discover or Store (on by default)'**
   String get autoHideTopDescription;
 
   /// No description provided for @autoHideBottomBar.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'自动隐藏底栏'**
+  /// In en_US, this message translates to:
+  /// **'Auto-hide bottom bar'**
   String get autoHideBottomBar;
 
   /// No description provided for @autoHideBottomDescription.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'在发现 / 商城向下滚动时收起底部导航；宽屏侧边栏不会隐藏'**
+  /// In en_US, this message translates to:
+  /// **'Hide bottom navigation when scrolling down; the rail stays visible on wide screens'**
   String get autoHideBottomDescription;
 
   /// No description provided for @chat.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'聊天'**
+  /// In en_US, this message translates to:
+  /// **'Chat'**
   String get chat;
 
   /// No description provided for @showSelfAvatar.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'在会话聊天显示自己的头像'**
+  /// In en_US, this message translates to:
+  /// **'Show my avatar in chats'**
   String get showSelfAvatar;
 
   /// No description provided for @showSelfAvatarDescription.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'自己发送的消息右侧显示头像（默认关闭）'**
+  /// In en_US, this message translates to:
+  /// **'Show your avatar beside sent messages (off by default)'**
   String get showSelfAvatarDescription;
 
   /// No description provided for @showPeerAvatar.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'在私人会话聊天显示对方的头像'**
+  /// In en_US, this message translates to:
+  /// **'Show the other person’s avatar in private chats'**
   String get showPeerAvatar;
 
   /// No description provided for @showPeerAvatarDescription.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'私聊中对方消息左侧显示头像；群聊始终显示成员头像（默认关闭）'**
+  /// In en_US, this message translates to:
+  /// **'Show the other person’s avatar beside private messages; group avatars are always shown (off by default)'**
   String get showPeerAvatarDescription;
 
   /// No description provided for @systemGestures.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'系统手势'**
+  /// In en_US, this message translates to:
+  /// **'System gestures'**
   String get systemGestures;
 
   /// No description provided for @predictiveBack.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'预见式返回'**
+  /// In en_US, this message translates to:
+  /// **'Predictive back'**
   String get predictiveBack;
 
   /// No description provided for @predictiveBackDescription.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'Android 13+ 页面过渡使用预见式返回动画（默认关闭）'**
+  /// In en_US, this message translates to:
+  /// **'Use predictive back animations on Android 13+ (off by default)'**
   String get predictiveBackDescription;
 
   /// No description provided for @layout.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'布局'**
+  /// In en_US, this message translates to:
+  /// **'Layout'**
   String get layout;
 
   /// No description provided for @feedColumns.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'发现页列数范围'**
+  /// In en_US, this message translates to:
+  /// **'Discover grid columns'**
   String get feedColumns;
 
   /// No description provided for @shopColumns.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'商店页列数范围'**
+  /// In en_US, this message translates to:
+  /// **'Store grid columns'**
   String get shopColumns;
 
   /// No description provided for @columnRange.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'当前：{min} – {max} 列（宽度足够时在此范围内自适应）'**
+  /// In en_US, this message translates to:
+  /// **'Current: {min}–{max} columns (adapts within this range when space allows)'**
   String columnRange(int min, int max);
 
   /// No description provided for @minimumColumns.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'最小 {count}'**
+  /// In en_US, this message translates to:
+  /// **'Min {count}'**
   String minimumColumns(int count);
 
   /// No description provided for @maximumColumns.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'最大 {count}'**
+  /// In en_US, this message translates to:
+  /// **'Max {count}'**
   String maximumColumns(int count);
 
   /// No description provided for @postCount.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'{count} 篇'**
+  /// In en_US, this message translates to:
+  /// **'{count} posts'**
   String postCount(int count);
 
   /// No description provided for @pageCount.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'第 {page} / {total} 页'**
+  /// In en_US, this message translates to:
+  /// **'Page {page} of {total}'**
   String pageCount(int page, int total);
 
   /// No description provided for @itemCount.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'{count} 件商品'**
+  /// In en_US, this message translates to:
+  /// **'{count} products'**
   String itemCount(int count);
 
   /// No description provided for @rightNow.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'此刻在聊'**
+  /// In en_US, this message translates to:
+  /// **'What people are discussing'**
   String get rightNow;
 
   /// No description provided for @freshDiscussions.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'看看社区里的新鲜讨论'**
+  /// In en_US, this message translates to:
+  /// **'See what is new in the community'**
   String get freshDiscussions;
 
   /// No description provided for @searchPostsAndTopics.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'搜索帖子和话题'**
+  /// In en_US, this message translates to:
+  /// **'Search posts and topics'**
   String get searchPostsAndTopics;
 
   /// No description provided for @search.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'搜索'**
+  /// In en_US, this message translates to:
+  /// **'Search'**
   String get search;
 
   /// No description provided for @refreshPosts.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'刷新帖子'**
+  /// In en_US, this message translates to:
+  /// **'Refresh posts'**
   String get refreshPosts;
 
   /// No description provided for @latest.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'最新'**
+  /// In en_US, this message translates to:
+  /// **'Latest'**
   String get latest;
 
   /// No description provided for @popular.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'热门'**
+  /// In en_US, this message translates to:
+  /// **'Popular'**
   String get popular;
 
   /// No description provided for @featured.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'精华'**
+  /// In en_US, this message translates to:
+  /// **'Featured'**
   String get featured;
 
   /// No description provided for @noPosts.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'暂时没有帖子'**
+  /// In en_US, this message translates to:
+  /// **'No posts yet'**
   String get noPosts;
 
   /// No description provided for @noPostsHint.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'换个关键词或稍后再来看看'**
+  /// In en_US, this message translates to:
+  /// **'Try another keyword or check back later'**
   String get noPostsHint;
 
   /// No description provided for @retry.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'重试'**
+  /// In en_US, this message translates to:
+  /// **'Retry'**
   String get retry;
 
   /// No description provided for @previousPage.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'上一页'**
+  /// In en_US, this message translates to:
+  /// **'Previous page'**
   String get previousPage;
 
   /// No description provided for @nextPage.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'下一页'**
+  /// In en_US, this message translates to:
+  /// **'Next page'**
   String get nextPage;
 
   /// No description provided for @signOut.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'退出登录'**
+  /// In en_US, this message translates to:
+  /// **'Sign out'**
   String get signOut;
 
   /// No description provided for @confirmSignOut.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'确定退出当前 ChengeWorld 账户？'**
+  /// In en_US, this message translates to:
+  /// **'Are you sure you want to sign out of ChengeWorld?'**
   String get confirmSignOut;
 
   /// No description provided for @cancel.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'取消'**
+  /// In en_US, this message translates to:
+  /// **'Cancel'**
   String get cancel;
 
   /// No description provided for @exit.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'退出'**
+  /// In en_US, this message translates to:
+  /// **'Sign out'**
   String get exit;
 
   /// No description provided for @signedOut.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'已退出登录'**
+  /// In en_US, this message translates to:
+  /// **'Signed out'**
   String get signedOut;
 
   /// No description provided for @accountSettingsSignIn.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'登录后可管理账户设置'**
+  /// In en_US, this message translates to:
+  /// **'Sign in to manage account settings'**
   String get accountSettingsSignIn;
 
   /// No description provided for @signedIn.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'已登录'**
+  /// In en_US, this message translates to:
+  /// **'Signed in'**
   String get signedIn;
 
   /// No description provided for @welcome.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'欢迎来到社区'**
+  /// In en_US, this message translates to:
+  /// **'Welcome to the community'**
   String get welcome;
 
   /// No description provided for @accountConnected.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'账户已连接到 ChengeWorld'**
+  /// In en_US, this message translates to:
+  /// **'Your account is connected to ChengeWorld'**
   String get accountConnected;
 
   /// No description provided for @signInForPersonalized.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'登录后浏览个性化内容'**
+  /// In en_US, this message translates to:
+  /// **'Sign in to explore personalized content'**
   String get signInForPersonalized;
 
   /// No description provided for @taskCenter.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'任务中心'**
+  /// In en_US, this message translates to:
+  /// **'Task center'**
   String get taskCenter;
 
   /// No description provided for @taskCenterDescription.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'签到、完成任务并领取 ChengeCoin'**
+  /// In en_US, this message translates to:
+  /// **'Check in, complete tasks, and earn ChengeCoin'**
   String get taskCenterDescription;
 
   /// No description provided for @signIn.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'登录'**
+  /// In en_US, this message translates to:
+  /// **'Sign in'**
   String get signIn;
 
   /// No description provided for @signInAccount.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'登录账户'**
+  /// In en_US, this message translates to:
+  /// **'Sign in'**
   String get signInAccount;
 
   /// No description provided for @signInSuccess.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'登录成功'**
+  /// In en_US, this message translates to:
+  /// **'Signed in successfully'**
   String get signInSuccess;
 
   /// No description provided for @signInToChengeWorld.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'登录 ChengeWorld'**
+  /// In en_US, this message translates to:
+  /// **'Sign in to ChengeWorld'**
   String get signInToChengeWorld;
 
   /// No description provided for @username.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'用户名'**
+  /// In en_US, this message translates to:
+  /// **'Username'**
   String get username;
 
   /// No description provided for @enterUsername.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'请输入用户名'**
+  /// In en_US, this message translates to:
+  /// **'Enter a username'**
   String get enterUsername;
 
   /// No description provided for @password.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'密码'**
+  /// In en_US, this message translates to:
+  /// **'Password'**
   String get password;
 
   /// No description provided for @showPassword.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'显示密码'**
+  /// In en_US, this message translates to:
+  /// **'Show password'**
   String get showPassword;
 
   /// No description provided for @hidePassword.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'隐藏密码'**
+  /// In en_US, this message translates to:
+  /// **'Hide password'**
   String get hidePassword;
 
   /// No description provided for @enterPassword.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'请输入密码'**
+  /// In en_US, this message translates to:
+  /// **'Enter a password'**
   String get enterPassword;
 
   /// No description provided for @signingIn.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'正在登录'**
+  /// In en_US, this message translates to:
+  /// **'Signing in…'**
   String get signingIn;
 
   /// No description provided for @contacts.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'通讯录'**
+  /// In en_US, this message translates to:
+  /// **'Contacts'**
   String get contacts;
 
   /// No description provided for @productDetails.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'商品详情'**
+  /// In en_US, this message translates to:
+  /// **'Product details'**
   String get productDetails;
 
   /// No description provided for @post.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'帖子'**
+  /// In en_US, this message translates to:
+  /// **'Post'**
   String get post;
 
   /// No description provided for @shopNow.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'逛商城'**
+  /// In en_US, this message translates to:
+  /// **'Store'**
   String get shopNow;
 
   /// No description provided for @myAssets.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'我的资产'**
+  /// In en_US, this message translates to:
+  /// **'My assets'**
   String get myAssets;
 
   /// No description provided for @orders.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'订单'**
+  /// In en_US, this message translates to:
+  /// **'Orders'**
   String get orders;
 
   /// No description provided for @discoverItems.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'发现好物'**
+  /// In en_US, this message translates to:
+  /// **'Discover products'**
   String get discoverItems;
 
   /// No description provided for @searchProducts.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'搜索商品'**
+  /// In en_US, this message translates to:
+  /// **'Search products'**
   String get searchProducts;
 
   /// No description provided for @sortProducts.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'排序商品'**
+  /// In en_US, this message translates to:
+  /// **'Sort products'**
   String get sortProducts;
 
   /// No description provided for @newestArrivals.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'最新上架'**
+  /// In en_US, this message translates to:
+  /// **'Newest arrivals'**
   String get newestArrivals;
 
   /// No description provided for @popularProducts.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'热门商品'**
+  /// In en_US, this message translates to:
+  /// **'Popular products'**
   String get popularProducts;
 
   /// No description provided for @priceLowToHigh.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'价格从低到高'**
+  /// In en_US, this message translates to:
+  /// **'Price: low to high'**
   String get priceLowToHigh;
 
   /// No description provided for @priceHighToLow.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'价格从高到低'**
+  /// In en_US, this message translates to:
+  /// **'Price: high to low'**
   String get priceHighToLow;
 
   /// No description provided for @ratingFirst.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'评分优先'**
+  /// In en_US, this message translates to:
+  /// **'Top rated'**
   String get ratingFirst;
 
   /// No description provided for @all.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'全部'**
+  /// In en_US, this message translates to:
+  /// **'All'**
   String get all;
 
   /// No description provided for @files.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'文件'**
+  /// In en_US, this message translates to:
+  /// **'Files'**
   String get files;
 
   /// No description provided for @emojiPacks.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'表情包'**
+  /// In en_US, this message translates to:
+  /// **'Emoji packs'**
   String get emojiPacks;
 
   /// No description provided for @components.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'组件'**
+  /// In en_US, this message translates to:
+  /// **'Components'**
   String get components;
 
   /// No description provided for @applications.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'应用'**
+  /// In en_US, this message translates to:
+  /// **'Applications'**
   String get applications;
 
   /// No description provided for @executables.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'可执行'**
+  /// In en_US, this message translates to:
+  /// **'Executables'**
   String get executables;
 
   /// No description provided for @libraries.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'类库'**
+  /// In en_US, this message translates to:
+  /// **'Libraries'**
   String get libraries;
 
   /// No description provided for @functionLibraries.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'函数库'**
+  /// In en_US, this message translates to:
+  /// **'Function libraries'**
   String get functionLibraries;
 
   /// No description provided for @noAssetsOrOrdersSignIn.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'登录后查看资产与订单'**
+  /// In en_US, this message translates to:
+  /// **'Sign in to view assets and orders'**
   String get noAssetsOrOrdersSignIn;
 
   /// No description provided for @goSignIn.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'前往登录'**
+  /// In en_US, this message translates to:
+  /// **'Sign in'**
   String get goSignIn;
 
   /// No description provided for @shopUnavailable.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'商城暂时不可用'**
+  /// In en_US, this message translates to:
+  /// **'Store temporarily unavailable'**
   String get shopUnavailable;
 
   /// No description provided for @checkNetworkAndRetry.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'检查网络后重试'**
+  /// In en_US, this message translates to:
+  /// **'Check your connection and try again'**
   String get checkNetworkAndRetry;
 
   /// No description provided for @noProducts.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'暂时没有商品'**
+  /// In en_US, this message translates to:
+  /// **'No products yet'**
   String get noProducts;
 
   /// No description provided for @tryOtherSearch.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'试试其他关键词或分类'**
+  /// In en_US, this message translates to:
+  /// **'Try another keyword or category'**
   String get tryOtherSearch;
 
   /// No description provided for @noAssets.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'还没有资产'**
+  /// In en_US, this message translates to:
+  /// **'No assets yet'**
   String get noAssets;
 
   /// No description provided for @noOrders.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'还没有订单'**
+  /// In en_US, this message translates to:
+  /// **'No orders yet'**
   String get noOrders;
 
   /// No description provided for @purchasesShowHere.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'在商城购买的内容会显示在这里'**
+  /// In en_US, this message translates to:
+  /// **'Your store purchases will appear here'**
   String get purchasesShowHere;
 
   /// No description provided for @refresh.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'刷新'**
+  /// In en_US, this message translates to:
+  /// **'Refresh'**
   String get refresh;
 
   /// No description provided for @refreshTasks.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'刷新任务'**
+  /// In en_US, this message translates to:
+  /// **'Refresh tasks'**
   String get refreshTasks;
 
   /// No description provided for @claimComplete.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'去完成'**
+  /// In en_US, this message translates to:
+  /// **'Continue'**
   String get claimComplete;
 
   /// No description provided for @rewardClaimed.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'奖励已领取，+{coins} CC'**
+  /// In en_US, this message translates to:
+  /// **'Reward claimed: +{coins} CC'**
   String rewardClaimed(String coins);
 
   /// No description provided for @productPurchaseSuccess.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'购买成功，已加入资产清单'**
+  /// In en_US, this message translates to:
+  /// **'Purchase complete; added to your assets'**
   String get productPurchaseSuccess;
 
   /// No description provided for @signInToLike.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'登录后即可点赞'**
+  /// In en_US, this message translates to:
+  /// **'Sign in to like this post'**
   String get signInToLike;
 
   /// No description provided for @signInToComment.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'登录后即可发表评论'**
+  /// In en_US, this message translates to:
+  /// **'Sign in to comment'**
   String get signInToComment;
 
   /// No description provided for @commentPublished.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'评论已发表'**
+  /// In en_US, this message translates to:
+  /// **'Comment posted'**
   String get commentPublished;
 
   /// No description provided for @noComments.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'还没有评论'**
+  /// In en_US, this message translates to:
+  /// **'No comments yet'**
   String get noComments;
 
   /// No description provided for @back.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'返回'**
+  /// In en_US, this message translates to:
+  /// **'Back'**
   String get back;
 
   /// No description provided for @commentCount.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'评论 · {count}'**
+  /// In en_US, this message translates to:
+  /// **'Comments · {count}'**
   String commentCount(int count);
 
   /// No description provided for @refreshComments.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'刷新评论'**
+  /// In en_US, this message translates to:
+  /// **'Refresh comments'**
   String get refreshComments;
 
   /// No description provided for @cancelReply.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'取消回复'**
+  /// In en_US, this message translates to:
+  /// **'Cancel reply'**
   String get cancelReply;
 
   /// No description provided for @writeComment.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'写下你的评论…'**
+  /// In en_US, this message translates to:
+  /// **'Write a comment…'**
   String get writeComment;
 
   /// No description provided for @reply.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'回复'**
+  /// In en_US, this message translates to:
+  /// **'Reply'**
   String get reply;
 
   /// No description provided for @publishing.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'正在发表'**
+  /// In en_US, this message translates to:
+  /// **'Posting…'**
   String get publishing;
 
   /// No description provided for @publishComment.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'发表评论'**
+  /// In en_US, this message translates to:
+  /// **'Post comment'**
   String get publishComment;
 
   /// No description provided for @liked.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'已点赞'**
+  /// In en_US, this message translates to:
+  /// **'Liked'**
   String get liked;
 
   /// No description provided for @like.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'点赞'**
+  /// In en_US, this message translates to:
+  /// **'Like'**
   String get like;
 
   /// No description provided for @commentsWithCount.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'评论 ({count})'**
+  /// In en_US, this message translates to:
+  /// **'Comments ({count})'**
   String commentsWithCount(int count);
 
   /// No description provided for @noMessages.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'还没有消息，打个招呼吧'**
+  /// In en_US, this message translates to:
+  /// **'No messages yet. Say hello!'**
   String get noMessages;
 
   /// No description provided for @online.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'在线'**
+  /// In en_US, this message translates to:
+  /// **'Online'**
   String get online;
 
   /// No description provided for @offline.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'离线'**
+  /// In en_US, this message translates to:
+  /// **'Offline'**
   String get offline;
 
   /// No description provided for @groupChat.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'群聊'**
+  /// In en_US, this message translates to:
+  /// **'Group chat'**
   String get groupChat;
 
   /// No description provided for @loadOlderMessages.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'加载更早消息'**
+  /// In en_US, this message translates to:
+  /// **'Load earlier messages'**
   String get loadOlderMessages;
 
   /// No description provided for @backToConversations.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'返回会话列表'**
+  /// In en_US, this message translates to:
+  /// **'Back to conversations'**
   String get backToConversations;
 
   /// No description provided for @searchConversation.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'搜索会话'**
+  /// In en_US, this message translates to:
+  /// **'Search conversations'**
   String get searchConversation;
 
   /// No description provided for @addressBook.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'通讯录'**
+  /// In en_US, this message translates to:
+  /// **'Contacts'**
   String get addressBook;
 
   /// No description provided for @noFriendsToInvite.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'暂无好友可邀请'**
+  /// In en_US, this message translates to:
+  /// **'No friends to invite yet'**
   String get noFriendsToInvite;
 
   /// No description provided for @selectConversation.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'选择一个会话，开始聊天'**
+  /// In en_US, this message translates to:
+  /// **'Select a conversation to start chatting'**
   String get selectConversation;
 
   /// No description provided for @refreshConversations.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'刷新会话'**
+  /// In en_US, this message translates to:
+  /// **'Refresh conversations'**
   String get refreshConversations;
 
   /// No description provided for @signInToStartChat.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'登录后开始聊天'**
+  /// In en_US, this message translates to:
+  /// **'Sign in to start chatting'**
   String get signInToStartChat;
 
   /// No description provided for @chengeCore.
   ///
-  /// In zh_CN, this message translates to:
+  /// In en_US, this message translates to:
   /// **'ChengeCore'**
   String get chengeCore;
 
   /// No description provided for @signInWithToken.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'使用 Token 登录'**
+  /// In en_US, this message translates to:
+  /// **'Sign in with Token'**
   String get signInWithToken;
 
   /// No description provided for @openOfficialSiteWithWebView.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'使用 WebView 打开官网'**
+  /// In en_US, this message translates to:
+  /// **'Open official site with WebView'**
   String get openOfficialSiteWithWebView;
 
   /// No description provided for @close.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'关闭'**
+  /// In en_US, this message translates to:
+  /// **'Close'**
   String get close;
 
   /// No description provided for @raising.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'养成'**
+  /// In en_US, this message translates to:
+  /// **'Raising'**
   String get raising;
 
   /// No description provided for @copy.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'复制'**
+  /// In en_US, this message translates to:
+  /// **'Copy'**
   String get copy;
 
   /// No description provided for @webViewNotSupportedOnAllOs.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'并非所有操作系统都能够调用 WebView'**
+  /// In en_US, this message translates to:
+  /// **'Not all operating systems support WebView'**
   String get webViewNotSupportedOnAllOs;
 
   /// No description provided for @platformWebViewNotSupported.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'当前平台暂不支持内置网页'**
+  /// In en_US, this message translates to:
+  /// **'Built-in web view is not supported on this platform'**
   String get platformWebViewNotSupported;
 
   /// No description provided for @openCoreEcosystem.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'打开核心生态'**
+  /// In en_US, this message translates to:
+  /// **'Open core ecosystem'**
   String get openCoreEcosystem;
 
   /// No description provided for @openRaisingSystem.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'打开站娘养成系统'**
+  /// In en_US, this message translates to:
+  /// **'Open raising system'**
   String get openRaisingSystem;
 
   /// No description provided for @cannotOpenSiteMissingConfig.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'无法打开官网：缺少服务配置'**
+  /// In en_US, this message translates to:
+  /// **'Cannot open site: missing service configuration'**
   String get cannotOpenSiteMissingConfig;
 
   /// No description provided for @accessTokenDescription.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'用于校验身份的访问令牌'**
+  /// In en_US, this message translates to:
+  /// **'Access token used for identity verification'**
   String get accessTokenDescription;
 
   /// No description provided for @confirm.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'确定'**
+  /// In en_US, this message translates to:
+  /// **'OK'**
   String get confirm;
 
   /// No description provided for @confirmSignIn.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'确认登录'**
+  /// In en_US, this message translates to:
+  /// **'Confirm sign in'**
   String get confirmSignIn;
 
   /// No description provided for @pasteJwtToken.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'粘贴 JWT Token'**
+  /// In en_US, this message translates to:
+  /// **'Paste JWT Token'**
   String get pasteJwtToken;
 
   /// No description provided for @accessToken.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'访问令牌'**
+  /// In en_US, this message translates to:
+  /// **'Access token'**
   String get accessToken;
 
   /// No description provided for @accessTokenCopied.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'访问令牌 已复制'**
+  /// In en_US, this message translates to:
+  /// **'Access token copied'**
   String get accessTokenCopied;
 
   /// No description provided for @accessTokenUpdated.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'访问令牌 已更新'**
+  /// In en_US, this message translates to:
+  /// **'Access token updated'**
   String get accessTokenUpdated;
 
   /// No description provided for @signInToUseChengeCore.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'请先登录后再使用 ChengeCore'**
+  /// In en_US, this message translates to:
+  /// **'Please sign in to use ChengeCore'**
   String get signInToUseChengeCore;
 
   /// No description provided for @signInToUseRaising.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'请先登录后再使用养成'**
+  /// In en_US, this message translates to:
+  /// **'Please sign in to use raising'**
   String get signInToUseRaising;
 
   /// No description provided for @enterToken.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'请输入 Token'**
+  /// In en_US, this message translates to:
+  /// **'Please enter token'**
   String get enterToken;
 
   /// No description provided for @communityMerchant.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'社区商家'**
+  /// In en_US, this message translates to:
+  /// **'Community seller'**
   String get communityMerchant;
 
   /// No description provided for @product.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'商品'**
+  /// In en_US, this message translates to:
+  /// **'Product'**
   String get product;
 
   /// No description provided for @productInitial.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'商'**
+  /// In en_US, this message translates to:
+  /// **'P'**
   String get productInitial;
 
   /// No description provided for @stockCount.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'库存 {count}'**
+  /// In en_US, this message translates to:
+  /// **'Stock {count}'**
   String stockCount(int count);
 
   /// No description provided for @soldCount.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'已售 {count}'**
+  /// In en_US, this message translates to:
+  /// **'Sold {count}'**
   String soldCount(int count);
 
   /// No description provided for @ratingReviews.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'{rating} · {count} 评价'**
+  /// In en_US, this message translates to:
+  /// **'{rating} · {count} reviews'**
   String ratingReviews(String rating, int count);
 
   /// No description provided for @productDescription.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'商品介绍'**
+  /// In en_US, this message translates to:
+  /// **'Description'**
   String get productDescription;
 
   /// No description provided for @purchasedContent.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'已购内容'**
+  /// In en_US, this message translates to:
+  /// **'Purchased content'**
   String get purchasedContent;
 
   /// No description provided for @purchaseToViewContent.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'购买后可查看完整内容'**
+  /// In en_US, this message translates to:
+  /// **'Purchase to view full content'**
   String get purchaseToViewContent;
 
   /// No description provided for @openOrDownloadFile.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'打开/下载文件'**
+  /// In en_US, this message translates to:
+  /// **'Open / download file'**
   String get openOrDownloadFile;
 
   /// No description provided for @balanceCc.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'余额 {amount} CC'**
+  /// In en_US, this message translates to:
+  /// **'Balance {amount} CC'**
   String balanceCc(String amount);
 
   /// No description provided for @buying.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'购买中…'**
+  /// In en_US, this message translates to:
+  /// **'Buying…'**
   String get buying;
 
   /// No description provided for @buy.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'购买'**
+  /// In en_US, this message translates to:
+  /// **'Buy'**
   String get buy;
 
   /// No description provided for @yourListedProduct.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'这是你上架的商品'**
+  /// In en_US, this message translates to:
+  /// **'This is your listed product'**
   String get yourListedProduct;
 
   /// No description provided for @backToShop.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'返回商城'**
+  /// In en_US, this message translates to:
+  /// **'Back to store'**
   String get backToShop;
 
   /// No description provided for @holdingQuantityType.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'持有 {quantity} 件 · {type}'**
+  /// In en_US, this message translates to:
+  /// **'Owned {quantity} · {type}'**
   String holdingQuantityType(Object quantity, String type);
 
   /// No description provided for @orderPending.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'待支付'**
+  /// In en_US, this message translates to:
+  /// **'Pending'**
   String get orderPending;
 
   /// No description provided for @orderPaid.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'已支付'**
+  /// In en_US, this message translates to:
+  /// **'Paid'**
   String get orderPaid;
 
   /// No description provided for @orderRefunded.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'已退款'**
+  /// In en_US, this message translates to:
+  /// **'Refunded'**
   String get orderRefunded;
 
   /// No description provided for @statusUnknown.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'状态未知'**
+  /// In en_US, this message translates to:
+  /// **'Unknown status'**
   String get statusUnknown;
 
   /// No description provided for @conversationNotFound.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'未找到该会话，请刷新后重试'**
+  /// In en_US, this message translates to:
+  /// **'Conversation not found. Please refresh and try again.'**
   String get conversationNotFound;
 
   /// No description provided for @noMatchingConversations.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'没有匹配的会话'**
+  /// In en_US, this message translates to:
+  /// **'No matching conversations'**
   String get noMatchingConversations;
 
   /// No description provided for @noConversationsYet.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'还没有会话'**
+  /// In en_US, this message translates to:
+  /// **'No conversations yet'**
   String get noConversationsYet;
 
   /// No description provided for @goContactsToChat.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'去通讯录发起聊天'**
+  /// In en_US, this message translates to:
+  /// **'Go to contacts to start a chat'**
   String get goContactsToChat;
 
   /// No description provided for @friendInitial.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'友'**
+  /// In en_US, this message translates to:
+  /// **'F'**
   String get friendInitial;
 
   /// No description provided for @noMessagesYetShort.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'还没有消息'**
+  /// In en_US, this message translates to:
+  /// **'No messages yet'**
   String get noMessagesYetShort;
 
   /// No description provided for @previewEmoji.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'[表情] {key}'**
+  /// In en_US, this message translates to:
+  /// **'[Emoji] {key}'**
   String previewEmoji(String key);
 
   /// No description provided for @previewSharedPost.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'[分享帖子]'**
+  /// In en_US, this message translates to:
+  /// **'[Shared post]'**
   String get previewSharedPost;
 
   /// No description provided for @previewOrder.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'[商品订单]'**
+  /// In en_US, this message translates to:
+  /// **'[Product order]'**
   String get previewOrder;
 
   /// No description provided for @emojiMessage.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'表情消息'**
+  /// In en_US, this message translates to:
+  /// **'Emoji message'**
   String get emojiMessage;
 
   /// No description provided for @me.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'我'**
+  /// In en_US, this message translates to:
+  /// **'Me'**
   String get me;
 
   /// No description provided for @sharedPost.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'分享帖子'**
+  /// In en_US, this message translates to:
+  /// **'Shared post'**
   String get sharedPost;
 
   /// No description provided for @productOrder.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'商品订单'**
+  /// In en_US, this message translates to:
+  /// **'Product order'**
   String get productOrder;
 
   /// No description provided for @cannotOpenPostMissingId.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'无法打开帖子：分享内容缺少帖子编号'**
+  /// In en_US, this message translates to:
+  /// **'Cannot open post: missing post id in share'**
   String get cannotOpenPostMissingId;
 
   /// No description provided for @cannotOpenProductMissingId.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'无法打开商品：分享内容缺少商品编号'**
+  /// In en_US, this message translates to:
+  /// **'Cannot open product: missing product id in share'**
   String get cannotOpenProductMissingId;
 
   /// No description provided for @chengeUser.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'Chenge 用户'**
+  /// In en_US, this message translates to:
+  /// **'Chenge user'**
   String get chengeUser;
 
   /// No description provided for @signInToPurchase.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'登录后才能购买'**
+  /// In en_US, this message translates to:
+  /// **'Sign in to purchase'**
   String get signInToPurchase;
 
   /// No description provided for @typeMessage.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'输入消息…'**
+  /// In en_US, this message translates to:
+  /// **'Type a message…'**
   String get typeMessage;
 
   /// No description provided for @sendMessage.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'发送消息'**
+  /// In en_US, this message translates to:
+  /// **'Send message'**
   String get sendMessage;
 
   /// No description provided for @emoji.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'表情'**
+  /// In en_US, this message translates to:
+  /// **'Emoji'**
   String get emoji;
 
   /// No description provided for @previewEmojiOnly.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'[表情]'**
+  /// In en_US, this message translates to:
+  /// **'[Emoji]'**
   String get previewEmojiOnly;
 
   /// No description provided for @enterGroupNameKeyword.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'请输入群名称关键词'**
+  /// In en_US, this message translates to:
+  /// **'Enter a group name keyword'**
   String get enterGroupNameKeyword;
 
   /// No description provided for @enterUserSearchHint.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'请输入用户名、昵称或邮箱'**
+  /// In en_US, this message translates to:
+  /// **'Enter username, nickname, or email'**
   String get enterUserSearchHint;
 
   /// No description provided for @friendAddedBack.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'已回加，现在你们是好友了'**
+  /// In en_US, this message translates to:
+  /// **'Added back — you are friends now'**
   String get friendAddedBack;
 
   /// No description provided for @friendRequestSent.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'好友申请已发送'**
+  /// In en_US, this message translates to:
+  /// **'Friend request sent'**
   String get friendRequestSent;
 
   /// No description provided for @rejectFriendRequest.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'拒绝好友申请'**
+  /// In en_US, this message translates to:
+  /// **'Reject friend request'**
   String get rejectFriendRequest;
 
   /// No description provided for @removeFriend.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'解除好友'**
+  /// In en_US, this message translates to:
+  /// **'Remove friend'**
   String get removeFriend;
 
   /// No description provided for @confirmRejectFriendRequest.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'确定拒绝 {name} 的好友申请？'**
+  /// In en_US, this message translates to:
+  /// **'Reject friend request from {name}?'**
   String confirmRejectFriendRequest(String name);
 
   /// No description provided for @confirmRemoveFriend.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'确定与 {name} 解除好友关系？'**
+  /// In en_US, this message translates to:
+  /// **'Remove {name} from friends?'**
   String confirmRemoveFriend(String name);
 
   /// No description provided for @reject.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'拒绝'**
+  /// In en_US, this message translates to:
+  /// **'Reject'**
   String get reject;
 
   /// No description provided for @remove.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'解除'**
+  /// In en_US, this message translates to:
+  /// **'Remove'**
   String get remove;
 
   /// No description provided for @friendRequestRejected.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'已拒绝好友申请'**
+  /// In en_US, this message translates to:
+  /// **'Friend request rejected'**
   String get friendRequestRejected;
 
   /// No description provided for @friendRemoved.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'已解除好友关系'**
+  /// In en_US, this message translates to:
+  /// **'Friend removed'**
   String get friendRemoved;
 
   /// No description provided for @remarkCleared.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'备注已清除'**
+  /// In en_US, this message translates to:
+  /// **'Remark cleared'**
   String get remarkCleared;
 
   /// No description provided for @remarkSaved.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'备注已保存'**
+  /// In en_US, this message translates to:
+  /// **'Remark saved'**
   String get remarkSaved;
 
   /// No description provided for @joinedGroup.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'已加入「{name}」'**
+  /// In en_US, this message translates to:
+  /// **'Joined “{name}”'**
   String joinedGroup(String name);
 
   /// No description provided for @enterGroupName.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'请输入群名称'**
+  /// In en_US, this message translates to:
+  /// **'Please enter a group name'**
   String get enterGroupName;
 
   /// No description provided for @groupCreated.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'群聊「{name}」已创建'**
+  /// In en_US, this message translates to:
+  /// **'Group “{name}” created'**
   String groupCreated(String name);
 
   /// No description provided for @createGroupChat.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'创建群聊'**
+  /// In en_US, this message translates to:
+  /// **'Create group chat'**
   String get createGroupChat;
 
   /// No description provided for @signInToManageContacts.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'登录后管理通讯录'**
+  /// In en_US, this message translates to:
+  /// **'Sign in to manage contacts'**
   String get signInToManageContacts;
 
   /// No description provided for @contactsSubtitle.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'搜索用户、加入群聊、处理好友申请'**
+  /// In en_US, this message translates to:
+  /// **'Search users, join groups, handle friend requests'**
   String get contactsSubtitle;
 
   /// No description provided for @friendsTab.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'好友 {count}'**
+  /// In en_US, this message translates to:
+  /// **'Friends {count}'**
   String friendsTab(int count);
 
   /// No description provided for @groupsTab.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'群聊 {count}'**
+  /// In en_US, this message translates to:
+  /// **'Groups {count}'**
   String groupsTab(int count);
 
   /// No description provided for @requestsTab.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'申请 {count}'**
+  /// In en_US, this message translates to:
+  /// **'Requests {count}'**
   String requestsTab(int count);
 
   /// No description provided for @searchUsers.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'搜用户'**
+  /// In en_US, this message translates to:
+  /// **'Users'**
   String get searchUsers;
 
   /// No description provided for @searchGroups.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'搜群聊'**
+  /// In en_US, this message translates to:
+  /// **'Groups'**
   String get searchGroups;
 
   /// No description provided for @groupNameKeyword.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'群名称关键词'**
+  /// In en_US, this message translates to:
+  /// **'Group name keyword'**
   String get groupNameKeyword;
 
   /// No description provided for @userSearchHint.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'用户名、昵称或邮箱'**
+  /// In en_US, this message translates to:
+  /// **'Username, nickname, or email'**
   String get userSearchHint;
 
   /// No description provided for @searchGroupsTooltip.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'搜索群聊'**
+  /// In en_US, this message translates to:
+  /// **'Search groups'**
   String get searchGroupsTooltip;
 
   /// No description provided for @searchUsersTooltip.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'搜索用户'**
+  /// In en_US, this message translates to:
+  /// **'Search users'**
   String get searchUsersTooltip;
 
   /// No description provided for @searchPublicGroups.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'搜索公开群聊'**
+  /// In en_US, this message translates to:
+  /// **'Search public groups'**
   String get searchPublicGroups;
 
   /// No description provided for @searchChengeUsers.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'搜索 ChengeWorld 用户'**
+  /// In en_US, this message translates to:
+  /// **'Search ChengeWorld users'**
   String get searchChengeUsers;
 
   /// No description provided for @searchPublicGroupsHint.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'输入群名称关键词，加入感兴趣的群'**
+  /// In en_US, this message translates to:
+  /// **'Enter a group name to join groups you like'**
   String get searchPublicGroupsHint;
 
   /// No description provided for @searchUsersHint.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'支持用户名、昵称或邮箱'**
+  /// In en_US, this message translates to:
+  /// **'Username, nickname, or email supported'**
   String get searchUsersHint;
 
   /// No description provided for @noMatchingGroups.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'没有找到匹配的群'**
+  /// In en_US, this message translates to:
+  /// **'No matching groups'**
   String get noMatchingGroups;
 
   /// No description provided for @noMatchingPeople.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'没有找到匹配的人'**
+  /// In en_US, this message translates to:
+  /// **'No matching people'**
   String get noMatchingPeople;
 
   /// No description provided for @tryOtherKeywords.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'试试其他关键词'**
+  /// In en_US, this message translates to:
+  /// **'Try other keywords'**
   String get tryOtherKeywords;
 
   /// No description provided for @noGroupsYet.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'还没有群聊'**
+  /// In en_US, this message translates to:
+  /// **'No groups yet'**
   String get noGroupsYet;
 
   /// No description provided for @noGroupsHint.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'创建群聊，或在搜索里加入公开群'**
+  /// In en_US, this message translates to:
+  /// **'Create a group, or join a public one from search'**
   String get noGroupsHint;
 
   /// No description provided for @noFriendsYet.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'还没有好友'**
+  /// In en_US, this message translates to:
+  /// **'No friends yet'**
   String get noFriendsYet;
 
   /// No description provided for @noFriendsHint.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'搜索用户名或昵称，认识新朋友'**
+  /// In en_US, this message translates to:
+  /// **'Search by username or nickname to meet people'**
   String get noFriendsHint;
 
   /// No description provided for @noPendingRequests.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'没有待处理的申请'**
+  /// In en_US, this message translates to:
+  /// **'No pending requests'**
   String get noPendingRequests;
 
   /// No description provided for @noPendingRequestsHint.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'新的好友申请会显示在这里'**
+  /// In en_US, this message translates to:
+  /// **'New friend requests will show up here'**
   String get noPendingRequestsHint;
 
   /// No description provided for @groupTapToJoin.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'群聊 · 点击加入'**
+  /// In en_US, this message translates to:
+  /// **'Group · tap to join'**
   String get groupTapToJoin;
 
   /// No description provided for @join.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'加入'**
+  /// In en_US, this message translates to:
+  /// **'Join'**
   String get join;
 
   /// No description provided for @enterGroup.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'进入群聊'**
+  /// In en_US, this message translates to:
+  /// **'Enter group'**
   String get enterGroup;
 
   /// No description provided for @requestAddYou.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'@{username} · 申请添加你'**
+  /// In en_US, this message translates to:
+  /// **'@{username} · wants to add you'**
   String requestAddYou(String username);
 
   /// No description provided for @onlineWithRemark.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'{status} · 备注：{remark} · @{username}'**
+  /// In en_US, this message translates to:
+  /// **'{status} · remark: {remark} · @{username}'**
   String onlineWithRemark(String status, String remark, String username);
 
   /// No description provided for @friend.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'好友'**
+  /// In en_US, this message translates to:
+  /// **'Friend'**
   String get friend;
 
   /// No description provided for @addBack.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'回加'**
+  /// In en_US, this message translates to:
+  /// **'Add back'**
   String get addBack;
 
   /// No description provided for @requested.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'已申请'**
+  /// In en_US, this message translates to:
+  /// **'Requested'**
   String get requested;
 
   /// No description provided for @add.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'添加'**
+  /// In en_US, this message translates to:
+  /// **'Add'**
   String get add;
 
   /// No description provided for @acceptAndAddBack.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'回加并接受'**
+  /// In en_US, this message translates to:
+  /// **'Accept and add back'**
   String get acceptAndAddBack;
 
   /// No description provided for @rejectRequest.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'拒绝申请'**
+  /// In en_US, this message translates to:
+  /// **'Reject request'**
   String get rejectRequest;
 
   /// No description provided for @friendActions.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'好友操作'**
+  /// In en_US, this message translates to:
+  /// **'Friend actions'**
   String get friendActions;
 
   /// No description provided for @sendMessageAction.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'发消息'**
+  /// In en_US, this message translates to:
+  /// **'Message'**
   String get sendMessageAction;
 
   /// No description provided for @editRemark.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'修改备注'**
+  /// In en_US, this message translates to:
+  /// **'Edit remark'**
   String get editRemark;
 
   /// No description provided for @setRemark.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'设置备注'**
+  /// In en_US, this message translates to:
+  /// **'Set remark'**
   String get setRemark;
 
   /// No description provided for @removeFriendRelation.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'解除好友关系'**
+  /// In en_US, this message translates to:
+  /// **'Remove friend'**
   String get removeFriendRelation;
 
   /// No description provided for @setFriendRemark.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'设置好友备注'**
+  /// In en_US, this message translates to:
+  /// **'Set friend remark'**
   String get setFriendRemark;
 
   /// No description provided for @remarkName.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'备注名称'**
+  /// In en_US, this message translates to:
+  /// **'Remark name'**
   String get remarkName;
 
   /// No description provided for @remarkHintClear.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'留空以清除备注'**
+  /// In en_US, this message translates to:
+  /// **'Leave empty to clear remark'**
   String get remarkHintClear;
 
   /// No description provided for @save.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'保存'**
+  /// In en_US, this message translates to:
+  /// **'Save'**
   String get save;
 
   /// No description provided for @groupName.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'群名称'**
+  /// In en_US, this message translates to:
+  /// **'Group name'**
   String get groupName;
 
   /// No description provided for @groupNameHint.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'给群聊起个名字'**
+  /// In en_US, this message translates to:
+  /// **'Give the group a name'**
   String get groupNameHint;
 
   /// No description provided for @selectMembersOptional.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'选择成员（可选）'**
+  /// In en_US, this message translates to:
+  /// **'Select members (optional)'**
   String get selectMembersOptional;
 
   /// No description provided for @create.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'创建'**
+  /// In en_US, this message translates to:
+  /// **'Create'**
   String get create;
 
   /// No description provided for @newConversation.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'新对话'**
+  /// In en_US, this message translates to:
+  /// **'New chat'**
   String get newConversation;
 
   /// No description provided for @deleteSession.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'删除会话'**
+  /// In en_US, this message translates to:
+  /// **'Delete session'**
   String get deleteSession;
 
   /// No description provided for @confirmDeleteSession.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'确定删除「{name}」？聊天记录将一并清除。'**
+  /// In en_US, this message translates to:
+  /// **'Delete “{name}”? Chat history will be removed.'**
   String confirmDeleteSession(String name);
 
   /// No description provided for @delete.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'删除'**
+  /// In en_US, this message translates to:
+  /// **'Delete'**
   String get delete;
 
   /// No description provided for @newChat.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'新建对话'**
+  /// In en_US, this message translates to:
+  /// **'New chat'**
   String get newChat;
 
   /// No description provided for @refreshSessions.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'刷新会话'**
+  /// In en_US, this message translates to:
+  /// **'Refresh sessions'**
   String get refreshSessions;
 
   /// No description provided for @signInToUseAiAgent.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'登录后使用 AI Agent'**
+  /// In en_US, this message translates to:
+  /// **'Sign in to use AI Agent'**
   String get signInToUseAiAgent;
 
   /// No description provided for @aiAgentSubtitle.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'支持多会话、流式回复与 MCP 工具'**
+  /// In en_US, this message translates to:
+  /// **'Multi-session, streaming replies, and MCP tools'**
   String get aiAgentSubtitle;
 
   /// No description provided for @selectOrCreateAiSession.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'选择或新建一个 AI 会话'**
+  /// In en_US, this message translates to:
+  /// **'Select or create an AI session'**
   String get selectOrCreateAiSession;
 
   /// No description provided for @aiSessions.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'AI 会话'**
+  /// In en_US, this message translates to:
+  /// **'AI sessions'**
   String get aiSessions;
 
   /// No description provided for @noAiChatsYet.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'还没有 AI 对话'**
+  /// In en_US, this message translates to:
+  /// **'No AI chats yet'**
   String get noAiChatsYet;
 
   /// No description provided for @tapNewToStartChat.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'点下方新建开始对话'**
+  /// In en_US, this message translates to:
+  /// **'Tap New below to start chatting'**
   String get tapNewToStartChat;
 
   /// No description provided for @thinking.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'思考中…'**
+  /// In en_US, this message translates to:
+  /// **'Thinking…'**
   String get thinking;
 
   /// No description provided for @aiRequestFailed.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'AI 请求失败'**
+  /// In en_US, this message translates to:
+  /// **'AI request failed'**
   String get aiRequestFailed;
 
   /// No description provided for @noTextReply.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'（无文本回复）'**
+  /// In en_US, this message translates to:
+  /// **'(No text reply)'**
   String get noTextReply;
 
   /// No description provided for @waitingConfirm.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'等待确认…'**
+  /// In en_US, this message translates to:
+  /// **'Waiting for confirmation…'**
   String get waitingConfirm;
 
   /// No description provided for @receivedType.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'收到 {type}'**
+  /// In en_US, this message translates to:
+  /// **'Received {type}'**
   String receivedType(String type);
 
   /// No description provided for @backToSessionList.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'返回会话列表'**
+  /// In en_US, this message translates to:
+  /// **'Back to sessions'**
   String get backToSessionList;
 
   /// No description provided for @sendMessageToStart.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'发一条消息开始对话'**
+  /// In en_US, this message translates to:
+  /// **'Send a message to start chatting'**
   String get sendMessageToStart;
 
   /// No description provided for @askAiAgent.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'向 AI Agent 提问…'**
+  /// In en_US, this message translates to:
+  /// **'Ask AI Agent…'**
   String get askAiAgent;
 
   /// No description provided for @emojiPackTitle.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'表情包 {id}'**
+  /// In en_US, this message translates to:
+  /// **'Emoji pack {id}'**
   String emojiPackTitle(Object id);
 
   /// No description provided for @noEmojiPacksBuyInShop.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'暂无表情包，可在商店购买'**
+  /// In en_US, this message translates to:
+  /// **'No emoji packs yet — buy some in the store'**
   String get noEmojiPacksBuyInShop;
 
   /// No description provided for @replyToUser.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'回复 @{name}'**
+  /// In en_US, this message translates to:
+  /// **'Reply @{name}'**
   String replyToUser(String name);
 
   /// No description provided for @user.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'用户'**
+  /// In en_US, this message translates to:
+  /// **'User'**
   String get user;
 
   /// No description provided for @anonymousUser.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'匿名用户'**
+  /// In en_US, this message translates to:
+  /// **'Anonymous'**
   String get anonymousUser;
 
   /// No description provided for @timeUnknown.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'时间未知'**
+  /// In en_US, this message translates to:
+  /// **'Unknown time'**
   String get timeUnknown;
 
   /// No description provided for @dateYmd.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'{year}年{month}月{day}日'**
+  /// In en_US, this message translates to:
+  /// **'{year}-{month}-{day}'**
   String dateYmd(int year, int month, int day);
 
   /// No description provided for @tasksInProgress.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'进行中'**
+  /// In en_US, this message translates to:
+  /// **'In progress'**
   String get tasksInProgress;
 
   /// No description provided for @tasksNoInProgress.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'当前没有进行中的任务'**
+  /// In en_US, this message translates to:
+  /// **'No tasks in progress'**
   String get tasksNoInProgress;
 
   /// No description provided for @tasksCompletedSection.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'已完成'**
+  /// In en_US, this message translates to:
+  /// **'Completed'**
   String get tasksCompletedSection;
 
   /// No description provided for @tasksRewardHint.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'奖励需要手动领取 · 任务按周期刷新'**
+  /// In en_US, this message translates to:
+  /// **'Rewards must be claimed manually · Tasks refresh by cycle'**
   String get tasksRewardHint;
 
   /// No description provided for @tasksTodayGoal.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'今日目标'**
+  /// In en_US, this message translates to:
+  /// **'Today\'s goals'**
   String get tasksTodayGoal;
 
   /// No description provided for @tasksTodayGoalSubtitle.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'完成社区任务，领取 ChengeCoin'**
+  /// In en_US, this message translates to:
+  /// **'Complete community tasks and claim ChengeCoin'**
   String get tasksTodayGoalSubtitle;
 
   /// No description provided for @tasksProgressSummary.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'待完成 · {completed} 已完成'**
+  /// In en_US, this message translates to:
+  /// **'Pending · {completed} completed'**
   String tasksProgressSummary(int completed);
 
   /// No description provided for @taskClaimable.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'可领取'**
+  /// In en_US, this message translates to:
+  /// **'Claimable'**
   String get taskClaimable;
 
   /// No description provided for @taskCompletedBadge.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'已完成'**
+  /// In en_US, this message translates to:
+  /// **'Done'**
   String get taskCompletedBadge;
 
   /// No description provided for @taskCheckinStreak.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'已连续签到 {streak} 天 · 累计 {totalDays} 天'**
+  /// In en_US, this message translates to:
+  /// **'Checked in {streak} days in a row · {totalDays} days total'**
   String taskCheckinStreak(int streak, int totalDays);
 
   /// No description provided for @checkIn.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'签到'**
+  /// In en_US, this message translates to:
+  /// **'Check in'**
   String get checkIn;
 
   /// No description provided for @claim.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'领取'**
+  /// In en_US, this message translates to:
+  /// **'Claim'**
   String get claim;
 
   /// No description provided for @statusBarTopHideMask.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'顶栏隐藏时状态栏遮罩'**
+  /// In en_US, this message translates to:
+  /// **'Status bar mask when top bar is hidden'**
   String get statusBarTopHideMask;
 
   /// No description provided for @statusBarTopHideMaskDescription.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'顶栏可自动隐藏时，状态栏使用半透明主题背景，避免内容顶到状态栏（默认开启）'**
+  /// In en_US, this message translates to:
+  /// **'When the top bar can auto-hide, use a translucent theme background for the status bar so content does not go under it (on by default)'**
   String get statusBarTopHideMaskDescription;
 
   /// No description provided for @siteAndToken.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'站点与令牌'**
+  /// In en_US, this message translates to:
+  /// **'Site & token'**
   String get siteAndToken;
 
   /// No description provided for @officialSite.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'官网'**
+  /// In en_US, this message translates to:
+  /// **'Official site'**
   String get officialSite;
 
   /// No description provided for @webViewInitFailed.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'WebView 初始化失败（{errorType}）：{error}\nWindows 需安装 Edge WebView2 Runtime。'**
+  /// In en_US, this message translates to:
+  /// **'WebView failed to initialize ({errorType}): {error}\nWindows requires Edge WebView2 Runtime.'**
   String webViewInitFailed(String errorType, String error);
 
   /// No description provided for @registerAccount.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'注册账号'**
+  /// In en_US, this message translates to:
+  /// **'Create account'**
   String get registerAccount;
 
   /// No description provided for @registerTitle.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'注册 ChengeWorld'**
+  /// In en_US, this message translates to:
+  /// **'Sign up for ChengeWorld'**
   String get registerTitle;
 
   /// No description provided for @registerSuccess.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'注册成功，请登录'**
+  /// In en_US, this message translates to:
+  /// **'Registration successful. Please sign in.'**
   String get registerSuccess;
 
   /// No description provided for @nicknameOptional.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'昵称（可选）'**
+  /// In en_US, this message translates to:
+  /// **'Nickname (optional)'**
   String get nicknameOptional;
 
   /// No description provided for @email.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'邮箱'**
+  /// In en_US, this message translates to:
+  /// **'Email'**
   String get email;
 
   /// No description provided for @enterEmail.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'请输入邮箱'**
+  /// In en_US, this message translates to:
+  /// **'Enter email'**
   String get enterEmail;
 
   /// No description provided for @invalidEmail.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'邮箱格式不正确'**
+  /// In en_US, this message translates to:
+  /// **'Invalid email format'**
   String get invalidEmail;
 
   /// No description provided for @emailCode.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'邮箱验证码'**
+  /// In en_US, this message translates to:
+  /// **'Email verification code'**
   String get emailCode;
 
   /// No description provided for @enterEmailCode.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'请输入验证码'**
+  /// In en_US, this message translates to:
+  /// **'Enter verification code'**
   String get enterEmailCode;
 
   /// No description provided for @getEmailCode.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'获取验证码'**
+  /// In en_US, this message translates to:
+  /// **'Get code'**
   String get getEmailCode;
 
   /// No description provided for @sendingCode.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'发送中'**
+  /// In en_US, this message translates to:
+  /// **'Sending'**
   String get sendingCode;
 
   /// No description provided for @emailCodeSent.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'验证码已发送（开发环境可查看后端日志）'**
+  /// In en_US, this message translates to:
+  /// **'Code sent (check backend logs in development)'**
   String get emailCodeSent;
 
   /// No description provided for @fillEmailFirst.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'请先填写邮箱'**
+  /// In en_US, this message translates to:
+  /// **'Please enter your email first'**
   String get fillEmailFirst;
 
   /// No description provided for @passwordMinSix.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'密码（至少 6 位）'**
+  /// In en_US, this message translates to:
+  /// **'Password (min 6 characters)'**
   String get passwordMinSix;
 
   /// No description provided for @passwordTooShort.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'密码至少 6 位'**
+  /// In en_US, this message translates to:
+  /// **'Password must be at least 6 characters'**
   String get passwordTooShort;
 
   /// No description provided for @register.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'注册'**
+  /// In en_US, this message translates to:
+  /// **'Sign up'**
   String get register;
 
   /// No description provided for @registering.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'注册中…'**
+  /// In en_US, this message translates to:
+  /// **'Signing up…'**
   String get registering;
 
   /// No description provided for @clearCache.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'清空缓存'**
+  /// In en_US, this message translates to:
+  /// **'Clear cache'**
   String get clearCache;
 
   /// No description provided for @clearCacheDescription.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'清除图片等本地缓存，不影响登录状态'**
+  /// In en_US, this message translates to:
+  /// **'Clear local image cache without signing you out'**
   String get clearCacheDescription;
 
   /// No description provided for @clearCacheConfirm.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'确定清空本地缓存？'**
+  /// In en_US, this message translates to:
+  /// **'Clear local cache?'**
   String get clearCacheConfirm;
 
   /// No description provided for @clearCacheDone.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'缓存已清空'**
+  /// In en_US, this message translates to:
+  /// **'Cache cleared'**
   String get clearCacheDone;
 
   /// No description provided for @clearingCache.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'正在清空…'**
+  /// In en_US, this message translates to:
+  /// **'Clearing…'**
   String get clearingCache;
 
   /// No description provided for @accessTokenCleared.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'访问令牌已清除'**
+  /// In en_US, this message translates to:
+  /// **'Access token cleared'**
   String get accessTokenCleared;
 
   /// No description provided for @createPost.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'发帖'**
+  /// In en_US, this message translates to:
+  /// **'New post'**
   String get createPost;
 
   /// No description provided for @publishPost.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'发布'**
+  /// In en_US, this message translates to:
+  /// **'Publish'**
   String get publishPost;
 
   /// No description provided for @postTitle.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'标题'**
+  /// In en_US, this message translates to:
+  /// **'Title'**
   String get postTitle;
 
   /// No description provided for @postContent.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'正文（Markdown）'**
+  /// In en_US, this message translates to:
+  /// **'Content (Markdown)'**
   String get postContent;
 
   /// No description provided for @markdownHint.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'支持 Markdown，可插入图片'**
+  /// In en_US, this message translates to:
+  /// **'Markdown supported. You can insert images.'**
   String get markdownHint;
 
   /// No description provided for @insertImage.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'插入图片'**
+  /// In en_US, this message translates to:
+  /// **'Insert image'**
   String get insertImage;
 
   /// No description provided for @coverImage.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'封面图'**
+  /// In en_US, this message translates to:
+  /// **'Cover image'**
   String get coverImage;
 
   /// No description provided for @chooseCover.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'选择封面'**
+  /// In en_US, this message translates to:
+  /// **'Choose cover'**
   String get chooseCover;
 
   /// No description provided for @removeCover.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'移除封面'**
+  /// In en_US, this message translates to:
+  /// **'Remove cover'**
   String get removeCover;
 
   /// No description provided for @category.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'板块'**
+  /// In en_US, this message translates to:
+  /// **'Category'**
   String get category;
 
   /// No description provided for @selectCategoryHint.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'请选择板块'**
+  /// In en_US, this message translates to:
+  /// **'Please select a category'**
   String get selectCategoryHint;
 
   /// No description provided for @noCategories.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'暂无可用板块'**
+  /// In en_US, this message translates to:
+  /// **'No categories available'**
   String get noCategories;
 
   /// No description provided for @titleRequired.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'请填写标题'**
+  /// In en_US, this message translates to:
+  /// **'Title is required'**
   String get titleRequired;
 
   /// No description provided for @contentRequired.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'请填写正文'**
+  /// In en_US, this message translates to:
+  /// **'Content is required'**
   String get contentRequired;
 
   /// No description provided for @postPublished.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'发布成功'**
+  /// In en_US, this message translates to:
+  /// **'Post published'**
   String get postPublished;
 
   /// No description provided for @signInToCreatePost.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'登录后即可发帖'**
+  /// In en_US, this message translates to:
+  /// **'Sign in to create a post'**
   String get signInToCreatePost;
 
   /// No description provided for @tagsOptional.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'标签（可选）'**
+  /// In en_US, this message translates to:
+  /// **'Tags (optional)'**
   String get tagsOptional;
 
   /// No description provided for @tagsHint.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'用逗号或空格分隔'**
+  /// In en_US, this message translates to:
+  /// **'Separate with commas or spaces'**
   String get tagsHint;
 
   /// No description provided for @saveDraft.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'存草稿'**
+  /// In en_US, this message translates to:
+  /// **'Save draft'**
   String get saveDraft;
 
   /// No description provided for @draftSaved.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'草稿已保存'**
+  /// In en_US, this message translates to:
+  /// **'Draft saved'**
   String get draftSaved;
 
   /// No description provided for @draftAutoSaved.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'草稿已自动保存 {time}'**
+  /// In en_US, this message translates to:
+  /// **'Draft auto-saved at {time}'**
   String draftAutoSaved(String time);
 
   /// No description provided for @restoreDraftTitle.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'恢复草稿？'**
+  /// In en_US, this message translates to:
+  /// **'Restore draft?'**
   String get restoreDraftTitle;
 
   /// No description provided for @restoreDraftMessage.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'检测到未发布的草稿，是否恢复？'**
+  /// In en_US, this message translates to:
+  /// **'An unpublished draft was found. Restore it?'**
   String get restoreDraftMessage;
 
   /// No description provided for @restoreDraft.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'恢复'**
+  /// In en_US, this message translates to:
+  /// **'Restore'**
   String get restoreDraft;
 
   /// No description provided for @discardDraft.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'丢弃'**
+  /// In en_US, this message translates to:
+  /// **'Discard'**
   String get discardDraft;
 
   /// No description provided for @hotTags.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'热门标签'**
+  /// In en_US, this message translates to:
+  /// **'Hot tags'**
   String get hotTags;
 
   /// No description provided for @attachmentUrls.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'附件 URL'**
+  /// In en_US, this message translates to:
+  /// **'Attachment URLs'**
   String get attachmentUrls;
 
   /// No description provided for @attachmentUrlsHint.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'支持任意附件链接；也可填写 B 站视频链接'**
+  /// In en_US, this message translates to:
+  /// **'Any attachment URL; Bilibili video links are also supported'**
   String get attachmentUrlsHint;
 
   /// No description provided for @attachmentUrlHint.
   ///
-  /// In zh_CN, this message translates to:
+  /// In en_US, this message translates to:
   /// **'https://…'**
   String get attachmentUrlHint;
 
   /// No description provided for @addAttachmentUrl.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'添加附件 URL'**
+  /// In en_US, this message translates to:
+  /// **'Add attachment URL'**
   String get addAttachmentUrl;
 
   /// No description provided for @removeAttachment.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'移除附件'**
+  /// In en_US, this message translates to:
+  /// **'Remove attachment'**
   String get removeAttachment;
 
   /// No description provided for @maxImagesReached.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'最多上传 {count} 张图片'**
+  /// In en_US, this message translates to:
+  /// **'Up to {count} images'**
   String maxImagesReached(int count);
 
   /// No description provided for @articleImages.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'文章图片'**
+  /// In en_US, this message translates to:
+  /// **'Article images'**
   String get articleImages;
 
   /// No description provided for @articleImagesHint.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'最多 5 张，用于文章内容区展示（非 Markdown）；未设封面时默认用第一张作封面'**
+  /// In en_US, this message translates to:
+  /// **'Up to 5 images for the article gallery (not Markdown). First image is used as cover if none is set.'**
   String get articleImagesHint;
 
   /// No description provided for @deleteImage.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'删除图片'**
+  /// In en_US, this message translates to:
+  /// **'Delete image'**
   String get deleteImage;
 
   /// No description provided for @bilibiliVideo.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'B 站视频'**
+  /// In en_US, this message translates to:
+  /// **'Bilibili video'**
   String get bilibiliVideo;
 
   /// No description provided for @attachmentLink.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'附件链接'**
+  /// In en_US, this message translates to:
+  /// **'Attachment link'**
   String get attachmentLink;
 
   /// No description provided for @cannotOpenLink.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'无法打开链接'**
+  /// In en_US, this message translates to:
+  /// **'Cannot open link'**
   String get cannotOpenLink;
 
   /// No description provided for @editMarkdown.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'编辑'**
+  /// In en_US, this message translates to:
+  /// **'Edit'**
   String get editMarkdown;
 
   /// No description provided for @previewMarkdown.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'预览'**
+  /// In en_US, this message translates to:
+  /// **'Preview'**
   String get previewMarkdown;
 
   /// No description provided for @previewEmpty.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'暂无内容可预览'**
+  /// In en_US, this message translates to:
+  /// **'Nothing to preview yet'**
   String get previewEmpty;
 
   /// No description provided for @editProfile.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'编辑资料'**
+  /// In en_US, this message translates to:
+  /// **'Edit profile'**
   String get editProfile;
 
   /// No description provided for @editProfileDescription.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'修改昵称、头像与个人简介'**
+  /// In en_US, this message translates to:
+  /// **'Update nickname, avatar and bio'**
   String get editProfileDescription;
 
   /// No description provided for @saveProfile.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'保存'**
+  /// In en_US, this message translates to:
+  /// **'Save'**
   String get saveProfile;
 
   /// No description provided for @profileUpdated.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'资料已更新'**
+  /// In en_US, this message translates to:
+  /// **'Profile updated'**
   String get profileUpdated;
 
   /// No description provided for @changeAvatar.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'更换头像'**
+  /// In en_US, this message translates to:
+  /// **'Change avatar'**
   String get changeAvatar;
 
   /// No description provided for @nickname.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'昵称'**
+  /// In en_US, this message translates to:
+  /// **'Nickname'**
   String get nickname;
 
   /// No description provided for @gender.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'性别'**
+  /// In en_US, this message translates to:
+  /// **'Gender'**
   String get gender;
 
   /// No description provided for @genderSecret.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'保密'**
+  /// In en_US, this message translates to:
+  /// **'Private'**
   String get genderSecret;
 
   /// No description provided for @genderMale.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'男'**
+  /// In en_US, this message translates to:
+  /// **'Male'**
   String get genderMale;
 
   /// No description provided for @genderFemale.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'女'**
+  /// In en_US, this message translates to:
+  /// **'Female'**
   String get genderFemale;
 
   /// No description provided for @birthday.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'生日'**
+  /// In en_US, this message translates to:
+  /// **'Birthday'**
   String get birthday;
 
   /// No description provided for @bio.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'简介'**
+  /// In en_US, this message translates to:
+  /// **'Bio'**
   String get bio;
 
   /// No description provided for @website.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'网站'**
+  /// In en_US, this message translates to:
+  /// **'Website'**
   String get website;
 
   /// No description provided for @phone.
   ///
-  /// In zh_CN, this message translates to:
-  /// **'手机号'**
+  /// In en_US, this message translates to:
+  /// **'Phone'**
   String get phone;
 }
 

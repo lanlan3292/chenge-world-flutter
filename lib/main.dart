@@ -164,9 +164,9 @@ class _ChengeWorldAppState extends State<ChengeWorldApp>
             _ => null,
           },
           supportedLocales: const [
+            Locale('en', 'US'),
             Locale('zh', 'CN'),
             Locale('zh', 'TW'),
-            Locale('en', 'US'),
             Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
             Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
             Locale('ko', 'KR'),
