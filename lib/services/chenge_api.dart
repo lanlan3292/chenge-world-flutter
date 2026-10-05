@@ -196,6 +196,30 @@ class ChengeApi {
     return data;
   }
 
+  Future<void> updateProfile({
+    required String token,
+    String? nickname,
+    String? avatar,
+    int? gender,
+    String? birthday,
+    String? bio,
+    String? website,
+    String? email,
+    String? phone,
+  }) async {
+    final body = <String, dynamic>{
+      if (nickname != null) 'nickname': nickname,
+      if (avatar != null) 'avatar': avatar,
+      if (gender != null) 'gender': gender,
+      if (birthday != null && birthday.isNotEmpty) 'birthday': birthday,
+      if (bio != null) 'bio': bio,
+      if (website != null) 'website': website,
+      if (email != null) 'email': email,
+      if (phone != null) 'phone': phone,
+    };
+    await _request('POST', '/home/profile/update', body: body, token: token);
+  }
+
   Future<void> logout(String token) async {
     await _request('POST', '/home/logout', token: token);
   }
@@ -416,8 +440,11 @@ class ChengeApi {
   }
 
   Future<void> setFriendRemark(int friendId, String remark, String token) async {
-    final query = <String, String>{'friendId': '$friendId'};
-    if (remark.trim().isNotEmpty) query['remark'] = remark.trim();
+    // Always send remark (including empty) so MyBatis can clear null-strategy fields.
+    final query = <String, String>{
+      'friendId': '$friendId',
+      'remark': remark.trim(),
+    };
     await _request('POST', '/friend/remark', query: query, token: token);
   }
 

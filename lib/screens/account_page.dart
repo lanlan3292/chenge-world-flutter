@@ -7,6 +7,7 @@ import '../services/settings_store.dart';
 import 'chenge_core_page.dart';
 import 'settings_page.dart';
 import '../theme/app_theme.dart';
+import 'edit_profile_page.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({
@@ -69,6 +70,19 @@ class _AccountPageState extends State<AccountPage> {
       // 保持占位头像
     } finally {
       if (mounted) setState(() => _avatarLoading = false);
+    }
+  }
+
+  Future<void> _openEditProfile() async {
+    final token = widget.token;
+    if (token == null || token.isEmpty) return;
+    final updated = await Navigator.of(context).push<bool>(
+      MaterialPageRoute<bool>(
+        builder: (_) => EditProfilePage(api: widget.api, token: token),
+      ),
+    );
+    if (updated == true && mounted) {
+      await _loadAvatar();
     }
   }
 
@@ -237,7 +251,39 @@ class _AccountPageState extends State<AccountPage> {
                 ),
               ),
               const SizedBox(height: 18),
-              Material(
+                            Material(
+                color: Theme.of(context).colorScheme.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(8),
+                child: ListTile(
+                  onTap: _openEditProfile,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 15,
+                    vertical: 3,
+                  ),
+                  leading: Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Icon(
+                      Icons.manage_accounts_outlined,
+                      color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    ),
+                  ),
+                  title: Text(
+                    AppLocalizations.of(context).editProfile,
+                    style: const TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  subtitle: Text(
+                    AppLocalizations.of(context).editProfileDescription,
+                  ),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                ),
+              ),
+              const SizedBox(height: 12),
+Material(
                 color: Theme.of(context).colorScheme.surfaceContainerLow,
                 borderRadius: BorderRadius.circular(8),
                 child: ListTile(

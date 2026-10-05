@@ -15,6 +15,7 @@ class BlogPost {
     this.liked = false,
     this.tags = const [],
     this.images = const [],
+    this.media = const [],
   });
 
   final int id;
@@ -32,12 +33,14 @@ class BlogPost {
   final bool liked;
   final List<String> tags;
   final List<String> images;
+  final List<String> media;
 
   factory BlogPost.fromJson(Map<String, dynamic> json) {
     final content = _text(json['content']);
     final summary = _text(json['summary']);
     final tags = json['tags'];
     final images = json['images'];
+    final media = json['media'];
 
     return BlogPost(
       id: _integer(json['id']),
@@ -57,6 +60,7 @@ class BlogPost {
       images: images is List
           ? images.map((item) => _text(item)).where((item) => item.isNotEmpty).toList()
           : const [],
+      media: _stringList(media),
     );
   }
 
@@ -84,6 +88,7 @@ class BlogPost {
     bool? liked,
     List<String>? tags,
     List<String>? images,
+    List<String>? media,
   }) {
     return BlogPost(
       id: id ?? this.id,
@@ -101,7 +106,23 @@ class BlogPost {
       liked: liked ?? this.liked,
       tags: tags ?? this.tags,
       images: images ?? this.images,
+      media: media ?? this.media,
     );
+  }
+
+  static List<String> _stringList(Object? value) {
+    if (value is List) {
+      return value.map((item) => _text(item)).where((item) => item.isNotEmpty).toList();
+    }
+    if (value is String && value.trim().isNotEmpty) {
+      // Backend may store newline-joined media.
+      return value
+          .split(RegExp(r'[\n,]'))
+          .map((s) => s.trim())
+          .where((s) => s.isNotEmpty)
+          .toList();
+    }
+    return const [];
   }
 
   static int _integer(Object? value) => value is num ? value.toInt() : int.tryParse('$value') ?? 0;

@@ -2334,6 +2334,126 @@ abstract class AppLocalizations {
   /// In zh_CN, this message translates to:
   /// **'删除图片'**
   String get deleteImage;
+
+  /// No description provided for @bilibiliVideo.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'B 站视频'**
+  String get bilibiliVideo;
+
+  /// No description provided for @attachmentLink.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'附件链接'**
+  String get attachmentLink;
+
+  /// No description provided for @cannotOpenLink.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'无法打开链接'**
+  String get cannotOpenLink;
+
+  /// No description provided for @editMarkdown.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'编辑'**
+  String get editMarkdown;
+
+  /// No description provided for @previewMarkdown.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'预览'**
+  String get previewMarkdown;
+
+  /// No description provided for @previewEmpty.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'暂无内容可预览'**
+  String get previewEmpty;
+
+  /// No description provided for @editProfile.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'编辑资料'**
+  String get editProfile;
+
+  /// No description provided for @editProfileDescription.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'修改昵称、头像与个人简介'**
+  String get editProfileDescription;
+
+  /// No description provided for @saveProfile.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'保存'**
+  String get saveProfile;
+
+  /// No description provided for @profileUpdated.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'资料已更新'**
+  String get profileUpdated;
+
+  /// No description provided for @changeAvatar.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'更换头像'**
+  String get changeAvatar;
+
+  /// No description provided for @nickname.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'昵称'**
+  String get nickname;
+
+  /// No description provided for @gender.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'性别'**
+  String get gender;
+
+  /// No description provided for @genderSecret.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'保密'**
+  String get genderSecret;
+
+  /// No description provided for @genderMale.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'男'**
+  String get genderMale;
+
+  /// No description provided for @genderFemale.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'女'**
+  String get genderFemale;
+
+  /// No description provided for @birthday.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'生日'**
+  String get birthday;
+
+  /// No description provided for @bio.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'简介'**
+  String get bio;
+
+  /// No description provided for @website.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'网站'**
+  String get website;
+
+  /// No description provided for @phone.
+  ///
+  /// In zh_CN, this message translates to:
+  /// **'手机号'**
+  String get phone;
 }
 
 class _AppLocalizationsDelegate

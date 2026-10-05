@@ -1215,6 +1215,66 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteImage => '删除图片';
+
+  @override
+  String get bilibiliVideo => 'B 站视频';
+
+  @override
+  String get attachmentLink => '附件链接';
+
+  @override
+  String get cannotOpenLink => '无法打开链接';
+
+  @override
+  String get editMarkdown => '编辑';
+
+  @override
+  String get previewMarkdown => '预览';
+
+  @override
+  String get previewEmpty => '暂无内容可预览';
+
+  @override
+  String get editProfile => '编辑资料';
+
+  @override
+  String get editProfileDescription => '修改昵称、头像与个人简介';
+
+  @override
+  String get saveProfile => '保存';
+
+  @override
+  String get profileUpdated => '资料已更新';
+
+  @override
+  String get changeAvatar => '更换头像';
+
+  @override
+  String get nickname => '昵称';
+
+  @override
+  String get gender => '性别';
+
+  @override
+  String get genderSecret => '保密';
+
+  @override
+  String get genderMale => '男';
+
+  @override
+  String get genderFemale => '女';
+
+  @override
+  String get birthday => '生日';
+
+  @override
+  String get bio => '简介';
+
+  @override
+  String get website => '网站';
+
+  @override
+  String get phone => '手机号';
 }
 
 /// The translations for English, as used in the United States (`en_US`).
@@ -2431,4 +2491,64 @@ class AppLocalizationsEnUs extends AppLocalizationsEn {
 
   @override
   String get deleteImage => 'Delete image';
+
+  @override
+  String get bilibiliVideo => 'Bilibili video';
+
+  @override
+  String get attachmentLink => 'Attachment link';
+
+  @override
+  String get cannotOpenLink => 'Cannot open link';
+
+  @override
+  String get editMarkdown => 'Edit';
+
+  @override
+  String get previewMarkdown => 'Preview';
+
+  @override
+  String get previewEmpty => 'Nothing to preview yet';
+
+  @override
+  String get editProfile => 'Edit profile';
+
+  @override
+  String get editProfileDescription => 'Update nickname, avatar and bio';
+
+  @override
+  String get saveProfile => 'Save';
+
+  @override
+  String get profileUpdated => 'Profile updated';
+
+  @override
+  String get changeAvatar => 'Change avatar';
+
+  @override
+  String get nickname => 'Nickname';
+
+  @override
+  String get gender => 'Gender';
+
+  @override
+  String get genderSecret => 'Private';
+
+  @override
+  String get genderMale => 'Male';
+
+  @override
+  String get genderFemale => 'Female';
+
+  @override
+  String get birthday => 'Birthday';
+
+  @override
+  String get bio => 'Bio';
+
+  @override
+  String get website => 'Website';
+
+  @override
+  String get phone => 'Phone';
 }

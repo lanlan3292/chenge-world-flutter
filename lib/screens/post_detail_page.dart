@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../l10n/generated/app_localizations.dart';
@@ -420,11 +421,19 @@ class _PostDetailPageState extends State<PostDetailPage> {
                         )
                         .toList(),
               ),
-            if (post.images.isNotEmpty)
+            if (_galleryImages(post).isNotEmpty)
               PostImagesCarousel(
-                images: post.images,
+                images: _galleryImages(post),
                 resolveUrl: widget.api.resolveMediaUrl,
               ),
+            if (_biliLinks(post).isNotEmpty) ...[
+              const SizedBox(height: 12),
+              ..._biliLinks(post).map((url) => _biliTile(context, url)),
+            ],
+            if (_fileLinks(post).isNotEmpty) ...[
+              const SizedBox(height: 12),
+              ..._fileLinks(post).map((url) => _attachmentTile(context, url)),
+            ],
             MarkdownBody(
               data: post.content.isNotEmpty ? post.content : post.summary,
               selectable: true,
@@ -740,6 +749,114 @@ class _PostDetailPageState extends State<PostDetailPage> {
       ),
     ],
   );
+
+
+  static final _imageExt = RegExp(
+    r'\.(png|jpe?g|gif|webp|bmp|svg|avif)(\?.*)?$',
+    caseSensitive: false,
+  );
+  static final _bvRe = RegExp(r'BV([0-9A-Za-z]{10})');
+
+  static bool _isImageUrl(String url) => _imageExt.hasMatch(url);
+  static bool _isBiliUrl(String url) => _bvRe.hasMatch(url);
+
+  static List<String> _galleryImages(BlogPost post) {
+    final seen = <String>{};
+    final out = <String>[];
+    for (final u in [...post.images, ...post.media]) {
+      final t = u.trim();
+      if (t.isEmpty || seen.contains(t)) continue;
+      if (post.images.contains(t) || _isImageUrl(t)) {
+        seen.add(t);
+        out.add(t);
+      }
+    }
+    return out;
+  }
+
+  static List<String> _biliLinks(BlogPost post) {
+    return post.media
+        .map((u) => u.trim())
+        .where((u) => u.isNotEmpty && _isBiliUrl(u) && !_isImageUrl(u))
+        .toList();
+  }
+
+  static List<String> _fileLinks(BlogPost post) {
+    return post.media
+        .map((u) => u.trim())
+        .where((u) => u.isNotEmpty && !_isImageUrl(u) && !_isBiliUrl(u))
+        .toList();
+  }
+
+  static String? _parseBvid(String text) {
+    final m = _bvRe.firstMatch(text);
+    return m?.group(0);
+  }
+
+  Widget _biliTile(BuildContext context, String url) {
+    final l10n = AppLocalizations.of(context);
+    final bvid = _parseBvid(url);
+    final openUrl = bvid != null
+        ? 'https://www.bilibili.com/video/$bvid'
+        : url;
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        leading: const Icon(Icons.play_circle_outline_rounded),
+        title: Text(l10n.bilibiliVideo),
+        subtitle: Text(
+          bvid ?? url,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        trailing: const Icon(Icons.open_in_new_rounded, size: 18),
+        onTap: () => _openExternal(openUrl),
+      ),
+    );
+  }
+
+  Widget _attachmentTile(BuildContext context, String url) {
+    final l10n = AppLocalizations.of(context);
+    final name = _fileNameFromUrl(url);
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        leading: const Icon(Icons.attach_file_rounded),
+        title: Text(name, maxLines: 1, overflow: TextOverflow.ellipsis),
+        subtitle: Text(
+          l10n.attachmentLink,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        trailing: const Icon(Icons.open_in_new_rounded, size: 18),
+        onTap: () => _openExternal(widget.api.resolveMediaUrl(url)),
+      ),
+    );
+  }
+
+  static String _fileNameFromUrl(String url) {
+    try {
+      final uri = Uri.parse(url);
+      if (uri.pathSegments.isNotEmpty) {
+        final last = uri.pathSegments.last;
+        if (last.isNotEmpty) return Uri.decodeComponent(last);
+      }
+    } catch (_) {}
+    return url;
+  }
+
+  Future<void> _openExternal(String url) async {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return;
+    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!ok && mounted) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context).cannotOpenLink)),
+        );
+    }
+  }
 
   static String _date(BuildContext context, DateTime? date) {
     final l10n = AppLocalizations.of(context);

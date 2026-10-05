@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -48,6 +49,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
   bool _publishing = false;
   bool _uploading = false;
   bool _savingDraft = false;
+  bool _previewMode = false;
   String? _error;
   String? _draftSavedAt;
   Timer? _draftTimer;
@@ -707,25 +709,78 @@ class _CreatePostPageState extends State<CreatePostPage> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    l10n.postContent,
-                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  Row(
+                    children: [
+                      Text(
+                        l10n.postContent,
+                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                      const Spacer(),
+                      SegmentedButton<bool>(
+                        segments: [
+                          ButtonSegment<bool>(
+                            value: false,
+                            label: Text(l10n.editMarkdown),
+                            icon: const Icon(Icons.edit_outlined, size: 16),
+                          ),
+                          ButtonSegment<bool>(
+                            value: true,
+                            label: Text(l10n.previewMarkdown),
+                            icon: const Icon(Icons.visibility_outlined, size: 16),
+                          ),
+                        ],
+                        selected: {_previewMode},
+                        onSelectionChanged: (s) =>
+                            setState(() => _previewMode = s.first),
+                        style: const ButtonStyle(
+                          visualDensity: VisualDensity.compact,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 8),
-                  TextField(
-                    controller: _contentController,
-                    focusNode: _contentFocus,
-                    minLines: 12,
-                    maxLines: 24,
-                    keyboardType: TextInputType.multiline,
-                    decoration: InputDecoration(
-                      hintText: l10n.markdownHint,
-                      alignLabelWithHint: true,
-                      border: OutlineInputBorder(
+                  if (_previewMode)
+                    Container(
+                      width: double.infinity,
+                      constraints: const BoxConstraints(minHeight: 240),
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: scheme.outlineVariant),
                         borderRadius: BorderRadius.circular(12),
                       ),
+                      child: _contentController.text.trim().isEmpty
+                          ? Text(
+                              l10n.previewEmpty,
+                              style: TextStyle(color: scheme.onSurfaceVariant),
+                            )
+                          : MarkdownBody(
+                              data: _contentController.text,
+                              selectable: true,
+                              styleSheet: MarkdownStyleSheet(
+                                p: TextStyle(
+                                  fontSize: 15,
+                                  height: 1.6,
+                                  color: scheme.onSurface,
+                                ),
+                              ),
+                            ),
+                    )
+                  else
+                    TextField(
+                      controller: _contentController,
+                      focusNode: _contentFocus,
+                      minLines: 12,
+                      maxLines: 24,
+                      keyboardType: TextInputType.multiline,
+                      decoration: InputDecoration(
+                        hintText: l10n.markdownHint,
+                        alignLabelWithHint: true,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
                     ),
-                  ),
                   const SizedBox(height: 16),
                   Text(
                     l10n.attachmentUrls,

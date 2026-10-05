@@ -1189,6 +1189,66 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get deleteImage => '删除图片';
+
+  @override
+  String get bilibiliVideo => 'B 站视频';
+
+  @override
+  String get attachmentLink => '附件链接';
+
+  @override
+  String get cannotOpenLink => '无法打开链接';
+
+  @override
+  String get editMarkdown => '编辑';
+
+  @override
+  String get previewMarkdown => '预览';
+
+  @override
+  String get previewEmpty => '暂无内容可预览';
+
+  @override
+  String get editProfile => '编辑资料';
+
+  @override
+  String get editProfileDescription => '修改昵称、头像与个人简介';
+
+  @override
+  String get saveProfile => '保存';
+
+  @override
+  String get profileUpdated => '资料已更新';
+
+  @override
+  String get changeAvatar => '更换头像';
+
+  @override
+  String get nickname => '昵称';
+
+  @override
+  String get gender => '性别';
+
+  @override
+  String get genderSecret => '保密';
+
+  @override
+  String get genderMale => '男';
+
+  @override
+  String get genderFemale => '女';
+
+  @override
+  String get birthday => '生日';
+
+  @override
+  String get bio => '简介';
+
+  @override
+  String get website => '网站';
+
+  @override
+  String get phone => '手机号';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -2376,6 +2436,66 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get deleteImage => '删除图片';
+
+  @override
+  String get bilibiliVideo => 'B 站视频';
+
+  @override
+  String get attachmentLink => '附件链接';
+
+  @override
+  String get cannotOpenLink => '无法打开链接';
+
+  @override
+  String get editMarkdown => '编辑';
+
+  @override
+  String get previewMarkdown => '预览';
+
+  @override
+  String get previewEmpty => '暂无内容可预览';
+
+  @override
+  String get editProfile => '编辑资料';
+
+  @override
+  String get editProfileDescription => '修改昵称、头像与个人简介';
+
+  @override
+  String get saveProfile => '保存';
+
+  @override
+  String get profileUpdated => '资料已更新';
+
+  @override
+  String get changeAvatar => '更换头像';
+
+  @override
+  String get nickname => '昵称';
+
+  @override
+  String get gender => '性别';
+
+  @override
+  String get genderSecret => '保密';
+
+  @override
+  String get genderMale => '男';
+
+  @override
+  String get genderFemale => '女';
+
+  @override
+  String get birthday => '生日';
+
+  @override
+  String get bio => '简介';
+
+  @override
+  String get website => '网站';
+
+  @override
+  String get phone => '手机号';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -5937,4 +6057,64 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get deleteImage => '刪除圖片';
+
+  @override
+  String get bilibiliVideo => 'B 站影片';
+
+  @override
+  String get attachmentLink => '附件連結';
+
+  @override
+  String get cannotOpenLink => '無法開啟連結';
+
+  @override
+  String get editMarkdown => '編輯';
+
+  @override
+  String get previewMarkdown => '預覽';
+
+  @override
+  String get previewEmpty => '暫無內容可預覽';
+
+  @override
+  String get editProfile => '編輯資料';
+
+  @override
+  String get editProfileDescription => '修改暱稱、頭像與個人簡介';
+
+  @override
+  String get saveProfile => '儲存';
+
+  @override
+  String get profileUpdated => '資料已更新';
+
+  @override
+  String get changeAvatar => '更換頭像';
+
+  @override
+  String get nickname => '暱稱';
+
+  @override
+  String get gender => '性別';
+
+  @override
+  String get genderSecret => '保密';
+
+  @override
+  String get genderMale => '男';
+
+  @override
+  String get genderFemale => '女';
+
+  @override
+  String get birthday => '生日';
+
+  @override
+  String get bio => '簡介';
+
+  @override
+  String get website => '網站';
+
+  @override
+  String get phone => '手機號';
 }
