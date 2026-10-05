@@ -82,6 +82,9 @@ class SettingsStore {
       'zh_CN' => 'zh_CN',
       'zh_TW' => 'zh_TW',
       'en_US' => 'en_US',
+    'zh_hans' => 'zh_hans',
+    'zh_hant' => 'zh_hant',
+    'ko_KR' => 'ko_KR',
       _ => 'system',
     };
     statusBarImmersive = prefs.getBool(_statusImmersiveKey) ?? true;
@@ -130,6 +133,9 @@ class SettingsStore {
       'zh_CN' => 'zh_CN',
       'zh_TW' => 'zh_TW',
       'en_US' => 'en_US',
+      'zh_hans' => 'zh_hans',
+      'zh_hant' => 'zh_hant',
+      'ko_KR' => 'ko_KR',
       _ => 'system',
     };
     final prefs = await SharedPreferences.getInstance();

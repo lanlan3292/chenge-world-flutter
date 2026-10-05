@@ -248,17 +248,23 @@ void _onScroll() {
             : 1;
     final columns = responsive.clamp(minCols, maxCols);
     final isWide = MediaQuery.sizeOf(context).width >= 760;
-    final showFab = widget.token != null && widget.token!.isNotEmpty;
-    final dockFab = MediaQuery.sizeOf(context).width < 760 &&
-        (!widget.autoHideBottomBar || _chromeVisible);
-    // Position FAB in a body Stack so Scaffold cannot apply IME viewInsets to it.
     return Scaffold(
+      // FAB must not ride the IME; shell already keeps the bottom bar fixed.
       resizeToAvoidBottomInset: false,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Center(
-            child: ConstrainedBox(
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton:
+          widget.token != null && widget.token!.isNotEmpty
+              ? _CreatePostFab(
+                onPressed: _openCreatePost,
+                // Wide layout has no shell bottom bar — never reserve nav height.
+                dockedToBottomBar:
+                    MediaQuery.sizeOf(context).width < 760 &&
+                    (!widget.autoHideBottomBar || _chromeVisible),
+                expanded: _fabExpanded
+              )
+              : null,
+      body: Center(
+        child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: maxWidth),
           child: RefreshIndicator(
             onRefresh: () => _loadPage(1),
@@ -375,18 +381,6 @@ void _onScroll() {
             ),
           ),
         ),
-          ),
-          if (showFab)
-            Positioned(
-              right: 16,
-              bottom: 0,
-              child: _CreatePostFab(
-                onPressed: _openCreatePost,
-                dockedToBottomBar: dockFab,
-                expanded: _fabExpanded,
-              ),
-            ),
-        ],
       ),
     );
   }
@@ -618,17 +612,17 @@ class _CreatePostFab extends StatelessWidget {
 
     switch (platform) {
       case TargetPlatform.android:
-        // Gesture/nav inset + NavigationBar; keep clear of tall system bars.
-        return systemBottom + _shellNavBarHeight + 28;
-      case TargetPlatform.iOS:
+        // Gesture/nav inset + NavigationBar; extra gap avoids occlusion on tall safe areas.
         return systemBottom + _shellNavBarHeight + 20;
+      case TargetPlatform.iOS:
+        return systemBottom + _shellNavBarHeight + 12;
       case TargetPlatform.windows:
       case TargetPlatform.linux:
       case TargetPlatform.macOS:
-        // Desktop: clear in-app nav with a modest gap (not as high as before).
-        return _shellNavBarHeight + 12;
+        // Desktop client area already excludes OS taskbar; only clear the in-app nav.
+        return _shellNavBarHeight + 4;
       default:
-        return systemBottom + _shellNavBarHeight + 24;
+        return systemBottom + _shellNavBarHeight + 12;
     }
   }
 
@@ -636,12 +630,9 @@ class _CreatePostFab extends StatelessWidget {
   Widget build(BuildContext context) {
     final bottom = _bottomInset(context, docked: dockedToBottomBar);
     final mq = MediaQuery.of(context);
-    // Zero IME insets; pin padding.bottom to viewPadding so keyboard cannot lift FAB.
+    // Strip viewInsets so any ancestor keyboard inset cannot nudge the FAB.
     return MediaQuery(
-      data: mq.copyWith(
-        viewInsets: EdgeInsets.zero,
-        padding: mq.padding.copyWith(bottom: mq.viewPadding.bottom),
-      ),
+      data: mq.copyWith(viewInsets: EdgeInsets.zero),
       child: AnimatedPadding(
         duration: const Duration(milliseconds: 280),
         curve: Curves.easeOutCubic,
