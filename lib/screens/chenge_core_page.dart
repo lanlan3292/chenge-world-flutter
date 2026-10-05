@@ -24,7 +24,13 @@ class ChengeCorePage extends StatelessWidget {
       title: AppLocalizations.of(context).chengeCore,
       hashRoute: '#/chengecore',
       themeSkin: 'aqua',
-      hideSiteChrome: true,
+      hideXPaths: const [
+        '/html/body/div[1]/div/div[6]/aside',
+        '/html/body/div[1]/div/nav',
+        '/html/body/div[7]',
+        '/html/body/div[1]/div/header',
+        '/html/body/div[4]',
+      ],
     );
   }
 }
@@ -49,6 +55,9 @@ class NurturePage extends StatelessWidget {
       title: AppLocalizations.of(context).raising,
       hashRoute: '#/intelligence?mode=nurture',
       themeSkin: 'cute',
+      hideXPaths: const [
+        '/html/body/div[10]/div/div/div/button[1]',
+      ],
     );
   }
 }
@@ -98,7 +107,7 @@ class _SiteWebViewPage extends StatefulWidget {
     required this.title,
     required this.hashRoute,
     required this.themeSkin,
-    this.hideSiteChrome = false,
+    this.hideXPaths = const [],
   });
 
   final String baseUrl;
@@ -109,9 +118,8 @@ class _SiteWebViewPage extends StatefulWidget {
   /// Client-fixed skin for this page (`aqua` or `cute`).
   final String themeSkin;
 
-  /// When true (ChengeCore only), remove site `nav` and layout `aside`
-  /// matching the XPaths under `#app`.
-  final bool hideSiteChrome;
+  /// Absolute XPaths to remove after load (empty = no DOM stripping).
+  final List<String> hideXPaths;
 
   @override
   State<_SiteWebViewPage> createState() => _SiteWebViewPageState();
@@ -269,64 +277,106 @@ class _SiteWebViewPageState extends State<_SiteWebViewPage> {
     final skinLiteral = jsonEncode(_skin);
     // Double-encode → JS string value is the JSON object {"skin":"..."}.
     final themeLiteral = jsonEncode(jsonEncode({'skin': _skin}));
-    final hideChromeLiteral = widget.hideSiteChrome ? 'true' : 'false';
+    final pathsLiteral = jsonEncode(widget.hideXPaths);
 
     final script = """
 (function() {
   var SKIN = $skinLiteral;
   var THEME_JSON = $themeLiteral;
   var TOKEN = $tokenLiteral;
-  var HIDE_CHROME = $hideChromeLiteral;
+  var HIDE_PATHS = $pathsLiteral;
+  var __chengeHideBusy = false;
+  var __chengeHideTimer = null;
 
-  // ChengeCore only: drop site chrome nodes
-  // /html/body/div[1]/div/div[6]/aside
-  // /html/body/div[1]/div/nav
-  // /html/body/div[7]
-  // /html/body/div[1]/div/header
-  function removeSiteChrome() {
-    if (!HIDE_CHROME) return;
+  // Soft-hide (do not removeChild): removing nodes from a live SPA tree can
+  // unmount the whole parent, or miss the target when div[N] indices shift.
+  function softHideNode(node, path) {
+    if (!node || !node.style) return false;
     try {
-      var paths = [
-        '/html/body/div[1]/div/div[6]/aside',
-        '/html/body/div[1]/div/nav',
-        '/html/body/div[7]',
-        '/html/body/div[1]/div/header'
-      ];
-      for (var i = 0; i < paths.length; i++) {
-        var node = document.evaluate(
-          paths[i],
-          document,
-          null,
-          XPathResult.FIRST_ORDERED_NODE_TYPE,
-          null
-        ).singleNodeValue;
-        if (node && node.parentNode) {
-          node.parentNode.removeChild(node);
-        }
+      if (node.getAttribute && node.getAttribute('data-chenge-hidden') === '1') {
+        return true;
+      }
+      // If path ends with button[N], only act on real <button> elements.
+      if (/button\\[\\d+\\]\\s*\$/i.test(String(path || '')) &&
+          String(node.tagName || '').toUpperCase() !== 'BUTTON') {
+        return false;
+      }
+      node.setAttribute('data-chenge-hidden', '1');
+      node.style.setProperty('display', 'none', 'important');
+      node.style.setProperty('visibility', 'hidden', 'important');
+      node.style.setProperty('pointer-events', 'none', 'important');
+      node.style.setProperty('max-height', '0', 'important');
+      node.style.setProperty('max-width', '0', 'important');
+      node.style.setProperty('overflow', 'hidden', 'important');
+      node.setAttribute('aria-hidden', 'true');
+      if (node.tabIndex !== undefined) node.tabIndex = -1;
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function resolveHideNode(path) {
+    try {
+      var node = document.evaluate(
+        path,
+        document,
+        null,
+        XPathResult.FIRST_ORDERED_NODE_TYPE,
+        null
+      ).singleNodeValue;
+      if (node) return node;
+    } catch (e) {}
+    return null;
+  }
+
+  function removeSiteChrome() {
+    if (!HIDE_PATHS || !HIDE_PATHS.length || __chengeHideBusy) return;
+    __chengeHideBusy = true;
+    try {
+      for (var i = 0; i < HIDE_PATHS.length; i++) {
+        var path = HIDE_PATHS[i];
+        var node = resolveHideNode(path);
+        softHideNode(node, path);
       }
     } catch (e) {}
+    __chengeHideBusy = false;
+  }
+
+  function scheduleHide() {
+    if (__chengeHideTimer) {
+      try { clearTimeout(__chengeHideTimer); } catch (e) {}
+    }
+    __chengeHideTimer = setTimeout(function() {
+      __chengeHideTimer = null;
+      removeSiteChrome();
+    }, 120);
   }
 
   function installChromeObserver() {
-    if (!HIDE_CHROME) return;
-    if (window.__chengeChromeObserverInstalled) {
-      removeSiteChrome();
+    if (!HIDE_PATHS || !HIDE_PATHS.length) return;
+    var key = HIDE_PATHS.join('|');
+    if (window.__chengeChromeObserverKey === key) {
+      scheduleHide();
       return;
     }
-    window.__chengeChromeObserverInstalled = true;
+    window.__chengeChromeObserverKey = key;
     removeSiteChrome();
     try {
       var root = document.body || document.documentElement;
       var obs = new MutationObserver(function() {
-        removeSiteChrome();
+        scheduleHide();
       });
       obs.observe(root, { childList: true, subtree: true });
     } catch (e) {}
     try {
-      setTimeout(removeSiteChrome, 0);
-      setTimeout(removeSiteChrome, 300);
-      setTimeout(removeSiteChrome, 1000);
-      setTimeout(removeSiteChrome, 2500);
+      // SPA panels often mount late; staggered retries without tearing the tree.
+      var delays = [0, 200, 500, 1000, 2000, 3500, 5000];
+      for (var d = 0; d < delays.length; d++) {
+        (function(ms) {
+          setTimeout(removeSiteChrome, ms);
+        })(delays[d]);
+      }
     } catch (e) {}
   }
 
