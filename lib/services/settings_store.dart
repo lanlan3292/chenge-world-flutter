@@ -82,9 +82,9 @@ class SettingsStore {
       'zh_CN' => 'zh_CN',
       'zh_TW' => 'zh_TW',
       'en_US' => 'en_US',
-    'zh_hans' => 'zh_hans',
-    'zh_hant' => 'zh_hant',
-    'ko_KR' => 'ko_KR',
+      'zh_Hans' => 'zh_Hans',
+      'zh_Hant' => 'zh_Hant',
+      'ko_KR' => 'ko_KR',
       _ => 'system',
     };
     statusBarImmersive = prefs.getBool(_statusImmersiveKey) ?? true;
@@ -133,8 +133,8 @@ class SettingsStore {
       'zh_CN' => 'zh_CN',
       'zh_TW' => 'zh_TW',
       'en_US' => 'en_US',
-      'zh_hans' => 'zh_hans',
-      'zh_hant' => 'zh_hant',
+      'zh_Hans' => 'zh_Hans',
+      'zh_Hant' => 'zh_Hant',
       'ko_KR' => 'ko_KR',
       _ => 'system',
     };
