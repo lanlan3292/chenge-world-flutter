@@ -281,12 +281,16 @@ class _SiteWebViewPageState extends State<_SiteWebViewPage> {
   // ChengeCore only: drop site chrome nodes
   // /html/body/div[1]/div/div[6]/aside
   // /html/body/div[1]/div/nav
+  // /html/body/div[7]
+  // /html/body/div[1]/div/header
   function removeSiteChrome() {
     if (!HIDE_CHROME) return;
     try {
       var paths = [
         '/html/body/div[1]/div/div[6]/aside',
-        '/html/body/div[1]/div/nav'
+        '/html/body/div[1]/div/nav',
+        '/html/body/div[7]',
+        '/html/body/div[1]/div/header'
       ];
       for (var i = 0; i < paths.length; i++) {
         var node = document.evaluate(
