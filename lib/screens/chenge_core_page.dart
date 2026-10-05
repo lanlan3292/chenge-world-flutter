@@ -5,7 +5,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 import '../l10n/generated/app_localizations.dart';
 
-/// ChengeCore：aqua 主题，路由 `#/chengecore`
+/// ChengeCore: aqua skin, route `#/chengecore`
 class ChengeCorePage extends StatelessWidget {
   const ChengeCorePage({
     super.key,
@@ -28,8 +28,8 @@ class ChengeCorePage extends StatelessWidget {
   }
 }
 
-/// 养成：cute 主题，路由 `#/intelligence?mode=nurture`
-/// 独立页面，避免与 ChengeCore 共用同一 State 导致皮肤串用。
+/// Nurture: cute skin, route `#/intelligence?mode=nurture`
+/// Separate page so skin/state is not shared with ChengeCore.
 class NurturePage extends StatelessWidget {
   const NurturePage({
     super.key,
@@ -52,7 +52,7 @@ class NurturePage extends StatelessWidget {
   }
 }
 
-/// 官网首页：aqua 主题，无 hash
+/// Official site home: aqua skin, no hash
 class OfficialSitePage extends StatelessWidget {
   const OfficialSitePage({
     super.key,
@@ -75,11 +75,21 @@ class OfficialSitePage extends StatelessWidget {
   }
 }
 
-/// 内嵌站点 WebView（不使用 loadHtmlString，直接 loadRequest）。
+/// Embedded site WebView (loadRequest, not loadHtmlString).
 ///
-/// - **关闭（左侧 ✕）**：退出本页
-/// - **返回（右侧箭头）**：仅 WebView 历史后退；无历史时禁用
-/// - **系统返回**：有历史先后退，否则退出
+/// - Close (leading): pop this route
+/// - Back (trailing): WebView history only
+/// - System back: history first, else pop
+///
+/// Theme is **client-specified** via [themeSkin] (`aqua` / `cute`).
+/// Server `GET /home/settings` and SPA writes must not override it:
+/// - localStorage `chengehr-theme` is forced to the client skin
+/// - `document.documentElement.dataset.skin` + stylesheet toggles match the
+///   site bootstrap script
+/// - fetch / XHR responses for `/home/settings` are patched so
+///   `data.appearance.skin` stays the client value
+/// - `localStorage.setItem('chengehr-theme', …)` is guarded against later
+///   overwrites by the SPA
 class _SiteWebViewPage extends StatefulWidget {
   const _SiteWebViewPage({
     required this.baseUrl,
@@ -93,6 +103,8 @@ class _SiteWebViewPage extends StatefulWidget {
   final String token;
   final String title;
   final String hashRoute;
+
+  /// Client-fixed skin for this page (`aqua` or `cute`).
   final String themeSkin;
 
   @override
@@ -103,12 +115,20 @@ class _SiteWebViewPageState extends State<_SiteWebViewPage> {
   WebViewController? _controller;
   var _loading = true;
   var _canGoBack = false;
-  /// 首次注入 localStorage 后做一次 reload，让 SPA 冷启动读到正确主题。
+
+  /// After first storage + intercept injection, reload once so SPA cold-start
+  /// reads the client skin and patched network.
   var _needsThemeReload = true;
   String? _error;
   var _unsupported = false;
 
   String get _root => widget.baseUrl.replaceFirst(RegExp(r'/+$'), '');
+
+  /// Normalize to the two skins the site bootstrap understands.
+  String get _skin {
+    final raw = widget.themeSkin.trim().toLowerCase();
+    return raw == 'aqua' ? 'aqua' : 'cute';
+  }
 
   Uri get _targetUri {
     final hash = widget.hashRoute.trim();
@@ -217,8 +237,8 @@ class _SiteWebViewPageState extends State<_SiteWebViewPage> {
   }
 
   Future<void> _onPageFinished(String url) async {
-    await _injectStorage();
-    // 第一次注入后 reload，让前端在冷启动时读取新的 chengehr-theme
+    await _injectClientThemeLock();
+    // First inject then reload so cold-start HTML bootstrap sees client skin.
     if (_needsThemeReload) {
       _needsThemeReload = false;
       final c = _controller;
@@ -233,19 +253,170 @@ class _SiteWebViewPageState extends State<_SiteWebViewPage> {
     if (mounted) setState(() => _loading = false);
   }
 
-  Future<void> _injectStorage() async {
+  /// Force client [themeSkin] into localStorage, DOM, stylesheets, and any
+  /// later `/home/settings` payload or localStorage write from the SPA.
+  Future<void> _injectClientThemeLock() async {
     final controller = _controller;
     if (controller == null) return;
+
     final tokenLiteral = jsonEncode(widget.token);
-    // 双重 encode → JS 字符串，setItem 得到 {"skin":"..."}
-    final themeLiteral = jsonEncode(jsonEncode({'skin': widget.themeSkin}));
+    final skinLiteral = jsonEncode(_skin);
+    // Double-encode → JS string value is the JSON object {"skin":"..."}.
+    final themeLiteral = jsonEncode(jsonEncode({'skin': _skin}));
+
+    final script = """
+(function() {
+  var SKIN = $skinLiteral;
+  var THEME_JSON = $themeLiteral;
+  var TOKEN = $tokenLiteral;
+
+  function applyDomSkin(skin) {
     try {
-      await controller.runJavaScript(
-        "try {"
-        "  localStorage.setItem('chengehr-token', $tokenLiteral);"
-        "  localStorage.setItem('chengehr-theme', $themeLiteral);"
-        "} catch (e) {}",
-      );
+      document.documentElement.dataset.skin = skin;
+    } catch (e) {}
+    try {
+      var links = document.querySelectorAll('[data-skin-stylesheet]');
+      for (var i = 0; i < links.length; i++) {
+        var link = links[i];
+        var sheetSkin = link.getAttribute('data-skin-stylesheet');
+        // Site bootstrap: only exact 'aqua' keeps aqua styles; else cute.
+        if (skin === 'aqua') {
+          link.disabled = (sheetSkin === 'cute');
+        } else {
+          link.disabled = (sheetSkin === 'aqua');
+        }
+      }
+    } catch (e) {}
+  }
+
+  function writeTheme() {
+    try {
+      localStorage.setItem('chengehr-token', TOKEN);
+      localStorage.setItem('chengehr-theme', THEME_JSON);
+    } catch (e) {}
+    applyDomSkin(SKIN);
+  }
+
+  writeTheme();
+
+  // Re-apply if SPA mutates theme key after load.
+  try {
+    if (!window.__chengeThemeSetItemPatched) {
+      window.__chengeThemeSetItemPatched = true;
+      var origSetItem = Storage.prototype.setItem;
+      Storage.prototype.setItem = function(key, value) {
+        if (String(key) === 'chengehr-theme') {
+          try {
+            var parsed = {};
+            try { parsed = JSON.parse(String(value) || '{}') || {}; } catch (e) {}
+            if (parsed.skin !== SKIN) {
+              value = THEME_JSON;
+            }
+          } catch (e) {
+            value = THEME_JSON;
+          }
+        }
+        return origSetItem.apply(this, [key, value]);
+      };
+    }
+  } catch (e) {}
+
+  function patchSettingsBody(text) {
+    try {
+      var j = JSON.parse(text);
+      if (!j || typeof j !== 'object') return text;
+      if (!j.data || typeof j.data !== 'object') j.data = {};
+      if (!j.data.appearance || typeof j.data.appearance !== 'object') {
+        j.data.appearance = {};
+      }
+      j.data.appearance.skin = SKIN;
+      return JSON.stringify(j);
+    } catch (e) {
+      return text;
+    }
+  }
+
+  function isSettingsUrl(u) {
+    if (!u) return false;
+    return String(u).indexOf('/home/settings') !== -1;
+  }
+
+  // Patch fetch so SPA receives client skin from /home/settings.
+  try {
+    if (window.fetch && window.__chengeSettingsFetchSkin !== SKIN) {
+      window.__chengeSettingsFetchSkin = SKIN;
+      var origFetch = window.fetch.bind(window);
+      window.fetch = function(input, init) {
+        var url = '';
+        try {
+          if (typeof input === 'string') url = input;
+          else if (input && input.url) url = input.url;
+        } catch (e) {}
+        return origFetch(input, init).then(function(resp) {
+          if (!isSettingsUrl(url) && !isSettingsUrl(resp && resp.url)) {
+            return resp;
+          }
+          return resp.clone().text().then(function(t) {
+            var body = patchSettingsBody(t);
+            return new Response(body, {
+              status: resp.status,
+              statusText: resp.statusText,
+              headers: resp.headers
+            });
+          });
+        });
+      };
+    }
+  } catch (e) {}
+
+  // Patch XHR the same way.
+  try {
+    if (window.__chengeSettingsXhrSkin !== SKIN) {
+      window.__chengeSettingsXhrSkin = SKIN;
+      var XO = XMLHttpRequest.prototype.open;
+      var XS = XMLHttpRequest.prototype.send;
+      XMLHttpRequest.prototype.open = function(method, url) {
+        this.__chengeUrl = url;
+        return XO.apply(this, arguments);
+      };
+      XMLHttpRequest.prototype.send = function() {
+        if (isSettingsUrl(this.__chengeUrl)) {
+          this.addEventListener('load', function() {
+            try {
+              var text = this.responseText;
+              var patched = patchSettingsBody(text);
+              if (patched !== text) {
+                Object.defineProperty(this, 'responseText', {
+                  configurable: true,
+                  get: function() { return patched; }
+                });
+                try {
+                  Object.defineProperty(this, 'response', {
+                    configurable: true,
+                    get: function() { return patched; }
+                  });
+                } catch (e) {}
+              }
+            } catch (e) {}
+            writeTheme();
+          });
+        }
+        return XS.apply(this, arguments);
+      };
+    }
+  } catch (e) {}
+
+  // Keep DOM skin aligned after SPA settles.
+  try {
+    setTimeout(function() { writeTheme(); }, 0);
+    setTimeout(function() { writeTheme(); }, 300);
+    setTimeout(function() { writeTheme(); }, 1000);
+  } catch (e) {}
+})();
+""";
+
+    try {
+      await controller.runJavaScript(script);
     } catch (_) {}
   }
 
