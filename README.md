@@ -1,6 +1,9 @@
 # ChengeWorld Flutter
 
-面向于 [ChengeWorld](https://gitee.com/bfg-as/chenge-world) 的 Flutter 客户端。项目采用 Flutter + Material 3 构建。
+面向于 [ChengeWorld](https://gitee.com/bfg-as/chenge-world) 的第三方 Flutter 客户端。项目采用 Flutter + Material 3 构建。
+
+> [!WARNING]
+> 本项目为非官方第三方客户端 与 **[ChengeWorld](https://gitee.com/bfg-as/chenge-world)** 不存在任何关联 合作或从属关系 本项目依赖的上游服务及其接口可能随时发生变更 调整或停止提供服务 相关变更可能导致本项目的部分或全部功能在未提前通知的情况下失效 使用 修改 二次开发 分发或以其他方式利用本项目所产生的任何直接或间接后果及风险 均由使用者自行评估并承担 项目作者不对因使用本项目所产生的任何损失 服务中断 数据异常或其他后果承担责任 使用本项目即视为已知悉并接受上述风险
 
 ## 功能
 
@@ -49,8 +52,6 @@
 
 - Flutter / Dart
 - Material 3
-- 深色 / 浅色 / 跟随系统主题
-- 中文（中国）、中文（台湾）、英语（美国）界面语言
 - `http`：HTTP API
 - `flutter_secure_storage`：安全保存登录凭据
 - `flutter_markdown`：Markdown 渲染
