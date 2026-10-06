@@ -1,0 +1,295 @@
+name: Flutter Stable Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: flutter-release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  FLUTTER_CHANNEL: stable
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze Dart code
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test
+
+  build-android:
+    name: Build Android
+    needs: test
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Android APK
+        run: flutter build apk --release
+
+      - name: Rename APK
+        run: |
+          mkdir -p release
+          cp build/app/outputs/flutter-apk/app-release.apk \
+            release/chenge-world-${{ github.ref_name }}-android.apk
+
+      - name: Upload Android artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: chenge-world-android
+          path: release/chenge-world-${{ github.ref_name }}-android.apk
+          retention-days: 7
+
+  build-windows:
+    name: Build Windows
+    needs: test
+    runs-on: windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Windows
+        run: flutter build windows --release
+
+      - name: Package Windows
+        shell: pwsh
+        run: |
+          Compress-Archive `
+            -Path "build\windows\x64\runner\Release\*" `
+            -DestinationPath "chenge-world-${{ github.ref_name }}-windows.zip"
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: chenge-world-windows
+          path: chenge-world-${{ github.ref_name }}-windows.zip
+          retention-days: 7
+
+  build-linux:
+    name: Build Linux
+    needs: test
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            clang \
+            cmake \
+            ninja-build \
+            pkg-config \
+            libgtk-3-dev \
+            liblzma-dev \
+            libsecret-1-dev
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Linux
+        run: flutter build linux --release
+
+      - name: Package Linux
+        run: |
+          tar -czf \
+            chenge-world-${{ github.ref_name }}-linux.tar.gz \
+            -C build/linux/x64/release bundle
+
+      - name: Upload Linux artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: chenge-world-linux
+          path: chenge-world-${{ github.ref_name }}-linux.tar.gz
+          retention-days: 7
+
+  build-macos:
+    name: Build macOS
+    needs: test
+    runs-on: macos-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build macOS
+        run: flutter build macos --release
+
+      - name: Package macOS
+        run: |
+          cd build/macos/Build/Products/Release
+          zip -r \
+            "$GITHUB_WORKSPACE/chenge-world-${{ github.ref_name }}-macos.zip" \
+            chenge_world_app.app
+
+      - name: Upload macOS artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: chenge-world-macos
+          path: chenge-world-${{ github.ref_name }}-macos.zip
+          retention-days: 7
+
+  # ============================================================
+  #
+  # 注意：
+  # 这里使用 --no-codesign。
+  # 如果你需要真正可以安装/提交 App Store 的 IPA，
+  # 需要配置 Apple Developer 签名证书、Provisioning Profile
+  # 和相关 GitHub Secrets。
+  #
+  # ============================================================
+  build-ios:
+    name: Build iOS
+    needs: test
+    runs-on: macos-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build iOS
+        run: flutter build ios --release --no-codesign
+
+      - name: Package iOS
+        run: |
+          mkdir -p ios-build
+          cp -R build/ios/iphoneos/Runner.app ios-build/
+
+          cd ios-build
+          zip -r \
+            "$GITHUB_WORKSPACE/chenge-world-${{ github.ref_name }}-ios.zip" \
+            Runner.app
+
+      - name: Upload iOS artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: chenge-world-ios
+          path: chenge-world-${{ github.ref_name }}-ios.zip
+          retention-days: 7
+
+  release:
+    name: Create GitHub Release
+    needs:
+      - build-android
+      - build-windows
+      - build-linux
+      - build-macos
+      - build-ios
+
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Download Android artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: chenge-world-android
+          path: release
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: chenge-world-windows
+          path: release
+
+      - name: Download Linux artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: chenge-world-linux
+          path: release
+
+      - name: Download macOS artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: chenge-world-macos
+          path: release
+
+      - name: Download iOS artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: chenge-world-ios
+          path: release
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Chenge World ${{ github.ref_name }}
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+          files: |
+            release/chenge-world-${{ github.ref_name }}-android.apk
+            release/chenge-world-${{ github.ref_name }}-windows.zip
+            release/chenge-world-${{ github.ref_name }}-linux.tar.gz
+            release/chenge-world-${{ github.ref_name }}-macos.zip
+            release/chenge-world-${{ github.ref_name }}-ios.zip
