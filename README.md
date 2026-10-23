@@ -3,7 +3,7 @@
 面向于 [ChengeWorld](https://gitee.com/bfg-as/chenge-world) 的第三方 Flutter 客户端。项目采用 Flutter + Material 3 构建。
 
 > [!WARNING]
-> 本项目为非官方第三方客户端 与 **[ChengeWorld](https://gitee.com/bfg-as/chenge-world)** 不存在任何关联 合作或从属关系 本项目依赖的上游服务及其接口可能随时发生变更 调整或停止提供服务 相关变更可能导致本项目的部分或全部功能在未提前通知的情况下失效 使用 修改 二次开发 分发或以其他方式利用本项目所产生的任何直接或间接后果及风险 均由使用者自行评估并承担 项目作者不对因使用本项目所产生的任何损失 服务中断 数据异常或其他后果承担责任 使用本项目即视为已知悉并接受上述风险
+> 本项目为非官方第三方客户端 与 **[ChengeWorld](https://gitee.com/bfg-as/chenge-world)** 不存在任何关联 合作或从属关系 本项目依赖的上游服务及其接口可能随时发生变更 调整或停止提供服务 相关变更可能导致本项目的部分或全部功能在未提前通知的情况下失效或异常 使用 修改 二次开发 分发或以其他方式利用本项目所产生的任何直接或间接后果及风险 均由使用者自行评估并承担 项目作者不对因使用本项目所产生的任何损失 服务中断 数据异常或其他后果承担责任 使用本项目即视为已知悉并接受上述风险
 
 ## 功能
 
@@ -108,13 +108,13 @@ flutter run -d <device-id>
 默认 API 地址：
 
 ```text
-http://8.138.13.61
+https://chengecore.cn
 ```
 
 可以通过 `CHENGE_API_BASE_URL` 在启动时覆盖：
 
 ```bash
-flutter run --dart-define=CHENGE_API_BASE_URL=http://8.138.13.61
+flutter run --dart-define=CHENGE_API_BASE_URL=https://chengecore.cn
 ```
 
 例如连接本地或测试服务：

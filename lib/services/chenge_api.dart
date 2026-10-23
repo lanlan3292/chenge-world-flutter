@@ -98,7 +98,7 @@ class ChengeApi {
       : _client = client ?? http.Client(),
         _baseUrl = (baseUrl ?? const String.fromEnvironment(
           'CHENGE_API_BASE_URL',
-          defaultValue: 'http://8.138.13.61',
+          defaultValue: 'https://chengecore.cn',
         )).replaceFirst(RegExp(r'/+$'), '');
 
   final http.Client _client;

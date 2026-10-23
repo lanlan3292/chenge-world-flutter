@@ -12,7 +12,6 @@ import '../models/chat_message.dart';
 class ChatSocket {
   ChatSocket({required this.baseUrl});
 
-  /// HTTP 根地址，如 `http://8.138.13.61`（无尾斜杠）
   final String baseUrl;
 
   WebSocketChannel? _channel;
