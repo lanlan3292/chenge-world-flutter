@@ -14,11 +14,18 @@ class PostCard extends StatelessWidget {
     required this.post,
     required this.onTap,
     this.featured = false,
+    this.resolveMediaUrl,
   });
 
   final BlogPost post;
   final VoidCallback onTap;
   final bool featured;
+
+  /// Turns a possibly relative media path into an absolute URL.
+  ///
+  /// The API returns paths like `/file/x.jpg` for covers and inline images, so
+  /// without this resolver every fallback image silently fails to load.
+  final String Function(String url)? resolveMediaUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -159,13 +166,16 @@ class PostCard extends StatelessWidget {
   }
 
   Widget _cover(BuildContext context, {required double width}) {
-    final imageUrl = _resolveCoverImage(post);
+    final rawUrl = post.displayCoverImage;
+    final imageUrl = rawUrl == null || rawUrl.isEmpty
+        ? null
+        : (resolveMediaUrl?.call(rawUrl) ?? rawUrl);
     if (imageUrl == null || imageUrl.isEmpty) return _coverPlaceholder(context);
 
     // 按展示宽度限制解码尺寸，避免瀑布流里按原图解码导致卡顿
     final dpr = MediaQuery.devicePixelRatioOf(context);
     final memW = (width * dpr).round().clamp(64, 720);
-    return CachedNetworkImage(
+    final image = CachedNetworkImage(
       imageUrl: imageUrl,
       width: double.infinity,
       height: double.infinity,
@@ -180,6 +190,9 @@ class PostCard extends StatelessWidget {
       placeholder: (_, __) => _coverPlaceholder(context),
       errorWidget: (_, __, ___) => _coverPlaceholder(context),
     );
+    // Match the destination Hero in PostDetailPage so opening a post animates
+    // the cover instead of popping in with no transition.
+    return Hero(tag: 'post-cover-${post.id}', child: image);
   }
 
   Widget _coverPlaceholder(BuildContext context) => Container(
@@ -319,19 +332,6 @@ class PostCard extends StatelessWidget {
           ),
         ],
       );
-
-  static String? _resolveCoverImage(BlogPost post) {
-    final cover = post.coverImage;
-    if (cover != null && cover.trim().isNotEmpty) return cover.trim();
-    if (post.images.isNotEmpty) {
-      final first = post.images.first.trim();
-      if (first.isNotEmpty) return first;
-    }
-    final match = RegExp(r'!\[[^\]]*\]\(([^)]+)\)').firstMatch(post.content);
-    final fromContent = match?.group(1)?.trim();
-    if (fromContent != null && fromContent.isNotEmpty) return fromContent;
-    return null;
-  }
 
   static String _dateLabel(DateTime? date) {
     if (date == null) return '刚刚';

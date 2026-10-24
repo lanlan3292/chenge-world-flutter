@@ -16,11 +16,17 @@ class PostDetailPage extends StatefulWidget {
     required this.api,
     required this.post,
     this.token,
+    this.onPostChanged,
   });
 
   final ChengeApi api;
   final BlogPost post;
   final String? token;
+
+  /// Called whenever like/comment counters change, so the list behind this
+  /// page updates live — including when the user leaves via predictive back,
+  /// which pops without a route result.
+  final ValueChanged<BlogPost>? onPostChanged;
 
   @override
   State<PostDetailPage> createState() => _PostDetailPageState();
@@ -90,6 +96,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
           }
           _commentCount = post.commentCount;
         });
+        _notifyChanged();
       }
       return post;
     } on ApiException {
@@ -114,12 +121,21 @@ class _PostDetailPageState extends State<PostDetailPage> {
           (count, comment) => count + 1 + comment.children.length,
         );
       });
+      _notifyChanged();
     } on ApiException catch (error) {
       if (mounted) setState(() => _commentError = error.message);
     } finally {
       if (mounted) setState(() => _commentsLoading = false);
     }
   }
+
+  BlogPost get _currentPost => widget.post.copyWith(
+    liked: _liked,
+    likeCount: _likeCount,
+    commentCount: _commentCount,
+  );
+
+  void _notifyChanged() => widget.onPostChanged?.call(_currentPost);
 
   Future<void> _toggleLike() async {
     final token = widget.token;
@@ -139,6 +155,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
         _liked = liked;
       });
       widget.api.rememberPostLiked(widget.post.id, liked);
+      _notifyChanged();
     } on ApiException catch (error) {
       if (mounted) _showMessage(error.message, isError: true);
     } finally {
@@ -221,18 +238,12 @@ class _PostDetailPageState extends State<PostDetailPage> {
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.paddingOf(context).bottom;
-    final result = widget.post.copyWith(
-      liked: _liked,
-      likeCount: _likeCount,
-      commentCount: _commentCount,
-    );
+    final result = _currentPost;
+    // `canPop: true` keeps the system predictive-back preview alive; the list
+    // behind this page is kept in sync through [PostDetailPage.onPostChanged]
+    // instead of the route result (predictive back pops without one).
     return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) {
-          Navigator.pop(context, result);
-        }
-      },
+      canPop: true,
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
@@ -288,11 +299,11 @@ class _PostDetailPageState extends State<PostDetailPage> {
                 ),
               ),
             const SizedBox(height: 12),
-            if (post.coverImage != null) ...[
+            if (post.displayCoverImage != null) ...[
               GestureDetector(
                 onTap: () => ImageViewerPage.openSingle(
                   context,
-                  imageUrl: widget.api.resolveMediaUrl(post.coverImage!),
+                  imageUrl: widget.api.resolveMediaUrl(post.displayCoverImage!),
                   heroTag: 'post-cover-${post.id}',
                 ),
                 child: Hero(
@@ -302,7 +313,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                     child: AspectRatio(
                       aspectRatio: 16 / 9,
                       child: Image.network(
-                        widget.api.resolveMediaUrl(post.coverImage!),
+                        widget.api.resolveMediaUrl(post.displayCoverImage!),
                         width: double.infinity,
                         fit: BoxFit.cover,
                         errorBuilder: (_, __, ___) => ColoredBox(

@@ -207,10 +207,15 @@ void _onScroll() {
               api: widget.api,
               post: post,
               token: widget.token,
+              onPostChanged: _applyPostUpdate,
             ),
       ),
     );
     if (!mounted || updated == null) return;
+    _applyPostUpdate(updated);
+  }
+
+  void _applyPostUpdate(BlogPost updated) {
     final index = _posts.indexWhere((item) => item.id == updated.id);
     if (index < 0) return;
     setState(() {
@@ -378,6 +383,7 @@ void _onScroll() {
                           (context, index) => PostCard(
                             post: _posts[index],
                             featured: index == 0 && _page == 1,
+                            resolveMediaUrl: widget.api.resolveMediaUrl,
                             onTap: () => _openPost(_posts[index]),
                           ),
                     ),
