@@ -125,26 +125,22 @@ class _ChengeWorldAppState extends State<ChengeWorldApp>
           statusBarImmersive: _settings.statusBarImmersive,
           navigationBarImmersive: _settings.navigationBarImmersive,
         );
-        final transitions = PageTransitionsTheme(
-          builders: {
-            ...theme.pageTransitionsTheme.builders,
-            TargetPlatform.android:
-                _settings.predictiveBack
-                    ? const PredictiveBackPageTransitionsBuilder()
-                    : const ZoomPageTransitionsBuilder(),
-          },
-        );
-        theme = theme.copyWith(pageTransitionsTheme: transitions);
+        // Android 16-style horizontal fade-through instead of the stiff zoom
+        // transition; predictive back keeps the gesture-driven preview.
+        final androidTransitions =
+            _settings.predictiveBack
+                ? const PredictiveBackPageTransitionsBuilder()
+                : const FadeForwardsPageTransitionsBuilder();
+        PageTransitionsTheme withTransitions(ThemeData base) =>
+            PageTransitionsTheme(
+              builders: {
+                ...base.pageTransitionsTheme.builders,
+                TargetPlatform.android: androidTransitions,
+              },
+            );
+        theme = theme.copyWith(pageTransitionsTheme: withTransitions(theme));
         darkTheme = darkTheme.copyWith(
-          pageTransitionsTheme: PageTransitionsTheme(
-            builders: {
-              ...darkTheme.pageTransitionsTheme.builders,
-              TargetPlatform.android:
-                  _settings.predictiveBack
-                      ? const PredictiveBackPageTransitionsBuilder()
-                      : const ZoomPageTransitionsBuilder(),
-            },
-          ),
+          pageTransitionsTheme: withTransitions(darkTheme),
         );
 
         return MaterialApp(
