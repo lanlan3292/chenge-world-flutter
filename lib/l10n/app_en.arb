@@ -165,6 +165,10 @@
   "communityMerchant": "Community seller",
   "product": "Product",
   "productInitial": "P",
+  "productUnderReview": "Under review",
+  "productRejected": "Review failed",
+  "productSoldOut": "Sold out",
+  "productUnavailable": "Currently unavailable",
   "stockCount": "Stock {count}",
   "@stockCount": {
     "placeholders": {

@@ -125,26 +125,22 @@ class _ChengeWorldAppState extends State<ChengeWorldApp>
           statusBarImmersive: _settings.statusBarImmersive,
           navigationBarImmersive: _settings.navigationBarImmersive,
         );
-        final transitions = PageTransitionsTheme(
-          builders: {
-            ...theme.pageTransitionsTheme.builders,
-            TargetPlatform.android:
-                _settings.predictiveBack
-                    ? const PredictiveBackPageTransitionsBuilder()
-                    : const ZoomPageTransitionsBuilder(),
-          },
-        );
-        theme = theme.copyWith(pageTransitionsTheme: transitions);
+        // Android 16-style horizontal fade-through instead of the stiff zoom
+        // transition; predictive back keeps the gesture-driven preview.
+        final androidTransitions =
+            _settings.predictiveBack
+                ? const PredictiveBackPageTransitionsBuilder()
+                : const FadeForwardsPageTransitionsBuilder();
+        PageTransitionsTheme withTransitions(ThemeData base) =>
+            PageTransitionsTheme(
+              builders: {
+                ...base.pageTransitionsTheme.builders,
+                TargetPlatform.android: androidTransitions,
+              },
+            );
+        theme = theme.copyWith(pageTransitionsTheme: withTransitions(theme));
         darkTheme = darkTheme.copyWith(
-          pageTransitionsTheme: PageTransitionsTheme(
-            builders: {
-              ...darkTheme.pageTransitionsTheme.builders,
-              TargetPlatform.android:
-                  _settings.predictiveBack
-                      ? const PredictiveBackPageTransitionsBuilder()
-                      : const ZoomPageTransitionsBuilder(),
-            },
-          ),
+          pageTransitionsTheme: withTransitions(darkTheme),
         );
 
         return MaterialApp(
@@ -353,6 +349,16 @@ class _AppShellState extends State<AppShell> {
     final wide = MediaQuery.sizeOf(context).width >= 760;
     final hideBottomBar = !wide && widget.settings.autoHideBottomBar;
 
+    // The shell paints its bottom bar over the page (`extendBody`), which
+    // hides the bottom inset from descendant MediaQuery data. Hand the chrome
+    // geometry down instead, so pages can keep floating controls clear of it.
+    final shellBottomInset = MediaQuery.viewPaddingOf(context).bottom;
+    // Material 3 `NavigationBar` default material height (destinations row).
+    const shellNavBarHeight = 80.0;
+    final shellBottomBarHeight = wide
+        ? 0.0
+        : shellNavBarHeight + shellBottomInset;
+
     // Reset chrome across wide↔narrow flips so a bar hidden on narrow
     // cannot remain hidden after returning from wide layout.
     final wasWide = _wasWide;
@@ -388,6 +394,8 @@ class _AppShellState extends State<AppShell> {
         minColumns: widget.settings.feedMinColumns,
         maxColumns: widget.settings.feedMaxColumns,
         onChromeVisibilityChanged: onChromeVisibilityChanged,
+        bottomBarHeight: shellBottomBarHeight,
+        systemBottomInset: shellBottomInset,
       ),
       SocialPage(
         api: _api,

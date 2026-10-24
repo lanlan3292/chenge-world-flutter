@@ -234,6 +234,10 @@
   "communityMerchant": "コミュニティ販売者",
   "product": "商品",
   "productInitial": "商",
+  "productUnderReview": "商品を審査中です",
+  "productRejected": "商品が審査を通りませんでした",
+  "productSoldOut": "売り切れ",
+  "productUnavailable": "商品は現在購入できません",
   "stockCount": "在庫 {count}",
   "@stockCount": {
     "placeholders": {

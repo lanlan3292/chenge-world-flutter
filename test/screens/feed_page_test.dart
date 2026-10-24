@@ -125,4 +125,66 @@ void main() {
     expect(find.text('帖子 2'), findsOneWidget);
     expect(find.text('第 2 / 3 页'), findsOneWidget);
   });
+
+  testWidgets('compose fab clears the shell bottom bar on tall safe areas', (
+    tester,
+  ) async {
+    // A large gesture inset used to push the FAB into the shell bar, because
+    // the shell paints its bar over the page and hides the inset from
+    // descendant MediaQuery data.
+    const inset = 96.0;
+    const shellBarHeight = 80.0 + inset;
+    final api = ChengeApi(
+      baseUrl: 'http://example.test',
+      client: MockClient((_) async => http.Response(
+        jsonEncode({
+          'code': 200,
+          'data': {'records': <Map<String, Object>>[], 'total': 0, 'pages': 0},
+        }),
+        200,
+        headers: {'content-type': 'application/json; charset=utf-8'},
+      )),
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('zh', 'CN'),
+        theme: AppTheme.light,
+        home: Builder(
+          builder: (context) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              size: const Size(400, 800),
+              padding: const EdgeInsets.only(bottom: inset),
+              viewPadding: const EdgeInsets.only(bottom: inset),
+            ),
+            child: Scaffold(
+              extendBody: true,
+              body: FeedPage(
+                api: api,
+                token: 'token',
+                bottomBarHeight: shellBarHeight,
+                systemBottomInset: inset,
+              ),
+              bottomNavigationBar: Material(
+                child: NavigationBar(
+                  selectedIndex: 0,
+                  destinations: const [
+                    NavigationDestination(icon: Icon(Icons.home), label: 'A'),
+                    NavigationDestination(icon: Icon(Icons.person), label: 'B'),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final barRect = tester.getRect(find.byType(NavigationBar));
+    final fabRect = tester.getRect(find.byType(RawMaterialButton));
+    expect(barRect.top - fabRect.bottom, moreOrLessEquals(16, epsilon: 0.01));
+  });
 }

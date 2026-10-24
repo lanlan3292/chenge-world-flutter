@@ -522,6 +522,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get productInitial => '商';
 
   @override
+  String get productUnderReview => '商品审核中';
+
+  @override
+  String get productRejected => '商品未通过审核';
+
+  @override
+  String get productSoldOut => '已售罄';
+
+  @override
+  String get productUnavailable => '商品暂不可购买';
+
+  @override
   String stockCount(int count) {
     return '库存 $count';
   }
@@ -1772,6 +1784,18 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
   String get productInitial => '商';
 
   @override
+  String get productUnderReview => '商品审核中';
+
+  @override
+  String get productRejected => '商品未通过审核';
+
+  @override
+  String get productSoldOut => '已售罄';
+
+  @override
+  String get productUnavailable => '商品暂不可购买';
+
+  @override
   String stockCount(int count) {
     return '库存 $count';
   }
@@ -3019,6 +3043,18 @@ class AppLocalizationsZhHans extends AppLocalizationsZh {
   String get productInitial => '商';
 
   @override
+  String get productUnderReview => '商品审核中';
+
+  @override
+  String get productRejected => '商品未通过审核';
+
+  @override
+  String get productSoldOut => '已售罄';
+
+  @override
+  String get productUnavailable => '商品暂不可购买';
+
+  @override
   String stockCount(int count) {
     return '库存 $count';
   }
@@ -4206,6 +4242,18 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   String get productInitial => '商';
 
   @override
+  String get productUnderReview => '商品審核中';
+
+  @override
+  String get productRejected => '商品未通過審核';
+
+  @override
+  String get productSoldOut => '已售罄';
+
+  @override
+  String get productUnavailable => '商品暫不可購買';
+
+  @override
   String stockCount(int count) {
     return '庫存 $count';
   }
@@ -5391,6 +5439,18 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get productInitial => '商';
+
+  @override
+  String get productUnderReview => '商品審核中';
+
+  @override
+  String get productRejected => '商品未通過審核';
+
+  @override
+  String get productSoldOut => '已售罄';
+
+  @override
+  String get productUnavailable => '商品暫不可購買';
 
   @override
   String stockCount(int count) {

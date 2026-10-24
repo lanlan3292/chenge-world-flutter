@@ -15,8 +15,18 @@ class ShopItem {
     this.soldCount = 0,
     this.rating = 0,
     this.ratingCount = 0,
-    this.status = 'on',
+    this.status = statusPublished,
+    this.reviewNote,
   });
+
+  /// Review pipeline reported by the API since the `published` rollout.
+  static const String statusPublished = 'published';
+  static const String statusReviewing = 'reviewing';
+  static const String statusRejected = 'rejected';
+  static const String statusDeleted = 'deleted';
+
+  /// Legacy status used before the review pipeline; still means "buyable".
+  static const String statusLegacyOn = 'on';
 
   final int id;
   final String title;
@@ -35,7 +45,22 @@ class ShopItem {
   final int ratingCount;
   final String status;
 
+  /// Moderation feedback, only set when the reviewer rejected the item.
+  final String? reviewNote;
+
   double get priceCoins => price / 100;
+
+  /// `true` while the item is visible to everyone (or served by an older API).
+  bool get isPublished => status == statusPublished || status == statusLegacyOn;
+
+  bool get isUnderReview => status == statusReviewing;
+
+  bool get isRejected => status == statusRejected;
+
+  bool get isSoldOut => stock <= 0;
+
+  /// A published item with stock left is the only thing a buyer can purchase.
+  bool get isPurchasable => isPublished && !isSoldOut;
 
   factory ShopItem.fromJson(Map<String, dynamic> json) => ShopItem(
         id: _integer(json['id']),
@@ -53,7 +78,8 @@ class ShopItem {
         soldCount: _integer(json['soldCount']),
         rating: _number(json['rating']),
         ratingCount: _integer(json['ratingCount']),
-        status: _text(json['status'], fallback: 'on'),
+        status: _text(json['status'], fallback: statusPublished),
+        reviewNote: _nullableText(json['reviewNote']),
       );
 
   static int _integer(Object? value) => value is num ? value.toInt() : int.tryParse('$value') ?? 0;

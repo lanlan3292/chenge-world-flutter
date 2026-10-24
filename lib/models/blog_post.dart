@@ -65,6 +65,43 @@ class BlogPost {
   }
 
 
+  /// Image that represents this post in lists and detail headers.
+  ///
+  /// Prefers the explicit cover, then uploaded images, and finally the first
+  /// image embedded in the markdown/HTML body — older posts often have no
+  /// cover but do have images inline, which used to render as an empty card.
+  String? get displayCoverImage {
+    final cover = coverImage?.trim();
+    if (cover != null && cover.isNotEmpty) return cover;
+    for (final image in images) {
+      final trimmed = image.trim();
+      if (trimmed.isNotEmpty) return trimmed;
+    }
+    return firstInlineImage;
+  }
+
+  /// First image target embedded in [content] (markdown `![]()` or HTML `img`).
+  String? get firstInlineImage {
+    if (content.isEmpty) return null;
+    final markdown = RegExp(
+      r'!\[[^\]]*\]\(\s*<?([^)\s>]+)',
+    ).firstMatch(content);
+    final fromMarkdown = _cleanImageUrl(markdown?.group(1));
+    if (fromMarkdown != null) return fromMarkdown;
+    final html = RegExp(
+      r'''<img[^>]+src\s*=\s*["']([^"']+)["']''',
+      caseSensitive: false,
+    ).firstMatch(content);
+    return _cleanImageUrl(html?.group(1));
+  }
+
+  static String? _cleanImageUrl(String? value) {
+    if (value == null) return null;
+    final trimmed = value.trim();
+    if (trimmed.isEmpty || trimmed.startsWith('data:')) return null;
+    return trimmed;
+  }
+
   static bool _asBool(Object? value) {
     if (value is bool) return value;
     if (value is num) return value != 0;

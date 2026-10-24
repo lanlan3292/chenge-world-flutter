@@ -127,7 +127,7 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
 
   Widget _detailBody(ShopItem item) {
     final isSeller = widget.userId != null && widget.userId == item.sellerId;
-    final canBuy = item.status == 'on' && item.stock > 0 && !isSeller;
+    final canBuy = item.isPurchasable && !isSeller;
     final width = MediaQuery.sizeOf(context).width;
     return Center(
       child: ConstrainedBox(
@@ -296,13 +296,65 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
                   ),
                 ],
               ),
-            ] else if (isSeller)
+            ] else if (!item.isPublished)
+              _statusNotice(item)
+            else if (isSeller)
               Text(
                 AppLocalizations.of(context).yourListedProduct,
+                style: const TextStyle(color: Color(0xFF70817D)),
+              )
+            else if (item.isSoldOut)
+              Text(
+                AppLocalizations.of(context).productSoldOut,
                 style: const TextStyle(color: Color(0xFF70817D)),
               ),
           ],
         ),
+      ),
+    );
+  }
+
+  /// Explains why a seller cannot buy their own unpublished item.
+  Widget _statusNotice(ShopItem item) {
+    final l10n = AppLocalizations.of(context);
+    final (icon, label) = switch (item.status) {
+      ShopItem.statusReviewing => (
+        Icons.hourglass_top_rounded,
+        l10n.productUnderReview,
+      ),
+      ShopItem.statusRejected => (Icons.error_outline_rounded, l10n.productRejected),
+      _ => (Icons.visibility_off_outlined, l10n.productUnavailable),
+    };
+    final note = item.reviewNote?.trim() ?? '';
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFE8C5),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 18, color: AppTheme.ink),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  label,
+                  style: const TextStyle(fontWeight: FontWeight.w800),
+                ),
+              ),
+            ],
+          ),
+          if (note.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text(
+              note,
+              style: const TextStyle(height: 1.45, color: Color(0xFF687A74)),
+            ),
+          ],
+        ],
       ),
     );
   }

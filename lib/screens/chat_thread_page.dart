@@ -390,6 +390,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
             : '';
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         automaticallyImplyLeading: widget.showBackButton,
         leading:
@@ -481,8 +482,8 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
           _composer(),
         ],
       ),
-    );
-  }
+  );
+}
 
   bool _shouldShowTime(int messageIndex) {
     if (messageIndex == 0) return true;
@@ -546,6 +547,19 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                       ),
                     ),
                   ),
+                if (showTime)
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: Text(
+                        _shortTime(message.createdAt),
+                        style: const TextStyle(
+                          fontSize: 10,
+                          color: Color(0xFF83918D),
+                        ),
+                      ),
+                    ),
+                  ),
                 if (isEmoji)
                   _emojiImage(message)
                 else if (isShare)
@@ -581,17 +595,6 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                                 ? Theme.of(context).colorScheme.onPrimary
                                 : Theme.of(context).colorScheme.onSurface,
                         height: 1.4,
-                      ),
-                    ),
-                  ),
-                if (showTime)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 3, left: 4, right: 4),
-                    child: Text(
-                      _shortTime(message.createdAt),
-                      style: const TextStyle(
-                        fontSize: 10,
-                        color: Color(0xFF83918D),
                       ),
                     ),
                   ),
