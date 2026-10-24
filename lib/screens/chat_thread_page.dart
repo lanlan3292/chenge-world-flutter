@@ -484,8 +484,9 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
           _composer(),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   bool _shouldShowTime(int messageIndex) {
     if (messageIndex == 0) return true;
