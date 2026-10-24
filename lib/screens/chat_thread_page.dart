@@ -425,10 +425,12 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
           ],
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Stack(
+      body: Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+        child: Column(
+          children: [
+            Expanded(
+              child: Stack(
               children: [
                 Opacity(
                   opacity: _contentReady ? 1 : 0,
@@ -479,12 +481,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
               ],
             ),
           ),
-          Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.viewInsetsOf(context).bottom,
-            ),
-            child: _composer(),
-          ),
+          _composer(),
         ],
       ),
     );
