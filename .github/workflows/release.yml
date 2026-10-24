@@ -72,7 +72,7 @@ jobs:
         with:
           name: chenge-world-android
           path: release/chenge-world-${{ github.ref_name }}-android.apk
-          retention-days: 7
+          retention-days: 1
 
   build-windows:
     name: Build Windows
@@ -107,7 +107,7 @@ jobs:
         with:
           name: chenge-world-windows
           path: chenge-world-${{ github.ref_name }}-windows.zip
-          retention-days: 7
+          retention-days: 1
 
   build-linux:
     name: Build Linux
@@ -153,7 +153,7 @@ jobs:
         with:
           name: chenge-world-linux
           path: chenge-world-${{ github.ref_name }}-linux.tar.gz
-          retention-days: 7
+          retention-days: 1
 
   build-macos:
     name: Build macOS
@@ -188,7 +188,7 @@ jobs:
         with:
           name: chenge-world-macos
           path: chenge-world-${{ github.ref_name }}-macos.zip
-          retention-days: 7
+          retention-days: 1
 
   # ============================================================
   #
@@ -235,7 +235,7 @@ jobs:
         with:
           name: chenge-world-ios
           path: chenge-world-${{ github.ref_name }}-ios.zip
-          retention-days: 7
+          retention-days: 1
 
   release:
     name: Create GitHub Release

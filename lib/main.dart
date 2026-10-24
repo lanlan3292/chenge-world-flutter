@@ -353,6 +353,16 @@ class _AppShellState extends State<AppShell> {
     final wide = MediaQuery.sizeOf(context).width >= 760;
     final hideBottomBar = !wide && widget.settings.autoHideBottomBar;
 
+    // The shell paints its bottom bar over the page (`extendBody`), which
+    // hides the bottom inset from descendant MediaQuery data. Hand the chrome
+    // geometry down instead, so pages can keep floating controls clear of it.
+    final shellBottomInset = MediaQuery.viewPaddingOf(context).bottom;
+    // Material 3 `NavigationBar` default material height (destinations row).
+    const shellNavBarHeight = 80.0;
+    final shellBottomBarHeight = wide
+        ? 0.0
+        : shellNavBarHeight + shellBottomInset;
+
     // Reset chrome across wide↔narrow flips so a bar hidden on narrow
     // cannot remain hidden after returning from wide layout.
     final wasWide = _wasWide;
@@ -388,6 +398,8 @@ class _AppShellState extends State<AppShell> {
         minColumns: widget.settings.feedMinColumns,
         maxColumns: widget.settings.feedMaxColumns,
         onChromeVisibilityChanged: onChromeVisibilityChanged,
+        bottomBarHeight: shellBottomBarHeight,
+        systemBottomInset: shellBottomInset,
       ),
       SocialPage(
         api: _api,

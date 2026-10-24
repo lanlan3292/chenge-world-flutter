@@ -527,6 +527,18 @@ class AppLocalizationsJa extends AppLocalizations {
   String get productInitial => '商';
 
   @override
+  String get productUnderReview => '商品を審査中です';
+
+  @override
+  String get productRejected => '商品が審査を通りませんでした';
+
+  @override
+  String get productSoldOut => '売り切れ';
+
+  @override
+  String get productUnavailable => '商品は現在購入できません';
+
+  @override
   String stockCount(int count) {
     return '在庫 $count';
   }
@@ -1778,6 +1790,18 @@ class AppLocalizationsJaJp extends AppLocalizationsJa {
 
   @override
   String get productInitial => '商';
+
+  @override
+  String get productUnderReview => '商品を審査中です';
+
+  @override
+  String get productRejected => '商品が審査を通りませんでした';
+
+  @override
+  String get productSoldOut => '売り切れ';
+
+  @override
+  String get productUnavailable => '商品は現在購入できません';
 
   @override
   String stockCount(int count) {

@@ -1099,6 +1099,30 @@ abstract class AppLocalizations {
   /// **'P'**
   String get productInitial;
 
+  /// No description provided for @productUnderReview.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Under review'**
+  String get productUnderReview;
+
+  /// No description provided for @productRejected.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Review failed'**
+  String get productRejected;
+
+  /// No description provided for @productSoldOut.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Sold out'**
+  String get productSoldOut;
+
+  /// No description provided for @productUnavailable.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Currently unavailable'**
+  String get productUnavailable;
+
   /// No description provided for @stockCount.
   ///
   /// In en_US, this message translates to:

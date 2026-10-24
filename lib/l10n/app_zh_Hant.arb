@@ -165,6 +165,10 @@
   "communityMerchant": "社群商家",
   "product": "商品",
   "productInitial": "商",
+  "productUnderReview": "商品審核中",
+  "productRejected": "商品未通過審核",
+  "productSoldOut": "已售罄",
+  "productUnavailable": "商品暫不可購買",
   "stockCount": "庫存 {count}",
   "@stockCount": {
     "placeholders": {

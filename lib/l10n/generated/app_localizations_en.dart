@@ -538,6 +538,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get productInitial => 'P';
 
   @override
+  String get productUnderReview => 'Under review';
+
+  @override
+  String get productRejected => 'Review failed';
+
+  @override
+  String get productSoldOut => 'Sold out';
+
+  @override
+  String get productUnavailable => 'Currently unavailable';
+
+  @override
   String stockCount(int count) {
     return 'Stock $count';
   }
@@ -1812,6 +1824,18 @@ class AppLocalizationsEnUs extends AppLocalizationsEn {
 
   @override
   String get productInitial => 'P';
+
+  @override
+  String get productUnderReview => 'Under review';
+
+  @override
+  String get productRejected => 'Review failed';
+
+  @override
+  String get productSoldOut => 'Sold out';
+
+  @override
+  String get productUnavailable => 'Currently unavailable';
 
   @override
   String stockCount(int count) {

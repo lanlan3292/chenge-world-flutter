@@ -234,6 +234,10 @@
   "communityMerchant": "커뮤니티 판매자",
   "product": "상품",
   "productInitial": "상",
+  "productUnderReview": "상품 심사 중",
+  "productRejected": "상품이 심사를 통과하지 못했습니다",
+  "productSoldOut": "품절",
+  "productUnavailable": "상품을 구매할 수 없습니다",
   "stockCount": "재고 {count}",
   "@stockCount": {
     "placeholders": {

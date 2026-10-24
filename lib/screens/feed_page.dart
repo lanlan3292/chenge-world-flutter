@@ -21,12 +21,25 @@ class FeedPage extends StatefulWidget {
     this.minColumns = 1,
     this.maxColumns = 3,
     this.onChromeVisibilityChanged,
+    this.bottomBarHeight = 0,
+    this.systemBottomInset = 0,
   });
 
   final ChengeApi api;
   final String? token;
   final bool autoHideTopBar;
   final bool autoHideBottomBar;
+
+  /// Full height of the shell bottom bar (including its system inset).
+  ///
+  /// The shell paints its bottom bar over the page (`extendBody`), and a
+  /// nested [Scaffold] cannot see that overlay through [MediaQuery], so the
+  /// value is handed down instead of guessed.
+  final double bottomBarHeight;
+
+  /// System bottom inset (gesture bar / home indicator), hidden from this
+  /// page's [MediaQuery] for the same reason as [bottomBarHeight].
+  final double systemBottomInset;
 
   /// Minimum grid column count (1–3).
   final int minColumns;
@@ -260,7 +273,9 @@ void _onScroll() {
                 dockedToBottomBar:
                     MediaQuery.sizeOf(context).width < 760 &&
                     (!widget.autoHideBottomBar || _chromeVisible),
-                expanded: _fabExpanded
+                expanded: _fabExpanded,
+                bottomBarHeight: widget.bottomBarHeight,
+                systemBottomInset: widget.systemBottomInset,
               )
               : null,
       body: Center(
@@ -577,58 +592,51 @@ class _CreatePostFab extends StatelessWidget {
     required this.onPressed,
     required this.dockedToBottomBar,
     required this.expanded,
+    required this.bottomBarHeight,
+    required this.systemBottomInset,
   });
 
   final VoidCallback onPressed;
   final bool dockedToBottomBar;
   final bool expanded;
 
-  /// M3 [NavigationBar] material height (destinations row), excluding system inset.
-  static const double _shellNavBarHeight = 80;
+  /// Full height of the shell bottom bar (system inset included).
+  final double bottomBarHeight;
+
+  /// System bottom inset (gesture bar / home indicator).
+  final double systemBottomInset;
+
+  /// Visual gap between the FAB and whatever chrome sits below it.
+  static const double _gapAboveChrome = 16;
+
+  /// `Scaffold` already leaves this margin below an `endFloat` FAB.
+  static const double _scaffoldFabMargin = 16;
 
   /// Bottom offset so the FAB clears the shell bottom bar / screen edge.
   ///
-  /// Platform differences matter:
-  /// - Android edge-to-edge: system gesture inset + nav bar stack; needs more clearance.
-  /// - Desktop (Windows/macOS/Linux): no gesture inset overlap; nav height alone is enough.
-  /// - Always use [MediaQueryData.viewPadding] (not padding) so the IME cannot lift the FAB.
-  static double _bottomInset(BuildContext context, {required bool docked}) {
-    final mq = MediaQuery.of(context);
-    // Ignore keyboard / viewInsets entirely.
-    final systemBottom = mq.viewPadding.bottom;
-    final platform = Theme.of(context).platform;
-
-    if (!docked) {
-      // Bar hidden or wide layout: rest near the physical bottom.
-      switch (platform) {
-        case TargetPlatform.windows:
-        case TargetPlatform.linux:
-        case TargetPlatform.macOS:
-          return 12;
-        default:
-          return systemBottom + 12;
-      }
-    }
-
-    switch (platform) {
-      case TargetPlatform.android:
-        // Gesture/nav inset + NavigationBar; extra gap avoids occlusion on tall safe areas.
-        return systemBottom + _shellNavBarHeight + 20;
-      case TargetPlatform.iOS:
-        return systemBottom + _shellNavBarHeight + 12;
-      case TargetPlatform.windows:
-      case TargetPlatform.linux:
-      case TargetPlatform.macOS:
-        // Desktop client area already excludes OS taskbar; only clear the in-app nav.
-        return _shellNavBarHeight + 4;
-      default:
-        return systemBottom + _shellNavBarHeight + 12;
-    }
+  /// The shell paints its bottom bar over this page (`extendBody`), and a
+  /// nested [Scaffold] lays the FAB out against the physical bottom edge
+  /// without seeing that overlay — so the offset has to add the overlay back.
+  /// [MediaQuery] cannot supply it: the shell strips its bottom padding before
+  /// building the body, which is why the heights are passed in explicitly.
+  static double _bottomOffset({
+    required bool docked,
+    required double bottomBarHeight,
+    required double systemBottomInset,
+  }) {
+    final overlay = docked && bottomBarHeight > 0
+        ? bottomBarHeight
+        : systemBottomInset;
+    return math.max(0, overlay + _gapAboveChrome - _scaffoldFabMargin);
   }
 
   @override
   Widget build(BuildContext context) {
-    final bottom = _bottomInset(context, docked: dockedToBottomBar);
+    final bottom = _bottomOffset(
+      docked: dockedToBottomBar,
+      bottomBarHeight: bottomBarHeight,
+      systemBottomInset: systemBottomInset,
+    );
     final mq = MediaQuery.of(context);
     // Strip viewInsets so any ancestor keyboard inset cannot nudge the FAB.
     return MediaQuery(

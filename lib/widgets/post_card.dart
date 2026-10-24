@@ -159,7 +159,7 @@ class PostCard extends StatelessWidget {
   }
 
   Widget _cover(BuildContext context, {required double width}) {
-    final imageUrl = post.coverImage;
+    final imageUrl = _resolveCoverImage(post);
     if (imageUrl == null || imageUrl.isEmpty) return _coverPlaceholder(context);
 
     // 按展示宽度限制解码尺寸，避免瀑布流里按原图解码导致卡顿
@@ -319,6 +319,19 @@ class PostCard extends StatelessWidget {
           ),
         ],
       );
+
+  static String? _resolveCoverImage(BlogPost post) {
+    final cover = post.coverImage;
+    if (cover != null && cover.trim().isNotEmpty) return cover.trim();
+    if (post.images.isNotEmpty) {
+      final first = post.images.first.trim();
+      if (first.isNotEmpty) return first;
+    }
+    final match = RegExp(r'!\[[^\]]*\]\(([^)]+)\)').firstMatch(post.content);
+    final fromContent = match?.group(1)?.trim();
+    if (fromContent != null && fromContent.isNotEmpty) return fromContent;
+    return null;
+  }
 
   static String _dateLabel(DateTime? date) {
     if (date == null) return '刚刚';

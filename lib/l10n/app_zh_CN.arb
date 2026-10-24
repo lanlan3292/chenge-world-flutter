@@ -234,6 +234,10 @@
   "communityMerchant": "社区商家",
   "product": "商品",
   "productInitial": "商",
+  "productUnderReview": "商品审核中",
+  "productRejected": "商品未通过审核",
+  "productSoldOut": "已售罄",
+  "productUnavailable": "商品暂不可购买",
   "stockCount": "库存 {count}",
   "@stockCount": {
     "placeholders": {

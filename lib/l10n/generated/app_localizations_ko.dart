@@ -525,6 +525,18 @@ class AppLocalizationsKo extends AppLocalizations {
   String get productInitial => '상';
 
   @override
+  String get productUnderReview => '상품 심사 중';
+
+  @override
+  String get productRejected => '상품이 심사를 통과하지 못했습니다';
+
+  @override
+  String get productSoldOut => '품절';
+
+  @override
+  String get productUnavailable => '상품을 구매할 수 없습니다';
+
+  @override
   String stockCount(int count) {
     return '재고 $count';
   }
@@ -1774,6 +1786,18 @@ class AppLocalizationsKoKr extends AppLocalizationsKo {
 
   @override
   String get productInitial => '상';
+
+  @override
+  String get productUnderReview => '상품 심사 중';
+
+  @override
+  String get productRejected => '상품이 심사를 통과하지 못했습니다';
+
+  @override
+  String get productSoldOut => '품절';
+
+  @override
+  String get productUnavailable => '상품을 구매할 수 없습니다';
 
   @override
   String stockCount(int count) {
