@@ -262,6 +262,28 @@ class _AppShellState extends State<AppShell> {
       _userId = userId;
       _restoring = false;
     });
+    _maybeAutoCheckin();
+  }
+
+  /// 启动时若开启“自动签到”，静默尝试一次每日签到。
+  ///
+  /// 已签到（TASK_CHECKED_IN）或签名未配置都视为正常，不打扰用户。
+  bool _autoCheckinAttempted = false;
+
+  Future<void> _maybeAutoCheckin() async {
+    if (_autoCheckinAttempted) return;
+    final token = _token;
+    if (!widget.settings.autoCheckinOnLaunch ||
+        token == null ||
+        token.isEmpty) {
+      return;
+    }
+    _autoCheckinAttempted = true;
+    try {
+      await _api.checkin(token);
+    } on ApiException {
+      // 今天已签到 / 任务未配置 / 网络异常：启动流程保持静默。
+    }
   }
 
   Future<void> _onLogin(Map<String, dynamic> result) async {
@@ -271,6 +293,7 @@ class _AppShellState extends State<AppShell> {
     // 空令牌：只清本地会话，不调用 /home/logout，原令牌在服务端仍有效
     if (token.isEmpty) {
       await _sessionStore.clearToken();
+      _autoCheckinAttempted = false;
       if (!mounted) return;
       setState(() {
         _token = null;
@@ -289,6 +312,7 @@ class _AppShellState extends State<AppShell> {
       _userId =
           user is Map && user['id'] is num ? (user['id'] as num).toInt() : null;
     });
+    _maybeAutoCheckin();
   }
 
   Future<void> _onLogout() async {
@@ -301,6 +325,7 @@ class _AppShellState extends State<AppShell> {
       }
     }
     await _sessionStore.clearToken();
+    _autoCheckinAttempted = false;
     if (!mounted) return;
     setState(() {
       _token = null;
@@ -393,6 +418,11 @@ class _AppShellState extends State<AppShell> {
         autoHideBottomBar: hideBottomBar,
         minColumns: widget.settings.feedMinColumns,
         maxColumns: widget.settings.feedMaxColumns,
+        hideExternalPosts: widget.settings.feedHideExternalPosts,
+        onHideExternalPostsChanged: (value) async {
+          await widget.settings.setFeedHideExternalPosts(value);
+          await widget.onSettingsChanged();
+        },
         onChromeVisibilityChanged: onChromeVisibilityChanged,
         bottomBarHeight: shellBottomBarHeight,
         systemBottomInset: shellBottomInset,

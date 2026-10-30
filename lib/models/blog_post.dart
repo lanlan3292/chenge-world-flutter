@@ -13,6 +13,7 @@ class BlogPost {
     this.authorAvatar,
     this.categoryName,
     this.liked = false,
+    this.origin = 0,
     this.tags = const [],
     this.images = const [],
     this.media = const [],
@@ -31,6 +32,13 @@ class BlogPost {
   final String? authorAvatar;
   final String? categoryName;
   final bool liked;
+
+  /// 0 = 站内原创，1 = 站外 RSS 同步。
+  final int origin;
+
+  /// 是否为站外 RSS 同步的帖子。
+  bool get isExternal => origin == 1;
+
   final List<String> tags;
   final List<String> images;
   final List<String> media;
@@ -56,6 +64,7 @@ class BlogPost {
       authorAvatar: _nullableText(json['authorAvatar']),
       categoryName: _nullableText(json['categoryName']),
       liked: _asBool(json['liked']),
+      origin: _integer(json['origin']),
       tags: tags is List ? tags.map((tag) => _text(tag)).where((tag) => tag.isNotEmpty).toList() : const [],
       images: images is List
           ? images.map((item) => _text(item)).where((item) => item.isNotEmpty).toList()
@@ -123,6 +132,7 @@ class BlogPost {
     String? authorAvatar,
     String? categoryName,
     bool? liked,
+    int? origin,
     List<String>? tags,
     List<String>? images,
     List<String>? media,
@@ -141,6 +151,7 @@ class BlogPost {
       authorAvatar: authorAvatar ?? this.authorAvatar,
       categoryName: categoryName ?? this.categoryName,
       liked: liked ?? this.liked,
+      origin: origin ?? this.origin,
       tags: tags ?? this.tags,
       images: images ?? this.images,
       media: media ?? this.media,

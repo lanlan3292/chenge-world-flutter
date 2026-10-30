@@ -50,6 +50,33 @@ class AiStreamEvent {
   final dynamic data;
 }
 
+/// Draw model bound by the backend (`GET /ai/draw/models`).
+class AiDrawModel {
+  const AiDrawModel({
+    required this.task,
+    required this.label,
+    this.modelName,
+    this.modelLabel,
+    this.imagePrice,
+  });
+
+  final String task;
+  final String label;
+  final String? modelName;
+  final String? modelLabel;
+  final double? imagePrice;
+
+  String get title => label.isNotEmpty ? label : (modelLabel ?? modelName ?? task);
+
+  factory AiDrawModel.fromJson(Map<String, dynamic> json) => AiDrawModel(
+        task: json['task']?.toString().trim() ?? '',
+        label: json['label']?.toString().trim() ?? '',
+        modelName: json['model_name']?.toString(),
+        modelLabel: json['model_label']?.toString(),
+        imagePrice: json['image_price'] is num ? (json['image_price'] as num).toDouble() : null,
+      );
+}
+
 /// Owned emoji asset for the picker (from shop assets / my items).
 class EmojiAsset {
   const EmojiAsset({
@@ -169,6 +196,7 @@ class ChengeApi {
     required int page,
     required String sort,
     String keyword = '',
+    int? origin,
     String? token,
   }) async {
     final query = <String, String>{
@@ -177,6 +205,8 @@ class ChengeApi {
       'sort': sort,
     };
     if (keyword.trim().isNotEmpty) query['keyword'] = keyword.trim();
+    // 0 = 站内原创（过滤站外 RSS），1 = 站外；null = 全部
+    if (origin != null) query['origin'] = '$origin';
 
     final data = await _request('GET', '/blog/post/list', query: query, token: token);
     if (data is! Map<String, dynamic>) throw const ApiException('帖子列表格式不正确');
@@ -512,9 +542,23 @@ class ChengeApi {
     await _request('POST', '/chat/$conversationId/join', token: token);
   }
 
-  Future<List<ChatMessage>> chatMessages(int conversationId, String token, {int? beforeId, int size = 30}) async {
+  /// 群管理总览：群信息、可见频道（含 canSend）、权限、成员等。
+  Future<Map<String, dynamic>> groupOverview(int conversationId, String token) async {
+    final data = await _request('GET', '/chat/groups/$conversationId', token: token);
+    if (data is! Map<String, dynamic>) throw const ApiException('群信息格式不正确');
+    return data;
+  }
+
+  Future<List<ChatMessage>> chatMessages(
+    int conversationId,
+    String token, {
+    int? beforeId,
+    int? channelId,
+    int size = 30,
+  }) async {
     final query = <String, String>{'size': '$size'};
     if (beforeId != null) query['beforeId'] = '$beforeId';
+    if (channelId != null) query['channelId'] = '$channelId';
     final data = await _request('GET', '/chat/$conversationId/messages', query: query, token: token);
     if (data is! List) throw const ApiException('消息列表格式不正确');
     return data.whereType<Map<String, dynamic>>().map(ChatMessage.fromJson).toList();
@@ -525,6 +569,7 @@ class ChengeApi {
     String content,
     String token, {
     String type = 'text',
+    int? channelId,
   }) async {
     final data = await _request(
       'POST',
@@ -533,6 +578,7 @@ class ChengeApi {
         'type': type,
         'content': content,
         'clientMsgId': 'android-${DateTime.now().microsecondsSinceEpoch}',
+        if (channelId != null) 'channelId': channelId,
       },
       token: token,
     );
@@ -540,11 +586,19 @@ class ChengeApi {
     return ChatMessage.fromJson(data);
   }
 
-  Future<void> markChatRead(int conversationId, String token, {int? messageId}) async {
+  Future<void> markChatRead(
+    int conversationId,
+    String token, {
+    int? messageId,
+    int? channelId,
+  }) async {
     await _request(
       'POST',
       '/chat/$conversationId/read',
-      body: messageId == null ? const {} : {'messageId': messageId},
+      body: {
+        if (messageId != null) 'messageId': messageId,
+        if (channelId != null) 'channelId': channelId,
+      },
       token: token,
     );
   }
@@ -719,6 +773,13 @@ class ChengeApi {
     return data;
   }
 
+  /// 每日签到（无请求体）。重复签到会抛 TASK_CHECKED_IN。
+  Future<Map<String, dynamic>> checkin(String token) async {
+    final data = await _request('POST', '/task/checkin', token: token);
+    if (data is! Map<String, dynamic>) return const {};
+    return data;
+  }
+
   // ——— AI Agent / chatSession ———
 
   Future<List<AiSession>> aiSessions(String token) async {
@@ -768,6 +829,13 @@ class ChengeApi {
     required String sessionId,
     required String userInput,
     String? turnId,
+    bool? webSearch,
+    String? language,
+    Map<String, dynamic>? draw,
+    List<String>? images,
+    Map<String, dynamic>? quote,
+    String? quoteRef,
+    String? quoteText,
   }) async* {
     final uri = Uri.parse('$_baseUrl/ai/agent/stream');
     final request = http.Request('POST', uri)
@@ -780,6 +848,13 @@ class ChengeApi {
         'session_id': sessionId,
         'user_input': userInput,
         if (turnId != null && turnId.isNotEmpty) 'turn_id': turnId,
+        if (webSearch != null) 'web_search': webSearch,
+        if (language != null && language.isNotEmpty) 'language': language,
+        if (draw != null && draw.isNotEmpty) 'draw': draw,
+        if (images != null && images.isNotEmpty) 'images': images,
+        if (quote != null && quote.isNotEmpty) 'quote': quote,
+        if (quoteRef != null && quoteRef.isNotEmpty) 'quote_ref': quoteRef,
+        if (quoteText != null && quoteText.isNotEmpty) 'quote_text': quoteText,
       });
 
     late http.StreamedResponse response;
@@ -848,6 +923,40 @@ class ChengeApi {
       }
       yield AiStreamEvent(type: eventType ?? 'message', data: parsed);
     }
+  }
+
+  Future<List<AiDrawModel>> aiDrawModels(String token) async {
+    final data = await _request('GET', '/ai/draw/models', token: token);
+    if (data is! List) return const [];
+    return data.whereType<Map<String, dynamic>>().map(AiDrawModel.fromJson).toList();
+  }
+
+  /// 消息反馈：rating 1 赞 / -1 踩 / 0 取消。
+  Future<void> submitAiFeedback({
+    required String token,
+    required String sessionId,
+    required String messageKey,
+    required int rating,
+    String? critique,
+    String? answerSnapshot,
+    String? scene,
+    String? model,
+  }) async {
+    await _request(
+      'POST',
+      '/ai/feedback',
+      body: {
+        'sessionId': sessionId,
+        'messageKey': messageKey,
+        'rating': rating,
+        if (critique != null && critique.isNotEmpty) 'critique': critique,
+        if (answerSnapshot != null && answerSnapshot.isNotEmpty)
+          'answerSnapshot': answerSnapshot,
+        if (scene != null && scene.isNotEmpty) 'scene': scene,
+        if (model != null && model.isNotEmpty) 'model': model,
+      },
+      token: token,
+    );
   }
 
   Future<List<Map<String, dynamic>>> _mapList(String path, String token) async {

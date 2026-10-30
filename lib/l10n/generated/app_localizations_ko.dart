@@ -1265,6 +1265,117 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get phone => 'Phone';
+
+  @override
+  String get hideExternalPosts => 'Hide external';
+
+  @override
+  String get hideExternalPostsDescription =>
+      'Hide posts synced from external RSS (on by default)';
+
+  @override
+  String get tasksSection => 'Tasks';
+
+  @override
+  String get autoCheckin => 'Auto check-in on launch';
+
+  @override
+  String get autoCheckinDescription =>
+      'Try the daily check-in each time the app starts (skipped if already done today)';
+
+  @override
+  String get groupNoChannels => 'This group has no channels yet';
+
+  @override
+  String get channelReadOnly => 'You cannot post in this channel';
+
+  @override
+  String get shopTypeAppPack => 'APP package';
+
+  @override
+  String get shopType3d => '3D model';
+
+  @override
+  String get shopTypeAnimation => 'Animation';
+
+  @override
+  String get shopTypeArchive => 'Archive';
+
+  @override
+  String get shopTypeMusic => 'Music';
+
+  @override
+  String get shopTypeMp2 => 'MP2 music';
+
+  @override
+  String get shopTypeLiba2 => 'LIBA2 music';
+
+  @override
+  String get shopTypeSkill => 'Skill';
+
+  @override
+  String get shopTypeNurture => 'Nurture item';
+
+  @override
+  String get shopTypeNurtureTicket => 'Nurture ticket';
+
+  @override
+  String get aiWebSearch => 'Web search';
+
+  @override
+  String get aiDrawing => 'Draw';
+
+  @override
+  String get aiDrawModel => 'Draw model';
+
+  @override
+  String get aiDrawNoModels => 'No drawing model available';
+
+  @override
+  String get aiDrawAspect => 'Aspect ratio';
+
+  @override
+  String get aiDrawQuality => 'Quality';
+
+  @override
+  String get aiFeedbackThanks => 'Thanks for your feedback';
+
+  @override
+  String get aiFeedbackHelpful => 'Helpful';
+
+  @override
+  String get aiFeedbackNotHelpful => 'Not helpful';
+
+  @override
+  String get aiImages => 'Image';
+
+  @override
+  String get shopMusicHint =>
+      'Audio resource. The file is downloadable after purchase (in-app playback is not supported yet).';
+
+  @override
+  String get shop3dHint =>
+      '3D model resource. The file is downloadable after purchase.';
+
+  @override
+  String get shopAnimationHint =>
+      'Animation resource. The file is downloadable after purchase.';
+
+  @override
+  String get shopArchiveHint =>
+      'Archived resource. The archive is downloadable after purchase.';
+
+  @override
+  String get shopAppPackHint =>
+      'APP package resource. The package is downloadable after purchase.';
+
+  @override
+  String get shopSkillHint =>
+      'Skill resource. After purchase it can be enabled in AI sessions.';
+
+  @override
+  String get shopNurtureHint =>
+      'Nurture item. After purchase it can be used in the nurture gameplay.';
 }
 
 /// The translations for Korean, as used in Republic of Korea (`ko_KR`).
@@ -2468,4 +2579,107 @@ class AppLocalizationsKoKr extends AppLocalizationsKo {
 
   @override
   String get deleteImage => '이미지 삭제';
+
+  @override
+  String get hideExternalPosts => '외부 피드 숨기기';
+
+  @override
+  String get hideExternalPostsDescription => '외부 RSS에서 동기화된 게시물을 숨깁니다(기본 켜짐)';
+
+  @override
+  String get tasksSection => '작업';
+
+  @override
+  String get autoCheckin => '시작 시 자동 출석 체크';
+
+  @override
+  String get autoCheckinDescription => '앱을 열 때마다 일일 출석 체크를 시도합니다(오늘 완료 시 건너뜀)';
+
+  @override
+  String get groupNoChannels => '이 그룹에는 아직 채널이 없습니다';
+
+  @override
+  String get channelReadOnly => '이 채널에는 글을 쓸 수 없습니다';
+
+  @override
+  String get shopTypeAppPack => 'APP 패키지';
+
+  @override
+  String get shopType3d => '3D 모델';
+
+  @override
+  String get shopTypeAnimation => '애니메이션';
+
+  @override
+  String get shopTypeArchive => '아카이브';
+
+  @override
+  String get shopTypeMusic => '음악';
+
+  @override
+  String get shopTypeMp2 => 'MP2 음악';
+
+  @override
+  String get shopTypeLiba2 => 'LIBA2 음악';
+
+  @override
+  String get shopTypeSkill => '스킬';
+
+  @override
+  String get shopTypeNurture => '육성 아이템';
+
+  @override
+  String get shopTypeNurtureTicket => '육성 티켓';
+
+  @override
+  String get aiWebSearch => '웹 검색';
+
+  @override
+  String get aiDrawing => '이미지 생성';
+
+  @override
+  String get aiDrawModel => '이미지 생성 모델';
+
+  @override
+  String get aiDrawNoModels => '사용 가능한 이미지 생성 모델이 없습니다';
+
+  @override
+  String get aiDrawAspect => '화면 비율';
+
+  @override
+  String get aiDrawQuality => '화질';
+
+  @override
+  String get aiFeedbackThanks => '피드백 감사합니다';
+
+  @override
+  String get aiFeedbackHelpful => '도움이 됨';
+
+  @override
+  String get aiFeedbackNotHelpful => '도움이 안 됨';
+
+  @override
+  String get aiImages => '이미지';
+
+  @override
+  String get shopMusicHint =>
+      '오디오 리소스입니다. 구매 후 파일을 다운로드할 수 있습니다(앱 내 재생은 아직 지원되지 않음).';
+
+  @override
+  String get shop3dHint => '3D 모델 리소스입니다. 구매 후 파일을 다운로드할 수 있습니다.';
+
+  @override
+  String get shopAnimationHint => '애니메이션 리소스입니다. 구매 후 파일을 다운로드할 수 있습니다.';
+
+  @override
+  String get shopArchiveHint => '아카이브 리소스입니다. 구매 후 압축 파일을 다운로드할 수 있습니다.';
+
+  @override
+  String get shopAppPackHint => 'APP 패키지 리소스입니다. 구매 후 패키지를 다운로드할 수 있습니다.';
+
+  @override
+  String get shopSkillHint => '스킬 리소스입니다. 구매 후 AI 세션에서 활성화할 수 있습니다.';
+
+  @override
+  String get shopNurtureHint => '육성 아이템입니다. 구매 후 육성 콘텐츠에서 사용할 수 있습니다.';
 }

@@ -2478,6 +2478,210 @@ abstract class AppLocalizations {
   /// In en_US, this message translates to:
   /// **'Phone'**
   String get phone;
+
+  /// No description provided for @hideExternalPosts.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Hide external'**
+  String get hideExternalPosts;
+
+  /// No description provided for @hideExternalPostsDescription.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Hide posts synced from external RSS (on by default)'**
+  String get hideExternalPostsDescription;
+
+  /// No description provided for @tasksSection.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Tasks'**
+  String get tasksSection;
+
+  /// No description provided for @autoCheckin.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Auto check-in on launch'**
+  String get autoCheckin;
+
+  /// No description provided for @autoCheckinDescription.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Try the daily check-in each time the app starts (skipped if already done today)'**
+  String get autoCheckinDescription;
+
+  /// No description provided for @groupNoChannels.
+  ///
+  /// In en_US, this message translates to:
+  /// **'This group has no channels yet'**
+  String get groupNoChannels;
+
+  /// No description provided for @channelReadOnly.
+  ///
+  /// In en_US, this message translates to:
+  /// **'You cannot post in this channel'**
+  String get channelReadOnly;
+
+  /// No description provided for @shopTypeAppPack.
+  ///
+  /// In en_US, this message translates to:
+  /// **'APP package'**
+  String get shopTypeAppPack;
+
+  /// No description provided for @shopType3d.
+  ///
+  /// In en_US, this message translates to:
+  /// **'3D model'**
+  String get shopType3d;
+
+  /// No description provided for @shopTypeAnimation.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Animation'**
+  String get shopTypeAnimation;
+
+  /// No description provided for @shopTypeArchive.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Archive'**
+  String get shopTypeArchive;
+
+  /// No description provided for @shopTypeMusic.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Music'**
+  String get shopTypeMusic;
+
+  /// No description provided for @shopTypeMp2.
+  ///
+  /// In en_US, this message translates to:
+  /// **'MP2 music'**
+  String get shopTypeMp2;
+
+  /// No description provided for @shopTypeLiba2.
+  ///
+  /// In en_US, this message translates to:
+  /// **'LIBA2 music'**
+  String get shopTypeLiba2;
+
+  /// No description provided for @shopTypeSkill.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Skill'**
+  String get shopTypeSkill;
+
+  /// No description provided for @shopTypeNurture.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Nurture item'**
+  String get shopTypeNurture;
+
+  /// No description provided for @shopTypeNurtureTicket.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Nurture ticket'**
+  String get shopTypeNurtureTicket;
+
+  /// No description provided for @aiWebSearch.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Web search'**
+  String get aiWebSearch;
+
+  /// No description provided for @aiDrawing.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Draw'**
+  String get aiDrawing;
+
+  /// No description provided for @aiDrawModel.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Draw model'**
+  String get aiDrawModel;
+
+  /// No description provided for @aiDrawNoModels.
+  ///
+  /// In en_US, this message translates to:
+  /// **'No drawing model available'**
+  String get aiDrawNoModels;
+
+  /// No description provided for @aiDrawAspect.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Aspect ratio'**
+  String get aiDrawAspect;
+
+  /// No description provided for @aiDrawQuality.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Quality'**
+  String get aiDrawQuality;
+
+  /// No description provided for @aiFeedbackThanks.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Thanks for your feedback'**
+  String get aiFeedbackThanks;
+
+  /// No description provided for @aiFeedbackHelpful.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Helpful'**
+  String get aiFeedbackHelpful;
+
+  /// No description provided for @aiFeedbackNotHelpful.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Not helpful'**
+  String get aiFeedbackNotHelpful;
+
+  /// No description provided for @aiImages.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Image'**
+  String get aiImages;
+
+  /// No description provided for @shopMusicHint.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Audio resource. The file is downloadable after purchase (in-app playback is not supported yet).'**
+  String get shopMusicHint;
+
+  /// No description provided for @shop3dHint.
+  ///
+  /// In en_US, this message translates to:
+  /// **'3D model resource. The file is downloadable after purchase.'**
+  String get shop3dHint;
+
+  /// No description provided for @shopAnimationHint.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Animation resource. The file is downloadable after purchase.'**
+  String get shopAnimationHint;
+
+  /// No description provided for @shopArchiveHint.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Archived resource. The archive is downloadable after purchase.'**
+  String get shopArchiveHint;
+
+  /// No description provided for @shopAppPackHint.
+  ///
+  /// In en_US, this message translates to:
+  /// **'APP package resource. The package is downloadable after purchase.'**
+  String get shopAppPackHint;
+
+  /// No description provided for @shopSkillHint.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Skill resource. After purchase it can be enabled in AI sessions.'**
+  String get shopSkillHint;
+
+  /// No description provided for @shopNurtureHint.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Nurture item. After purchase it can be used in the nurture gameplay.'**
+  String get shopNurtureHint;
 }
 
 class _AppLocalizationsDelegate

@@ -1290,6 +1290,117 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get phone => 'Phone';
+
+  @override
+  String get hideExternalPosts => 'Hide external';
+
+  @override
+  String get hideExternalPostsDescription =>
+      'Hide posts synced from external RSS (on by default)';
+
+  @override
+  String get tasksSection => 'Tasks';
+
+  @override
+  String get autoCheckin => 'Auto check-in on launch';
+
+  @override
+  String get autoCheckinDescription =>
+      'Try the daily check-in each time the app starts (skipped if already done today)';
+
+  @override
+  String get groupNoChannels => 'This group has no channels yet';
+
+  @override
+  String get channelReadOnly => 'You cannot post in this channel';
+
+  @override
+  String get shopTypeAppPack => 'APP package';
+
+  @override
+  String get shopType3d => '3D model';
+
+  @override
+  String get shopTypeAnimation => 'Animation';
+
+  @override
+  String get shopTypeArchive => 'Archive';
+
+  @override
+  String get shopTypeMusic => 'Music';
+
+  @override
+  String get shopTypeMp2 => 'MP2 music';
+
+  @override
+  String get shopTypeLiba2 => 'LIBA2 music';
+
+  @override
+  String get shopTypeSkill => 'Skill';
+
+  @override
+  String get shopTypeNurture => 'Nurture item';
+
+  @override
+  String get shopTypeNurtureTicket => 'Nurture ticket';
+
+  @override
+  String get aiWebSearch => 'Web search';
+
+  @override
+  String get aiDrawing => 'Draw';
+
+  @override
+  String get aiDrawModel => 'Draw model';
+
+  @override
+  String get aiDrawNoModels => 'No drawing model available';
+
+  @override
+  String get aiDrawAspect => 'Aspect ratio';
+
+  @override
+  String get aiDrawQuality => 'Quality';
+
+  @override
+  String get aiFeedbackThanks => 'Thanks for your feedback';
+
+  @override
+  String get aiFeedbackHelpful => 'Helpful';
+
+  @override
+  String get aiFeedbackNotHelpful => 'Not helpful';
+
+  @override
+  String get aiImages => 'Image';
+
+  @override
+  String get shopMusicHint =>
+      'Audio resource. The file is downloadable after purchase (in-app playback is not supported yet).';
+
+  @override
+  String get shop3dHint =>
+      '3D model resource. The file is downloadable after purchase.';
+
+  @override
+  String get shopAnimationHint =>
+      'Animation resource. The file is downloadable after purchase.';
+
+  @override
+  String get shopArchiveHint =>
+      'Archived resource. The archive is downloadable after purchase.';
+
+  @override
+  String get shopAppPackHint =>
+      'APP package resource. The package is downloadable after purchase.';
+
+  @override
+  String get shopSkillHint =>
+      'Skill resource. After purchase it can be enabled in AI sessions.';
+
+  @override
+  String get shopNurtureHint =>
+      'Nurture item. After purchase it can be used in the nurture gameplay.';
 }
 
 /// The translations for English, as used in the United States (`en_US`).
@@ -2578,4 +2689,115 @@ class AppLocalizationsEnUs extends AppLocalizationsEn {
 
   @override
   String get phone => 'Phone';
+
+  @override
+  String get hideExternalPosts => 'Hide external';
+
+  @override
+  String get hideExternalPostsDescription =>
+      'Hide posts synced from external RSS (on by default)';
+
+  @override
+  String get tasksSection => 'Tasks';
+
+  @override
+  String get autoCheckin => 'Auto check-in on launch';
+
+  @override
+  String get autoCheckinDescription =>
+      'Try the daily check-in each time the app starts (skipped if already done today)';
+
+  @override
+  String get groupNoChannels => 'This group has no channels yet';
+
+  @override
+  String get channelReadOnly => 'You cannot post in this channel';
+
+  @override
+  String get shopTypeAppPack => 'APP package';
+
+  @override
+  String get shopType3d => '3D model';
+
+  @override
+  String get shopTypeAnimation => 'Animation';
+
+  @override
+  String get shopTypeArchive => 'Archive';
+
+  @override
+  String get shopTypeMusic => 'Music';
+
+  @override
+  String get shopTypeMp2 => 'MP2 music';
+
+  @override
+  String get shopTypeLiba2 => 'LIBA2 music';
+
+  @override
+  String get shopTypeSkill => 'Skill';
+
+  @override
+  String get shopTypeNurture => 'Nurture item';
+
+  @override
+  String get shopTypeNurtureTicket => 'Nurture ticket';
+
+  @override
+  String get aiWebSearch => 'Web search';
+
+  @override
+  String get aiDrawing => 'Draw';
+
+  @override
+  String get aiDrawModel => 'Draw model';
+
+  @override
+  String get aiDrawNoModels => 'No drawing model available';
+
+  @override
+  String get aiDrawAspect => 'Aspect ratio';
+
+  @override
+  String get aiDrawQuality => 'Quality';
+
+  @override
+  String get aiFeedbackThanks => 'Thanks for your feedback';
+
+  @override
+  String get aiFeedbackHelpful => 'Helpful';
+
+  @override
+  String get aiFeedbackNotHelpful => 'Not helpful';
+
+  @override
+  String get aiImages => 'Image';
+
+  @override
+  String get shopMusicHint =>
+      'Audio resource. The file is downloadable after purchase (in-app playback is not supported yet).';
+
+  @override
+  String get shop3dHint =>
+      '3D model resource. The file is downloadable after purchase.';
+
+  @override
+  String get shopAnimationHint =>
+      'Animation resource. The file is downloadable after purchase.';
+
+  @override
+  String get shopArchiveHint =>
+      'Archived resource. The archive is downloadable after purchase.';
+
+  @override
+  String get shopAppPackHint =>
+      'APP package resource. The package is downloadable after purchase.';
+
+  @override
+  String get shopSkillHint =>
+      'Skill resource. After purchase it can be enabled in AI sessions.';
+
+  @override
+  String get shopNurtureHint =>
+      'Nurture item. After purchase it can be used in the nurture gameplay.';
 }

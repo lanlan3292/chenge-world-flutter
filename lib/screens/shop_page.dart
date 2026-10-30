@@ -4,6 +4,7 @@ import '../l10n/generated/app_localizations.dart';
 import '../models/shop_item.dart';
 import '../services/chenge_api.dart';
 import '../theme/app_theme.dart';
+import '../widgets/shop_type_label.dart';
 import 'shop_detail_page.dart';
 
 class ShopPage extends StatefulWidget {
@@ -533,13 +534,22 @@ class _ShopPageState extends State<ShopPage> {
       scrollDirection: Axis.horizontal,
       children: [
         _typeChip('', AppLocalizations.of(context).all),
-        _typeChip('file', AppLocalizations.of(context).files),
         _typeChip('emoji', AppLocalizations.of(context).emojiPacks),
         _typeChip('ui', AppLocalizations.of(context).components),
-        _typeChip('app', AppLocalizations.of(context).applications),
+        _typeChip('apppack', AppLocalizations.of(context).shopTypeAppPack),
         _typeChip('command', AppLocalizations.of(context).executables),
         _typeChip('classes', AppLocalizations.of(context).libraries),
         _typeChip('functions', AppLocalizations.of(context).functionLibraries),
+        _typeChip('3d', AppLocalizations.of(context).shopType3d),
+        _typeChip('animation', AppLocalizations.of(context).shopTypeAnimation),
+        _typeChip('music', AppLocalizations.of(context).shopTypeMusic),
+        _typeChip('archive', AppLocalizations.of(context).shopTypeArchive),
+        _typeChip('skill', AppLocalizations.of(context).shopTypeSkill),
+        _typeChip('nurture', AppLocalizations.of(context).shopTypeNurture),
+        _typeChip(
+          'nurture_ticket',
+          AppLocalizations.of(context).shopTypeNurtureTicket,
+        ),
       ],
     ),
   );
@@ -584,7 +594,7 @@ class _ShopPageState extends State<ShopPage> {
                   const SizedBox(height: 4),
                   Expanded(
                     child: Text(
-                      item.summary ?? _typeLabel(context, item.type),
+                      item.summary ?? shopTypeLabel(context, item.type),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
@@ -673,7 +683,7 @@ class _ShopPageState extends State<ShopPage> {
                     const SizedBox(height: 5),
                     Text(
                       isAsset
-                          ? AppLocalizations.of(context).holdingQuantityType(row['quantity'] ?? 0, _typeLabel(context, row['type']?.toString()))
+                          ? AppLocalizations.of(context).holdingQuantityType(row['quantity'] ?? 0, shopTypeLabel(context, row['type']?.toString()))
                           : '${price.toStringAsFixed(2)} CC × ${row['quantity'] ?? 1} · ${_orderStatus(context, row['status']?.toString())}',
                       style: const TextStyle(
                         fontSize: 12,
@@ -874,20 +884,6 @@ class _ShopPageState extends State<ShopPage> {
       ),
     ),
   );
-
-  static String _typeLabel(BuildContext context, [String? type]) {
-    final l10n = AppLocalizations.of(context);
-    return switch (type) {
-      'emoji' => l10n.emojiPacks,
-      'file' => l10n.files,
-      'ui' => l10n.components,
-      'app' => l10n.applications,
-      'command' => l10n.executables,
-      'classes' => l10n.libraries,
-      'functions' => l10n.functionLibraries,
-      _ => type ?? l10n.product,
-    };
-  }
 
   static String _orderStatus(BuildContext context, [String? status]) {
     final l10n = AppLocalizations.of(context);

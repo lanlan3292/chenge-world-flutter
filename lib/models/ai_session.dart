@@ -54,7 +54,10 @@ class AiChatBubble {
     required this.content,
     this.status,
     this.streaming = false,
-  });
+    this.messageKey,
+    List<String> images = const [],
+    this.rating,
+  }) : images = List<String>.of(images);
 
   /// user | assistant | system | tool
   final String role;
@@ -62,14 +65,41 @@ class AiChatBubble {
   String? status;
   bool streaming;
 
+  /// 反馈用的消息键（后端 /ai/feedback 的 messageKey）。
+  String? messageKey;
+
+  /// 消息附带的图片（画图产物 / 引用图）。
+  final List<String> images;
+
+  /// 本地反馈状态：1 赞 / -1 踩 / null 未评价。
+  int? rating;
+
   factory AiChatBubble.fromHistory(dynamic raw) {
     if (raw is Map) {
       final map = Map<String, dynamic>.from(raw);
       final role = _roleOf(map);
       final content = _contentOf(map);
-      return AiChatBubble(role: role, content: content);
+      return AiChatBubble(
+        role: role,
+        content: content,
+        messageKey: map['messageKey']?.toString(),
+        images: _imagesOf(map),
+        rating: _ratingOf(map),
+      );
     }
     return AiChatBubble(role: 'assistant', content: '$raw');
+  }
+
+  static int? _ratingOf(Map<String, dynamic> map) {
+    final value = map['rating'] ?? map['feedback'];
+    if (value is num) return value.toInt();
+    return int.tryParse('$value');
+  }
+
+  static List<String> _imagesOf(Map<String, dynamic> map) {
+    final raw = map['images'] ?? map['image_refs'] ?? map['imageRefs'];
+    if (raw is! List) return const [];
+    return raw.map((item) => '$item').where((url) => url.startsWith('http')).toList();
   }
 
   static String _roleOf(Map<String, dynamic> map) {

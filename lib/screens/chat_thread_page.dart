@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../models/blog_post.dart';
+import '../models/chat_channel.dart';
 import '../models/chat_conversation.dart';
 import '../models/chat_message.dart';
 import '../l10n/generated/app_localizations.dart';
@@ -68,13 +69,85 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
   bool _emojiPickerOpen = false;
   late ChatConversation _conversation;
 
+  /// 群聊可见频道（私聊为空）。
+  List<ChatChannel> _channels = const [];
+
+  /// 当前选中的频道；群聊必须有一个，否则后端会报“请选择群频道”。
+  ChatChannel? _channel;
+  bool _channelsLoading = false;
+
+  bool get _isGroup => _conversation.type == 'group';
+
   @override
   void initState() {
     super.initState();
     _conversation = widget.conversation;
     _messageScrollController.addListener(_onScroll);
-    _loadMessages();
+    if (_conversation.type == 'group') {
+      _loadChannels();
+    } else {
+      _loadMessages();
+    }
     _bindSocket();
+  }
+
+  /// 拉群总览拿可见频道，选中默认频道后再加载历史。
+  Future<void> _loadChannels() async {
+    if (mounted) setState(() => _channelsLoading = true);
+    try {
+      final overview = await widget.api.groupOverview(
+        _conversation.id,
+        widget.token,
+      );
+      if (!mounted) return;
+      final channels = ChatChannel.listFromOverview(overview);
+      ChatChannel? selected;
+      // 优先可发言的普通频道，其次第一个可见频道。
+      for (final channel in channels) {
+        if (!channel.isAnnouncement && channel.canSend) {
+          selected = channel;
+          break;
+        }
+      }
+      selected ??= channels.isNotEmpty ? channels.first : null;
+      setState(() {
+        _channels = channels;
+        _channel = selected;
+        _messages.clear();
+        _initialScrollDone = false;
+        _contentReady = false;
+        _channelsLoading = false;
+      });
+      if (selected == null) {
+        setState(() => _contentReady = true);
+      } else {
+        await _loadMessages();
+      }
+    } on ApiException catch (error) {
+      if (!mounted) return;
+      setState(() => _channelsLoading = false);
+      // 拿不到频道时仍尝试加载（后端会返回明确错误）。
+      await _loadMessages();
+      if (!mounted) return;
+      _showError(error.message);
+    }
+  }
+
+  Future<void> _selectChannel(ChatChannel channel) async {
+    if (_channel?.id == channel.id) return;
+    setState(() {
+      _channel = channel;
+      _messages.clear();
+      _initialScrollDone = false;
+      _contentReady = false;
+    });
+    await _loadMessages();
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message), backgroundColor: AppTheme.coral));
   }
 
   void _bindSocket() {
@@ -98,6 +171,13 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
   void _onWsMessage(ChatMessage message) {
     if (!mounted) return;
     if (message.conversationId != _conversation.id) return;
+    // 群聊只接收当前频道的新消息。
+    if (_isGroup &&
+        _channel != null &&
+        message.channelId != null &&
+        message.channelId != _channel!.id) {
+      return;
+    }
     if (_messages.any((m) => m.id == message.id)) return;
     setState(() {
       _messages.add(message);
@@ -109,6 +189,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       _conversation.id,
       widget.token,
       messageId: message.id,
+      channelId: _isGroup ? _channel?.id : null,
     );
   }
 
@@ -149,6 +230,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       final messages = await widget.api.chatMessages(
         _conversation.id,
         widget.token,
+        channelId: _isGroup ? _channel?.id : null,
       );
       if (!mounted) return;
       final byId = {for (final m in _messages) m.id: m};
@@ -169,6 +251,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
         _conversation.id,
         widget.token,
         messageId: lastId,
+        channelId: _isGroup ? _channel?.id : null,
       );
       if (!mounted) return;
       if (isInitial) {
@@ -239,6 +322,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
         _conversation.id,
         widget.token,
         beforeId: _messages.first.id,
+        channelId: _isGroup ? _channel?.id : null,
       );
       if (!mounted) return;
       setState(() {
@@ -263,13 +347,14 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
 
   Future<void> _send() async {
     final text = _messageController.text.trim();
-    if (text.isEmpty || _sending) return;
+    if (text.isEmpty || _sending || !_canSend) return;
     setState(() => _sending = true);
     try {
       final message = await widget.api.sendChatMessage(
         _conversation.id,
         text,
         widget.token,
+        channelId: _isGroup ? _channel?.id : null,
       );
       if (!mounted) return;
       setState(() {
@@ -295,7 +380,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
   }
 
   Future<void> _sendEmoji(EmojiAsset asset) async {
-    if (_sending) return;
+    if (_sending || !_canSend) return;
     setState(() => _sending = true);
     try {
       final message = await widget.api.sendChatMessage(
@@ -303,6 +388,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
         jsonEncode(asset.toSendJson()),
         widget.token,
         type: 'emoji',
+        channelId: _isGroup ? _channel?.id : null,
       );
       if (!mounted) return;
       setState(() {
@@ -384,6 +470,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     }
     final isGroup = _conversation.type == 'group';
     final localizations = AppLocalizations.of(context);
+    final channel = _channel;
     final onlineLabel =
         !isGroup && widget.peerOnline != null
             ? (widget.peerOnline! ? localizations.online : localizations.offline)
@@ -412,7 +499,13 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
             ),
             if (onlineLabel.isNotEmpty || isGroup)
               Text(
-                isGroup ? localizations.groupChat : onlineLabel,
+                isGroup
+                    ? (channel == null
+                          ? localizations.groupChat
+                          : '${channel.name} · ${localizations.groupChat}')
+                    : onlineLabel,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontSize: 12,
                   color:
@@ -427,6 +520,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       ),
       body: Column(
         children: [
+          if (isGroup) _channelBar(),
           Expanded(
             child: Stack(
               children: [
@@ -484,6 +578,95 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       ),
   );
 }
+
+  /// 群频道切换条。
+  Widget _channelBar() {
+    final l10n = AppLocalizations.of(context);
+    if (_channelsLoading && _channels.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 10),
+        child: SizedBox(
+          height: 20,
+          width: 20,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
+      );
+    }
+    if (_channels.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(14, 10, 14, 4),
+        child: Row(
+          children: [
+            const Icon(Icons.tag_rounded, size: 16, color: Color(0xFF70817D)),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                l10n.groupNoChannels,
+                style: const TextStyle(fontSize: 12, color: Color(0xFF70817D)),
+              ),
+            ),
+            TextButton(
+              onPressed: _channelsLoading ? null : _loadChannels,
+              child: Text(l10n.refresh),
+            ),
+          ],
+        ),
+      );
+    }
+    return SizedBox(
+      height: 44,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.fromLTRB(12, 6, 12, 4),
+        itemCount: _channels.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        itemBuilder: (context, index) {
+          final channel = _channels[index];
+          final selected = channel.id == _channel?.id;
+          return ChoiceChip(
+            avatar: Icon(
+              channel.isAnnouncement ? Icons.campaign_outlined : Icons.tag_rounded,
+              size: 16,
+            ),
+            label: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(channel.name),
+                if (channel.unread > 0) ...[
+                  const SizedBox(width: 5),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                    decoration: BoxDecoration(
+                      color: selected ? Colors.white : AppTheme.coral,
+                      borderRadius: BorderRadius.circular(9),
+                    ),
+                    child: Text(
+                      channel.unread > 99 ? '99+' : '${channel.unread}',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: selected ? AppTheme.leaf : Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+            selected: selected,
+            onSelected: (_) => _selectChannel(channel),
+            visualDensity: VisualDensity.compact,
+            showCheckmark: false,
+          );
+        },
+      ),
+    );
+  }
+
+  bool get _canSend {
+    if (!_isGroup) return true;
+    if (_channel == null) return false;
+    return _channel!.canSend;
+  }
 
   bool _shouldShowTime(int messageIndex) {
     if (messageIndex == 0) return true;
@@ -781,7 +964,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
             children: [
               IconButton(
                 tooltip: AppLocalizations.of(context).emojiPacks,
-                onPressed: _sending ? null : _openEmojiPicker,
+                onPressed: _sending || !_canSend ? null : _openEmojiPicker,
                 icon: const Icon(Icons.emoji_emotions_outlined),
               ),
               Expanded(
@@ -790,9 +973,13 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                   minLines: 1,
                   maxLines: 5,
                   textInputAction: TextInputAction.newline,
+                  enabled: _canSend,
                   onChanged: (_) => setState(() {}),
                   decoration: InputDecoration(
-                    hintText: AppLocalizations.of(context).typeMessage,
+                    hintText:
+                        _canSend
+                            ? AppLocalizations.of(context).typeMessage
+                            : AppLocalizations.of(context).channelReadOnly,
                     isDense: true,
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 14,
@@ -805,7 +992,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
               IconButton.filled(
                 tooltip: AppLocalizations.of(context).sendMessage,
                 onPressed:
-                    _sending || _messageController.text.trim().isEmpty
+                    _sending || !_canSend || _messageController.text.trim().isEmpty
                         ? null
                         : _send,
                 icon:

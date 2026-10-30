@@ -10,6 +10,7 @@ class ChatMessage {
     this.senderName,
     this.senderAvatar,
     this.createdAt,
+    this.channelId,
   });
 
   final int id;
@@ -20,6 +21,9 @@ class ChatMessage {
   final String? senderName;
   final String? senderAvatar;
   final DateTime? createdAt;
+
+  /// 群聊频道 ID；私聊为 null。
+  final int? channelId;
 
   EmojiMessageContent? get emoji => type == 'emoji' ? EmojiMessageContent.tryParse(content) : null;
 
@@ -32,6 +36,7 @@ class ChatMessage {
         senderName: _nullableText(json['senderName']),
         senderAvatar: _nullableText(json['senderAvatar']),
         createdAt: DateTime.tryParse(_text(json['createdAt'])),
+        channelId: json['channelId'] == null ? null : _integer(json['channelId']),
       );
 
   static int _integer(Object? value) => value is num ? value.toInt() : int.tryParse('$value') ?? 0;
