@@ -22,6 +22,8 @@ class SettingsStore {
   static const _shopMaxColumnsKey = 'layout_shop_max_columns';
   static const _chatShowSelfAvatarKey = 'chat_show_self_avatar';
   static const _chatShowPeerAvatarKey = 'chat_show_peer_avatar';
+  static const _autoCheckinKey = 'task_auto_checkin_on_launch';
+  static const _feedHideExternalKey = 'feed_hide_external_posts';
 
   /// Default brand seed (AppTheme.leaf).
   static const defaultSeed = Color(0xFF006B61);
@@ -67,6 +69,13 @@ class SettingsStore {
   /// Group chats always show other members' avatars.
   bool chatShowPeerAvatar = false;
 
+  /// Try the daily check-in automatically once the app gets a valid session.
+  bool autoCheckinOnLaunch = false;
+
+  /// Hide posts that come from external RSS sources (origin = 1).
+  /// Mirrors the web client: filtered by default.
+  bool feedHideExternalPosts = true;
+
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
     final seedValue = prefs.getInt(_seedKey);
@@ -109,6 +118,8 @@ class SettingsStore {
 
     chatShowSelfAvatar = prefs.getBool(_chatShowSelfAvatarKey) ?? false;
     chatShowPeerAvatar = prefs.getBool(_chatShowPeerAvatarKey) ?? false;
+    autoCheckinOnLaunch = prefs.getBool(_autoCheckinKey) ?? false;
+    feedHideExternalPosts = prefs.getBool(_feedHideExternalKey) ?? true;
   }
 
   Future<void> setSeedColor(Color color) async {
@@ -236,5 +247,17 @@ class SettingsStore {
     chatShowPeerAvatar = value;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_chatShowPeerAvatarKey, value);
+  }
+
+  Future<void> setAutoCheckinOnLaunch(bool value) async {
+    autoCheckinOnLaunch = value;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_autoCheckinKey, value);
+  }
+
+  Future<void> setFeedHideExternalPosts(bool value) async {
+    feedHideExternalPosts = value;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_feedHideExternalKey, value);
   }
 }

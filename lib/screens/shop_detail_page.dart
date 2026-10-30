@@ -6,6 +6,7 @@ import '../l10n/generated/app_localizations.dart';
 import '../models/shop_item.dart';
 import '../services/chenge_api.dart';
 import '../theme/app_theme.dart';
+import '../widgets/shop_type_label.dart';
 
 class ShopDetailPage extends StatefulWidget {
   const ShopDetailPage({
@@ -176,9 +177,40 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
                   Icons.star_outline_rounded,
                   AppLocalizations.of(context).ratingReviews(item.rating.toStringAsFixed(1), item.ratingCount),
                 ),
-                _stat(Icons.category_outlined, _typeLabel(context, item.type)),
+                _stat(Icons.category_outlined, shopTypeLabel(context, item.type)),
               ],
             ),
+            if (_typeHint(item.type) != null) ...[
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEAF2ED),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      _typeIcon(item.type),
+                      size: 18,
+                      color: const Color(0xFF3D6BAA),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        _typeHint(item.type)!,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          height: 1.45,
+                          color: Color(0xFF3F514B),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             if (item.sellerName != null) ...[
               const SizedBox(height: 14),
               Row(
@@ -397,6 +429,32 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
     );
   }
 
+  /// 后端新增类型的用途提示（购买后能拿到什么）。
+  String? _typeHint(String type) {
+    final l10n = AppLocalizations.of(context);
+    return switch (type) {
+      'music' || 'mp2' || 'liba2' => l10n.shopMusicHint,
+      '3d' => l10n.shop3dHint,
+      'animation' => l10n.shopAnimationHint,
+      'archive' => l10n.shopArchiveHint,
+      'apppack' => l10n.shopAppPackHint,
+      'skill' => l10n.shopSkillHint,
+      'nurture' || 'nurture_ticket' => l10n.shopNurtureHint,
+      _ => null,
+    };
+  }
+
+  IconData _typeIcon(String type) => switch (type) {
+    'music' || 'mp2' || 'liba2' => Icons.library_music_outlined,
+    '3d' => Icons.view_in_ar_outlined,
+    'animation' => Icons.animation_rounded,
+    'archive' => Icons.inventory_2_outlined,
+    'apppack' => Icons.android_rounded,
+    'skill' => Icons.auto_awesome_outlined,
+    'nurture' || 'nurture_ticket' => Icons.pets_outlined,
+    _ => Icons.info_outline_rounded,
+  };
+
   Widget _coinTag(String label) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
     decoration: BoxDecoration(
@@ -423,18 +481,4 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
       ),
     ],
   );
-
-  static String _typeLabel(BuildContext context, [String? type]) {
-    final l10n = AppLocalizations.of(context);
-    return switch (type) {
-      'emoji' => l10n.emojiPacks,
-      'file' => l10n.files,
-      'ui' => l10n.components,
-      'app' => l10n.applications,
-      'command' => l10n.executables,
-      'classes' => l10n.libraries,
-      'functions' => l10n.functionLibraries,
-      _ => type ?? l10n.product,
-    };
-  }
 }

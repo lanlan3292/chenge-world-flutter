@@ -50,6 +50,8 @@ class _SettingsPageState extends State<SettingsPage> {
   late int _shopMaxColumns;
   late bool _chatShowSelfAvatar;
   late bool _chatShowPeerAvatar;
+  late bool _autoCheckin;
+  late bool _feedHideExternal;
   late ThemeMode _themeMode;
   late String _localeCode;
   late String _appIcon;
@@ -73,6 +75,8 @@ class _SettingsPageState extends State<SettingsPage> {
     _shopMaxColumns = widget.settings.shopMaxColumns;
     _chatShowSelfAvatar = widget.settings.chatShowSelfAvatar;
     _chatShowPeerAvatar = widget.settings.chatShowPeerAvatar;
+    _autoCheckin = widget.settings.autoCheckinOnLaunch;
+    _feedHideExternal = widget.settings.feedHideExternalPosts;
     _appIcon = AppIconService.defaultIcon;
     _loadAppIcon();
   }
@@ -401,6 +405,23 @@ class _SettingsPageState extends State<SettingsPage> {
                   value: _chatShowPeerAvatar,
                   setValue: (value) => _chatShowPeerAvatar = value,
                   saveValue: widget.settings.setChatShowPeerAvatar,
+                ),
+                _sectionTitle(AppLocalizations.of(context).tasksSection),
+                _switchTile(
+                  icon: Icons.event_available_outlined,
+                  title: AppLocalizations.of(context).autoCheckin,
+                  subtitle: AppLocalizations.of(context).autoCheckinDescription,
+                  value: _autoCheckin,
+                  setValue: (value) => _autoCheckin = value,
+                  saveValue: widget.settings.setAutoCheckinOnLaunch,
+                ),
+                _switchTile(
+                  icon: Icons.filter_alt_outlined,
+                  title: AppLocalizations.of(context).hideExternalPosts,
+                  subtitle: AppLocalizations.of(context).hideExternalPostsDescription,
+                  value: _feedHideExternal,
+                  setValue: (value) => _feedHideExternal = value,
+                  saveValue: widget.settings.setFeedHideExternalPosts,
                 ),
                 _sectionTitle(AppLocalizations.of(context).systemGestures),
                 _switchTile(

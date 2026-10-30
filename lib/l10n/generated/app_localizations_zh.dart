@@ -1264,6 +1264,117 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get phone => 'Phone';
+
+  @override
+  String get hideExternalPosts => 'Hide external';
+
+  @override
+  String get hideExternalPostsDescription =>
+      'Hide posts synced from external RSS (on by default)';
+
+  @override
+  String get tasksSection => 'Tasks';
+
+  @override
+  String get autoCheckin => 'Auto check-in on launch';
+
+  @override
+  String get autoCheckinDescription =>
+      'Try the daily check-in each time the app starts (skipped if already done today)';
+
+  @override
+  String get groupNoChannels => 'This group has no channels yet';
+
+  @override
+  String get channelReadOnly => 'You cannot post in this channel';
+
+  @override
+  String get shopTypeAppPack => 'APP package';
+
+  @override
+  String get shopType3d => '3D model';
+
+  @override
+  String get shopTypeAnimation => 'Animation';
+
+  @override
+  String get shopTypeArchive => 'Archive';
+
+  @override
+  String get shopTypeMusic => 'Music';
+
+  @override
+  String get shopTypeMp2 => 'MP2 music';
+
+  @override
+  String get shopTypeLiba2 => 'LIBA2 music';
+
+  @override
+  String get shopTypeSkill => 'Skill';
+
+  @override
+  String get shopTypeNurture => 'Nurture item';
+
+  @override
+  String get shopTypeNurtureTicket => 'Nurture ticket';
+
+  @override
+  String get aiWebSearch => 'Web search';
+
+  @override
+  String get aiDrawing => 'Draw';
+
+  @override
+  String get aiDrawModel => 'Draw model';
+
+  @override
+  String get aiDrawNoModels => 'No drawing model available';
+
+  @override
+  String get aiDrawAspect => 'Aspect ratio';
+
+  @override
+  String get aiDrawQuality => 'Quality';
+
+  @override
+  String get aiFeedbackThanks => 'Thanks for your feedback';
+
+  @override
+  String get aiFeedbackHelpful => 'Helpful';
+
+  @override
+  String get aiFeedbackNotHelpful => 'Not helpful';
+
+  @override
+  String get aiImages => 'Image';
+
+  @override
+  String get shopMusicHint =>
+      'Audio resource. The file is downloadable after purchase (in-app playback is not supported yet).';
+
+  @override
+  String get shop3dHint =>
+      '3D model resource. The file is downloadable after purchase.';
+
+  @override
+  String get shopAnimationHint =>
+      'Animation resource. The file is downloadable after purchase.';
+
+  @override
+  String get shopArchiveHint =>
+      'Archived resource. The archive is downloadable after purchase.';
+
+  @override
+  String get shopAppPackHint =>
+      'APP package resource. The package is downloadable after purchase.';
+
+  @override
+  String get shopSkillHint =>
+      'Skill resource. After purchase it can be enabled in AI sessions.';
+
+  @override
+  String get shopNurtureHint =>
+      'Nurture item. After purchase it can be used in the nurture gameplay.';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -2523,6 +2634,108 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get phone => '手机号';
+
+  @override
+  String get hideExternalPosts => '站外过滤';
+
+  @override
+  String get hideExternalPostsDescription => '隐藏从站外 RSS 同步的帖子（默认开启）';
+
+  @override
+  String get tasksSection => '任务';
+
+  @override
+  String get autoCheckin => '启动时自动签到';
+
+  @override
+  String get autoCheckinDescription => '每次打开 APP 都会尝试签到；当天已签到会自动跳过';
+
+  @override
+  String get groupNoChannels => '该群还没有可用频道';
+
+  @override
+  String get channelReadOnly => '当前频道不可发言';
+
+  @override
+  String get shopTypeAppPack => 'APP 包';
+
+  @override
+  String get shopType3d => '3D 模型';
+
+  @override
+  String get shopTypeAnimation => '动画';
+
+  @override
+  String get shopTypeArchive => '归档';
+
+  @override
+  String get shopTypeMusic => '音乐';
+
+  @override
+  String get shopTypeMp2 => 'MP2 音乐';
+
+  @override
+  String get shopTypeLiba2 => 'LIBA2 音乐';
+
+  @override
+  String get shopTypeSkill => '技能';
+
+  @override
+  String get shopTypeNurture => '养成商品';
+
+  @override
+  String get shopTypeNurtureTicket => '养成门票';
+
+  @override
+  String get aiWebSearch => '联网搜索';
+
+  @override
+  String get aiDrawing => '画图';
+
+  @override
+  String get aiDrawModel => '画图模型';
+
+  @override
+  String get aiDrawNoModels => '没有可用的画图模型';
+
+  @override
+  String get aiDrawAspect => '画面比例';
+
+  @override
+  String get aiDrawQuality => '画质';
+
+  @override
+  String get aiFeedbackThanks => '感谢反馈';
+
+  @override
+  String get aiFeedbackHelpful => '有帮助';
+
+  @override
+  String get aiFeedbackNotHelpful => '没帮助';
+
+  @override
+  String get aiImages => '图片';
+
+  @override
+  String get shopMusicHint => '音频资源，购买后可下载文件（APP 内暂不支持在线播放）。';
+
+  @override
+  String get shop3dHint => '3D 模型资源，购买后可下载文件。';
+
+  @override
+  String get shopAnimationHint => '动画资源，购买后可下载文件。';
+
+  @override
+  String get shopArchiveHint => '归档资源，购买后可下载压缩包。';
+
+  @override
+  String get shopAppPackHint => 'APP 包资源，购买后可下载安装包。';
+
+  @override
+  String get shopSkillHint => '技能资源，购买后可在 AI 会话中启用。';
+
+  @override
+  String get shopNurtureHint => '养成商品，购买后可在养成玩法中使用。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6180,4 +6393,106 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get phone => '手機號';
+
+  @override
+  String get hideExternalPosts => '站外過濾';
+
+  @override
+  String get hideExternalPostsDescription => '隱藏從站外 RSS 同步的貼文（預設開啟）';
+
+  @override
+  String get tasksSection => '任務';
+
+  @override
+  String get autoCheckin => '啟動時自動簽到';
+
+  @override
+  String get autoCheckinDescription => '每次開啟 APP 都會嘗試簽到；當天已簽到會自動略過';
+
+  @override
+  String get groupNoChannels => '該群還沒有可用頻道';
+
+  @override
+  String get channelReadOnly => '目前頻道無法發言';
+
+  @override
+  String get shopTypeAppPack => 'APP 包';
+
+  @override
+  String get shopType3d => '3D 模型';
+
+  @override
+  String get shopTypeAnimation => '動畫';
+
+  @override
+  String get shopTypeArchive => '封存';
+
+  @override
+  String get shopTypeMusic => '音樂';
+
+  @override
+  String get shopTypeMp2 => 'MP2 音樂';
+
+  @override
+  String get shopTypeLiba2 => 'LIBA2 音樂';
+
+  @override
+  String get shopTypeSkill => '技能';
+
+  @override
+  String get shopTypeNurture => '養成商品';
+
+  @override
+  String get shopTypeNurtureTicket => '養成門票';
+
+  @override
+  String get aiWebSearch => '聯網搜尋';
+
+  @override
+  String get aiDrawing => '畫圖';
+
+  @override
+  String get aiDrawModel => '畫圖模型';
+
+  @override
+  String get aiDrawNoModels => '沒有可用的畫圖模型';
+
+  @override
+  String get aiDrawAspect => '畫面比例';
+
+  @override
+  String get aiDrawQuality => '畫質';
+
+  @override
+  String get aiFeedbackThanks => '感謝回饋';
+
+  @override
+  String get aiFeedbackHelpful => '有幫助';
+
+  @override
+  String get aiFeedbackNotHelpful => '沒幫助';
+
+  @override
+  String get aiImages => '圖片';
+
+  @override
+  String get shopMusicHint => '音訊資源，購買後可下載檔案（APP 內暫不支援線上播放）。';
+
+  @override
+  String get shop3dHint => '3D 模型資源，購買後可下載檔案。';
+
+  @override
+  String get shopAnimationHint => '動畫資源，購買後可下載檔案。';
+
+  @override
+  String get shopArchiveHint => '封存資源，購買後可下載壓縮檔。';
+
+  @override
+  String get shopAppPackHint => 'APP 包資源，購買後可下載安裝檔。';
+
+  @override
+  String get shopSkillHint => '技能資源，購買後可在 AI 會話中啟用。';
+
+  @override
+  String get shopNurtureHint => '養成商品，購買後可在養成玩法中使用。';
 }

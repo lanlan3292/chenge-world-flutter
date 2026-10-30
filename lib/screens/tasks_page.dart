@@ -70,7 +70,11 @@ class _TasksPageState extends State<TasksPage> {
     if (!_busyCodes.add(task.code)) return;
     setState(() {});
     try {
-      final reward = await widget.api.claimTask(task.code, token);
+      // 签到任务走 /task/checkin，普通任务才是 /task/claim。
+      final reward =
+          task.type == 'checkin'
+              ? await widget.api.checkin(token)
+              : await widget.api.claimTask(task.code, token);
       if (!mounted) return;
       final coins =
           reward['coins'] is num

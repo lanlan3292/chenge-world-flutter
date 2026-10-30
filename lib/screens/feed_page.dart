@@ -20,6 +20,8 @@ class FeedPage extends StatefulWidget {
     this.autoHideBottomBar = true,
     this.minColumns = 1,
     this.maxColumns = 3,
+    this.hideExternalPosts = true,
+    this.onHideExternalPostsChanged,
     this.onChromeVisibilityChanged,
     this.bottomBarHeight = 0,
     this.systemBottomInset = 0,
@@ -29,6 +31,12 @@ class FeedPage extends StatefulWidget {
   final String? token;
   final bool autoHideTopBar;
   final bool autoHideBottomBar;
+
+  /// 站外过滤：隐藏站外 RSS 同步的帖子（默认开）。
+  final bool hideExternalPosts;
+
+  /// 切换站外过滤（由上层持久化到设置）。
+  final ValueChanged<bool>? onHideExternalPostsChanged;
 
   /// Full height of the shell bottom bar (including its system inset).
   ///
@@ -78,6 +86,7 @@ class _FeedPageState extends State<FeedPage> {
   void didUpdateWidget(covariant FeedPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.token != widget.token) _loadPage(1);
+    if (oldWidget.hideExternalPosts != widget.hideExternalPosts) _loadPage(1);
     if (!widget.autoHideBottomBar && !_chromeVisible) {
       _setChromeVisible(true);
     }
@@ -180,6 +189,7 @@ void _onScroll() {
         page: page,
         sort: _sort,
         keyword: _searchController.text,
+        origin: widget.hideExternalPosts ? 0 : null,
         token: widget.token,
       );
       if (!mounted) return;
@@ -466,6 +476,25 @@ void _onScroll() {
         ],
       ),
       const SizedBox(height: 16),
+      Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          FilterChip(
+            avatar: Icon(
+              widget.hideExternalPosts
+                  ? Icons.filter_alt_rounded
+                  : Icons.filter_alt_off_rounded,
+              size: 18,
+            ),
+            label: Text(AppLocalizations.of(context).hideExternalPosts),
+            selected: widget.hideExternalPosts,
+            onSelected: (selected) =>
+                widget.onHideExternalPostsChanged?.call(selected),
+          ),
+        ],
+      ),
+      const SizedBox(height: 12),
       SegmentedButton<String>(
         showSelectedIcon: false,
         segments: [
