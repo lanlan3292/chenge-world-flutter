@@ -3378,6 +3378,12 @@ abstract class AppLocalizations {
   /// In en_US, this message translates to:
   /// **'Could not read the selected image.'**
   String get attachmentFailed;
+
+  /// No description provided for @docImages.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Document images'**
+  String get docImages;
 }
 
 class _AppLocalizationsDelegate

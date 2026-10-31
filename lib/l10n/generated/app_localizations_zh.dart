@@ -1752,6 +1752,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get attachmentFailed => 'Could not read the selected image.';
+
+  @override
+  String get docImages => 'Document images';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -3481,6 +3484,9 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get attachmentFailed => '无法读取所选图片。';
+
+  @override
+  String get docImages => '资料图片';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -7608,4 +7614,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get attachmentFailed => '無法讀取所選圖片。';
+
+  @override
+  String get docImages => '資料圖片';
 }

@@ -473,6 +473,8 @@ class _AppShellState extends State<AppShell> {
         onOpenTasks: _openTasks,
         settings: widget.settings,
         onSettingsChanged: widget.onSettingsChanged,
+        notificationBadge: _notificationBadge,
+        bottomBarHeight: shellBottomBarHeight,
       ),
     ];
 

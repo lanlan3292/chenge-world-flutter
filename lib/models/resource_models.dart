@@ -118,6 +118,36 @@ List<dynamic> _decodeJsonArray(String raw) {
     return const [];
   }
 }
+/// 资料附带的图片：来源图 + 解析文档时抠出的图片。
+///
+/// 后端 `GET /ai/knowledge/{docId}/images` 返回同一份列表，图片本身可能只存在
+/// 于 `url` 里（`file_id` 用来查单图文本）。
+class KnowledgeDocImage {
+  const KnowledgeDocImage({
+    this.fileId,
+    this.url = '',
+    this.caption = '',
+    this.description = '',
+  });
+
+  final int? fileId;
+  final String url;
+  final String caption;
+  final String description;
+
+  factory KnowledgeDocImage.fromJson(Map<String, dynamic> json) {
+    final rawId = json['file_id'] ?? json['image_id'] ?? json['id'];
+    return KnowledgeDocImage(
+      fileId: rawId is num
+          ? rawId.toInt()
+          : int.tryParse(rawId?.toString() ?? ''),
+      url: (json['url'] ?? json['src'] ?? '').toString().trim(),
+      caption: (json['caption'] ?? json['original_name'] ?? '').toString().trim(),
+      description: (json['description'] ?? '').toString().trim(),
+    );
+  }
+}
+
 /// 图库按天聚合。
 class GalleryDay {
   const GalleryDay({

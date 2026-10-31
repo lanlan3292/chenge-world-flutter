@@ -903,6 +903,24 @@ class ChengeApi {
     return utf8.decode(response.bodyBytes, allowMalformed: true);
   }
 
+  /// 资料附带的全部图片（来源图 + 解析文档时抠出的图）。
+  Future<List<KnowledgeDocImage>> knowledgeImages(
+    int docId, {
+    String? token,
+  }) async {
+    final data = await _request(
+      'GET',
+      '/ai/knowledge/$docId/images',
+      token: token,
+    );
+    if (data is! List) return const [];
+    return data
+        .whereType<Map<String, dynamic>>()
+        .map(KnowledgeDocImage.fromJson)
+        .where((image) => image.url.isNotEmpty)
+        .toList();
+  }
+
   /// 图库索引（公开、非统一信封）：`GET /file-module/files/gallery/index`。
   Future<GalleryIndex> galleryIndex({String? token}) async {
     final data = await _requestRaw('/file-module/files/gallery/index', token: token);

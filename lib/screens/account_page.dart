@@ -25,6 +25,7 @@ class AccountPage extends StatefulWidget {
     required this.settings,
     required this.onSettingsChanged,
     this.notificationBadge,
+    this.bottomBarHeight = 0,
   });
 
   final ChengeApi api;
@@ -38,6 +39,10 @@ class AccountPage extends StatefulWidget {
 
   /// 未读通知角标（登录后由 AppShell 维护）。
   final NotificationBadge? notificationBadge;
+
+  /// The shell paints its bottom bar over the page (`extendBody`), so the page
+  /// has to reserve that height itself or its last card hides behind the bar.
+  final double bottomBarHeight;
 
   @override
   State<AccountPage> createState() => _AccountPageState();
@@ -308,7 +313,12 @@ class _AccountPageState extends State<AccountPage> {
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 620),
           child: ListView(
-            padding: const EdgeInsets.all(22),
+            padding: EdgeInsets.fromLTRB(
+              22,
+              22,
+              22,
+              22 + widget.bottomBarHeight,
+            ),
             children: [
               Container(
                 padding: const EdgeInsets.all(22),

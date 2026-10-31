@@ -1778,6 +1778,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get attachmentFailed => 'Could not read the selected image.';
+
+  @override
+  String get docImages => 'Document images';
 }
 
 /// The translations for English, as used in the United States (`en_US`).
@@ -3554,4 +3557,7 @@ class AppLocalizationsEnUs extends AppLocalizationsEn {
 
   @override
   String get attachmentFailed => 'Could not read the selected image.';
+
+  @override
+  String get docImages => 'Document images';
 }

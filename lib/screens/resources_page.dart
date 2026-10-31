@@ -363,6 +363,7 @@ class _DocPreviewPageState extends State<_DocPreviewPage> {
   String _content = '';
   String _error = '';
   bool _loading = true;
+  List<KnowledgeDocImage> _images = const [];
 
   @override
   void initState() {
@@ -388,12 +389,136 @@ class _DocPreviewPageState extends State<_DocPreviewPage> {
     } finally {
       if (mounted) setState(() => _loading = false);
     }
+    await _loadImages();
+  }
+
+  /// 文档可能只是一段标题，真正的画面在「资料图片」里（后端把来源图、
+  /// 解析时抠出的图都挂在 `/ai/knowledge/{docId}/images`）。
+  Future<void> _loadImages() async {
+    try {
+      final images = await widget.api.knowledgeImages(
+        widget.doc.docId,
+        token: widget.token,
+      );
+      if (!mounted || images.isEmpty) return;
+      setState(() => _images = images);
+    } on ApiException {
+      // 图片只是锦上添花，失败时静默保持纯文本预览。
+    }
+  }
+
+  void _openImage(int index) {
+    showDialog<void>(
+      context: context,
+      builder:
+          (_) => _ImageViewerDialog(
+            images:
+                _images
+                    .map((image) => widget.api.resolveMediaUrl(image.url))
+                    .toList(),
+            initialIndex: index,
+          ),
+    );
+  }
+
+  Widget _imagesSection(AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(18, 8, 18, 28),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.photo_library_outlined, size: 18),
+              const SizedBox(width: 8),
+              Text(
+                l10n.docImages,
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                l10n.galleryDayCount(_images.length),
+                style: const TextStyle(fontSize: 12, color: Color(0xFF7B8C86)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              const gap = 8.0;
+              final columns = constraints.maxWidth >= 520 ? 4 : 3;
+              final itemWidth =
+                  (constraints.maxWidth - gap * (columns - 1)) / columns;
+              return Wrap(
+                spacing: gap,
+                runSpacing: gap,
+                children: [
+                  for (var i = 0; i < _images.length; i++)
+                    GestureDetector(
+                      onTap: () => _openImage(i),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: SizedBox(
+                          width: itemWidth,
+                          height: itemWidth,
+                          child: CachedNetworkImage(
+                            imageUrl: widget.api.resolveMediaUrl(_images[i].url),
+                            fit: BoxFit.cover,
+                            placeholder:
+                                (_, __) => const ColoredBox(
+                                  color: Color(0xFFEAF2ED),
+                                  child: Center(
+                                    child: SizedBox(
+                                      width: 18,
+                                      height: 18,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            errorWidget:
+                                (_, __, ___) => const ColoredBox(
+                                  color: Color(0xFFEAF2ED),
+                                  child: Center(
+                                    child: Icon(
+                                      Icons.broken_image_outlined,
+                                      size: 20,
+                                      color: Color(0xFF9AA8A3),
+                                    ),
+                                  ),
+                                ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+          if (_images.any((image) => image.caption.isNotEmpty)) ...[
+            const SizedBox(height: 10),
+            Text(
+              _images
+                  .map((image) => image.caption)
+                  .where((caption) => caption.isNotEmpty)
+                  .join(' · '),
+              style: const TextStyle(fontSize: 12, color: Color(0xFF7B8C86)),
+            ),
+          ],
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final type = widget.doc.fileType.toLowerCase();
+    final isMarkdown = type == 'md' || type == 'markdown';
+    final isImage =
+        widget.doc.category == 'image' ||
+        const ['png', 'jpg', 'jpeg', 'webp', 'gif', 'bmp'].contains(type);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -430,16 +555,95 @@ class _DocPreviewPageState extends State<_DocPreviewPage> {
                 ),
               ),
             )
-          : type == 'md' || type == 'markdown'
-          ? Markdown(
-              data: _content,
-              padding: const EdgeInsets.fromLTRB(18, 12, 18, 32),
+          : isImage && _images.isEmpty && widget.doc.fileUrl.isNotEmpty
+          ? Center(
+              child: GestureDetector(
+                onTap: () => showDialog<void>(
+                  context: context,
+                  builder:
+                      (_) => _ImageViewerDialog(
+                        images: [widget.api.resolveMediaUrl(widget.doc.fileUrl)],
+                        initialIndex: 0,
+                      ),
+                ),
+                child: CachedNetworkImage(
+                  imageUrl: widget.api.resolveMediaUrl(
+                    widget.doc.thumbnail ?? widget.doc.fileUrl,
+                  ),
+                  fit: BoxFit.contain,
+                ),
+              ),
             )
           : SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(18, 14, 18, 32),
-              child: SelectableText(
-                _content,
-                style: const TextStyle(fontSize: 14, height: 1.55),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (_content.trim().isNotEmpty)
+                    isMarkdown
+                        ? MarkdownBody(
+                            data: _content,
+                            selectable: true,
+                            styleSheet: MarkdownStyleSheet.fromTheme(
+                              Theme.of(context),
+                            ).copyWith(
+                              p: const TextStyle(fontSize: 15, height: 1.7),
+                            ),
+                            sizedImageBuilder: (config) {
+                              final url = widget.api.resolveMediaUrl(
+                                config.uri.toString(),
+                              );
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 6),
+                                child: GestureDetector(
+                                  onTap: () => showDialog<void>(
+                                    context: context,
+                                    builder:
+                                        (_) => _ImageViewerDialog(
+                                          images: [url],
+                                          initialIndex: 0,
+                                        ),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: CachedNetworkImage(
+                                      imageUrl: url,
+                                      fit: BoxFit.contain,
+                                      errorWidget:
+                                          (_, __, ___) => const SizedBox(
+                                            height: 40,
+                                            child: Center(
+                                              child: Text(
+                                                '图片加载失败',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Color(0xFF9AA8A3),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          )
+                        : Padding(
+                            padding: const EdgeInsets.fromLTRB(18, 14, 18, 20),
+                            child: SelectableText(
+                              _content,
+                              style: const TextStyle(fontSize: 14, height: 1.55),
+                            ),
+                          ),
+                  if (_images.isNotEmpty) _imagesSection(l10n),
+                  if (_content.trim().isEmpty && _images.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Text(
+                        l10n.docPreviewUnavailable,
+                        style: const TextStyle(color: Color(0xFF7B8C86)),
+                      ),
+                    ),
+                ],
               ),
             ),
     );

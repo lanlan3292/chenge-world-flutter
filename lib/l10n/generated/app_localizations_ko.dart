@@ -1753,6 +1753,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get attachmentFailed => 'Could not read the selected image.';
+
+  @override
+  String get docImages => 'Document images';
 }
 
 /// The translations for Korean, as used in Republic of Korea (`ko_KR`).
@@ -3427,4 +3430,7 @@ class AppLocalizationsKoKr extends AppLocalizationsKo {
 
   @override
   String get attachmentFailed => '선택한 이미지를 읽을 수 없습니다.';
+
+  @override
+  String get docImages => '자료 이미지';
 }

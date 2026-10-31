@@ -819,5 +819,6 @@
   "aiPendingReject": "拒绝",
   "aiPendingSubmitted": "已提交",
   "addAttachment": "添加图片",
-  "attachmentFailed": "无法读取所选图片。"
+  "attachmentFailed": "无法读取所选图片。",
+  "docImages": "资料图片"
 }

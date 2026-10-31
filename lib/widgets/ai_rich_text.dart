@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
 import 'ai_chart_view.dart';
+import 'ai_data_fence.dart';
 import 'ai_history_archive.dart';
 
-/// 把 AI 消息里的 ```chart / ```history 围栏渲染成卡片，其余交给 Markdown。
+/// 把 AI 消息里的 ```chart / ```history / ```timeline / ```table / ```tree
+/// 围栏渲染成卡片，其余交给 Markdown。
 class AiRichText extends StatelessWidget {
   const AiRichText({
     super.key,
@@ -34,6 +36,8 @@ class AiRichText extends StatelessWidget {
         segments.add(AiChartCard(source: body));
       } else if (language == 'history') {
         segments.add(AiHistoryCard(source: body));
+      } else if (language == 'timeline' || language == 'table' || language == 'tree') {
+        segments.add(AiDataFenceCard(type: language, source: body));
       } else {
         segments.add(_codeBlock(body, language));
       }

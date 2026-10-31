@@ -799,5 +799,6 @@
   "aiPendingReject": "거절",
   "aiPendingSubmitted": "제출됨",
   "addAttachment": "사진 추가",
-  "attachmentFailed": "선택한 이미지를 읽을 수 없습니다."
+  "attachmentFailed": "선택한 이미지를 읽을 수 없습니다.",
+  "docImages": "자료 이미지"
 }

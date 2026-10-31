@@ -750,5 +750,6 @@
   "aiPendingReject": "拒絕",
   "aiPendingSubmitted": "已提交",
   "addAttachment": "新增圖片",
-  "attachmentFailed": "無法讀取所選圖片。"
+  "attachmentFailed": "無法讀取所選圖片。",
+  "docImages": "資料圖片"
 }

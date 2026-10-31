@@ -1755,6 +1755,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get attachmentFailed => 'Could not read the selected image.';
+
+  @override
+  String get docImages => 'Document images';
 }
 
 /// The translations for Japanese, as used in Japan (`ja_JP`).
@@ -3431,4 +3434,7 @@ class AppLocalizationsJaJp extends AppLocalizationsJa {
 
   @override
   String get attachmentFailed => '選択した画像を読み込めません。';
+
+  @override
+  String get docImages => '資料の画像';
 }

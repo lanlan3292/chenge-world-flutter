@@ -819,5 +819,6 @@
   "aiPendingReject": "Reject",
   "aiPendingSubmitted": "Submitted",
   "addAttachment": "Add photo",
-  "attachmentFailed": "Could not read the selected image."
+  "attachmentFailed": "Could not read the selected image.",
+  "docImages": "Document images"
 }
