@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
 import '../models/ai_session.dart';
+import '../models/app_notification.dart';
 import '../models/blog_post.dart';
 import '../models/blog_category.dart';
 import '../models/blog_tag.dart';
@@ -13,7 +14,10 @@ import '../models/blog_comment.dart';
 import '../models/chat_conversation.dart';
 import '../models/chat_message.dart';
 import '../models/friend_user.dart';
+import '../models/ai_skill.dart';
+import '../models/resource_models.dart';
 import '../models/shop_item.dart';
+import '../models/system_guide.dart';
 import '../models/task_item.dart';
 
 class ApiException implements Exception {
@@ -555,6 +559,29 @@ class ChengeApi {
     return data;
   }
 
+  /// 群邀请详情（通知深链 `group_invite`）。
+  Future<Map<String, dynamic>> groupInviteRequest(int requestId, String token) async {
+    final data = await _request('GET', '/chat/groups/requests/$requestId', token: token);
+    if (data is! Map<String, dynamic>) throw const ApiException('群邀请格式不正确');
+    return data;
+  }
+
+  /// 回应群邀请：`accept=true` 后才会加入，返回的 `id` 即会话 id。
+  Future<Map<String, dynamic>> respondGroupInvite(
+    int requestId,
+    bool accept,
+    String token,
+  ) async {
+    final data = await _request(
+      'POST',
+      '/chat/groups/requests/$requestId/respond',
+      body: {'accept': accept},
+      token: token,
+    );
+    if (data is! Map<String, dynamic>) return const {};
+    return data;
+  }
+
   Future<List<ChatMessage>> chatMessages(
     int conversationId,
     String token, {
@@ -786,6 +813,198 @@ class ChengeApi {
     return data;
   }
 
+  // ——— 站内通知 / 公告 ———
+
+  /// `GET /home/notify/list?limit=`：列表与未读数一次返回。
+  Future<AppNotificationFeed> notifications(String token, {int limit = 60}) async {
+    final data = await _request(
+      'GET',
+      '/home/notify/list',
+      query: {'limit': '$limit'},
+      token: token,
+    );
+    if (data is! Map<String, dynamic>) throw const ApiException('通知列表格式不正确');
+    return AppNotificationFeed.fromJson(data);
+  }
+
+  /// `GET /home/notify/unread`：仅取未读数（角标轮询）。
+  Future<int> notificationUnread(String token) async {
+    final data = await _request('GET', '/home/notify/unread', token: token);
+    if (data is! Map<String, dynamic>) return 0;
+    return data['unread'] is num ? (data['unread'] as num).toInt() : 0;
+  }
+
+  Future<void> markNotificationRead(int id, String token) =>
+      _request('POST', '/home/notify/$id/read', token: token);
+
+  Future<void> markAllNotificationsRead(String token) =>
+      _request('POST', '/home/notify/read-all', token: token);
+
+  Future<void> clearNotifications(String token) =>
+      _request('DELETE', '/home/notify', token: token);
+
+  /// `GET /home/announcements`：已发布且未过期的公告。
+  Future<List<Announcement>> announcements(String token) async {
+    final data = await _request('GET', '/home/announcements', token: token);
+    if (data is! List) return const [];
+    return data
+        .whereType<Map<String, dynamic>>()
+        .map(Announcement.fromJson)
+        .toList();
+  }
+
+  /// `POST /home/announcements/{id}/read`，需带上当前公告版本。
+  Future<void> markAnnouncementRead(int id, int version, String token) =>
+      _request(
+        'POST',
+        '/home/announcements/$id/read',
+        body: {'version': version},
+        token: token,
+      );
+
+  // ——— 资料库 / 图库 / 经验库 ———
+
+  /// 资料库：`GET /ai/knowledge/list`（返回扁平数组，无分页）。
+  Future<List<KnowledgeDoc>> knowledgeDocs({
+    String collection = 'chengeworld',
+    String q = '',
+    String? token,
+  }) async {
+    final data = await _request(
+      'GET',
+      '/ai/knowledge/list',
+      query: {
+        'collection': collection,
+        if (q.trim().isNotEmpty) 'q': q.trim(),
+      },
+      token: token,
+    );
+    if (data is! List) return const [];
+    return data
+        .whereType<Map<String, dynamic>>()
+        .map(KnowledgeDoc.fromJson)
+        .toList();
+  }
+
+  /// 资料预览：md/txt 等文本类型直接读正文（二进制资料由调用方按 URL 处理）。
+  Future<String> filePreviewText(int fileId, {String? token}) async {
+    final uri = Uri.parse('$_baseUrl/file-module/files/$fileId/preview');
+    final response = await _client.get(uri, headers: {
+      'Accept': 'text/plain',
+      'Cache-Control': 'no-cache',
+      if (token != null) 'Authorization': 'Bearer $token',
+    }).timeout(_timeout);
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw ApiException(
+        '资料读取失败 (${response.statusCode})',
+        statusCode: response.statusCode,
+      );
+    }
+    return utf8.decode(response.bodyBytes, allowMalformed: true);
+  }
+
+  /// 图库索引（公开、非统一信封）：`GET /file-module/files/gallery/index`。
+  Future<GalleryIndex> galleryIndex({String? token}) async {
+    final data = await _requestRaw('/file-module/files/gallery/index', token: token);
+    if (data is! Map<String, dynamic>) throw const ApiException('图库索引格式不正确');
+    return GalleryIndex.fromJson(data);
+  }
+
+  /// 单日图库（公开、非统一信封）：`GET /file-module/files/gallery/days/{YYYYMMDD}`。
+  Future<GalleryDay> galleryDay(String day, {String? token}) async {
+    final data = await _requestRaw(
+      '/file-module/files/gallery/days/${Uri.encodeComponent(day)}',
+      token: token,
+    );
+    if (data is! Map<String, dynamic>) throw const ApiException('图库内容格式不正确');
+    return GalleryDay.fromJson(data);
+  }
+
+  /// 经验库：`GET /ai/experience/library?polarity=&keyword=&page=`（20 条/页）。
+  Future<ExperiencePage> experienceLibrary({
+    int polarity = 1,
+    String keyword = '',
+    int page = 1,
+    String? token,
+  }) async {
+    final data = await _request(
+      'GET',
+      '/ai/experience/library',
+      query: {
+        'polarity': '$polarity',
+        if (keyword.trim().isNotEmpty) 'keyword': keyword.trim(),
+        'page': '$page',
+      },
+      token: token,
+    );
+    if (data is! Map<String, dynamic>) throw const ApiException('经验库格式不正确');
+    return ExperiencePage.fromJson(data);
+  }
+
+  /// 非统一信封（裸 JSON）的 GET，图库公开接口使用。
+  Future<dynamic> _requestRaw(String path, {Map<String, String>? query, String? token}) async {
+    final uri = Uri.parse('$_baseUrl$path').replace(queryParameters: query);
+    final response = await _client.get(uri, headers: {
+      'Accept': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    }).timeout(_timeout);
+    if (response.statusCode == 401) {
+      throw const ApiException('未授权或 Token 无效', statusCode: 401, businessCode: 401);
+    }
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw ApiException('请求失败 (${response.statusCode})', statusCode: response.statusCode);
+    }
+    final text = utf8.decode(response.bodyBytes, allowMalformed: true);
+    try {
+      return jsonDecode(text);
+    } on FormatException {
+      throw const ApiException('响应格式不正确');
+    }
+  }
+
+  // ——— 帮助中心（系统教程）———
+
+  /// 教程列表：`GET /ai/system-guides?q=&module=`。
+  Future<List<SystemGuideSummary>> systemGuides({
+    String q = '',
+    String module = '',
+    String? token,
+  }) async {
+    final query = <String, String>{
+      if (q.trim().isNotEmpty) 'q': q.trim(),
+      if (module.trim().isNotEmpty) 'module': module.trim(),
+    };
+    final data = await _request(
+      'GET',
+      '/ai/system-guides',
+      query: query.isEmpty ? null : query,
+      token: token,
+    );
+    if (data is! Map<String, dynamic>) throw const ApiException('教程列表格式不正确');
+    final records = data['records'];
+    if (records is! List) return const [];
+    return records
+        .whereType<Map<String, dynamic>>()
+        .map(SystemGuideSummary.fromJson)
+        .toList();
+  }
+
+  /// 教程详情：`GET /ai/system-guides/{key}?revision=`。
+  Future<SystemGuide> systemGuide(
+    String guideKey, {
+    int? revision,
+    String? token,
+  }) async {
+    final data = await _request(
+      'GET',
+      '/ai/system-guides/${Uri.encodeComponent(guideKey)}',
+      query: revision == null ? null : {'revision': '$revision'},
+      token: token,
+    );
+    if (data is! Map<String, dynamic>) throw const ApiException('教程内容格式不正确');
+    return SystemGuide.fromJson(data);
+  }
+
   // ——— AI Agent / chatSession ———
 
   Future<List<AiSession>> aiSessions(String token) async {
@@ -963,6 +1182,84 @@ class ChengeApi {
       },
       token: token,
     );
+  }
+
+  /// 会话可用技能：`GET /ai/skills?session_id=`。
+  Future<List<AiSkill>> aiSkills(String sessionId, String token) async {
+    final data = await _request(
+      'GET',
+      '/ai/skills',
+      query: {'session_id': sessionId},
+      token: token,
+    );
+    if (data is! List) return const [];
+    return data.whereType<Map<String, dynamic>>().map(AiSkill.fromJson).toList();
+  }
+
+  /// 开启/关闭技能：`POST /ai/skills/pref`。
+  Future<void> setAiSkill({
+    required String token,
+    required String sessionId,
+    required String key,
+    required bool enabled,
+  }) async {
+    await _request(
+      'POST',
+      '/ai/skills/pref',
+      body: {'session_id': sessionId, 'key': key, 'enabled': enabled},
+      token: token,
+    );
+  }
+
+  /// 回答任务清单/提问：`POST /ai/agent/interaction`。
+  Future<void> submitAiInteraction({
+    required String token,
+    required String sessionId,
+    required String interactionId,
+    required bool approve,
+    List<Map<String, dynamic>> answers = const [],
+  }) async {
+    await _request(
+      'POST',
+      '/ai/agent/interaction',
+      body: {
+        'session_id': sessionId,
+        'id': interactionId,
+        'action': approve ? 'approve' : 'reject',
+        if (answers.isNotEmpty) 'answers': answers,
+      },
+      token: token,
+    );
+  }
+
+  /// 拉取待确认写操作：`POST /ai/agent/pending`。
+  Future<List<AiPendingOp>> aiPendingOps(String sessionId, String token) async {
+    final data = await _request(
+      'POST',
+      '/ai/agent/pending',
+      body: {'session_id': sessionId},
+      token: token,
+    );
+    if (data is! Map || data['ops'] is! List) return const [];
+    return (data['ops'] as List)
+        .whereType<Map<String, dynamic>>()
+        .map(AiPendingOp.fromJson)
+        .toList();
+  }
+
+  /// 确认/拒绝待执行操作：`POST /ai/agent/pending/confirm`。
+  Future<Map<String, dynamic>> confirmAiPending({
+    required String token,
+    required String sessionId,
+    required bool approve,
+  }) async {
+    final data = await _request(
+      'POST',
+      '/ai/agent/pending/confirm',
+      body: {'session_id': sessionId, 'action': approve ? 'approve' : 'reject'},
+      token: token,
+    );
+    return data is Map<String, dynamic> ? data : const {};
   }
 
   Future<List<Map<String, dynamic>>> _mapList(String path, String token) async {

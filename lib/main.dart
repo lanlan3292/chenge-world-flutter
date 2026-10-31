@@ -7,6 +7,7 @@ import 'screens/feed_page.dart';
 import 'screens/shop_page.dart';
 import 'screens/social_page.dart';
 import 'screens/tasks_page.dart';
+import 'services/notification_badge.dart';
 import 'services/chenge_api.dart';
 import 'services/settings_store.dart';
 import 'theme/app_theme.dart';
@@ -210,6 +211,9 @@ class AppShell extends StatefulWidget {
 class _AppShellState extends State<AppShell> {
   final _api = ChengeApi();
   final _sessionStore = const SessionStore();
+
+  /// 全站未读通知角标（跨页面共享，登录后每 60 秒刷新）。
+  late final NotificationBadge _notificationBadge = NotificationBadge(_api);
   int _selectedIndex = 0;
   String? _token;
   String? _username;
@@ -231,6 +235,7 @@ class _AppShellState extends State<AppShell> {
   @override
   void dispose() {
     _chromeVisible.dispose();
+    _notificationBadge.dispose();
     super.dispose();
   }
 
@@ -262,6 +267,7 @@ class _AppShellState extends State<AppShell> {
       _userId = userId;
       _restoring = false;
     });
+    _notificationBadge.bind(_api, _token);
     _maybeAutoCheckin();
   }
 
@@ -300,6 +306,7 @@ class _AppShellState extends State<AppShell> {
         _username = null;
         _userId = null;
       });
+      _notificationBadge.bind(_api, null);
       return;
     }
 
@@ -312,6 +319,7 @@ class _AppShellState extends State<AppShell> {
       _userId =
           user is Map && user['id'] is num ? (user['id'] as num).toInt() : null;
     });
+    _notificationBadge.bind(_api, _token);
     _maybeAutoCheckin();
   }
 
@@ -332,6 +340,7 @@ class _AppShellState extends State<AppShell> {
       _username = null;
       _userId = null;
     });
+    _notificationBadge.bind(_api, null);
   }
 
   void _openTaskLink(String link) {
@@ -419,6 +428,7 @@ class _AppShellState extends State<AppShell> {
         minColumns: widget.settings.feedMinColumns,
         maxColumns: widget.settings.feedMaxColumns,
         hideExternalPosts: widget.settings.feedHideExternalPosts,
+        notificationBadge: _notificationBadge,
         onHideExternalPostsChanged: (value) async {
           await widget.settings.setFeedHideExternalPosts(value);
           await widget.onSettingsChanged();

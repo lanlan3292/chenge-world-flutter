@@ -1396,6 +1396,362 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get sendImage => 'Send image';
+
+  @override
+  String get helpCenter => 'Help Center';
+
+  @override
+  String get helpSubtitle =>
+      'Find official tutorials, step-by-step guides and troubleshooting by module.';
+
+  @override
+  String get searchGuides => 'Search tutorials';
+
+  @override
+  String get allModules => 'All modules';
+
+  @override
+  String get noGuides => 'No tutorials match your search.';
+
+  @override
+  String get clear => 'Clear';
+
+  @override
+  String guideRevision(Object revision) {
+    return 'revision $revision';
+  }
+
+  @override
+  String get guideUnavailable =>
+      'This tutorial is unavailable or has been taken offline.';
+
+  @override
+  String guideActionUnavailable(Object action) {
+    return '$action is not supported in the app yet.';
+  }
+
+  @override
+  String get officialGuide => 'Official tutorial';
+
+  @override
+  String get guideAppliesTo => 'Applies to';
+
+  @override
+  String get guideBeforeStart => 'Before you start';
+
+  @override
+  String get guideSteps => 'Steps';
+
+  @override
+  String get guideTroubleshooting => 'Troubleshooting';
+
+  @override
+  String get guideRelated => 'Related tutorials';
+
+  @override
+  String guideStableLink(Object key, Object revision) {
+    return 'Stable link: /help/$key?revision=$revision';
+  }
+
+  @override
+  String get guideCheck => 'Check';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get announcements => 'Announcements';
+
+  @override
+  String get notificationsEmpty => 'No notifications yet.';
+
+  @override
+  String get markAllRead => 'Mark all read';
+
+  @override
+  String get clearNotifications => 'Clear';
+
+  @override
+  String get clearNotificationsConfirm => 'Clear all notifications?';
+
+  @override
+  String notificationCount(Object count) {
+    return '$count notifications';
+  }
+
+  @override
+  String get noAnnouncements => 'No announcements yet.';
+
+  @override
+  String get markAnnouncementRead => 'Mark as read';
+
+  @override
+  String get gotIt => 'Got it';
+
+  @override
+  String announcementCount(Object count) {
+    return '$count announcements';
+  }
+
+  @override
+  String get notificationsTabMessages => 'Messages';
+
+  @override
+  String get notificationsTabAnnouncements => 'Announcements';
+
+  @override
+  String get notifyFriendRequest => 'Friend request';
+
+  @override
+  String get notifyFriendAccept => 'Friend accepted';
+
+  @override
+  String get notifyMessage => 'New message';
+
+  @override
+  String get notifyLike => 'Like';
+
+  @override
+  String get notifyComment => 'Comment';
+
+  @override
+  String get notifyMention => 'Mention';
+
+  @override
+  String get notifyFollow => 'Follow';
+
+  @override
+  String get notifyShare => 'Share';
+
+  @override
+  String get notifyGroupInvite => 'Group invite';
+
+  @override
+  String get notifySystem => 'System';
+
+  @override
+  String get notifyDraw => 'AI drawing';
+
+  @override
+  String get notifyBill => 'Balance';
+
+  @override
+  String get systemAnnouncement => 'System announcement';
+
+  @override
+  String groupInvitePrompt(Object group) {
+    return 'Invitation to join \"$group\". You will join only after accepting.';
+  }
+
+  @override
+  String get conversationUnavailable =>
+      'This conversation is no longer available.';
+
+  @override
+  String get decline => 'Decline';
+
+  @override
+  String get accept => 'Accept';
+
+  @override
+  String get resources => 'Resources';
+
+  @override
+  String get resourcesDescription =>
+      'Document library, gallery and experience base';
+
+  @override
+  String get notificationsDescription =>
+      'In-app notifications and announcements';
+
+  @override
+  String get resourceLibrary => 'Library';
+
+  @override
+  String get gallery => 'Gallery';
+
+  @override
+  String get experience => 'Experience';
+
+  @override
+  String get experiencePositive => 'Positive';
+
+  @override
+  String get experienceNegative => 'Negative';
+
+  @override
+  String get resourceSearch => 'Search file name';
+
+  @override
+  String get resourceLibraryEmpty => 'The shelf is empty.';
+
+  @override
+  String get resourceLoginRequired => 'Sign in to open the library.';
+
+  @override
+  String get resourceTypeAll => 'All';
+
+  @override
+  String get resourceTypeDoc => 'Document';
+
+  @override
+  String get resourceTypeMd => 'Markdown';
+
+  @override
+  String get resourceTypeWord => 'Word';
+
+  @override
+  String get resourceTypePpt => 'PPT';
+
+  @override
+  String get resourceTypePdf => 'PDF';
+
+  @override
+  String get resourceTypeSheet => 'Sheet';
+
+  @override
+  String get resourceTypeImage => 'Image';
+
+  @override
+  String get galleryEmpty => 'No photos in the gallery yet.';
+
+  @override
+  String galleryDayCount(Object count) {
+    return '$count photos';
+  }
+
+  @override
+  String get experienceSearch => 'Search problems or experience';
+
+  @override
+  String get experienceEmpty => 'No approved experience yet.';
+
+  @override
+  String get experienceLoginRequired => 'Sign in to view the experience base.';
+
+  @override
+  String experienceTotal(Object count) {
+    return '$count entries';
+  }
+
+  @override
+  String get sceneNormal => 'Chat';
+
+  @override
+  String get sceneNurture => 'Nurture';
+
+  @override
+  String get sceneGlobal => 'General';
+
+  @override
+  String get skillLabel => 'Skill';
+
+  @override
+  String get openOriginal => 'Open original';
+
+  @override
+  String get docPreviewUnavailable =>
+      'Preview is not available for this file; open the original instead.';
+
+  @override
+  String get aiModeChat => 'Chat';
+
+  @override
+  String get aiModeHistorian => 'Historian';
+
+  @override
+  String get aiHistorianWorking => 'Researching and organizing…';
+
+  @override
+  String get aiHistorianHint =>
+      'Historian mode: compare records, verify events, order the timeline.';
+
+  @override
+  String get aiHistorianPlaceholder =>
+      'Enter a person, event or era to research…';
+
+  @override
+  String get aiArchivePreview => 'Content ready, adding entity covers…';
+
+  @override
+  String get aiArchiveSaving => 'Covers filled, saving…';
+
+  @override
+  String get aiSkillsTitle => 'Skills';
+
+  @override
+  String get aiSkillsEmpty => 'No skills available.';
+
+  @override
+  String get aiSkillPurchased => 'Purchased';
+
+  @override
+  String get aiTasksTitle => 'Task list';
+
+  @override
+  String get aiTasksEmpty => 'No tasks in this conversation.';
+
+  @override
+  String aiTasksFooter(Object count) {
+    return '$count task(s) this batch · collapsing is not consent';
+  }
+
+  @override
+  String get aiTasksCancel => 'Cancel tasks';
+
+  @override
+  String get aiTasksConfirm => 'Confirm';
+
+  @override
+  String get aiTasksReady => 'AI is waiting for your answer';
+
+  @override
+  String get aiTaskPending => 'Pending';
+
+  @override
+  String get aiTaskRunning => 'Running';
+
+  @override
+  String get aiTaskDone => 'Done';
+
+  @override
+  String get aiTaskFailed => 'Failed';
+
+  @override
+  String get aiTaskCancelled => 'Cancelled';
+
+  @override
+  String get aiTaskApproved => 'Handled';
+
+  @override
+  String get aiQuestionMultiHint =>
+      'Choose one or more, or write your own idea';
+
+  @override
+  String get aiQuestionSingleHint => 'Pick an answer, or write your own idea';
+
+  @override
+  String get aiQuestionCustomHint => 'Say it your way';
+
+  @override
+  String aiPendingTitle(Object count) {
+    return 'Operations awaiting confirmation ($count)';
+  }
+
+  @override
+  String get aiPendingApprove => 'Confirm';
+
+  @override
+  String get aiPendingReject => 'Reject';
+
+  @override
+  String get aiPendingSubmitted => 'Submitted';
+
+  @override
+  String get addAttachment => 'Add photo';
+
+  @override
+  String get attachmentFailed => 'Could not read the selected image.';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -2778,6 +3134,353 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get sendImage => '发送图片';
+
+  @override
+  String get helpCenter => '帮助中心';
+
+  @override
+  String get helpSubtitle => '按模块查找官方教程、操作步骤与问题排查。';
+
+  @override
+  String get searchGuides => '搜索教程';
+
+  @override
+  String get allModules => '全部模块';
+
+  @override
+  String get noGuides => '没有找到匹配的教程。';
+
+  @override
+  String get clear => '清除';
+
+  @override
+  String guideRevision(Object revision) {
+    return '修订 $revision';
+  }
+
+  @override
+  String get guideUnavailable => '教程不可用、已下线或当前身份不可见。';
+
+  @override
+  String guideActionUnavailable(Object action) {
+    return 'App 暂未支持“$action”操作。';
+  }
+
+  @override
+  String get officialGuide => '官方系统教程';
+
+  @override
+  String get guideAppliesTo => '适用';
+
+  @override
+  String get guideBeforeStart => '开始之前';
+
+  @override
+  String get guideSteps => '操作步骤';
+
+  @override
+  String get guideTroubleshooting => '遇到问题？';
+
+  @override
+  String get guideRelated => '相关教程';
+
+  @override
+  String guideStableLink(Object key, Object revision) {
+    return '稳定链接：/help/$key?revision=$revision';
+  }
+
+  @override
+  String get guideCheck => '检查';
+
+  @override
+  String get notifications => '消息通知';
+
+  @override
+  String get announcements => '公告';
+
+  @override
+  String get notificationsEmpty => '暂时没有通知';
+
+  @override
+  String get markAllRead => '全部已读';
+
+  @override
+  String get clearNotifications => '清空';
+
+  @override
+  String get clearNotificationsConfirm => '清空全部通知？';
+
+  @override
+  String notificationCount(Object count) {
+    return '$count 条通知';
+  }
+
+  @override
+  String get noAnnouncements => '暂无公告';
+
+  @override
+  String get markAnnouncementRead => '标记为已读';
+
+  @override
+  String get gotIt => '知道了';
+
+  @override
+  String announcementCount(Object count) {
+    return '$count 条公告';
+  }
+
+  @override
+  String get notificationsTabMessages => '消息通知';
+
+  @override
+  String get notificationsTabAnnouncements => '公告';
+
+  @override
+  String get notifyFriendRequest => '好友申请';
+
+  @override
+  String get notifyFriendAccept => '好友通过';
+
+  @override
+  String get notifyMessage => '新消息';
+
+  @override
+  String get notifyLike => '点赞';
+
+  @override
+  String get notifyComment => '评论';
+
+  @override
+  String get notifyMention => '提及';
+
+  @override
+  String get notifyFollow => '关注';
+
+  @override
+  String get notifyShare => '分享';
+
+  @override
+  String get notifyGroupInvite => '群邀请';
+
+  @override
+  String get notifySystem => '系统';
+
+  @override
+  String get notifyDraw => '绘图';
+
+  @override
+  String get notifyBill => '账单';
+
+  @override
+  String get systemAnnouncement => '系统公告';
+
+  @override
+  String groupInvitePrompt(Object group) {
+    return '邀请你加入「$group」，确认后才会加入。';
+  }
+
+  @override
+  String get conversationUnavailable => '会话不存在或已失效。';
+
+  @override
+  String get decline => '拒绝';
+
+  @override
+  String get accept => '接受';
+
+  @override
+  String get resources => '资料';
+
+  @override
+  String get resourcesDescription => '资料库、图库与经验库';
+
+  @override
+  String get notificationsDescription => '查看站内通知与系统公告';
+
+  @override
+  String get resourceLibrary => '资料库';
+
+  @override
+  String get gallery => '图库';
+
+  @override
+  String get experience => '经验库';
+
+  @override
+  String get experiencePositive => '正面经验';
+
+  @override
+  String get experienceNegative => '负面经验';
+
+  @override
+  String get resourceSearch => '搜索文件名';
+
+  @override
+  String get resourceLibraryEmpty => '书架还是空的。';
+
+  @override
+  String get resourceLoginRequired => '资料库需要登录';
+
+  @override
+  String get resourceTypeAll => '全部';
+
+  @override
+  String get resourceTypeDoc => '文档';
+
+  @override
+  String get resourceTypeMd => 'Markdown';
+
+  @override
+  String get resourceTypeWord => 'Word';
+
+  @override
+  String get resourceTypePpt => 'PPT';
+
+  @override
+  String get resourceTypePdf => 'PDF';
+
+  @override
+  String get resourceTypeSheet => '表格';
+
+  @override
+  String get resourceTypeImage => '图片';
+
+  @override
+  String get galleryEmpty => '图库中还没有照片。';
+
+  @override
+  String galleryDayCount(Object count) {
+    return '$count 张';
+  }
+
+  @override
+  String get experienceSearch => '搜索适用问题或经验内容';
+
+  @override
+  String get experienceEmpty => '暂无已生效的经验。';
+
+  @override
+  String get experienceLoginRequired => '登录后可查看经验库。';
+
+  @override
+  String experienceTotal(Object count) {
+    return '共 $count 条';
+  }
+
+  @override
+  String get sceneNormal => '普通对话';
+
+  @override
+  String get sceneNurture => '养成';
+
+  @override
+  String get sceneGlobal => '通用';
+
+  @override
+  String get skillLabel => '技能';
+
+  @override
+  String get openOriginal => '查看原图';
+
+  @override
+  String get docPreviewUnavailable => '该资料暂不支持预览，可打开原文件。';
+
+  @override
+  String get aiModeChat => '聊天';
+
+  @override
+  String get aiModeHistorian => '史官';
+
+  @override
+  String get aiHistorianWorking => '正在查证与整理…';
+
+  @override
+  String get aiHistorianHint => '史官模式：对照记载、考证事件、编排年代。';
+
+  @override
+  String get aiHistorianPlaceholder => '输入人物、事件或年代，开始考证…';
+
+  @override
+  String get aiArchivePreview => '正文已就绪，正在补充实体封面…';
+
+  @override
+  String get aiArchiveSaving => '封面已补齐，正在保存…';
+
+  @override
+  String get aiSkillsTitle => '技能';
+
+  @override
+  String get aiSkillsEmpty => '暂无可用技能。';
+
+  @override
+  String get aiSkillPurchased => '已购';
+
+  @override
+  String get aiTasksTitle => '任务清单';
+
+  @override
+  String get aiTasksEmpty => '当前对话暂无任务。';
+
+  @override
+  String aiTasksFooter(Object count) {
+    return '本批共 $count 项任务 · 收起不代表同意';
+  }
+
+  @override
+  String get aiTasksCancel => '取消任务';
+
+  @override
+  String get aiTasksConfirm => '确认执行';
+
+  @override
+  String get aiTasksReady => 'AI 需要你的回答';
+
+  @override
+  String get aiTaskPending => '待确认';
+
+  @override
+  String get aiTaskRunning => '执行中';
+
+  @override
+  String get aiTaskDone => '已完成';
+
+  @override
+  String get aiTaskFailed => '失败';
+
+  @override
+  String get aiTaskCancelled => '已取消';
+
+  @override
+  String get aiTaskApproved => '已处理';
+
+  @override
+  String get aiQuestionMultiHint => '可选择多个，也可以补充自己的想法';
+
+  @override
+  String get aiQuestionSingleHint => '选择一个答案，或写下自己的想法';
+
+  @override
+  String get aiQuestionCustomHint => '用你的方式表达';
+
+  @override
+  String aiPendingTitle(Object count) {
+    return '待确认的操作（$count）';
+  }
+
+  @override
+  String get aiPendingApprove => '确认执行';
+
+  @override
+  String get aiPendingReject => '拒绝';
+
+  @override
+  String get aiPendingSubmitted => '已提交';
+
+  @override
+  String get addAttachment => '添加图片';
+
+  @override
+  String get attachmentFailed => '无法读取所选图片。';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6558,4 +7261,351 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get sendImage => '傳送圖片';
+
+  @override
+  String get helpCenter => '幫助中心';
+
+  @override
+  String get helpSubtitle => '依模組尋找官方教學、操作步驟與問題排查。';
+
+  @override
+  String get searchGuides => '搜尋教學';
+
+  @override
+  String get allModules => '全部模組';
+
+  @override
+  String get noGuides => '沒有找到符合的教學。';
+
+  @override
+  String get clear => '清除';
+
+  @override
+  String guideRevision(Object revision) {
+    return '修訂 $revision';
+  }
+
+  @override
+  String get guideUnavailable => '教學無法使用、已下線或目前身分不可見。';
+
+  @override
+  String guideActionUnavailable(Object action) {
+    return 'App 尚未支援「$action」操作。';
+  }
+
+  @override
+  String get officialGuide => '官方系統教學';
+
+  @override
+  String get guideAppliesTo => '適用';
+
+  @override
+  String get guideBeforeStart => '開始之前';
+
+  @override
+  String get guideSteps => '操作步驟';
+
+  @override
+  String get guideTroubleshooting => '遇到問題？';
+
+  @override
+  String get guideRelated => '相關教學';
+
+  @override
+  String guideStableLink(Object key, Object revision) {
+    return '固定連結：/help/$key?revision=$revision';
+  }
+
+  @override
+  String get guideCheck => '檢查';
+
+  @override
+  String get notifications => '訊息通知';
+
+  @override
+  String get announcements => '公告';
+
+  @override
+  String get notificationsEmpty => '目前沒有通知';
+
+  @override
+  String get markAllRead => '全部已讀';
+
+  @override
+  String get clearNotifications => '清空';
+
+  @override
+  String get clearNotificationsConfirm => '清空全部通知？';
+
+  @override
+  String notificationCount(Object count) {
+    return '$count 則通知';
+  }
+
+  @override
+  String get noAnnouncements => '暫無公告';
+
+  @override
+  String get markAnnouncementRead => '標記為已讀';
+
+  @override
+  String get gotIt => '知道了';
+
+  @override
+  String announcementCount(Object count) {
+    return '$count 則公告';
+  }
+
+  @override
+  String get notificationsTabMessages => '訊息通知';
+
+  @override
+  String get notificationsTabAnnouncements => '公告';
+
+  @override
+  String get notifyFriendRequest => '好友邀請';
+
+  @override
+  String get notifyFriendAccept => '好友通過';
+
+  @override
+  String get notifyMessage => '新訊息';
+
+  @override
+  String get notifyLike => '按讚';
+
+  @override
+  String get notifyComment => '留言';
+
+  @override
+  String get notifyMention => '提及';
+
+  @override
+  String get notifyFollow => '追蹤';
+
+  @override
+  String get notifyShare => '分享';
+
+  @override
+  String get notifyGroupInvite => '群組邀請';
+
+  @override
+  String get notifySystem => '系統';
+
+  @override
+  String get notifyDraw => '繪圖';
+
+  @override
+  String get notifyBill => '帳務';
+
+  @override
+  String get systemAnnouncement => '系統公告';
+
+  @override
+  String groupInvitePrompt(Object group) {
+    return '邀請你加入「$group」，確認後才會加入。';
+  }
+
+  @override
+  String get conversationUnavailable => '會話不存在或已失效。';
+
+  @override
+  String get decline => '拒絕';
+
+  @override
+  String get accept => '接受';
+
+  @override
+  String get resources => '資料';
+
+  @override
+  String get resourcesDescription => '資料庫、圖庫與經驗庫';
+
+  @override
+  String get notificationsDescription => '查看站內通知與系統公告';
+
+  @override
+  String get resourceLibrary => '資料庫';
+
+  @override
+  String get gallery => '圖庫';
+
+  @override
+  String get experience => '經驗庫';
+
+  @override
+  String get experiencePositive => '正面經驗';
+
+  @override
+  String get experienceNegative => '負面經驗';
+
+  @override
+  String get resourceSearch => '搜尋檔案名稱';
+
+  @override
+  String get resourceLibraryEmpty => '書架還是空的。';
+
+  @override
+  String get resourceLoginRequired => '資料庫需要登入';
+
+  @override
+  String get resourceTypeAll => '全部';
+
+  @override
+  String get resourceTypeDoc => '文件';
+
+  @override
+  String get resourceTypeMd => 'Markdown';
+
+  @override
+  String get resourceTypeWord => 'Word';
+
+  @override
+  String get resourceTypePpt => 'PPT';
+
+  @override
+  String get resourceTypePdf => 'PDF';
+
+  @override
+  String get resourceTypeSheet => '試算表';
+
+  @override
+  String get resourceTypeImage => '圖片';
+
+  @override
+  String get galleryEmpty => '圖庫中還沒有照片。';
+
+  @override
+  String galleryDayCount(Object count) {
+    return '$count 張';
+  }
+
+  @override
+  String get experienceSearch => '搜尋適用問題或經驗內容';
+
+  @override
+  String get experienceEmpty => '暫無已生效的經驗。';
+
+  @override
+  String get experienceLoginRequired => '登入後可查看經驗庫。';
+
+  @override
+  String experienceTotal(Object count) {
+    return '共 $count 條';
+  }
+
+  @override
+  String get sceneNormal => '一般對話';
+
+  @override
+  String get sceneNurture => '養成';
+
+  @override
+  String get sceneGlobal => '通用';
+
+  @override
+  String get skillLabel => '技能';
+
+  @override
+  String get openOriginal => '查看原圖';
+
+  @override
+  String get docPreviewUnavailable => '此資料暫不支援預覽，可開啟原始檔案。';
+
+  @override
+  String get aiModeChat => '聊天';
+
+  @override
+  String get aiModeHistorian => '史官';
+
+  @override
+  String get aiHistorianWorking => '正在查證與整理…';
+
+  @override
+  String get aiHistorianHint => '史官模式：對照記載、考證事件、編排年代。';
+
+  @override
+  String get aiHistorianPlaceholder => '輸入人物、事件或年代，開始考證…';
+
+  @override
+  String get aiArchivePreview => '正文已就緒，正在補充實體封面…';
+
+  @override
+  String get aiArchiveSaving => '封面已補齊，正在儲存…';
+
+  @override
+  String get aiSkillsTitle => '技能';
+
+  @override
+  String get aiSkillsEmpty => '暫無可用技能。';
+
+  @override
+  String get aiSkillPurchased => '已購';
+
+  @override
+  String get aiTasksTitle => '任務清單';
+
+  @override
+  String get aiTasksEmpty => '目前對話暫無任務。';
+
+  @override
+  String aiTasksFooter(Object count) {
+    return '本批共 $count 項任務 · 收起不代表同意';
+  }
+
+  @override
+  String get aiTasksCancel => '取消任務';
+
+  @override
+  String get aiTasksConfirm => '確認執行';
+
+  @override
+  String get aiTasksReady => 'AI 需要你的回答';
+
+  @override
+  String get aiTaskPending => '待確認';
+
+  @override
+  String get aiTaskRunning => '執行中';
+
+  @override
+  String get aiTaskDone => '已完成';
+
+  @override
+  String get aiTaskFailed => '失敗';
+
+  @override
+  String get aiTaskCancelled => '已取消';
+
+  @override
+  String get aiTaskApproved => '已處理';
+
+  @override
+  String get aiQuestionMultiHint => '可選擇多個，也可以補充自己的想法';
+
+  @override
+  String get aiQuestionSingleHint => '選擇一個答案，或寫下自己的想法';
+
+  @override
+  String get aiQuestionCustomHint => '用你的方式表達';
+
+  @override
+  String aiPendingTitle(Object count) {
+    return '待確認的操作（$count）';
+  }
+
+  @override
+  String get aiPendingApprove => '確認執行';
+
+  @override
+  String get aiPendingReject => '拒絕';
+
+  @override
+  String get aiPendingSubmitted => '已提交';
+
+  @override
+  String get addAttachment => '新增圖片';
+
+  @override
+  String get attachmentFailed => '無法讀取所選圖片。';
 }

@@ -30,6 +30,7 @@ class ChatThreadPage extends StatefulWidget {
     this.peerOnline,
     this.showSelfAvatar = false,
     this.showPeerAvatar = false,
+    this.initialChannelId,
   });
 
   final ChengeApi api;
@@ -46,6 +47,9 @@ class ChatThreadPage extends StatefulWidget {
 
   /// 是否在私聊中显示对方头像（设置项，默认关）；群聊始终显示成员头像
   final bool showPeerAvatar;
+
+  /// 从通知等入口直接定位到某个群频道。
+  final int? initialChannelId;
 
   @override
   State<ChatThreadPage> createState() => _ChatThreadPageState();
@@ -108,11 +112,22 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       if (!mounted) return;
       final channels = ChatChannel.listFromOverview(overview);
       ChatChannel? selected;
+      final preferredId = widget.initialChannelId;
+      if (preferredId != null) {
+        for (final channel in channels) {
+          if (channel.id == preferredId) {
+            selected = channel;
+            break;
+          }
+        }
+      }
       // 优先可发言的普通频道，其次第一个可见频道。
-      for (final channel in channels) {
-        if (!channel.isAnnouncement && channel.canSend) {
-          selected = channel;
-          break;
+      if (selected == null) {
+        for (final channel in channels) {
+          if (!channel.isAnnouncement && channel.canSend) {
+            selected = channel;
+            break;
+          }
         }
       }
       selected ??= channels.isNotEmpty ? channels.first : null;

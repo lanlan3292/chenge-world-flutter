@@ -4,7 +4,10 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../models/blog_post.dart';
 import '../services/chenge_api.dart';
+import '../theme/app_theme.dart';
+import '../services/notification_badge.dart';
 import '../widgets/post_card.dart';
+import 'notifications_page.dart';
 import 'post_detail_page.dart';
 import 'create_post_page.dart';
 
@@ -25,10 +28,14 @@ class FeedPage extends StatefulWidget {
     this.onChromeVisibilityChanged,
     this.bottomBarHeight = 0,
     this.systemBottomInset = 0,
+    this.notificationBadge,
   });
 
   final ChengeApi api;
   final String? token;
+
+  /// 未读通知角标（登录后由 AppShell 维护）。
+  final NotificationBadge? notificationBadge;
   final bool autoHideTopBar;
   final bool autoHideBottomBar;
 
@@ -352,6 +359,7 @@ void _onScroll() {
                     ],
                   ),
                   actions: [
+                    if (widget.token != null) _notificationButton(),
                     IconButton(
                       tooltip: AppLocalizations.of(context).refreshPosts,
                       onPressed: _loading ? null : () => _loadPage(1),
@@ -412,6 +420,50 @@ void _onScroll() {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _notificationButton() {
+    final badge = widget.notificationBadge;
+    final icon = Icon(Icons.notifications_none_rounded);
+    if (badge == null) {
+      return IconButton(
+        tooltip: AppLocalizations.of(context).notifications,
+        onPressed: _openNotifications,
+        icon: icon,
+      );
+    }
+    return ListenableBuilder(
+      listenable: badge,
+      builder: (context, _) {
+        final count = badge.unread;
+        return IconButton(
+          tooltip: AppLocalizations.of(context).notifications,
+          onPressed: _openNotifications,
+          icon: count == 0
+              ? icon
+              : Badge(
+                  label: Text(count > 99 ? '99+' : '$count'),
+                  backgroundColor: AppTheme.coral,
+                  child: icon,
+                ),
+        );
+      },
+    );
+  }
+
+  Future<void> _openNotifications() async {
+    final token = widget.token;
+    if (token == null) return;
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder:
+            (_) => NotificationsPage(
+              api: widget.api,
+              token: token,
+              badge: widget.notificationBadge,
+            ),
       ),
     );
   }

@@ -2724,6 +2724,660 @@ abstract class AppLocalizations {
   /// In en_US, this message translates to:
   /// **'Send image'**
   String get sendImage;
+
+  /// No description provided for @helpCenter.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Help Center'**
+  String get helpCenter;
+
+  /// No description provided for @helpSubtitle.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Find official tutorials, step-by-step guides and troubleshooting by module.'**
+  String get helpSubtitle;
+
+  /// No description provided for @searchGuides.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Search tutorials'**
+  String get searchGuides;
+
+  /// No description provided for @allModules.
+  ///
+  /// In en_US, this message translates to:
+  /// **'All modules'**
+  String get allModules;
+
+  /// No description provided for @noGuides.
+  ///
+  /// In en_US, this message translates to:
+  /// **'No tutorials match your search.'**
+  String get noGuides;
+
+  /// No description provided for @clear.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Clear'**
+  String get clear;
+
+  /// No description provided for @guideRevision.
+  ///
+  /// In en_US, this message translates to:
+  /// **'revision {revision}'**
+  String guideRevision(Object revision);
+
+  /// No description provided for @guideUnavailable.
+  ///
+  /// In en_US, this message translates to:
+  /// **'This tutorial is unavailable or has been taken offline.'**
+  String get guideUnavailable;
+
+  /// No description provided for @guideActionUnavailable.
+  ///
+  /// In en_US, this message translates to:
+  /// **'{action} is not supported in the app yet.'**
+  String guideActionUnavailable(Object action);
+
+  /// No description provided for @officialGuide.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Official tutorial'**
+  String get officialGuide;
+
+  /// No description provided for @guideAppliesTo.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Applies to'**
+  String get guideAppliesTo;
+
+  /// No description provided for @guideBeforeStart.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Before you start'**
+  String get guideBeforeStart;
+
+  /// No description provided for @guideSteps.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Steps'**
+  String get guideSteps;
+
+  /// No description provided for @guideTroubleshooting.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Troubleshooting'**
+  String get guideTroubleshooting;
+
+  /// No description provided for @guideRelated.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Related tutorials'**
+  String get guideRelated;
+
+  /// No description provided for @guideStableLink.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Stable link: /help/{key}?revision={revision}'**
+  String guideStableLink(Object key, Object revision);
+
+  /// No description provided for @guideCheck.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Check'**
+  String get guideCheck;
+
+  /// No description provided for @notifications.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @announcements.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Announcements'**
+  String get announcements;
+
+  /// No description provided for @notificationsEmpty.
+  ///
+  /// In en_US, this message translates to:
+  /// **'No notifications yet.'**
+  String get notificationsEmpty;
+
+  /// No description provided for @markAllRead.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Mark all read'**
+  String get markAllRead;
+
+  /// No description provided for @clearNotifications.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Clear'**
+  String get clearNotifications;
+
+  /// No description provided for @clearNotificationsConfirm.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Clear all notifications?'**
+  String get clearNotificationsConfirm;
+
+  /// No description provided for @notificationCount.
+  ///
+  /// In en_US, this message translates to:
+  /// **'{count} notifications'**
+  String notificationCount(Object count);
+
+  /// No description provided for @noAnnouncements.
+  ///
+  /// In en_US, this message translates to:
+  /// **'No announcements yet.'**
+  String get noAnnouncements;
+
+  /// No description provided for @markAnnouncementRead.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Mark as read'**
+  String get markAnnouncementRead;
+
+  /// No description provided for @gotIt.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Got it'**
+  String get gotIt;
+
+  /// No description provided for @announcementCount.
+  ///
+  /// In en_US, this message translates to:
+  /// **'{count} announcements'**
+  String announcementCount(Object count);
+
+  /// No description provided for @notificationsTabMessages.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Messages'**
+  String get notificationsTabMessages;
+
+  /// No description provided for @notificationsTabAnnouncements.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Announcements'**
+  String get notificationsTabAnnouncements;
+
+  /// No description provided for @notifyFriendRequest.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Friend request'**
+  String get notifyFriendRequest;
+
+  /// No description provided for @notifyFriendAccept.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Friend accepted'**
+  String get notifyFriendAccept;
+
+  /// No description provided for @notifyMessage.
+  ///
+  /// In en_US, this message translates to:
+  /// **'New message'**
+  String get notifyMessage;
+
+  /// No description provided for @notifyLike.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Like'**
+  String get notifyLike;
+
+  /// No description provided for @notifyComment.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Comment'**
+  String get notifyComment;
+
+  /// No description provided for @notifyMention.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Mention'**
+  String get notifyMention;
+
+  /// No description provided for @notifyFollow.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Follow'**
+  String get notifyFollow;
+
+  /// No description provided for @notifyShare.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Share'**
+  String get notifyShare;
+
+  /// No description provided for @notifyGroupInvite.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Group invite'**
+  String get notifyGroupInvite;
+
+  /// No description provided for @notifySystem.
+  ///
+  /// In en_US, this message translates to:
+  /// **'System'**
+  String get notifySystem;
+
+  /// No description provided for @notifyDraw.
+  ///
+  /// In en_US, this message translates to:
+  /// **'AI drawing'**
+  String get notifyDraw;
+
+  /// No description provided for @notifyBill.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Balance'**
+  String get notifyBill;
+
+  /// No description provided for @systemAnnouncement.
+  ///
+  /// In en_US, this message translates to:
+  /// **'System announcement'**
+  String get systemAnnouncement;
+
+  /// No description provided for @groupInvitePrompt.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Invitation to join \"{group}\". You will join only after accepting.'**
+  String groupInvitePrompt(Object group);
+
+  /// No description provided for @conversationUnavailable.
+  ///
+  /// In en_US, this message translates to:
+  /// **'This conversation is no longer available.'**
+  String get conversationUnavailable;
+
+  /// No description provided for @decline.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Decline'**
+  String get decline;
+
+  /// No description provided for @accept.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Accept'**
+  String get accept;
+
+  /// No description provided for @resources.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Resources'**
+  String get resources;
+
+  /// No description provided for @resourcesDescription.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Document library, gallery and experience base'**
+  String get resourcesDescription;
+
+  /// No description provided for @notificationsDescription.
+  ///
+  /// In en_US, this message translates to:
+  /// **'In-app notifications and announcements'**
+  String get notificationsDescription;
+
+  /// No description provided for @resourceLibrary.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Library'**
+  String get resourceLibrary;
+
+  /// No description provided for @gallery.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Gallery'**
+  String get gallery;
+
+  /// No description provided for @experience.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Experience'**
+  String get experience;
+
+  /// No description provided for @experiencePositive.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Positive'**
+  String get experiencePositive;
+
+  /// No description provided for @experienceNegative.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Negative'**
+  String get experienceNegative;
+
+  /// No description provided for @resourceSearch.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Search file name'**
+  String get resourceSearch;
+
+  /// No description provided for @resourceLibraryEmpty.
+  ///
+  /// In en_US, this message translates to:
+  /// **'The shelf is empty.'**
+  String get resourceLibraryEmpty;
+
+  /// No description provided for @resourceLoginRequired.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Sign in to open the library.'**
+  String get resourceLoginRequired;
+
+  /// No description provided for @resourceTypeAll.
+  ///
+  /// In en_US, this message translates to:
+  /// **'All'**
+  String get resourceTypeAll;
+
+  /// No description provided for @resourceTypeDoc.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Document'**
+  String get resourceTypeDoc;
+
+  /// No description provided for @resourceTypeMd.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Markdown'**
+  String get resourceTypeMd;
+
+  /// No description provided for @resourceTypeWord.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Word'**
+  String get resourceTypeWord;
+
+  /// No description provided for @resourceTypePpt.
+  ///
+  /// In en_US, this message translates to:
+  /// **'PPT'**
+  String get resourceTypePpt;
+
+  /// No description provided for @resourceTypePdf.
+  ///
+  /// In en_US, this message translates to:
+  /// **'PDF'**
+  String get resourceTypePdf;
+
+  /// No description provided for @resourceTypeSheet.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Sheet'**
+  String get resourceTypeSheet;
+
+  /// No description provided for @resourceTypeImage.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Image'**
+  String get resourceTypeImage;
+
+  /// No description provided for @galleryEmpty.
+  ///
+  /// In en_US, this message translates to:
+  /// **'No photos in the gallery yet.'**
+  String get galleryEmpty;
+
+  /// No description provided for @galleryDayCount.
+  ///
+  /// In en_US, this message translates to:
+  /// **'{count} photos'**
+  String galleryDayCount(Object count);
+
+  /// No description provided for @experienceSearch.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Search problems or experience'**
+  String get experienceSearch;
+
+  /// No description provided for @experienceEmpty.
+  ///
+  /// In en_US, this message translates to:
+  /// **'No approved experience yet.'**
+  String get experienceEmpty;
+
+  /// No description provided for @experienceLoginRequired.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Sign in to view the experience base.'**
+  String get experienceLoginRequired;
+
+  /// No description provided for @experienceTotal.
+  ///
+  /// In en_US, this message translates to:
+  /// **'{count} entries'**
+  String experienceTotal(Object count);
+
+  /// No description provided for @sceneNormal.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Chat'**
+  String get sceneNormal;
+
+  /// No description provided for @sceneNurture.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Nurture'**
+  String get sceneNurture;
+
+  /// No description provided for @sceneGlobal.
+  ///
+  /// In en_US, this message translates to:
+  /// **'General'**
+  String get sceneGlobal;
+
+  /// No description provided for @skillLabel.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Skill'**
+  String get skillLabel;
+
+  /// No description provided for @openOriginal.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Open original'**
+  String get openOriginal;
+
+  /// No description provided for @docPreviewUnavailable.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Preview is not available for this file; open the original instead.'**
+  String get docPreviewUnavailable;
+
+  /// No description provided for @aiModeChat.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Chat'**
+  String get aiModeChat;
+
+  /// No description provided for @aiModeHistorian.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Historian'**
+  String get aiModeHistorian;
+
+  /// No description provided for @aiHistorianWorking.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Researching and organizing…'**
+  String get aiHistorianWorking;
+
+  /// No description provided for @aiHistorianHint.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Historian mode: compare records, verify events, order the timeline.'**
+  String get aiHistorianHint;
+
+  /// No description provided for @aiHistorianPlaceholder.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Enter a person, event or era to research…'**
+  String get aiHistorianPlaceholder;
+
+  /// No description provided for @aiArchivePreview.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Content ready, adding entity covers…'**
+  String get aiArchivePreview;
+
+  /// No description provided for @aiArchiveSaving.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Covers filled, saving…'**
+  String get aiArchiveSaving;
+
+  /// No description provided for @aiSkillsTitle.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Skills'**
+  String get aiSkillsTitle;
+
+  /// No description provided for @aiSkillsEmpty.
+  ///
+  /// In en_US, this message translates to:
+  /// **'No skills available.'**
+  String get aiSkillsEmpty;
+
+  /// No description provided for @aiSkillPurchased.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Purchased'**
+  String get aiSkillPurchased;
+
+  /// No description provided for @aiTasksTitle.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Task list'**
+  String get aiTasksTitle;
+
+  /// No description provided for @aiTasksEmpty.
+  ///
+  /// In en_US, this message translates to:
+  /// **'No tasks in this conversation.'**
+  String get aiTasksEmpty;
+
+  /// No description provided for @aiTasksFooter.
+  ///
+  /// In en_US, this message translates to:
+  /// **'{count} task(s) this batch · collapsing is not consent'**
+  String aiTasksFooter(Object count);
+
+  /// No description provided for @aiTasksCancel.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Cancel tasks'**
+  String get aiTasksCancel;
+
+  /// No description provided for @aiTasksConfirm.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Confirm'**
+  String get aiTasksConfirm;
+
+  /// No description provided for @aiTasksReady.
+  ///
+  /// In en_US, this message translates to:
+  /// **'AI is waiting for your answer'**
+  String get aiTasksReady;
+
+  /// No description provided for @aiTaskPending.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Pending'**
+  String get aiTaskPending;
+
+  /// No description provided for @aiTaskRunning.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Running'**
+  String get aiTaskRunning;
+
+  /// No description provided for @aiTaskDone.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Done'**
+  String get aiTaskDone;
+
+  /// No description provided for @aiTaskFailed.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Failed'**
+  String get aiTaskFailed;
+
+  /// No description provided for @aiTaskCancelled.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Cancelled'**
+  String get aiTaskCancelled;
+
+  /// No description provided for @aiTaskApproved.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Handled'**
+  String get aiTaskApproved;
+
+  /// No description provided for @aiQuestionMultiHint.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Choose one or more, or write your own idea'**
+  String get aiQuestionMultiHint;
+
+  /// No description provided for @aiQuestionSingleHint.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Pick an answer, or write your own idea'**
+  String get aiQuestionSingleHint;
+
+  /// No description provided for @aiQuestionCustomHint.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Say it your way'**
+  String get aiQuestionCustomHint;
+
+  /// No description provided for @aiPendingTitle.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Operations awaiting confirmation ({count})'**
+  String aiPendingTitle(Object count);
+
+  /// No description provided for @aiPendingApprove.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Confirm'**
+  String get aiPendingApprove;
+
+  /// No description provided for @aiPendingReject.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Reject'**
+  String get aiPendingReject;
+
+  /// No description provided for @aiPendingSubmitted.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Submitted'**
+  String get aiPendingSubmitted;
+
+  /// No description provided for @addAttachment.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Add photo'**
+  String get addAttachment;
+
+  /// No description provided for @attachmentFailed.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Could not read the selected image.'**
+  String get attachmentFailed;
 }
 
 class _AppLocalizationsDelegate
