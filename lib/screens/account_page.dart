@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../services/chenge_api.dart';
+import '../services/notification_badge.dart';
 import '../services/settings_store.dart';
 import 'chenge_core_page.dart';
+import 'help_page.dart';
+import 'notifications_page.dart';
+import 'resources_page.dart';
 import 'settings_page.dart';
 import '../theme/app_theme.dart';
 import 'edit_profile_page.dart';
@@ -20,6 +24,8 @@ class AccountPage extends StatefulWidget {
     required this.onOpenTasks,
     required this.settings,
     required this.onSettingsChanged,
+    this.notificationBadge,
+    this.bottomBarHeight = 0,
   });
 
   final ChengeApi api;
@@ -30,6 +36,13 @@ class AccountPage extends StatefulWidget {
   final VoidCallback onOpenTasks;
   final SettingsStore settings;
   final Future<void> Function() onSettingsChanged;
+
+  /// 未读通知角标（登录后由 AppShell 维护）。
+  final NotificationBadge? notificationBadge;
+
+  /// The shell paints its bottom bar over the page (`extendBody`), so the page
+  /// has to reserve that height itself or its last card hides behind the bar.
+  final double bottomBarHeight;
 
   @override
   State<AccountPage> createState() => _AccountPageState();
@@ -136,6 +149,102 @@ class _AccountPageState extends State<AccountPage> {
     );
   }
 
+  Widget _actionTile({
+    required IconData icon,
+    required Color containerColor,
+    required Color iconColor,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+    Widget? trailing,
+  }) => Material(
+    color: Theme.of(context).colorScheme.surfaceContainerLow,
+    borderRadius: BorderRadius.circular(8),
+    child: ListTile(
+      onTap: onTap,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 3),
+      leading: Container(
+        width: 42,
+        height: 42,
+        decoration: BoxDecoration(
+          color: containerColor,
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Icon(icon, color: iconColor),
+      ),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
+      subtitle: Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis),
+      trailing: trailing ?? const Icon(Icons.chevron_right_rounded),
+    ),
+  );
+
+  Widget _notificationTrailing() {
+    final badge = widget.notificationBadge;
+    if (badge == null) return const Icon(Icons.chevron_right_rounded);
+    return ListenableBuilder(
+      listenable: badge,
+      builder: (context, _) {
+        final count = badge.unread;
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (count > 0)
+              Badge(
+                label: Text(count > 99 ? '99+' : '$count'),
+                backgroundColor: AppTheme.coral,
+              ),
+            const SizedBox(width: 4),
+            const Icon(Icons.chevron_right_rounded),
+          ],
+        );
+      },
+    );
+  }
+
+  void _openResources(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder:
+            (_) => ResourcesPage(
+              api: widget.api,
+              token: widget.token,
+              onLoginRequested: () => _showLogin(context),
+            ),
+      ),
+    );
+  }
+
+  void _openHelp(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder:
+            (_) => HelpPage(
+              api: widget.api,
+              token: widget.token,
+              onLoginRequested: () => _showLogin(context),
+            ),
+      ),
+    );
+  }
+
+  void _openNotifications(BuildContext context) {
+    final token = widget.token;
+    if (token == null) {
+      _showLogin(context);
+      return;
+    }
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder:
+            (_) => NotificationsPage(
+              api: widget.api,
+              token: token,
+              badge: widget.notificationBadge,
+            ),
+      ),
+    );
+  }
+
   void _openChengeCore(BuildContext context) {
     final token = widget.token;
     if (token == null) {
@@ -204,7 +313,12 @@ class _AccountPageState extends State<AccountPage> {
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 620),
           child: ListView(
-            padding: const EdgeInsets.all(22),
+            padding: EdgeInsets.fromLTRB(
+              22,
+              22,
+              22,
+              22 + widget.bottomBarHeight,
+            ),
             children: [
               Container(
                 padding: const EdgeInsets.all(22),
@@ -345,6 +459,34 @@ Material(
                   ),
                   trailing: const Icon(Icons.chevron_right_rounded),
                 ),
+              ),
+              const SizedBox(height: 12),
+              _actionTile(
+                icon: Icons.folder_copy_outlined,
+                containerColor: Theme.of(context).colorScheme.primaryContainer,
+                iconColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                title: AppLocalizations.of(context).resources,
+                subtitle: AppLocalizations.of(context).resourcesDescription,
+                onTap: () => _openResources(context),
+              ),
+              const SizedBox(height: 12),
+              _actionTile(
+                icon: Icons.menu_book_outlined,
+                containerColor: Theme.of(context).colorScheme.secondaryContainer,
+                iconColor: Theme.of(context).colorScheme.onSecondaryContainer,
+                title: AppLocalizations.of(context).helpCenter,
+                subtitle: AppLocalizations.of(context).helpSubtitle,
+                onTap: () => _openHelp(context),
+              ),
+              const SizedBox(height: 12),
+              _actionTile(
+                icon: Icons.notifications_none_rounded,
+                containerColor: Theme.of(context).colorScheme.tertiaryContainer,
+                iconColor: Theme.of(context).colorScheme.onTertiaryContainer,
+                title: AppLocalizations.of(context).notifications,
+                subtitle: AppLocalizations.of(context).notificationsDescription,
+                onTap: () => _openNotifications(context),
+                trailing: _notificationTrailing(),
               ),
               const SizedBox(height: 12),
               Material(
