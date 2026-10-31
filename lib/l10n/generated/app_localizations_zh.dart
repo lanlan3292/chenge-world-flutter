@@ -1375,6 +1375,27 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get shopNurtureHint =>
       'Nurture item. After purchase it can be used in the nurture gameplay.';
+
+  @override
+  String get chatImage => 'Image';
+
+  @override
+  String get chatImageUnavailable => '[Image unavailable]';
+
+  @override
+  String get chatImageLoading => '[Loading image]';
+
+  @override
+  String get chatSourceQq => 'QQ';
+
+  @override
+  String get chatSourceGame => 'Game';
+
+  @override
+  String get chatInteropFallback => '[Cross-platform message]';
+
+  @override
+  String get sendImage => 'Send image';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -2736,6 +2757,27 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get shopNurtureHint => '养成商品，购买后可在养成玩法中使用。';
+
+  @override
+  String get chatImage => '图片';
+
+  @override
+  String get chatImageUnavailable => '[图片不可用]';
+
+  @override
+  String get chatImageLoading => '[图片加载中]';
+
+  @override
+  String get chatSourceQq => 'QQ';
+
+  @override
+  String get chatSourceGame => '游戏';
+
+  @override
+  String get chatInteropFallback => '[跨平台消息]';
+
+  @override
+  String get sendImage => '发送图片';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -6495,4 +6537,25 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get shopNurtureHint => '養成商品，購買後可在養成玩法中使用。';
+
+  @override
+  String get chatImage => '圖片';
+
+  @override
+  String get chatImageUnavailable => '[圖片不可用]';
+
+  @override
+  String get chatImageLoading => '[圖片載入中]';
+
+  @override
+  String get chatSourceQq => 'QQ';
+
+  @override
+  String get chatSourceGame => '遊戲';
+
+  @override
+  String get chatInteropFallback => '[跨平台訊息]';
+
+  @override
+  String get sendImage => '傳送圖片';
 }

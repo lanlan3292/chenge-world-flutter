@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../models/blog_post.dart';
 import '../models/chat_channel.dart';
@@ -67,6 +68,11 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
   bool _contentReady = false;
   bool _popScheduled = false;
   bool _emojiPickerOpen = false;
+  bool _uploadingImage = false;
+  final ImagePicker _picker = ImagePicker();
+
+  /// fileId → 图片地址缓存（图片消息可能只带 fileId）。
+  final Map<int, String> _fileUrls = {};
   late ChatConversation _conversation;
 
   /// 群聊可见频道（私聊为空）。
@@ -412,6 +418,55 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     }
   }
 
+  /// 从相册挑一张图上传后以 type='image' 发出。
+  Future<void> _sendImage() async {
+    if (_sending || _uploadingImage || !_canSend) return;
+    final file = await _picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 2000,
+      imageQuality: 86,
+      requestFullMetadata: false,
+    );
+    if (file == null || !mounted) return;
+    setState(() => _uploadingImage = true);
+    try {
+      final bytes = await file.readAsBytes();
+      final name = file.name.isNotEmpty ? file.name : 'image.jpg';
+      final url = await widget.api.uploadFile(
+        bytes: bytes,
+        filename: name,
+        token: widget.token,
+        businessType: 'chat_image',
+      );
+      final message = await widget.api.sendChatMessage(
+        _conversation.id,
+        jsonEncode({'url': url}),
+        widget.token,
+        type: 'image',
+        channelId: _isGroup ? _channel?.id : null,
+      );
+      if (!mounted) return;
+      setState(() {
+        if (!_messages.any((m) => m.id == message.id)) _messages.add(message);
+        _stickToBottom = true;
+      });
+      _scrollToBottom(animate: true);
+    } on ApiException catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(error.message),
+              backgroundColor: AppTheme.coral,
+            ),
+          );
+      }
+    } finally {
+      if (mounted) setState(() => _uploadingImage = false);
+    }
+  }
+
   Future<void> _openEmojiPicker() async {
     if (_emojiPickerOpen) return;
     _emojiPickerOpen = true;
@@ -681,6 +736,8 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
   Widget _messageTile(ChatMessage message, {required bool showTime}) {
     final mine = message.senderId == widget.userId;
     final isEmoji = message.type == 'emoji';
+    final isImage = message.type == 'image';
+    final isInterop = message.type == 'qq' || message.type == 'game';
     final isShare = message.type == 'post' || message.type == 'order';
     final isGroup = _conversation.type == 'group';
     final showOtherAvatar = !mine && (isGroup || widget.showPeerAvatar);
@@ -745,6 +802,10 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                   ),
                 if (isEmoji)
                   _emojiImage(message)
+                else if (isImage)
+                  _imageMessage(message)
+                else if (isInterop)
+                  _interopMessage(message)
                 else if (isShare)
                   _shareCard(message)
                 else
@@ -789,6 +850,254 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
             avatarFor(AppLocalizations.of(context).me, message.senderAvatar),
           ],
         ],
+      ),
+    );
+  }
+
+  /// 图片消息：content 里通常有 url；只有 fileId 时再去文件模块换地址。
+  Widget _imageMessage(ChatMessage message) {
+    final l10n = AppLocalizations.of(context);
+    final content = message.image;
+    final url = content?.url;
+    if (url != null && url.isNotEmpty) {
+      return _networkImage(url, size: 220);
+    }
+    final fileId = content?.fileId;
+    if (fileId == null || fileId <= 0) {
+      return _imagePlaceholder(l10n.chatImageUnavailable);
+    }
+    return FutureBuilder<String?>(
+      future: _fileUrl(fileId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return _imagePlaceholder(l10n.chatImageLoading);
+        }
+        final resolved = snapshot.data;
+        if (resolved == null || resolved.isEmpty) {
+          return _imagePlaceholder(l10n.chatImageUnavailable);
+        }
+        return _networkImage(resolved, size: 220);
+      },
+    );
+  }
+
+  Future<String?> _fileUrl(int fileId) async {
+    final cached = _fileUrls[fileId];
+    if (cached != null) return cached;
+    try {
+      final info = await widget.api.fileInfo(fileId, token: widget.token);
+      final raw = (info['url'] ?? info['fileUrl'] ?? info['path'] ?? '').toString().trim();
+      if (raw.isEmpty) return null;
+      final url = widget.api.resolveMediaUrl(raw);
+      _fileUrls[fileId] = url;
+      return url;
+    } on ApiException {
+      return null;
+    }
+  }
+
+  Widget _networkImage(String rawUrl, {double size = 160}) {
+    final url = widget.api.resolveMediaUrl(rawUrl);
+    return GestureDetector(
+      onTap: () => _openImageViewer(url),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: CachedNetworkImage(
+          imageUrl: url,
+          width: size,
+          height: size,
+          fit: BoxFit.cover,
+          memCacheWidth: (size * MediaQuery.devicePixelRatioOf(context)).round(),
+          placeholder:
+              (_, __) => _imagePlaceholder(
+                AppLocalizations.of(context).chatImageLoading,
+                size: size,
+              ),
+          errorWidget:
+              (_, __, ___) => _imagePlaceholder(
+                AppLocalizations.of(context).chatImageUnavailable,
+                size: size,
+              ),
+        ),
+      ),
+    );
+  }
+
+  Widget _imagePlaceholder(String label, {double size = 160}) => Container(
+    width: size,
+    height: size * 0.62,
+    alignment: Alignment.center,
+    padding: const EdgeInsets.all(8),
+    decoration: BoxDecoration(
+      color: const Color(0xFFEAF2ED),
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: Text(
+      label,
+      textAlign: TextAlign.center,
+      style: const TextStyle(fontSize: 12, color: Color(0xFF70817D)),
+    ),
+  );
+
+  void _openImageViewer(String url) {
+    showDialog<void>(
+      context: context,
+      barrierColor: Colors.black87,
+      builder: (dialogContext) => Dialog.fullscreen(
+        backgroundColor: Colors.black,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: InteractiveViewer(
+                minScale: 0.8,
+                maxScale: 5,
+                child: Center(
+                  child: Image.network(
+                    url,
+                    fit: BoxFit.contain,
+                    errorBuilder:
+                        (_, __, ___) => Text(
+                          AppLocalizations.of(context).chatImageUnavailable,
+                          style: const TextStyle(color: Colors.white70),
+                        ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 8,
+              right: 8,
+              child: SafeArea(
+                child: IconButton.filledTonal(
+                  tooltip: AppLocalizations.of(context).close,
+                  onPressed: () => Navigator.pop(dialogContext),
+                  icon: const Icon(Icons.close_rounded),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// QQ / 游戏互通消息：来源标签 + 正文 + 同步过来的图片。
+  Widget _interopMessage(ChatMessage message) {
+    final l10n = AppLocalizations.of(context);
+    final data = message.interop;
+    final isQq = message.type == 'qq';
+    final sourceLabel = isQq ? l10n.chatSourceQq : l10n.chatSourceGame;
+    final text = data?.displayText ?? '';
+    final images = data?.images ?? const <String>[];
+    final subtitle =
+        [data?.nickname, data?.groupName]
+            .whereType<String>()
+            .where((value) => value.isNotEmpty)
+            .join(' · ');
+
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 340),
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE2EAE5)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          InkWell(
+            borderRadius: BorderRadius.circular(8),
+            onTap: data == null || data.details.isEmpty
+                ? null
+                : () => _showInteropDetails(data, sourceLabel),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  isQq ? Icons.forum_outlined : Icons.sports_esports_outlined,
+                  size: 14,
+                  color: const Color(0xFF3D6BAA),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  sourceLabel,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF3D6BAA),
+                  ),
+                ),
+                if (subtitle.isNotEmpty) ...[
+                  const SizedBox(width: 6),
+                  Flexible(
+                    child: Text(
+                      subtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: Color(0xFF70817D),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          if (text.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            SelectableText(text, style: const TextStyle(height: 1.45)),
+          ],
+          if (images.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: [for (final url in images) _networkImage(url, size: 120)],
+            ),
+          ],
+          if (text.isEmpty && images.isEmpty && data == null) ...[
+            const SizedBox(height: 6),
+            Text(l10n.chatInteropFallback),
+          ],
+        ],
+      ),
+    );
+  }
+
+  void _showInteropDetails(ChatInteropContent data, String sourceLabel) {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                sourceLabel,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+              ),
+              const SizedBox(height: 8),
+              for (final line in data.details)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: SelectableText(
+                    line,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      height: 1.4,
+                      color: Color(0xFF3F514B),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -963,6 +1272,18 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               IconButton(
+                tooltip: AppLocalizations.of(context).sendImage,
+                onPressed:
+                    _sending || _uploadingImage || !_canSend ? null : _sendImage,
+                icon:
+                    _uploadingImage
+                        ? const SizedBox.square(
+                          dimension: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                        : const Icon(Icons.image_outlined),
+              ),
+              IconButton(
                 tooltip: AppLocalizations.of(context).emojiPacks,
                 onPressed: _sending || !_canSend ? null : _openEmojiPicker,
                 icon: const Icon(Icons.emoji_emotions_outlined),
@@ -1057,6 +1378,11 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     if (message.type == 'emoji') return l10n.previewEmojiOnly;
     if (message.type == 'post') return l10n.previewSharedPost;
     if (message.type == 'order') return l10n.previewOrder;
+    if (message.type == 'image') return l10n.chatImage;
+    if (message.type == 'qq' || message.type == 'game') {
+      final text = message.interop?.displayText ?? '';
+      return text.isEmpty ? l10n.chatInteropFallback : text;
+    }
     return '[${message.type}]';
   }
 

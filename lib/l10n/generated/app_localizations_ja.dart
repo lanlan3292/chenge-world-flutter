@@ -1378,6 +1378,27 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get shopNurtureHint =>
       'Nurture item. After purchase it can be used in the nurture gameplay.';
+
+  @override
+  String get chatImage => 'Image';
+
+  @override
+  String get chatImageUnavailable => '[Image unavailable]';
+
+  @override
+  String get chatImageLoading => '[Loading image]';
+
+  @override
+  String get chatSourceQq => 'QQ';
+
+  @override
+  String get chatSourceGame => 'Game';
+
+  @override
+  String get chatInteropFallback => '[Cross-platform message]';
+
+  @override
+  String get sendImage => 'Send image';
 }
 
 /// The translations for Japanese, as used in Japan (`ja_JP`).
@@ -2686,4 +2707,25 @@ class AppLocalizationsJaJp extends AppLocalizationsJa {
 
   @override
   String get shopNurtureHint => '育成アイテムです。購入後、育成コンテンツで使用できます。';
+
+  @override
+  String get chatImage => '画像';
+
+  @override
+  String get chatImageUnavailable => '[画像を読み込めません]';
+
+  @override
+  String get chatImageLoading => '[画像を読み込み中]';
+
+  @override
+  String get chatSourceQq => 'QQ';
+
+  @override
+  String get chatSourceGame => 'ゲーム';
+
+  @override
+  String get chatInteropFallback => '[クロスプラットフォームメッセージ]';
+
+  @override
+  String get sendImage => '画像を送信';
 }

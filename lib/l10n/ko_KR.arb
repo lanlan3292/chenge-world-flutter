@@ -679,4 +679,12 @@
   "shopAppPackHint": "APP 패키지 리소스입니다. 구매 후 패키지를 다운로드할 수 있습니다.",
   "shopSkillHint": "스킬 리소스입니다. 구매 후 AI 세션에서 활성화할 수 있습니다.",
   "shopNurtureHint": "육성 아이템입니다. 구매 후 육성 콘텐츠에서 사용할 수 있습니다."
+,
+  "chatImage": "이미지",
+  "chatImageUnavailable": "[이미지를 불러올 수 없음]",
+  "chatImageLoading": "[이미지 불러오는 중]",
+  "chatSourceQq": "QQ",
+  "chatSourceGame": "게임",
+  "chatInteropFallback": "[크로스 플랫폼 메시지]",
+  "sendImage": "이미지 보내기"
 }

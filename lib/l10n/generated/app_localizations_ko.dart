@@ -1376,6 +1376,27 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String get shopNurtureHint =>
       'Nurture item. After purchase it can be used in the nurture gameplay.';
+
+  @override
+  String get chatImage => 'Image';
+
+  @override
+  String get chatImageUnavailable => '[Image unavailable]';
+
+  @override
+  String get chatImageLoading => '[Loading image]';
+
+  @override
+  String get chatSourceQq => 'QQ';
+
+  @override
+  String get chatSourceGame => 'Game';
+
+  @override
+  String get chatInteropFallback => '[Cross-platform message]';
+
+  @override
+  String get sendImage => 'Send image';
 }
 
 /// The translations for Korean, as used in Republic of Korea (`ko_KR`).
@@ -2682,4 +2703,25 @@ class AppLocalizationsKoKr extends AppLocalizationsKo {
 
   @override
   String get shopNurtureHint => '육성 아이템입니다. 구매 후 육성 콘텐츠에서 사용할 수 있습니다.';
+
+  @override
+  String get chatImage => '이미지';
+
+  @override
+  String get chatImageUnavailable => '[이미지를 불러올 수 없음]';
+
+  @override
+  String get chatImageLoading => '[이미지 불러오는 중]';
+
+  @override
+  String get chatSourceQq => 'QQ';
+
+  @override
+  String get chatSourceGame => '게임';
+
+  @override
+  String get chatInteropFallback => '[크로스 플랫폼 메시지]';
+
+  @override
+  String get sendImage => '이미지 보내기';
 }
