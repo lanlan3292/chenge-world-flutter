@@ -1756,6 +1756,45 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get docImages => 'Document images';
+
+  @override
+  String get chatQuote => 'Quote';
+
+  @override
+  String get chatCancelQuote => 'Cancel quote';
+
+  @override
+  String get chatQuoting => 'Quoting';
+
+  @override
+  String get chatCopy => 'Copy';
+
+  @override
+  String get chatCopied => 'Copied';
+
+  @override
+  String get chatRecall => 'Recall';
+
+  @override
+  String get chatRecalled => 'Message recalled';
+
+  @override
+  String get chatReaction => 'React';
+
+  @override
+  String get chatViewOriginal => 'View original';
+
+  @override
+  String get chatHdr => 'HDR';
+
+  @override
+  String get chatChartUnavailable => 'Chart data unavailable';
+
+  @override
+  String get chatMessageActions => 'Message actions';
+
+  @override
+  String get chatQuotedMessage => 'Quoted message';
 }
 
 /// The translations for Korean, as used in Republic of Korea (`ko_KR`).
@@ -3433,4 +3472,43 @@ class AppLocalizationsKoKr extends AppLocalizationsKo {
 
   @override
   String get docImages => '자료 이미지';
+
+  @override
+  String get chatQuote => '인용';
+
+  @override
+  String get chatCancelQuote => '인용 취소';
+
+  @override
+  String get chatQuoting => '인용 중';
+
+  @override
+  String get chatCopy => '복사';
+
+  @override
+  String get chatCopied => '복사됨';
+
+  @override
+  String get chatRecall => '회수';
+
+  @override
+  String get chatRecalled => '메시지를 회수했습니다';
+
+  @override
+  String get chatReaction => '리액션';
+
+  @override
+  String get chatViewOriginal => '원본 보기';
+
+  @override
+  String get chatHdr => 'HDR 원본';
+
+  @override
+  String get chatChartUnavailable => '차트를 표시할 수 없음';
+
+  @override
+  String get chatMessageActions => '메시지 작업';
+
+  @override
+  String get chatQuotedMessage => '인용된 메시지';
 }

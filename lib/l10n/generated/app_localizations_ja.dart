@@ -1758,6 +1758,45 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get docImages => 'Document images';
+
+  @override
+  String get chatQuote => 'Quote';
+
+  @override
+  String get chatCancelQuote => 'Cancel quote';
+
+  @override
+  String get chatQuoting => 'Quoting';
+
+  @override
+  String get chatCopy => 'Copy';
+
+  @override
+  String get chatCopied => 'Copied';
+
+  @override
+  String get chatRecall => 'Recall';
+
+  @override
+  String get chatRecalled => 'Message recalled';
+
+  @override
+  String get chatReaction => 'React';
+
+  @override
+  String get chatViewOriginal => 'View original';
+
+  @override
+  String get chatHdr => 'HDR';
+
+  @override
+  String get chatChartUnavailable => 'Chart data unavailable';
+
+  @override
+  String get chatMessageActions => 'Message actions';
+
+  @override
+  String get chatQuotedMessage => 'Quoted message';
 }
 
 /// The translations for Japanese, as used in Japan (`ja_JP`).
@@ -3437,4 +3476,43 @@ class AppLocalizationsJaJp extends AppLocalizationsJa {
 
   @override
   String get docImages => '資料の画像';
+
+  @override
+  String get chatQuote => '引用';
+
+  @override
+  String get chatCancelQuote => '引用をキャンセル';
+
+  @override
+  String get chatQuoting => '引用中';
+
+  @override
+  String get chatCopy => 'コピー';
+
+  @override
+  String get chatCopied => 'コピーしました';
+
+  @override
+  String get chatRecall => '取り消し';
+
+  @override
+  String get chatRecalled => 'メッセージを取り消しました';
+
+  @override
+  String get chatReaction => 'リアクション';
+
+  @override
+  String get chatViewOriginal => '元画像を表示';
+
+  @override
+  String get chatHdr => 'HDR 原画';
+
+  @override
+  String get chatChartUnavailable => 'グラフを表示できません';
+
+  @override
+  String get chatMessageActions => 'メッセージ操作';
+
+  @override
+  String get chatQuotedMessage => '引用されたメッセージ';
 }

@@ -603,6 +603,7 @@ class ChengeApi {
     String token, {
     String type = 'text',
     int? channelId,
+    int? replyToId,
   }) async {
     final data = await _request(
       'POST',
@@ -612,11 +613,43 @@ class ChengeApi {
         'content': content,
         'clientMsgId': 'android-${DateTime.now().microsecondsSinceEpoch}',
         if (channelId != null) 'channelId': channelId,
+        if (replyToId != null) 'replyToId': replyToId,
       },
       token: token,
     );
     if (data is! Map<String, dynamic>) throw const ApiException('发送消息响应格式不正确');
     return ChatMessage.fromJson(data);
+  }
+
+  /// 添加 / 取消表情回应，返回该消息最新的聚合回应。
+  Future<List<ChatReaction>> setChatReaction(
+    int conversationId,
+    int messageId, {
+    required String emoji,
+    required bool active,
+    required String token,
+  }) async {
+    final data = await _request(
+      'PUT',
+      '/chat/$conversationId/messages/$messageId/reactions',
+      body: {'type': 'emoji', 'emoji': emoji, 'active': active},
+      token: token,
+    );
+    if (data is! List) throw const ApiException('表情回应格式不正确');
+    return ChatReaction.listFromJson(data);
+  }
+
+  /// 撤回消息（后端限制：本人两分钟内，或有群管理权限）。
+  Future<void> recallChatMessage(
+    int conversationId,
+    int messageId,
+    String token,
+  ) async {
+    await _request(
+      'POST',
+      '/chat/$conversationId/messages/$messageId/recall',
+      token: token,
+    );
   }
 
   Future<void> markChatRead(

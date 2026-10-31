@@ -1781,6 +1781,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get docImages => 'Document images';
+
+  @override
+  String get chatQuote => 'Quote';
+
+  @override
+  String get chatCancelQuote => 'Cancel quote';
+
+  @override
+  String get chatQuoting => 'Quoting';
+
+  @override
+  String get chatCopy => 'Copy';
+
+  @override
+  String get chatCopied => 'Copied';
+
+  @override
+  String get chatRecall => 'Recall';
+
+  @override
+  String get chatRecalled => 'Message recalled';
+
+  @override
+  String get chatReaction => 'React';
+
+  @override
+  String get chatViewOriginal => 'View original';
+
+  @override
+  String get chatHdr => 'HDR';
+
+  @override
+  String get chatChartUnavailable => 'Chart data unavailable';
+
+  @override
+  String get chatMessageActions => 'Message actions';
+
+  @override
+  String get chatQuotedMessage => 'Quoted message';
 }
 
 /// The translations for English, as used in the United States (`en_US`).
@@ -3560,4 +3599,43 @@ class AppLocalizationsEnUs extends AppLocalizationsEn {
 
   @override
   String get docImages => 'Document images';
+
+  @override
+  String get chatQuote => 'Quote';
+
+  @override
+  String get chatCancelQuote => 'Cancel quote';
+
+  @override
+  String get chatQuoting => 'Quoting';
+
+  @override
+  String get chatCopy => 'Copy';
+
+  @override
+  String get chatCopied => 'Copied';
+
+  @override
+  String get chatRecall => 'Recall';
+
+  @override
+  String get chatRecalled => 'Message recalled';
+
+  @override
+  String get chatReaction => 'React';
+
+  @override
+  String get chatViewOriginal => 'View original';
+
+  @override
+  String get chatHdr => 'HDR';
+
+  @override
+  String get chatChartUnavailable => 'Chart data unavailable';
+
+  @override
+  String get chatMessageActions => 'Message actions';
+
+  @override
+  String get chatQuotedMessage => 'Quoted message';
 }

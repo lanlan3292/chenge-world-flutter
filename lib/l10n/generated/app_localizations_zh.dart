@@ -1755,6 +1755,45 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get docImages => 'Document images';
+
+  @override
+  String get chatQuote => 'Quote';
+
+  @override
+  String get chatCancelQuote => 'Cancel quote';
+
+  @override
+  String get chatQuoting => 'Quoting';
+
+  @override
+  String get chatCopy => 'Copy';
+
+  @override
+  String get chatCopied => 'Copied';
+
+  @override
+  String get chatRecall => 'Recall';
+
+  @override
+  String get chatRecalled => 'Message recalled';
+
+  @override
+  String get chatReaction => 'React';
+
+  @override
+  String get chatViewOriginal => 'View original';
+
+  @override
+  String get chatHdr => 'HDR';
+
+  @override
+  String get chatChartUnavailable => 'Chart data unavailable';
+
+  @override
+  String get chatMessageActions => 'Message actions';
+
+  @override
+  String get chatQuotedMessage => 'Quoted message';
 }
 
 /// The translations for Chinese, as used in China (`zh_CN`).
@@ -3487,6 +3526,45 @@ class AppLocalizationsZhCn extends AppLocalizationsZh {
 
   @override
   String get docImages => '资料图片';
+
+  @override
+  String get chatQuote => '引用';
+
+  @override
+  String get chatCancelQuote => '取消引用';
+
+  @override
+  String get chatQuoting => '正在引用';
+
+  @override
+  String get chatCopy => '复制';
+
+  @override
+  String get chatCopied => '已复制';
+
+  @override
+  String get chatRecall => '撤回';
+
+  @override
+  String get chatRecalled => '消息已撤回';
+
+  @override
+  String get chatReaction => '表情回应';
+
+  @override
+  String get chatViewOriginal => '查看原图';
+
+  @override
+  String get chatHdr => 'HDR 原图';
+
+  @override
+  String get chatChartUnavailable => '图表数据不可用';
+
+  @override
+  String get chatMessageActions => '消息操作';
+
+  @override
+  String get chatQuotedMessage => '引用的消息';
 }
 
 /// The translations for Chinese, using the Han script (`zh_Hans`).
@@ -7617,4 +7695,43 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get docImages => '資料圖片';
+
+  @override
+  String get chatQuote => '引用';
+
+  @override
+  String get chatCancelQuote => '取消引用';
+
+  @override
+  String get chatQuoting => '正在引用';
+
+  @override
+  String get chatCopy => '複製';
+
+  @override
+  String get chatCopied => '已複製';
+
+  @override
+  String get chatRecall => '收回';
+
+  @override
+  String get chatRecalled => '訊息已收回';
+
+  @override
+  String get chatReaction => '表情回應';
+
+  @override
+  String get chatViewOriginal => '檢視原圖';
+
+  @override
+  String get chatHdr => 'HDR 原圖';
+
+  @override
+  String get chatChartUnavailable => '圖表資料不可用';
+
+  @override
+  String get chatMessageActions => '訊息操作';
+
+  @override
+  String get chatQuotedMessage => '引用的訊息';
 }

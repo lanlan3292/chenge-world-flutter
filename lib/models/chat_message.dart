@@ -11,6 +11,9 @@ class ChatMessage {
     this.senderAvatar,
     this.createdAt,
     this.channelId,
+    this.reactions = const [],
+    this.replyTo,
+    this.recallDeadline,
   });
 
   final int id;
@@ -24,6 +27,17 @@ class ChatMessage {
 
   /// 群聊频道 ID；私聊为 null。
   final int? channelId;
+
+  /// 表情回应（后端 `reactions`，已按 emoji/key 聚合）。
+  final List<ChatReaction> reactions;
+
+  /// 被引用的消息快照；后端只在同会话同频道时返回。
+  final ChatQuote? replyTo;
+
+  /// 撤回截止时间（后端 createdAt + 2 分钟）。
+  final DateTime? recallDeadline;
+
+  bool get isRecalled => type == 'recalled';
 
   EmojiMessageContent? get emoji => type == 'emoji' ? EmojiMessageContent.tryParse(content) : null;
 
@@ -44,7 +58,35 @@ class ChatMessage {
         senderAvatar: _nullableText(json['senderAvatar']),
         createdAt: DateTime.tryParse(_text(json['createdAt'])),
         channelId: json['channelId'] == null ? null : _integer(json['channelId']),
+        reactions: ChatReaction.listFromJson(json['reactions']),
+        replyTo: ChatQuote.tryParse(json['reply']),
+        recallDeadline: _millis(json['recallDeadline']),
       );
+
+  /// 撤回 / 回应等局部更新。
+  ChatMessage copyWith({
+    String? type,
+    String? content,
+    List<ChatReaction>? reactions,
+  }) => ChatMessage(
+    id: id,
+    conversationId: conversationId,
+    senderId: senderId,
+    type: type ?? this.type,
+    content: content ?? this.content,
+    senderName: senderName,
+    senderAvatar: senderAvatar,
+    createdAt: createdAt,
+    channelId: channelId,
+    reactions: reactions ?? this.reactions,
+    replyTo: replyTo,
+    recallDeadline: recallDeadline,
+  );
+
+  static DateTime? _millis(Object? value) {
+    if (value is! num) return null;
+    return DateTime.fromMillisecondsSinceEpoch(value.toInt());
+  }
 
   static int _integer(Object? value) => value is num ? value.toInt() : int.tryParse('$value') ?? 0;
   static String _text(Object? value, {String fallback = ''}) {
@@ -202,6 +244,161 @@ class ChatInteropContent {
     } on FormatException {
       return null;
     }
+  }
+
+  static String? _nullableText(Object? value) {
+    final text = value?.toString().trim() ?? '';
+    return text.isEmpty || text == 'null' ? null : text;
+  }
+}
+
+/// 被引用消息的快照（后端 message view 的 `reply`）。
+class ChatQuote {
+  const ChatQuote({
+    required this.id,
+    this.senderId = 0,
+    this.senderName,
+    this.type = 'text',
+    this.content = '',
+  });
+
+  final int id;
+  final int senderId;
+  final String? senderName;
+  final String type;
+  final String content;
+
+  String get preview {
+    switch (type) {
+      case 'emoji':
+        return '[表情]';
+      case 'image':
+        return '[图片]';
+      case 'post':
+        return '[帖子]';
+      case 'order':
+        return '[订单]';
+      case 'recalled':
+        return '消息已撤回';
+      case 'qq':
+      case 'game':
+        final text = ChatInteropContent.tryParse(content)?.displayText ?? '';
+        return text.isEmpty ? '[跨平台消息]' : text;
+      default:
+        final text = content.replaceAll(RegExp(r'\s+'), ' ').trim();
+        return text.length > 120 ? '${text.substring(0, 120)}…' : text;
+    }
+  }
+
+  static ChatQuote? tryParse(Object? raw) {
+    if (raw is! Map) return null;
+    final map = raw.cast<String, dynamic>();
+    final id = map['id'] is num ? (map['id'] as num).toInt() : int.tryParse('${map['id']}');
+    if (id == null || id <= 0) return null;
+    return ChatQuote(
+      id: id,
+      senderId:
+          map['senderId'] is num
+              ? (map['senderId'] as num).toInt()
+              : int.tryParse('${map['senderId']}') ?? 0,
+      senderName: _nullableText(map['senderName']),
+      type: (map['type'] ?? 'text').toString(),
+      content: (map['content'] ?? '').toString(),
+    );
+  }
+
+  static String? _nullableText(Object? value) {
+    final text = value?.toString().trim() ?? '';
+    return text.isEmpty || text == 'null' ? null : text;
+  }
+}
+
+/// 表情回应用户。
+class ChatReactionUser {
+  const ChatReactionUser({this.userId = 0, this.name, this.avatar});
+
+  final int userId;
+  final String? name;
+  final String? avatar;
+
+  static ChatReactionUser? tryParse(Object? raw) {
+    if (raw is! Map) return null;
+    final map = raw.cast<String, dynamic>();
+    return ChatReactionUser(
+      userId:
+          map['userId'] is num
+              ? (map['userId'] as num).toInt()
+              : int.tryParse('${map['userId']}') ?? 0,
+      name: _nullableText(map['name']),
+      avatar: _nullableText(map['avatar']),
+    );
+  }
+
+  static String? _nullableText(Object? value) {
+    final text = value?.toString().trim() ?? '';
+    return text.isEmpty || text == 'null' ? null : text;
+  }
+}
+
+/// 一条消息上的聚合回应：`{type:'emoji', emoji, users, count}`。
+class ChatReaction {
+  const ChatReaction({
+    this.type = 'emoji',
+    this.emoji,
+    this.itemId,
+    this.key,
+    this.url,
+    this.users = const [],
+    this.count = 0,
+  });
+
+  final String type;
+  final String? emoji;
+  final int? itemId;
+  final String? key;
+  final String? url;
+  final List<ChatReactionUser> users;
+  final int count;
+
+  bool get isEmoji => type == 'emoji' && (emoji ?? '').isNotEmpty;
+
+  bool reactedBy(int userId) => users.any((user) => user.userId == userId);
+
+  String get display => isEmoji ? emoji! : '🎨';
+
+  static List<ChatReaction> listFromJson(Object? raw) {
+    if (raw is! List) return const [];
+    final result = <ChatReaction>[];
+    for (final item in raw) {
+      if (item is! Map) continue;
+      final map = item.cast<String, dynamic>();
+      final users = <ChatReactionUser>[];
+      final rawUsers = map['users'];
+      if (rawUsers is List) {
+        for (final user in rawUsers) {
+          final parsed = ChatReactionUser.tryParse(user);
+          if (parsed != null) users.add(parsed);
+        }
+      }
+      result.add(
+        ChatReaction(
+          type: (map['type'] ?? 'emoji').toString(),
+          emoji: _nullableText(map['emoji']),
+          itemId:
+              map['itemId'] is num
+                  ? (map['itemId'] as num).toInt()
+                  : int.tryParse('${map['itemId']}'),
+          key: _nullableText(map['key']),
+          url: _nullableText(map['url'] ?? map['fileUrl'] ?? map['cover']),
+          users: users,
+          count:
+              map['count'] is num
+                  ? (map['count'] as num).toInt()
+                  : users.length,
+        ),
+      );
+    }
+    return result;
   }
 
   static String? _nullableText(Object? value) {

@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../models/blog_post.dart';
@@ -14,6 +15,7 @@ import '../models/shop_item.dart';
 import '../services/chenge_api.dart';
 import '../services/chat_socket.dart';
 import '../theme/app_theme.dart';
+import '../widgets/chat_markdown.dart';
 import 'emoji_picker_sheet.dart';
 import 'post_detail_page.dart';
 import 'shop_detail_page.dart';
@@ -58,9 +60,11 @@ class ChatThreadPage extends StatefulWidget {
 class _ChatThreadPageState extends State<ChatThreadPage> {
   final _messageController = TextEditingController();
   final _messageScrollController = ScrollController();
+  final _composerFocus = FocusNode();
   final _messages = <ChatMessage>[];
   ChatSocket? _ownedSocket;
   StreamSubscription<ChatMessage>? _wsSub;
+  StreamSubscription<Map<String, dynamic>>? _wsRawSub;
   /// 断线时的轻量兜底轮询（仅在 WS 不可用时启用）
   Timer? _fallbackPoll;
   bool _loading = false;
@@ -74,6 +78,9 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
   bool _emojiPickerOpen = false;
   bool _uploadingImage = false;
   final ImagePicker _picker = ImagePicker();
+
+  /// 当前引用（回复）的消息。
+  ChatMessage? _quoting;
 
   /// fileId → 图片地址缓存（图片消息可能只带 fileId）。
   final Map<int, String> _fileUrls = {};
@@ -160,6 +167,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       _channel = channel;
       _messages.clear();
       _initialScrollDone = false;
+      _quoting = null;
       _contentReady = false;
     });
     await _loadMessages();
@@ -176,12 +184,14 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     if (shared != null) {
       shared.connect(widget.token);
       _wsSub = shared.messages.listen(_onWsMessage);
+      _wsRawSub = shared.rawEvents.listen(_onWsEvent);
       return;
     }
     final socket = ChatSocket(baseUrl: widget.api.baseUrl);
     _ownedSocket = socket;
     socket.connect(widget.token);
     _wsSub = socket.messages.listen(_onWsMessage);
+    _wsRawSub = socket.rawEvents.listen(_onWsEvent);
     // 若 12s 内仍无连接成功的消息活动，启动兜底轮询
     _fallbackPoll = Timer.periodic(const Duration(seconds: 12), (_) {
       if (!mounted) return;
@@ -214,6 +224,53 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     );
   }
 
+  /// 处理撤回 / 表情回应等非消息型 WS 事件。
+  void _onWsEvent(Map<String, dynamic> event) {
+    if (!mounted) return;
+    final type = event['event'];
+    if (type == 'message.recalled') {
+      final id = _asInt(event['id']);
+      if (id == null || id <= 0) return;
+      _replaceMessage(
+        id,
+        (message) => message.copyWith(
+          type: 'recalled',
+          content: '消息已撤回',
+          reactions: const [],
+        ),
+      );
+      return;
+    }
+    if (type == 'message.reactions') {
+      final conversationId = _asInt(event['conversationId']);
+      if (conversationId != null && conversationId != _conversation.id) return;
+      final id = _asInt(event['messageId']);
+      if (id == null || id <= 0) return;
+      _replaceMessage(
+        id,
+        (message) => message.copyWith(
+          reactions: ChatReaction.listFromJson(event['reactions']),
+        ),
+      );
+    }
+  }
+
+  void _replaceMessage(
+    int messageId,
+    ChatMessage Function(ChatMessage message) update,
+  ) {
+    final index = _messages.indexWhere((message) => message.id == messageId);
+    if (index < 0) return;
+    setState(() {
+      _messages[index] = update(_messages[index]);
+    });
+  }
+
+  static int? _asInt(Object? value) {
+    if (value is num) return value.toInt();
+    return int.tryParse('$value');
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -236,8 +293,10 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
   void dispose() {
     _fallbackPoll?.cancel();
     _wsSub?.cancel();
+    _wsRawSub?.cancel();
     _ownedSocket?.dispose();
     _messageController.dispose();
+    _composerFocus.dispose();
     _messageScrollController
       ..removeListener(_onScroll)
       ..dispose();
@@ -369,6 +428,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
   Future<void> _send() async {
     final text = _messageController.text.trim();
     if (text.isEmpty || _sending || !_canSend) return;
+    final replyTo = _quoting;
     setState(() => _sending = true);
     try {
       final message = await widget.api.sendChatMessage(
@@ -376,11 +436,13 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
         text,
         widget.token,
         channelId: _isGroup ? _channel?.id : null,
+        replyToId: replyTo?.id,
       );
       if (!mounted) return;
       setState(() {
         if (!_messages.any((m) => m.id == message.id)) _messages.add(message);
         _messageController.clear();
+        _quoting = null;
         _stickToBottom = true;
       });
       _scrollToBottom(animate: true);
@@ -402,6 +464,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
 
   Future<void> _sendEmoji(EmojiAsset asset) async {
     if (_sending || !_canSend) return;
+    final replyTo = _quoting;
     setState(() => _sending = true);
     try {
       final message = await widget.api.sendChatMessage(
@@ -410,10 +473,12 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
         widget.token,
         type: 'emoji',
         channelId: _isGroup ? _channel?.id : null,
+        replyToId: replyTo?.id,
       );
       if (!mounted) return;
       setState(() {
         if (!_messages.any((m) => m.id == message.id)) _messages.add(message);
+        _quoting = null;
         _stickToBottom = true;
       });
       _scrollToBottom(animate: true);
@@ -459,10 +524,12 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
         widget.token,
         type: 'image',
         channelId: _isGroup ? _channel?.id : null,
+        replyToId: _quoting?.id,
       );
       if (!mounted) return;
       setState(() {
         if (!_messages.any((m) => m.id == message.id)) _messages.add(message);
+        _quoting = null;
         _stickToBottom = true;
       });
       _scrollToBottom(animate: true);
@@ -750,13 +817,10 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
 
   Widget _messageTile(ChatMessage message, {required bool showTime}) {
     final mine = message.senderId == widget.userId;
-    final isEmoji = message.type == 'emoji';
-    final isImage = message.type == 'image';
-    final isInterop = message.type == 'qq' || message.type == 'game';
-    final isShare = message.type == 'post' || message.type == 'order';
     final isGroup = _conversation.type == 'group';
     final showOtherAvatar = !mine && (isGroup || widget.showPeerAvatar);
     final showMineAvatar = mine && widget.showSelfAvatar;
+    final localizations = AppLocalizations.of(context);
 
     Widget avatarFor(String name, String? url) => CircleAvatar(
       radius: 15,
@@ -771,6 +835,21 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
         ),
       ),
     );
+
+    if (message.isRecalled) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Text(
+              localizations.chatRecalled,
+              style: const TextStyle(fontSize: 11, color: Color(0xFF83918D)),
+            ),
+          ),
+        ),
+      );
+    }
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -815,48 +894,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                       ),
                     ),
                   ),
-                if (isEmoji)
-                  _emojiImage(message)
-                else if (isImage)
-                  _imageMessage(message)
-                else if (isInterop)
-                  _interopMessage(message)
-                else if (isShare)
-                  _shareCard(message)
-                else
-                  Container(
-                    constraints: const BoxConstraints(maxWidth: 520),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 13,
-                      vertical: 10,
-                    ),
-                    decoration: BoxDecoration(
-                      color:
-                          mine
-                              ? Theme.of(context).colorScheme.primary
-                              : Theme.of(
-                                context,
-                              ).colorScheme.surfaceContainerHigh,
-                      borderRadius: BorderRadius.only(
-                        topLeft: const Radius.circular(16),
-                        topRight: const Radius.circular(16),
-                        bottomLeft: Radius.circular(mine ? 16 : 4),
-                        bottomRight: Radius.circular(mine ? 4 : 16),
-                      ),
-                    ),
-                    child: SelectableText(
-                      message.type == 'text'
-                          ? message.content
-                          : _specialMessage(context, message),
-                      style: TextStyle(
-                        color:
-                            mine
-                                ? Theme.of(context).colorScheme.onPrimary
-                                : Theme.of(context).colorScheme.onSurface,
-                        height: 1.4,
-                      ),
-                    ),
-                  ),
+                _messageBubble(message, mine: mine),
               ],
             ),
           ),
@@ -866,6 +904,392 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
           ],
         ],
       ),
+    );
+  }
+
+  /// 气泡本体 + 下方的表情回应。
+  Widget _messageBubble(ChatMessage message, {required bool mine}) {
+    final body = GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onLongPress: () => _showMessageActions(message),
+      child: _bubbleContent(message, mine: mine),
+    );
+    final reactions = message.reactions.where((item) => item.isEmoji).toList();
+    if (reactions.isEmpty) return body;
+    return Column(
+      crossAxisAlignment: mine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        body,
+        const SizedBox(height: 4),
+        Wrap(
+          spacing: 4,
+          runSpacing: 4,
+          children: [
+            for (final reaction in reactions) _reactionChip(message, reaction),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _bubbleContent(ChatMessage message, {required bool mine}) {
+    if (message.type == 'emoji') return _emojiImage(message);
+    if (message.type == 'image') return _imageMessage(message);
+    if (message.type == 'qq' || message.type == 'game') {
+      return _interopMessage(message);
+    }
+    if (message.type == 'post' || message.type == 'order') {
+      return _shareCard(message);
+    }
+    return _textBubble(message, mine: mine);
+  }
+
+  Widget _textBubble(ChatMessage message, {required bool mine}) {
+    final theme = Theme.of(context);
+    final background =
+        mine
+            ? theme.colorScheme.primary
+            : theme.colorScheme.surfaceContainerHigh;
+    final foreground =
+        mine ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface;
+    final quote = message.replyTo;
+    final isText = message.type == 'text';
+
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 520),
+      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.only(
+          topLeft: const Radius.circular(16),
+          topRight: const Radius.circular(16),
+          bottomLeft: Radius.circular(mine ? 16 : 4),
+          bottomRight: Radius.circular(mine ? 4 : 16),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (quote != null) _quoteBlock(quote, mine: mine),
+          if (isText)
+            ChatMarkdown(
+              source: message.content,
+              textColor: foreground,
+              linkColor: mine ? Colors.white : null,
+            )
+          else
+            SelectableText(
+              _specialMessage(context, message),
+              style: TextStyle(color: foreground, height: 1.4),
+            ),
+        ],
+      ),
+    );
+  }
+
+  /// 气泡顶部的引用块。
+  Widget _quoteBlock(ChatQuote quote, {required bool mine}) {
+    final titleColor = mine ? Colors.white : const Color(0xFF3E5A50);
+    final bodyColor = mine ? Colors.white70 : const Color(0xFF70817D);
+    return InkWell(
+      borderRadius: BorderRadius.circular(8),
+      onTap: () => _showQuotedMessage(quote),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 6),
+        padding: const EdgeInsets.fromLTRB(8, 5, 8, 6),
+        decoration: BoxDecoration(
+          color:
+              mine
+                  ? Colors.white.withValues(alpha: 0.16)
+                  : const Color(0xFFEAF2ED),
+          borderRadius: BorderRadius.circular(8),
+          border: Border(
+            left: BorderSide(
+              color: mine ? Colors.white70 : const Color(0xFF8FB3A1),
+              width: 3,
+            ),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              quote.senderName ??
+                  AppLocalizations.of(context).chatQuotedMessage,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: titleColor,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              quote.preview,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 12, height: 1.3, color: bodyColor),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _reactionChip(ChatMessage message, ChatReaction reaction) {
+    final theme = Theme.of(context);
+    final selected = reaction.reactedBy(widget.userId ?? 0);
+    return InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: () => _toggleReaction(message, reaction.emoji!),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+        decoration: BoxDecoration(
+          color:
+              selected
+                  ? theme.colorScheme.primary.withValues(alpha: 0.14)
+                  : theme.colorScheme.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color:
+                selected
+                    ? theme.colorScheme.primary.withValues(alpha: 0.45)
+                    : theme.colorScheme.outlineVariant,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(reaction.display, style: const TextStyle(fontSize: 13)),
+            if (reaction.count > 1) ...[
+              const SizedBox(width: 3),
+              Text(
+                '${reaction.count}',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showMessageActions(ChatMessage message) async {
+    if (message.isRecalled) return;
+    final l10n = AppLocalizations.of(context);
+    final overdue =
+        message.recallDeadline != null &&
+        message.recallDeadline!.isBefore(DateTime.now());
+    final canRecall =
+        message.senderId == widget.userId && !overdue && message.type != 'system';
+    final action = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder:
+          (sheetContext) => SafeArea(
+            child: Wrap(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.format_quote_rounded),
+                  title: Text(l10n.chatQuote),
+                  onTap: () => Navigator.pop(sheetContext, 'quote'),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.add_reaction_outlined),
+                  title: Text(l10n.chatReaction),
+                  onTap: () => Navigator.pop(sheetContext, 'reaction'),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.copy_rounded),
+                  title: Text(l10n.chatCopy),
+                  onTap: () => Navigator.pop(sheetContext, 'copy'),
+                ),
+                if (canRecall)
+                  ListTile(
+                    leading: const Icon(Icons.undo_rounded, color: AppTheme.coral),
+                    title: Text(
+                      l10n.chatRecall,
+                      style: const TextStyle(color: AppTheme.coral),
+                    ),
+                    onTap: () => Navigator.pop(sheetContext, 'recall'),
+                  ),
+              ],
+            ),
+          ),
+    );
+    if (!mounted || action == null) return;
+    if (action == 'quote') {
+      _startQuote(message);
+    } else if (action == 'reaction') {
+      await _pickReaction(message);
+    } else if (action == 'copy') {
+      await _copyMessage(message);
+    } else if (action == 'recall') {
+      await _recallMessage(message);
+    }
+  }
+
+  void _startQuote(ChatMessage message) {
+    setState(() => _quoting = message);
+    if (_composerFocus.canRequestFocus) _composerFocus.requestFocus();
+  }
+
+  Future<void> _pickReaction(ChatMessage message) async {
+    const emojis = [
+      '👍', '❤️', '😂', '😮', '😢', '🎉', '🔥', '👀',
+      '🙏', '👏', '💯', '🤔', '😍', '😡', '🥳', '✅',
+    ];
+    final theme = Theme.of(context);
+    final picked = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder:
+          (sheetContext) => SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    AppLocalizations.of(context).chatReaction,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (final emoji in emojis)
+                        InkWell(
+                          borderRadius: BorderRadius.circular(22),
+                          onTap: () => Navigator.pop(sheetContext, emoji),
+                          child: Container(
+                            width: 44,
+                            height: 44,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.surfaceContainerHigh,
+                              borderRadius: BorderRadius.circular(22),
+                            ),
+                            child: Text(emoji, style: const TextStyle(fontSize: 20)),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+    );
+    if (picked == null || !mounted) return;
+    await _toggleReaction(message, picked);
+  }
+
+  Future<void> _toggleReaction(ChatMessage message, String emoji) async {
+    final existing =
+        message.reactions.where(
+          (reaction) => reaction.isEmoji && reaction.emoji == emoji,
+        );
+    final active = existing.isEmpty || !existing.first.reactedBy(widget.userId ?? 0);
+    try {
+      final updated = await widget.api.setChatReaction(
+        _conversation.id,
+        message.id,
+        emoji: emoji,
+        active: active,
+        token: widget.token,
+      );
+      if (!mounted) return;
+      _replaceMessage(message.id, (item) => item.copyWith(reactions: updated));
+    } on ApiException catch (error) {
+      if (mounted) _showError(error.message);
+    }
+  }
+
+  Future<void> _recallMessage(ChatMessage message) async {
+    final l10n = AppLocalizations.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder:
+          (dialogContext) => AlertDialog(
+            content: Text(l10n.chatRecall),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext, false),
+                child: Text(l10n.cancel),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(dialogContext, true),
+                child: Text(l10n.chatRecall),
+              ),
+            ],
+          ),
+    );
+    if (confirmed != true || !mounted) return;
+    try {
+      await widget.api.recallChatMessage(
+        _conversation.id,
+        message.id,
+        widget.token,
+      );
+      if (!mounted) return;
+      _replaceMessage(
+        message.id,
+        (item) =>
+            item.copyWith(type: 'recalled', content: l10n.chatRecalled, reactions: const []),
+      );
+    } on ApiException catch (error) {
+      if (mounted) _showError(error.message);
+    }
+  }
+
+  Future<void> _copyMessage(ChatMessage message) async {
+    final text =
+        message.type == 'text'
+            ? message.content
+            : _specialMessage(context, message);
+    final messenger = ScaffoldMessenger.of(context);
+    final label = AppLocalizations.of(context).chatCopied;
+    await Clipboard.setData(ClipboardData(text: text));
+    if (!mounted) return;
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(label)));
+  }
+
+  void _showQuotedMessage(ChatQuote quote) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    showDialog<void>(
+      context: context,
+      builder:
+          (dialogContext) => AlertDialog(
+            title: Text(quote.senderName ?? l10n.chatQuotedMessage),
+            content: SingleChildScrollView(
+              child:
+                  quote.type == 'text'
+                      ? ChatMarkdown(
+                        source: quote.content,
+                        textColor: theme.colorScheme.onSurface,
+                      )
+                      : Text(quote.preview),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: Text(l10n.close),
+              ),
+            ],
+          ),
     );
   }
 
@@ -955,6 +1379,9 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
   );
 
   void _openImageViewer(String url) {
+    final l10n = AppLocalizations.of(context);
+    // HDR / 宽色域图片按原图加载，交给引擎做色调映射；普通图片同样走原图。
+    final hdr = _isHdrUrl(url);
     showDialog<void>(
       context: context,
       barrierColor: Colors.black87,
@@ -970,12 +1397,81 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                   child: Image.network(
                     url,
                     fit: BoxFit.contain,
+                    filterQuality: FilterQuality.high,
+                    isAntiAlias: true,
+                    loadingBuilder: (context, child, progress) {
+                      if (progress == null) return child;
+                      final total = progress.expectedTotalBytes;
+                      return Center(
+                        child: SizedBox(
+                          width: 32,
+                          height: 32,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white70,
+                            value:
+                                total == null || total <= 0
+                                    ? null
+                                    : progress.cumulativeBytesLoaded / total,
+                          ),
+                        ),
+                      );
+                    },
                     errorBuilder:
                         (_, __, ___) => Text(
                           AppLocalizations.of(context).chatImageUnavailable,
                           style: const TextStyle(color: Colors.white70),
                         ),
                   ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 8,
+              left: 8,
+              child: SafeArea(
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white24,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (hdr) ...[
+                            const Icon(
+                              Icons.hdr_on,
+                              size: 14,
+                              color: Colors.white,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              l10n.chatHdr,
+                              style: const TextStyle(
+                                fontSize: 10.5,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                          ],
+                          Text(
+                            l10n.chatViewOriginal,
+                            style: const TextStyle(
+                              fontSize: 10.5,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -994,6 +1490,13 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
         ),
       ),
     );
+  }
+
+  /// 判断是否 HDR / 宽色域图片（HEIC/AVIF/HDR/EXR 等），仅用于界面标识。
+  bool _isHdrUrl(String url) {
+    final lower = url.toLowerCase();
+    const markers = ['.hdr', '.exr', '.avif', '.heic', '.heif', 'hdr=1', 'hdr=on'];
+    return markers.any(lower.contains);
   }
 
   /// QQ / 游戏互通消息：来源标签 + 正文 + 同步过来的图片。
@@ -1283,9 +1786,13 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
               ),
             ),
           ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
+              if (_quoting != null) _quoteComposerBar(),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
               IconButton(
                 tooltip: AppLocalizations.of(context).sendImage,
                 onPressed:
@@ -1306,6 +1813,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
               Expanded(
                 child: TextField(
                   controller: _messageController,
+                  focusNode: _composerFocus,
                   minLines: 1,
                   maxLines: 5,
                   textInputAction: TextInputAction.newline,
@@ -1339,11 +1847,89 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                         )
                         : const Icon(Icons.send_rounded),
               ),
+                ],
+              ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  /// 输入框上方的“正在引用”条。
+  Widget _quoteComposerBar() {
+    final l10n = AppLocalizations.of(context);
+    final message = _quoting;
+    if (message == null) return const SizedBox.shrink();
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.fromLTRB(10, 6, 4, 6),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEAF2ED),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          const Icon(
+            Icons.format_quote_rounded,
+            size: 16,
+            color: Color(0xFF4C8C6F),
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  l10n.chatQuoting,
+                  style: const TextStyle(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF4C8C6F),
+                  ),
+                ),
+                Text(
+                  '${message.senderName ?? ''}: ${_quotePreview(message)}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF3E5A50),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            visualDensity: VisualDensity.compact,
+            tooltip: l10n.chatCancelQuote,
+            onPressed: () => setState(() => _quoting = null),
+            icon: const Icon(Icons.close_rounded, size: 18),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _quotePreview(ChatMessage message) {
+    switch (message.type) {
+      case 'emoji':
+        return '[表情]';
+      case 'image':
+        return '[图片]';
+      case 'post':
+        return '[帖子]';
+      case 'order':
+        return '[订单]';
+      case 'qq':
+      case 'game':
+        final text = message.interop?.displayText ?? '';
+        return text.isEmpty ? '[跨平台消息]' : text;
+      default:
+        final text = message.content.replaceAll(RegExp(r'\s+'), ' ').trim();
+        return text.length > 80 ? '${text.substring(0, 80)}…' : text;
+    }
   }
 
   Widget _emojiImage(ChatMessage message) {

@@ -3384,6 +3384,84 @@ abstract class AppLocalizations {
   /// In en_US, this message translates to:
   /// **'Document images'**
   String get docImages;
+
+  /// No description provided for @chatQuote.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Quote'**
+  String get chatQuote;
+
+  /// No description provided for @chatCancelQuote.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Cancel quote'**
+  String get chatCancelQuote;
+
+  /// No description provided for @chatQuoting.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Quoting'**
+  String get chatQuoting;
+
+  /// No description provided for @chatCopy.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Copy'**
+  String get chatCopy;
+
+  /// No description provided for @chatCopied.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Copied'**
+  String get chatCopied;
+
+  /// No description provided for @chatRecall.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Recall'**
+  String get chatRecall;
+
+  /// No description provided for @chatRecalled.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Message recalled'**
+  String get chatRecalled;
+
+  /// No description provided for @chatReaction.
+  ///
+  /// In en_US, this message translates to:
+  /// **'React'**
+  String get chatReaction;
+
+  /// No description provided for @chatViewOriginal.
+  ///
+  /// In en_US, this message translates to:
+  /// **'View original'**
+  String get chatViewOriginal;
+
+  /// No description provided for @chatHdr.
+  ///
+  /// In en_US, this message translates to:
+  /// **'HDR'**
+  String get chatHdr;
+
+  /// No description provided for @chatChartUnavailable.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Chart data unavailable'**
+  String get chatChartUnavailable;
+
+  /// No description provided for @chatMessageActions.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Message actions'**
+  String get chatMessageActions;
+
+  /// No description provided for @chatQuotedMessage.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Quoted message'**
+  String get chatQuotedMessage;
 }
 
 class _AppLocalizationsDelegate
