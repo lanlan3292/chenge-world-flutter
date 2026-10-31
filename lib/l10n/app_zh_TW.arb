@@ -630,4 +630,12 @@
   "shopAppPackHint": "APP 包資源，購買後可下載安裝檔。",
   "shopSkillHint": "技能資源，購買後可在 AI 會話中啟用。",
   "shopNurtureHint": "養成商品，購買後可在養成玩法中使用。"
+,
+  "chatImage": "圖片",
+  "chatImageUnavailable": "[圖片不可用]",
+  "chatImageLoading": "[圖片載入中]",
+  "chatSourceQq": "QQ",
+  "chatSourceGame": "遊戲",
+  "chatInteropFallback": "[跨平台訊息]",
+  "sendImage": "傳送圖片"
 }

@@ -699,4 +699,12 @@
   "shopAppPackHint": "APP package resource. The package is downloadable after purchase.",
   "shopSkillHint": "Skill resource. After purchase it can be enabled in AI sessions.",
   "shopNurtureHint": "Nurture item. After purchase it can be used in the nurture gameplay."
+,
+  "chatImage": "Image",
+  "chatImageUnavailable": "[Image unavailable]",
+  "chatImageLoading": "[Loading image]",
+  "chatSourceQq": "QQ",
+  "chatSourceGame": "Game",
+  "chatInteropFallback": "[Cross-platform message]",
+  "sendImage": "Send image"
 }

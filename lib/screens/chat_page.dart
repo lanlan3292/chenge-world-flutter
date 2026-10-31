@@ -642,6 +642,11 @@ class _ChatPageState extends State<ChatPage> {
     }
     if (message.type == 'post') return l10n.previewSharedPost;
     if (message.type == 'order') return l10n.previewOrder;
+    if (message.type == 'image') return l10n.chatImage;
+    if (message.type == 'qq' || message.type == 'game') {
+      final text = message.interop?.displayText ?? '';
+      return text.isEmpty ? l10n.chatInteropFallback : text;
+    }
     return message.content;
   }
 

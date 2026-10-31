@@ -1401,6 +1401,27 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get shopNurtureHint =>
       'Nurture item. After purchase it can be used in the nurture gameplay.';
+
+  @override
+  String get chatImage => 'Image';
+
+  @override
+  String get chatImageUnavailable => '[Image unavailable]';
+
+  @override
+  String get chatImageLoading => '[Loading image]';
+
+  @override
+  String get chatSourceQq => 'QQ';
+
+  @override
+  String get chatSourceGame => 'Game';
+
+  @override
+  String get chatInteropFallback => '[Cross-platform message]';
+
+  @override
+  String get sendImage => 'Send image';
 }
 
 /// The translations for English, as used in the United States (`en_US`).
@@ -2800,4 +2821,25 @@ class AppLocalizationsEnUs extends AppLocalizationsEn {
   @override
   String get shopNurtureHint =>
       'Nurture item. After purchase it can be used in the nurture gameplay.';
+
+  @override
+  String get chatImage => 'Image';
+
+  @override
+  String get chatImageUnavailable => '[Image unavailable]';
+
+  @override
+  String get chatImageLoading => '[Loading image]';
+
+  @override
+  String get chatSourceQq => 'QQ';
+
+  @override
+  String get chatSourceGame => 'Game';
+
+  @override
+  String get chatInteropFallback => '[Cross-platform message]';
+
+  @override
+  String get sendImage => 'Send image';
 }

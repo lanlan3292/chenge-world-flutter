@@ -2682,6 +2682,48 @@ abstract class AppLocalizations {
   /// In en_US, this message translates to:
   /// **'Nurture item. After purchase it can be used in the nurture gameplay.'**
   String get shopNurtureHint;
+
+  /// No description provided for @chatImage.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Image'**
+  String get chatImage;
+
+  /// No description provided for @chatImageUnavailable.
+  ///
+  /// In en_US, this message translates to:
+  /// **'[Image unavailable]'**
+  String get chatImageUnavailable;
+
+  /// No description provided for @chatImageLoading.
+  ///
+  /// In en_US, this message translates to:
+  /// **'[Loading image]'**
+  String get chatImageLoading;
+
+  /// No description provided for @chatSourceQq.
+  ///
+  /// In en_US, this message translates to:
+  /// **'QQ'**
+  String get chatSourceQq;
+
+  /// No description provided for @chatSourceGame.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Game'**
+  String get chatSourceGame;
+
+  /// No description provided for @chatInteropFallback.
+  ///
+  /// In en_US, this message translates to:
+  /// **'[Cross-platform message]'**
+  String get chatInteropFallback;
+
+  /// No description provided for @sendImage.
+  ///
+  /// In en_US, this message translates to:
+  /// **'Send image'**
+  String get sendImage;
 }
 
 class _AppLocalizationsDelegate

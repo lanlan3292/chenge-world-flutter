@@ -439,6 +439,12 @@ class ChengeApi {
   /// Resolve relative file paths to absolute URLs under the API base.
   String resolveMediaUrl(String url) => _resolveMediaUrl(url);
 
+  /// 文件元信息（图片消息可能只带 fileId，需要换成 url）。
+  Future<Map<String, dynamic>> fileInfo(int fileId, {String? token}) async {
+    final data = await _request('GET', '/file-module/files/info/$fileId', token: token);
+    return data is Map<String, dynamic> ? data : const {};
+  }
+
   String _resolveMediaUrl(String url) {
     final trimmed = url.trim();
     if (trimmed.isEmpty) return trimmed;
