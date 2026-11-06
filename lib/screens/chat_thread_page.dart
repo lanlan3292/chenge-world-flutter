@@ -122,13 +122,6 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     _loadNotificationPreference();
     _bindSocket();
   }
-
-  static const _slashCommands = <_SlashCommand>[
-    _SlashCommand('help', '查看可用指令'),
-    _SlashCommand('me', '发送一条动作描述'),
-    _SlashCommand('shrug', '发送 ¯\\_(ツ)_/¯'),
-  ];
-
   Future<void> _loadMentionCandidates() async {
     try {
       final detail = await widget.api.chatDetail(_conversation.id, widget.token);
@@ -201,29 +194,20 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     final safeCursor = cursor < 0 ? value.length : cursor;
     final before = value.substring(0, safeCursor);
     final at = before.lastIndexOf('@');
-    final slash = before.lastIndexOf('/');
-    final trigger = at > slash ? at : slash;
-    if (trigger < 0 || (trigger > 0 && !RegExp(r'\s').hasMatch(before[trigger - 1]))) {
+    if (at < 0 || (at > 0 && !RegExp(r'\s').hasMatch(before[at - 1]))) {
       if (_composerHint != null) setState(() => _composerHint = null);
       return;
     }
-    final query = before.substring(trigger + 1);
+    final query = before.substring(at + 1);
     if (query.contains(RegExp(r'\s'))) {
       if (_composerHint != null) setState(() => _composerHint = null);
       return;
     }
-    if (before[trigger] == '@') {
-      final matches = _mentions
-          .where((item) => query.isEmpty || item.name.toLowerCase().contains(query.toLowerCase()))
-          .take(8)
-          .toList();
-      setState(() => _composerHint = matches.isEmpty ? null : _ComposerHint.mention(matches, trigger));
-      return;
-    }
-    final matches = _slashCommands
-        .where((item) => item.name.startsWith(query.toLowerCase()))
+    final matches = _mentions
+        .where((item) => query.isEmpty || item.name.toLowerCase().contains(query.toLowerCase()))
+        .take(8)
         .toList();
-    setState(() => _composerHint = matches.isEmpty ? null : _ComposerHint.slash(matches, trigger));
+    setState(() => _composerHint = matches.isEmpty ? null : _ComposerHint.mention(matches, at));
   }
 
   void _insertMention(_MentionCandidate candidate) {
@@ -238,28 +222,6 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       text: next,
       selection: TextSelection.collapsed(offset: caret),
     );
-    setState(() => _composerHint = null);
-  }
-
-  void _insertSlash(_SlashCommand command) {
-    final hint = _composerHint;
-    if (hint == null) return;
-    final text = _messageController.text;
-    final cursor = _messageController.selection.baseOffset;
-    final end = cursor < 0 ? text.length : cursor;
-    if (command.name == 'shrug') {
-      final next = '${text.substring(0, hint.start)}¯\\_(ツ)_/¯${text.substring(end)}';
-      _messageController.value = TextEditingValue(
-        text: next,
-        selection: TextSelection.collapsed(offset: hint.start + '¯\\_(ツ)_/¯'.length),
-      );
-    } else {
-      final next = '${text.substring(0, hint.start)}/${command.name} ${text.substring(end)}';
-      _messageController.value = TextEditingValue(
-        text: next,
-        selection: TextSelection.collapsed(offset: hint.start + command.name.length + 2),
-      );
-    }
     setState(() => _composerHint = null);
   }
 
@@ -1160,7 +1122,11 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onDoubleTap: () => _startQuote(message),
+        onLongPress: () => _showMessageActions(message),
+        child: Row(
         mainAxisAlignment:
             mine ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -1210,6 +1176,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
             avatarFor(AppLocalizations.of(context).me, message.senderAvatar),
           ],
         ],
+        ),
       ),
     );
   }
@@ -1839,8 +1806,10 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          InkWell(
-            borderRadius: BorderRadius.circular(8),
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onDoubleTap: () => _startQuote(message),
+            onLongPress: () => _showMessageActions(message),
             onTap: data == null || data.details.isEmpty
                 ? null
                 : () => _showInteropDetails(data, sourceLabel),
@@ -1880,7 +1849,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
           ),
           if (text.isNotEmpty) ...[
             const SizedBox(height: 6),
-            SelectableText(text, style: const TextStyle(height: 1.45)),
+            Text(text, style: const TextStyle(height: 1.45)),
           ],
           if (images.isNotEmpty) ...[
             const SizedBox(height: 8),
@@ -2196,15 +2165,6 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                 title: Text(candidate.name),
                 onTap: () => _insertMention(candidate),
               ),
-          if (hint.commands != null)
-            for (final command in hint.commands!)
-              ListTile(
-                dense: true,
-                leading: const Icon(Icons.terminal_rounded, size: 18),
-                title: Text('/${command.name}'),
-                subtitle: Text(command.hint),
-                onTap: () => _insertSlash(command),
-              ),
         ],
       ),
     );
@@ -2360,21 +2320,12 @@ class _MentionCandidate {
   final String name;
 }
 
-class _SlashCommand {
-  const _SlashCommand(this.name, this.hint);
-  final String name;
-  final String hint;
-}
-
 class _ComposerHint {
-  const _ComposerHint._({this.mentions, this.commands, required this.start});
+  const _ComposerHint._({this.mentions, required this.start});
   factory _ComposerHint.mention(List<_MentionCandidate> mentions, int start) =>
       _ComposerHint._(mentions: mentions, start: start);
-  factory _ComposerHint.slash(List<_SlashCommand> commands, int start) =>
-      _ComposerHint._(commands: commands, start: start);
 
   final List<_MentionCandidate>? mentions;
-  final List<_SlashCommand>? commands;
   final int start;
 }
 
