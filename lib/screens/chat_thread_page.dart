@@ -119,15 +119,12 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       _loadMessages();
     }
     _loadMentionCandidates();
+    _loadSlashCommands();
     _loadNotificationPreference();
     _bindSocket();
   }
 
-  static const _slashCommands = <_SlashCommand>[
-    _SlashCommand('help', '查看可用指令'),
-    _SlashCommand('me', '发送一条动作描述'),
-    _SlashCommand('shrug', '发送 ¯\\_(ツ)_/¯'),
-  ];
+  List<_SlashCommand> _slashCommands = const [];
 
   Future<void> _loadMentionCandidates() async {
     try {
@@ -149,6 +146,34 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     } on ApiException {
       // @ 列表失败不影响发消息。
     }
+  }
+
+  /// 斜杠指令按绑定的机器人分组。普通成员没有指令目录接口。
+  Future<void> _loadSlashCommands() async {
+    final commands = <_SlashCommand>[];
+    final seen = <String>{};
+    try {
+      final bindings = await widget.api.botBindings(widget.token);
+      for (final row in bindings) {
+        final appId = '${row['app_id'] ?? row['appId'] ?? ''}'.trim();
+        if (appId.isEmpty || !seen.add(appId)) continue;
+        commands.add(_SlashCommand('bind', '查看绑定状态', bot: appId));
+        commands.add(_SlashCommand('help', '查看这个机器人的指令', bot: appId));
+      }
+    } on ApiException {
+      // 未绑定或接口不可用时，仍可用会话里出现过的机器人分组。
+    }
+    for (final message in _messages.where((item) => item.type == 'qq' || item.type == 'game')) {
+      final data = message.interop;
+      final bot = (data?.nickname ?? message.senderName ?? '').trim();
+      final group = (data?.groupName ?? '').trim();
+      if (bot.isEmpty && group.isEmpty) continue;
+      final label = [bot, group].where((item) => item.isNotEmpty).join(' · ');
+      if (!seen.add(label)) continue;
+      commands.add(_SlashCommand('help', group.isEmpty ? '这个机器人' : group, bot: label));
+    }
+    if (!mounted) return;
+    setState(() => _slashCommands = commands);
   }
 
   Future<void> _loadNotificationPreference() async {
@@ -220,8 +245,9 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       setState(() => _composerHint = matches.isEmpty ? null : _ComposerHint.mention(matches, trigger));
       return;
     }
+    final needle = query.toLowerCase();
     final matches = _slashCommands
-        .where((item) => item.name.startsWith(query.toLowerCase()))
+        .where((item) => item.name.startsWith(needle) || item.bot.toLowerCase().contains(needle))
         .toList();
     setState(() => _composerHint = matches.isEmpty ? null : _ComposerHint.slash(matches, trigger));
   }
@@ -247,19 +273,12 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     final text = _messageController.text;
     final cursor = _messageController.selection.baseOffset;
     final end = cursor < 0 ? text.length : cursor;
-    if (command.name == 'shrug') {
-      final next = '${text.substring(0, hint.start)}¯\\_(ツ)_/¯${text.substring(end)}';
-      _messageController.value = TextEditingValue(
-        text: next,
-        selection: TextSelection.collapsed(offset: hint.start + '¯\\_(ツ)_/¯'.length),
-      );
-    } else {
-      final next = '${text.substring(0, hint.start)}/${command.name} ${text.substring(end)}';
-      _messageController.value = TextEditingValue(
-        text: next,
-        selection: TextSelection.collapsed(offset: hint.start + command.name.length + 2),
-      );
-    }
+    final inserted = command.bot.isEmpty ? '/${command.name} ' : '/${command.name} @${command.bot} ';
+    final next = '${text.substring(0, hint.start)}$inserted${text.substring(end)}';
+    _messageController.value = TextEditingValue(
+      text: next,
+      selection: TextSelection.collapsed(offset: hint.start + inserted.length),
+    );
     setState(() => _composerHint = null);
   }
 
@@ -573,6 +592,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
         _hasMore = messages.length >= 30;
         if (!isInitial) _loading = false;
       });
+      unawaited(_loadSlashCommands());
       final lastId = merged.isEmpty ? null : merged.last.id;
       await widget.api.markChatRead(
         _conversation.id,
@@ -1160,7 +1180,11 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onDoubleTap: () => _startQuote(message),
+        onLongPress: () => _showMessageActions(message),
+        child: Row(
         mainAxisAlignment:
             mine ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -1210,6 +1234,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
             avatarFor(AppLocalizations.of(context).me, message.senderAvatar),
           ],
         ],
+        ),
       ),
     );
   }
@@ -1839,8 +1864,10 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          InkWell(
-            borderRadius: BorderRadius.circular(8),
+          GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onDoubleTap: () => _startQuote(message),
+            onLongPress: () => _showMessageActions(message),
             onTap: data == null || data.details.isEmpty
                 ? null
                 : () => _showInteropDetails(data, sourceLabel),
@@ -1880,7 +1907,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
           ),
           if (text.isNotEmpty) ...[
             const SizedBox(height: 6),
-            SelectableText(text, style: const TextStyle(height: 1.45)),
+            Text(text, style: const TextStyle(height: 1.45)),
           ],
           if (images.isNotEmpty) ...[
             const SizedBox(height: 8),
@@ -2202,7 +2229,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                 dense: true,
                 leading: const Icon(Icons.terminal_rounded, size: 18),
                 title: Text('/${command.name}'),
-                subtitle: Text(command.hint),
+                subtitle: Text(command.bot.isEmpty ? command.hint : '${command.bot} · ${command.hint}'),
                 onTap: () => _insertSlash(command),
               ),
         ],
@@ -2361,9 +2388,10 @@ class _MentionCandidate {
 }
 
 class _SlashCommand {
-  const _SlashCommand(this.name, this.hint);
+  const _SlashCommand(this.name, this.hint, {this.bot = ''});
   final String name;
   final String hint;
+  final String bot;
 }
 
 class _ComposerHint {
