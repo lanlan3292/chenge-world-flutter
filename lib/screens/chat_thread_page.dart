@@ -148,32 +148,37 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     }
   }
 
-  /// 斜杠指令按绑定的机器人分组。普通成员没有指令目录接口。
+  /// 当前后端没有公开的指令目录；把客户端支持的指令按绑定机器人分组展示。
   Future<void> _loadSlashCommands() async {
     final commands = <_SlashCommand>[];
-    final seen = <String>{};
+    final seenBots = <String>{};
     try {
       final bindings = await widget.api.botBindings(widget.token);
       for (final row in bindings) {
         final appId = '${row['app_id'] ?? row['appId'] ?? ''}'.trim();
-        if (appId.isEmpty || !seen.add(appId)) continue;
-        commands.add(_SlashCommand('bind', '查看绑定状态', bot: appId));
-        commands.add(_SlashCommand('help', '查看这个机器人的指令', bot: appId));
+        if (appId.isEmpty || !seenBots.add(appId)) continue;
+        _addBotCommands(commands, appId);
       }
     } on ApiException {
-      // 未绑定或接口不可用时，仍可用会话里出现过的机器人分组。
+      // 未绑定或接口不可用时，使用会话中可识别的机器人分组。
     }
     for (final message in _messages.where((item) => item.type == 'qq' || item.type == 'game')) {
       final data = message.interop;
       final bot = (data?.nickname ?? message.senderName ?? '').trim();
       final group = (data?.groupName ?? '').trim();
-      if (bot.isEmpty && group.isEmpty) continue;
       final label = [bot, group].where((item) => item.isNotEmpty).join(' · ');
-      if (!seen.add(label)) continue;
-      commands.add(_SlashCommand('help', group.isEmpty ? '这个机器人' : group, bot: label));
+      if (label.isEmpty || !seenBots.add(label)) continue;
+      _addBotCommands(commands, label);
     }
     if (!mounted) return;
     setState(() => _slashCommands = commands);
+  }
+
+  void _addBotCommands(List<_SlashCommand> commands, String bot) {
+    commands
+      ..add(_SlashCommand('help', '查看可用指令', bot: bot))
+      ..add(_SlashCommand('me', '发送一条动作描述', bot: bot))
+      ..add(_SlashCommand('shrug', '发送 ¯\\_(ツ)_/¯', bot: bot));
   }
 
   Future<void> _loadNotificationPreference() async {
@@ -273,12 +278,21 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     final text = _messageController.text;
     final cursor = _messageController.selection.baseOffset;
     final end = cursor < 0 ? text.length : cursor;
-    final inserted = command.bot.isEmpty ? '/${command.name} ' : '/${command.name} @${command.bot} ';
-    final next = '${text.substring(0, hint.start)}$inserted${text.substring(end)}';
-    _messageController.value = TextEditingValue(
-      text: next,
-      selection: TextSelection.collapsed(offset: hint.start + inserted.length),
-    );
+    if (command.name == 'shrug') {
+      final inserted = '¯\\_(ツ)_/¯';
+      final next = '${text.substring(0, hint.start)}$inserted${text.substring(end)}';
+      _messageController.value = TextEditingValue(
+        text: next,
+        selection: TextSelection.collapsed(offset: hint.start + inserted.length),
+      );
+    } else {
+      final inserted = '/${command.name} ';
+      final next = '${text.substring(0, hint.start)}$inserted${text.substring(end)}';
+      _messageController.value = TextEditingValue(
+        text: next,
+        selection: TextSelection.collapsed(offset: hint.start + inserted.length),
+      );
+    }
     setState(() => _composerHint = null);
   }
 

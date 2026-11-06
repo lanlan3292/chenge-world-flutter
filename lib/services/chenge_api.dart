@@ -703,11 +703,14 @@ class ChengeApi {
     return data;
   }
 
-  /// 当前账号绑定的 QQ 机器人，按 appId 分组。
+  /// 当前账号绑定的 QQ 机器人。接口返回单个绑定对象，统一包装成列表。
   Future<List<Map<String, dynamic>>> botBindings(String token) async {
     final data = await _request('GET', '/home/bot/bind', token: token);
-    if (data is! List) return const [];
-    return data.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList();
+    if (data is Map) return [Map<String, dynamic>.from(data)];
+    if (data is List) {
+      return data.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList();
+    }
+    return const [];
   }
 
   /// 用户偏好：主题 / 语言 / 通知 / 隐私。服务端会与默认值合并。
