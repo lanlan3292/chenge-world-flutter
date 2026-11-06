@@ -652,6 +652,125 @@ class ChengeApi {
     );
   }
 
+  /// 搜索本人可见会话中的历史消息。
+  /// [scope] 只能是 `private-chat` 或 `group-chat`。
+  Future<List<ChatMessage>> searchChatMessages(
+    String token, {
+    required String keyword,
+    required String scope,
+    int? conversationId,
+    int? channelId,
+  }) async {
+    final query = <String, String>{
+      'keyword': keyword.trim(),
+      'scope': scope,
+    };
+    if (conversationId != null) query['conversationId'] = '$conversationId';
+    if (channelId != null) query['channelId'] = '$channelId';
+    final data = await _request(
+      'GET',
+      '/chat/messages/search',
+      query: query,
+      token: token,
+    );
+    if (data is! List) throw const ApiException('消息搜索结果格式不正确');
+    return data.whereType<Map<String, dynamic>>().map(ChatMessage.fromJson).toList();
+  }
+
+  /// 定位到某条消息前后的上下文。
+  Future<List<ChatMessage>> chatMessageContext(
+    int conversationId,
+    int messageId,
+    String token, {
+    int? channelId,
+  }) async {
+    final query = <String, String>{};
+    if (channelId != null) query['channelId'] = '$channelId';
+    final data = await _request(
+      'GET',
+      '/chat/$conversationId/messages/$messageId/context',
+      query: query.isEmpty ? null : query,
+      token: token,
+    );
+    if (data is! List) throw const ApiException('消息上下文格式不正确');
+    return data.whereType<Map<String, dynamic>>().map(ChatMessage.fromJson).toList();
+  }
+
+  /// 会话详情，含成员列表（用于 @）。
+  Future<Map<String, dynamic>> chatDetail(int conversationId, String token) async {
+    final data = await _request('GET', '/chat/$conversationId', token: token);
+    if (data is! Map<String, dynamic>) throw const ApiException('会话详情格式不正确');
+    return data;
+  }
+
+  /// 用户偏好：主题 / 语言 / 通知 / 隐私。服务端会与默认值合并。
+  Future<Map<String, dynamic>> userSettings(String token) async {
+    final data = await _request('GET', '/home/settings', token: token);
+    if (data is! Map<String, dynamic>) return const {};
+    return data;
+  }
+
+  Future<Map<String, dynamic>> saveUserSettings(
+    Map<String, dynamic> body,
+    String token,
+  ) async {
+    final data = await _request('POST', '/home/settings', body: body, token: token);
+    if (data is! Map<String, dynamic>) return const {};
+    return data;
+  }
+
+  /// 收藏列表。网关路径带 `/chengebasic` 前缀。
+  Future<({List<Map<String, dynamic>> records, int total})> favorites(
+    String token, {
+    String? business,
+    int pageNum = 1,
+    int pageSize = 30,
+  }) async {
+    final query = <String, String>{
+      'pageNum': '$pageNum',
+      'pageSize': '$pageSize',
+    };
+    if (business != null && business.isNotEmpty) query['business'] = business;
+    final data = await _request(
+      'GET',
+      '/chengebasic/favorites',
+      query: query,
+      token: token,
+    );
+    if (data is! Map) return (records: const <Map<String, dynamic>>[], total: 0);
+    final records = data['records'];
+    final total = data['total'];
+    return (
+      records: records is List
+          ? records.whereType<Map>().map((row) => Map<String, dynamic>.from(row)).toList()
+          : const <Map<String, dynamic>>[],
+      total: total is num ? total.toInt() : int.tryParse('$total') ?? 0,
+    );
+  }
+
+  /// 收藏或取消收藏。聊天消息：business=cchat, targetType=message。
+  Future<void> setFavorite(
+    String token, {
+    required String business,
+    required String targetType,
+    required String targetId,
+    String contextId = '',
+    required bool active,
+  }) async {
+    await _request(
+      'PUT',
+      '/chengebasic/favorites',
+      body: {
+        'business': business,
+        'targetType': targetType,
+        'targetId': targetId,
+        'contextId': contextId,
+        'active': active,
+      },
+      token: token,
+    );
+  }
+
   Future<void> markChatRead(
     int conversationId,
     String token, {

@@ -131,7 +131,7 @@ class ChatMarkdown extends StatelessWidget {
 
     return MarkdownBody(
       data: data,
-      selectable: true,
+      selectable: false,
       extensionSet: md.ExtensionSet.gitHubWeb,
       styleSheet: style,
       onTapLink: (text, href, title) => _onTapLink(context, href),
