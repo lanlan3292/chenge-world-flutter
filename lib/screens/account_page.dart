@@ -6,10 +6,12 @@ import '../services/chenge_api.dart';
 import '../services/notification_badge.dart';
 import '../services/settings_store.dart';
 import 'chenge_core_page.dart';
+import 'favorites_page.dart';
 import 'help_page.dart';
 import 'notifications_page.dart';
 import 'resources_page.dart';
 import 'settings_page.dart';
+import 'user_settings_page.dart';
 import '../theme/app_theme.dart';
 import 'edit_profile_page.dart';
 
@@ -223,6 +225,32 @@ class _AccountPageState extends State<AccountPage> {
               token: widget.token,
               onLoginRequested: () => _showLogin(context),
             ),
+      ),
+    );
+  }
+
+  void _openFavorites(BuildContext context) {
+    final token = widget.token;
+    if (token == null) {
+      _showLogin(context);
+      return;
+    }
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => FavoritesPage(api: widget.api, token: token),
+      ),
+    );
+  }
+
+  void _openUserSettings(BuildContext context) {
+    final token = widget.token;
+    if (token == null) {
+      _showLogin(context);
+      return;
+    }
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => UserSettingsPage(api: widget.api, token: token),
       ),
     );
   }
@@ -477,6 +505,24 @@ Material(
                 title: AppLocalizations.of(context).helpCenter,
                 subtitle: AppLocalizations.of(context).helpSubtitle,
                 onTap: () => _openHelp(context),
+              ),
+              const SizedBox(height: 12),
+              _actionTile(
+                icon: Icons.star_outline_rounded,
+                containerColor: Theme.of(context).colorScheme.primaryContainer,
+                iconColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                title: '收藏',
+                subtitle: '查看收藏的聊天、帖子和商品',
+                onTap: () => _openFavorites(context),
+              ),
+              const SizedBox(height: 12),
+              _actionTile(
+                icon: Icons.tune_rounded,
+                containerColor: Theme.of(context).colorScheme.secondaryContainer,
+                iconColor: Theme.of(context).colorScheme.onSecondaryContainer,
+                title: '用户设置',
+                subtitle: '通知、免打扰和隐私',
+                onTap: () => _openUserSettings(context),
               ),
               const SizedBox(height: 12),
               _actionTile(

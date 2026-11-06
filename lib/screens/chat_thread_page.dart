@@ -73,6 +73,9 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
   bool _hasMore = false;
   bool _stickToBottom = true;
   bool _initialScrollDone = false;
+  bool _pinScheduled = false;
+  double? _olderAnchorExtent;
+  double? _olderAnchorOffset;
   bool _contentReady = false;
   bool _popScheduled = false;
   bool _emojiPickerOpen = false;
@@ -81,6 +84,16 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
 
   /// 当前引用（回复）的消息。
   ChatMessage? _quoting;
+
+  /// 可 @ 的会话成员（不含自己）。
+  List<_MentionCandidate> _mentions = const [];
+
+  /// 输入 `@` 或 `/` 后弹出的候选项。
+  _ComposerHint? _composerHint;
+
+  /// 本会话是否接收消息通知。服务端只有全局 `notify.types.message`。
+  bool _receiveNotifications = true;
+  bool _notifyLoaded = false;
 
   /// fileId → 图片地址缓存（图片消息可能只带 fileId）。
   final Map<int, String> _fileUrls = {};
@@ -105,7 +118,241 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     } else {
       _loadMessages();
     }
+    _loadMentionCandidates();
+    _loadNotificationPreference();
     _bindSocket();
+  }
+
+  static const _slashCommands = <_SlashCommand>[
+    _SlashCommand('help', '查看可用指令'),
+    _SlashCommand('me', '发送一条动作描述'),
+    _SlashCommand('shrug', '发送 ¯\\_(ツ)_/¯'),
+  ];
+
+  Future<void> _loadMentionCandidates() async {
+    try {
+      final detail = await widget.api.chatDetail(_conversation.id, widget.token);
+      if (!mounted) return;
+      final raw = detail['members'];
+      final next = <_MentionCandidate>[];
+      if (raw is List) {
+        for (final item in raw.whereType<Map>()) {
+          final id = item['userId'] is num
+              ? (item['userId'] as num).toInt()
+              : int.tryParse('${item['userId']}') ?? 0;
+          if (id <= 0 || id == widget.userId) continue;
+          final nickname = '${item['nickname'] ?? ''}'.trim();
+          next.add(_MentionCandidate(id, nickname.isEmpty ? '用户$id' : nickname));
+        }
+      }
+      setState(() => _mentions = next);
+    } on ApiException {
+      // @ 列表失败不影响发消息。
+    }
+  }
+
+  Future<void> _loadNotificationPreference() async {
+    try {
+      final settings = await widget.api.userSettings(widget.token);
+      if (!mounted) return;
+      setState(() {
+        _receiveNotifications = _notifyMessageEnabled(settings);
+        _notifyLoaded = true;
+      });
+    } on ApiException {
+      if (mounted) setState(() => _notifyLoaded = true);
+    }
+  }
+
+  bool _notifyMessageEnabled(Map<String, dynamic> settings) {
+    final notify = settings['notify'];
+    if (notify is! Map) return true;
+    if (notify['site'] == false) return false;
+    final types = notify['types'];
+    if (types is! Map) return true;
+    return types['message'] != false;
+  }
+
+  Future<void> _setReceiveNotifications(bool enabled) async {
+    final previous = _receiveNotifications;
+    setState(() => _receiveNotifications = enabled);
+    try {
+      final current = await widget.api.userSettings(widget.token);
+      final notify = current['notify'] is Map
+          ? Map<String, dynamic>.from(current['notify'] as Map)
+          : <String, dynamic>{'site': true, 'types': <String, dynamic>{}};
+      final types = notify['types'] is Map
+          ? Map<String, dynamic>.from(notify['types'] as Map)
+          : <String, dynamic>{};
+      types['message'] = enabled;
+      notify['types'] = types;
+      if (enabled) notify['site'] = true;
+      await widget.api.saveUserSettings({'notify': notify}, widget.token);
+    } on ApiException catch (error) {
+      if (!mounted) return;
+      setState(() => _receiveNotifications = previous);
+      _showError(error.message);
+    }
+  }
+
+  void _onComposerChanged(String value) {
+    final selection = _messageController.selection;
+    final cursor = selection.isValid ? selection.baseOffset : value.length;
+    final safeCursor = cursor < 0 ? value.length : cursor;
+    final before = value.substring(0, safeCursor);
+    final at = before.lastIndexOf('@');
+    final slash = before.lastIndexOf('/');
+    final trigger = at > slash ? at : slash;
+    if (trigger < 0 || (trigger > 0 && !RegExp(r'\s').hasMatch(before[trigger - 1]))) {
+      if (_composerHint != null) setState(() => _composerHint = null);
+      return;
+    }
+    final query = before.substring(trigger + 1);
+    if (query.contains(RegExp(r'\s'))) {
+      if (_composerHint != null) setState(() => _composerHint = null);
+      return;
+    }
+    if (before[trigger] == '@') {
+      final matches = _mentions
+          .where((item) => query.isEmpty || item.name.toLowerCase().contains(query.toLowerCase()))
+          .take(8)
+          .toList();
+      setState(() => _composerHint = matches.isEmpty ? null : _ComposerHint.mention(matches, trigger));
+      return;
+    }
+    final matches = _slashCommands
+        .where((item) => item.name.startsWith(query.toLowerCase()))
+        .toList();
+    setState(() => _composerHint = matches.isEmpty ? null : _ComposerHint.slash(matches, trigger));
+  }
+
+  void _insertMention(_MentionCandidate candidate) {
+    final hint = _composerHint;
+    if (hint == null) return;
+    final text = _messageController.text;
+    final cursor = _messageController.selection.baseOffset;
+    final end = cursor < 0 ? text.length : cursor;
+    final next = '${text.substring(0, hint.start)}@${candidate.name} ${text.substring(end)}';
+    final caret = hint.start + candidate.name.length + 2;
+    _messageController.value = TextEditingValue(
+      text: next,
+      selection: TextSelection.collapsed(offset: caret),
+    );
+    setState(() => _composerHint = null);
+  }
+
+  void _insertSlash(_SlashCommand command) {
+    final hint = _composerHint;
+    if (hint == null) return;
+    final text = _messageController.text;
+    final cursor = _messageController.selection.baseOffset;
+    final end = cursor < 0 ? text.length : cursor;
+    if (command.name == 'shrug') {
+      final next = '${text.substring(0, hint.start)}¯\\_(ツ)_/¯${text.substring(end)}';
+      _messageController.value = TextEditingValue(
+        text: next,
+        selection: TextSelection.collapsed(offset: hint.start + '¯\\_(ツ)_/¯'.length),
+      );
+    } else {
+      final next = '${text.substring(0, hint.start)}/${command.name} ${text.substring(end)}';
+      _messageController.value = TextEditingValue(
+        text: next,
+        selection: TextSelection.collapsed(offset: hint.start + command.name.length + 2),
+      );
+    }
+    setState(() => _composerHint = null);
+  }
+
+  Future<void> _openHistorySearch() async {
+    final picked = await showModalBottomSheet<ChatMessage>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (sheetContext) => _HistorySearchSheet(
+        api: widget.api,
+        token: widget.token,
+        conversationId: _conversation.id,
+        channelId: _channel?.id,
+        scope: _isGroup ? 'group-chat' : 'private-chat',
+      ),
+    );
+    if (picked == null || !mounted) return;
+    await _jumpToMessage(picked);
+  }
+
+  Future<void> _jumpToMessage(ChatMessage target) async {
+    try {
+      final contextMessages = await widget.api.chatMessageContext(
+        _conversation.id,
+        target.id,
+        widget.token,
+        channelId: target.channelId ?? _channel?.id,
+      );
+      if (!mounted || contextMessages.isEmpty) return;
+      setState(() {
+        _messages
+          ..clear()
+          ..addAll(contextMessages);
+        _hasMore = true;
+        _contentReady = true;
+      });
+      final index = _messages.indexWhere((item) => item.id == target.id);
+      if (index < 0) return;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!_messageScrollController.hasClients) return;
+        final offset = (index * 72).toDouble();
+        _messageScrollController.jumpTo(
+          offset.clamp(0, _messageScrollController.position.maxScrollExtent),
+        );
+      });
+    } on ApiException catch (error) {
+      if (mounted) _showError(error.message);
+    }
+  }
+
+  Future<void> _openConversationSettings() async {
+    if (!_notifyLoaded) await _loadNotificationPreference();
+    if (!mounted) return;
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) {
+        var enabled = _receiveNotifications;
+        return StatefulBuilder(
+          builder: (context, setSheetState) => SafeArea(
+            child: SwitchListTile(
+              secondary: const Icon(Icons.notifications_outlined),
+              title: const Text('接收此会话通知'),
+              subtitle: const Text('关闭后不再接收聊天消息通知'),
+              value: enabled,
+              onChanged: (value) async {
+                setSheetState(() => enabled = value);
+                await _setReceiveNotifications(value);
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _toggleFavorite(ChatMessage message) async {
+    try {
+      await widget.api.setFavorite(
+        widget.token,
+        business: 'cchat',
+        targetType: 'message',
+        targetId: '${message.id}',
+        contextId: '${_conversation.id}',
+        active: true,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(const SnackBar(content: Text('已收藏')));
+    } on ApiException catch (error) {
+      if (mounted) _showError(error.message);
+    }
   }
 
   /// 拉群总览拿可见频道，选中默认频道后再加载历史。
@@ -405,10 +652,16 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
         channelId: _isGroup ? _channel?.id : null,
       );
       if (!mounted) return;
+      if (_messageScrollController.hasClients) {
+        final position = _messageScrollController.position;
+        _olderAnchorExtent = position.maxScrollExtent;
+        _olderAnchorOffset = position.pixels;
+      }
       setState(() {
         _messages.insertAll(0, older);
         _hasMore = older.length >= 30;
       });
+      _restoreOlderAnchor();
     } on ApiException catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context)
@@ -575,15 +828,45 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
   void _onScroll() {
     if (!_messageScrollController.hasClients) return;
     final position = _messageScrollController.position;
-    _stickToBottom = position.maxScrollExtent - position.pixels < 80;
+    if (position.isScrollingNotifier.value) {
+      _stickToBottom = position.maxScrollExtent - position.pixels < 80;
+    }
     if (position.pixels < 60) _loadOlder();
+  }
+
+  /// 用户停在底部时，新消息、图片和 Markdown 撑高后继续贴底。
+  void _schedulePin() {
+    if (!_stickToBottom || _pinScheduled || _olderAnchorExtent != null) return;
+    _pinScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _pinScheduled = false;
+      if (!mounted || !_stickToBottom || !_messageScrollController.hasClients) return;
+      final position = _messageScrollController.position;
+      final gap = position.maxScrollExtent - position.pixels;
+      if (gap > 1) position.jumpTo(position.maxScrollExtent);
+    });
+  }
+
+  void _restoreOlderAnchor() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_messageScrollController.hasClients) return;
+      final beforeExtent = _olderAnchorExtent;
+      final beforeOffset = _olderAnchorOffset;
+      _olderAnchorExtent = null;
+      _olderAnchorOffset = null;
+      if (beforeExtent == null || beforeOffset == null) return;
+      final position = _messageScrollController.position;
+      final delta = position.maxScrollExtent - beforeExtent;
+      if (delta <= 0) return;
+      position.jumpTo((beforeOffset + delta).clamp(0, position.maxScrollExtent));
+    });
   }
 
   void _scrollToBottom({bool animate = true}) {
     void go() {
       if (!_messageScrollController.hasClients) return;
       final max = _messageScrollController.position.maxScrollExtent;
-      if (animate) {
+      if (animate && max - _messageScrollController.position.pixels > 24) {
         _messageScrollController.animateTo(
           max,
           duration: const Duration(milliseconds: 180),
@@ -596,7 +879,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       go();
-      if (!animate) WidgetsBinding.instance.addPostFrameCallback((_) => go());
+      WidgetsBinding.instance.addPostFrameCallback((_) => go());
     });
   }
 
@@ -654,6 +937,22 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
               ),
           ],
         ),
+        actions: [
+          IconButton(
+            tooltip: '搜索历史消息',
+            onPressed: _openHistorySearch,
+            icon: const Icon(Icons.search_rounded),
+          ),
+          IconButton(
+            tooltip: '会话设置',
+            onPressed: _openConversationSettings,
+            icon: Icon(
+              _receiveNotifications
+                  ? Icons.settings_outlined
+                  : Icons.notifications_off_outlined,
+            ),
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -663,7 +962,13 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
               children: [
                 Opacity(
                   opacity: _contentReady ? 1 : 0,
-                  child: ListView.builder(
+                  child: NotificationListener<SizeChangedLayoutNotification>(
+                    onNotification: (_) {
+                      _schedulePin();
+                      return false;
+                    },
+                    child: SizeChangedLayoutNotifier(
+                      child: ListView.builder(
                     controller: _messageScrollController,
                     padding: const EdgeInsets.fromLTRB(14, 14, 14, 18),
                     itemCount: _messages.length + (_hasMore ? 1 : 0),
@@ -690,9 +995,11 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                         _messages[messageIndex],
                         showTime: _shouldShowTime(messageIndex),
                       );
-                    },
+                          },
+                        ),
+                      ),
+                    ),
                   ),
-                ),
                 if (!_contentReady)
                   ColoredBox(
                     color: Theme.of(context).colorScheme.surface,
@@ -911,6 +1218,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
   Widget _messageBubble(ChatMessage message, {required bool mine}) {
     final body = GestureDetector(
       behavior: HitTestBehavior.opaque,
+      onDoubleTap: () => _startQuote(message),
       onLongPress: () => _showMessageActions(message),
       child: _bubbleContent(message, mine: mine),
     );
@@ -1109,6 +1417,11 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                   title: Text(l10n.chatCopy),
                   onTap: () => Navigator.pop(sheetContext, 'copy'),
                 ),
+                ListTile(
+                  leading: const Icon(Icons.star_outline_rounded),
+                  title: const Text('收藏'),
+                  onTap: () => Navigator.pop(sheetContext, 'favorite'),
+                ),
                 if (canRecall)
                   ListTile(
                     leading: const Icon(Icons.undo_rounded, color: AppTheme.coral),
@@ -1129,6 +1442,8 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       await _pickReaction(message);
     } else if (action == 'copy') {
       await _copyMessage(message);
+    } else if (action == 'favorite') {
+      await _toggleFavorite(message);
     } else if (action == 'recall') {
       await _recallMessage(message);
     }
@@ -1790,6 +2105,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (_quoting != null) _quoteComposerBar(),
+              if (_composerHint != null) _composerHintBar(),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
@@ -1818,7 +2134,10 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                   maxLines: 5,
                   textInputAction: TextInputAction.newline,
                   enabled: _canSend,
-                  onChanged: (_) => setState(() {}),
+                  onChanged: (value) {
+                    setState(() {});
+                    _onComposerChanged(value);
+                  },
                   decoration: InputDecoration(
                     hintText:
                         _canSend
@@ -1852,6 +2171,41 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _composerHintBar() {
+    final hint = _composerHint;
+    if (hint == null) return const SizedBox.shrink();
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      constraints: const BoxConstraints(maxHeight: 180),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHigh,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: ListView(
+        shrinkWrap: true,
+        children: [
+          if (hint.mentions != null)
+            for (final candidate in hint.mentions!)
+              ListTile(
+                dense: true,
+                leading: const Icon(Icons.alternate_email_rounded, size: 18),
+                title: Text(candidate.name),
+                onTap: () => _insertMention(candidate),
+              ),
+          if (hint.commands != null)
+            for (final command in hint.commands!)
+              ListTile(
+                dense: true,
+                leading: const Icon(Icons.terminal_rounded, size: 18),
+                title: Text('/${command.name}'),
+                subtitle: Text(command.hint),
+                onTap: () => _insertSlash(command),
+              ),
+        ],
       ),
     );
   }
@@ -1997,5 +2351,148 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
     }
     return '${date.month}/${date.day}';
+  }
+}
+
+class _MentionCandidate {
+  const _MentionCandidate(this.id, this.name);
+  final int id;
+  final String name;
+}
+
+class _SlashCommand {
+  const _SlashCommand(this.name, this.hint);
+  final String name;
+  final String hint;
+}
+
+class _ComposerHint {
+  const _ComposerHint._({this.mentions, this.commands, required this.start});
+  factory _ComposerHint.mention(List<_MentionCandidate> mentions, int start) =>
+      _ComposerHint._(mentions: mentions, start: start);
+  factory _ComposerHint.slash(List<_SlashCommand> commands, int start) =>
+      _ComposerHint._(commands: commands, start: start);
+
+  final List<_MentionCandidate>? mentions;
+  final List<_SlashCommand>? commands;
+  final int start;
+}
+
+class _HistorySearchSheet extends StatefulWidget {
+  const _HistorySearchSheet({
+    required this.api,
+    required this.token,
+    required this.conversationId,
+    required this.scope,
+    this.channelId,
+  });
+
+  final ChengeApi api;
+  final String token;
+  final int conversationId;
+  final String scope;
+  final int? channelId;
+
+  @override
+  State<_HistorySearchSheet> createState() => _HistorySearchSheetState();
+}
+
+class _HistorySearchSheetState extends State<_HistorySearchSheet> {
+  final _controller = TextEditingController();
+  List<ChatMessage> _results = const [];
+  bool _loading = false;
+  String? _error;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _search() async {
+    final keyword = _controller.text.trim();
+    if (keyword.isEmpty) return;
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final rows = await widget.api.searchChatMessages(
+        widget.token,
+        keyword: keyword,
+        scope: widget.scope,
+        conversationId: widget.conversationId,
+        channelId: widget.channelId,
+      );
+      if (!mounted) return;
+      setState(() {
+        _results = rows;
+        _loading = false;
+      });
+    } on ApiException catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _error = error.message;
+        _loading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bottom = MediaQuery.viewInsetsOf(context).bottom;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(16, 0, 16, 16 + bottom),
+      child: SizedBox(
+        height: 420,
+        child: Column(
+          children: [
+            TextField(
+              controller: _controller,
+              autofocus: true,
+              textInputAction: TextInputAction.search,
+              decoration: const InputDecoration(
+                hintText: '搜索历史消息',
+                prefixIcon: Icon(Icons.search_rounded),
+              ),
+              onSubmitted: (_) => _search(),
+            ),
+            const SizedBox(height: 8),
+            if (_loading)
+              const Padding(
+                padding: EdgeInsets.all(24),
+                child: CircularProgressIndicator(),
+              )
+            else if (_error != null)
+              Padding(padding: const EdgeInsets.all(16), child: Text(_error!))
+            else
+              Expanded(
+                child: _results.isEmpty
+                    ? const Center(child: Text('输入关键词搜索本会话'))
+                    : ListView.builder(
+                        itemCount: _results.length,
+                        itemBuilder: (context, index) {
+                          final message = _results[index];
+                          final preview = message.content.replaceAll(RegExp(r'\s+'), ' ').trim();
+                          return ListTile(
+                            title: Text(
+                              message.senderName ?? '消息',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            subtitle: Text(
+                              preview,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            onTap: () => Navigator.pop(context, message),
+                          );
+                        },
+                      ),
+              ),
+          ],
+        ),
+      ),
+    );
   }
 }
