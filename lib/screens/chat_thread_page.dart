@@ -119,13 +119,9 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       _loadMessages();
     }
     _loadMentionCandidates();
-    _loadSlashCommands();
     _loadNotificationPreference();
     _bindSocket();
   }
-
-  List<_SlashCommand> _slashCommands = const [];
-
   Future<void> _loadMentionCandidates() async {
     try {
       final detail = await widget.api.chatDetail(_conversation.id, widget.token);
@@ -146,39 +142,6 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     } on ApiException {
       // @ 列表失败不影响发消息。
     }
-  }
-
-  /// 当前后端没有公开的指令目录；把客户端支持的指令按绑定机器人分组展示。
-  Future<void> _loadSlashCommands() async {
-    final commands = <_SlashCommand>[];
-    final seenBots = <String>{};
-    try {
-      final bindings = await widget.api.botBindings(widget.token);
-      for (final row in bindings) {
-        final appId = '${row['app_id'] ?? row['appId'] ?? ''}'.trim();
-        if (appId.isEmpty || !seenBots.add(appId)) continue;
-        _addBotCommands(commands, appId);
-      }
-    } on ApiException {
-      // 未绑定或接口不可用时，使用会话中可识别的机器人分组。
-    }
-    for (final message in _messages.where((item) => item.type == 'qq' || item.type == 'game')) {
-      final data = message.interop;
-      final bot = (data?.nickname ?? message.senderName ?? '').trim();
-      final group = (data?.groupName ?? '').trim();
-      final label = [bot, group].where((item) => item.isNotEmpty).join(' · ');
-      if (label.isEmpty || !seenBots.add(label)) continue;
-      _addBotCommands(commands, label);
-    }
-    if (!mounted) return;
-    setState(() => _slashCommands = commands);
-  }
-
-  void _addBotCommands(List<_SlashCommand> commands, String bot) {
-    commands
-      ..add(_SlashCommand('help', '查看可用指令', bot: bot))
-      ..add(_SlashCommand('me', '发送一条动作描述', bot: bot))
-      ..add(_SlashCommand('shrug', '发送 ¯\\_(ツ)_/¯', bot: bot));
   }
 
   Future<void> _loadNotificationPreference() async {
@@ -231,30 +194,20 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     final safeCursor = cursor < 0 ? value.length : cursor;
     final before = value.substring(0, safeCursor);
     final at = before.lastIndexOf('@');
-    final slash = before.lastIndexOf('/');
-    final trigger = at > slash ? at : slash;
-    if (trigger < 0 || (trigger > 0 && !RegExp(r'\s').hasMatch(before[trigger - 1]))) {
+    if (at < 0 || (at > 0 && !RegExp(r'\s').hasMatch(before[at - 1]))) {
       if (_composerHint != null) setState(() => _composerHint = null);
       return;
     }
-    final query = before.substring(trigger + 1);
+    final query = before.substring(at + 1);
     if (query.contains(RegExp(r'\s'))) {
       if (_composerHint != null) setState(() => _composerHint = null);
       return;
     }
-    if (before[trigger] == '@') {
-      final matches = _mentions
-          .where((item) => query.isEmpty || item.name.toLowerCase().contains(query.toLowerCase()))
-          .take(8)
-          .toList();
-      setState(() => _composerHint = matches.isEmpty ? null : _ComposerHint.mention(matches, trigger));
-      return;
-    }
-    final needle = query.toLowerCase();
-    final matches = _slashCommands
-        .where((item) => item.name.startsWith(needle) || item.bot.toLowerCase().contains(needle))
+    final matches = _mentions
+        .where((item) => query.isEmpty || item.name.toLowerCase().contains(query.toLowerCase()))
+        .take(8)
         .toList();
-    setState(() => _composerHint = matches.isEmpty ? null : _ComposerHint.slash(matches, trigger));
+    setState(() => _composerHint = matches.isEmpty ? null : _ComposerHint.mention(matches, at));
   }
 
   void _insertMention(_MentionCandidate candidate) {
@@ -269,30 +222,6 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       text: next,
       selection: TextSelection.collapsed(offset: caret),
     );
-    setState(() => _composerHint = null);
-  }
-
-  void _insertSlash(_SlashCommand command) {
-    final hint = _composerHint;
-    if (hint == null) return;
-    final text = _messageController.text;
-    final cursor = _messageController.selection.baseOffset;
-    final end = cursor < 0 ? text.length : cursor;
-    if (command.name == 'shrug') {
-      final inserted = '¯\\_(ツ)_/¯';
-      final next = '${text.substring(0, hint.start)}$inserted${text.substring(end)}';
-      _messageController.value = TextEditingValue(
-        text: next,
-        selection: TextSelection.collapsed(offset: hint.start + inserted.length),
-      );
-    } else {
-      final inserted = '/${command.name} ';
-      final next = '${text.substring(0, hint.start)}$inserted${text.substring(end)}';
-      _messageController.value = TextEditingValue(
-        text: next,
-        selection: TextSelection.collapsed(offset: hint.start + inserted.length),
-      );
-    }
     setState(() => _composerHint = null);
   }
 
@@ -606,7 +535,6 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
         _hasMore = messages.length >= 30;
         if (!isInitial) _loading = false;
       });
-      unawaited(_loadSlashCommands());
       final lastId = merged.isEmpty ? null : merged.last.id;
       await widget.api.markChatRead(
         _conversation.id,
@@ -2237,15 +2165,6 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                 title: Text(candidate.name),
                 onTap: () => _insertMention(candidate),
               ),
-          if (hint.commands != null)
-            for (final command in hint.commands!)
-              ListTile(
-                dense: true,
-                leading: const Icon(Icons.terminal_rounded, size: 18),
-                title: Text('/${command.name}'),
-                subtitle: Text(command.bot.isEmpty ? command.hint : '${command.bot} · ${command.hint}'),
-                onTap: () => _insertSlash(command),
-              ),
         ],
       ),
     );
@@ -2401,22 +2320,12 @@ class _MentionCandidate {
   final String name;
 }
 
-class _SlashCommand {
-  const _SlashCommand(this.name, this.hint, {this.bot = ''});
-  final String name;
-  final String hint;
-  final String bot;
-}
-
 class _ComposerHint {
-  const _ComposerHint._({this.mentions, this.commands, required this.start});
+  const _ComposerHint._({this.mentions, required this.start});
   factory _ComposerHint.mention(List<_MentionCandidate> mentions, int start) =>
       _ComposerHint._(mentions: mentions, start: start);
-  factory _ComposerHint.slash(List<_SlashCommand> commands, int start) =>
-      _ComposerHint._(commands: commands, start: start);
 
   final List<_MentionCandidate>? mentions;
-  final List<_SlashCommand>? commands;
   final int start;
 }
 
