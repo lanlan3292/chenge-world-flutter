@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../l10n/generated/app_localizations.dart';
 
@@ -84,7 +84,10 @@ class _AiAgentPageState extends State<AiAgentPage> {
     if (token == null || _busy) return;
     setState(() => _busy = true);
     try {
-      final session = await widget.api.createAiSession(token, name: AppLocalizations.of(context).newConversation);
+      final session = await widget.api.createAiSession(
+        token,
+        name: AppLocalizations.of(context).newConversation,
+      );
       if (!mounted) return;
       setState(() {
         _sessions.insert(0, session);
@@ -102,17 +105,23 @@ class _AiAgentPageState extends State<AiAgentPage> {
     if (token == null) return;
     final ok = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.of(context).deleteSession),
-        content: Text(AppLocalizations.of(context).confirmDeleteSession(session.name)),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(AppLocalizations.of(context).cancel)),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(AppLocalizations.of(context).delete),
+      builder:
+          (context) => AlertDialog(
+            title: Text(AppLocalizations.of(context).deleteSession),
+            content: Text(
+              AppLocalizations.of(context).confirmDeleteSession(session.name),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(AppLocalizations.of(context).cancel),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(AppLocalizations.of(context).delete),
+              ),
+            ],
           ),
-        ],
-      ),
     );
     if (ok != true) return;
     try {
@@ -143,20 +152,25 @@ class _AiAgentPageState extends State<AiAgentPage> {
     _routeOpen = true;
     final keep = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
-        builder: (_) => AiThreadPage(
-          api: widget.api,
-          token: token,
-          session: session,
-          onSessionRenamed: (updated) {
-            final index = _sessions.indexWhere((s) => s.sessionId == updated.sessionId);
-            if (index >= 0) {
-              setState(() {
-                _sessions[index] = updated;
-                if (_active?.sessionId == updated.sessionId) _active = updated;
-              });
-            }
-          },
-        ),
+        builder:
+            (_) => AiThreadPage(
+              api: widget.api,
+              token: token,
+              session: session,
+              onSessionRenamed: (updated) {
+                final index = _sessions.indexWhere(
+                  (s) => s.sessionId == updated.sessionId,
+                );
+                if (index >= 0) {
+                  setState(() {
+                    _sessions[index] = updated;
+                    if (_active?.sessionId == updated.sessionId) {
+                      _active = updated;
+                    }
+                  });
+                }
+              },
+            ),
       ),
     );
     _routeOpen = false;
@@ -176,7 +190,9 @@ class _AiAgentPageState extends State<AiAgentPage> {
     if (wasWide == null) return;
     if (wasWide && !isWide && _active != null && !_routeOpen) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && MediaQuery.sizeOf(context).width < 760 && _active != null) {
+        if (mounted &&
+            MediaQuery.sizeOf(context).width < 760 &&
+            _active != null) {
           _pushThread(_active!);
         }
       });
@@ -187,7 +203,9 @@ class _AiAgentPageState extends State<AiAgentPage> {
     setState(() => _error = message);
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(message), backgroundColor: AppTheme.coral));
+      ..showSnackBar(
+        SnackBar(content: Text(message), backgroundColor: AppTheme.coral),
+      );
   }
 
   @override
@@ -196,79 +214,98 @@ class _AiAgentPageState extends State<AiAgentPage> {
     _handleWidthChange(isWide);
 
     return Scaffold(
-      appBar: widget.showAppBar
-          ? AppBar(
-              title: const Text('AI Agent', style: TextStyle(fontWeight: FontWeight.w800)),
-              actions: [
-                IconButton(
-                  tooltip: AppLocalizations.of(context).newChat,
-                  onPressed: widget.token == null || _busy ? null : _createSession,
-                  icon: const Icon(Icons.add_comment_rounded),
+      appBar:
+          widget.showAppBar
+              ? AppBar(
+                title: const Text(
+                  'AI Agent',
+                  style: TextStyle(fontWeight: FontWeight.w800),
                 ),
-                IconButton(
-                  tooltip: AppLocalizations.of(context).refreshSessions,
-                  onPressed: widget.token == null ? null : () => _loadSessions(),
-                  icon: const Icon(Icons.refresh_rounded),
-                ),
-                const SizedBox(width: 4),
-              ],
-            )
-          : null,
-      body: widget.token == null
-          ? _signedOut()
-          : isWide
+                actions: [
+                  IconButton(
+                    tooltip: AppLocalizations.of(context).newChat,
+                    onPressed:
+                        widget.token == null || _busy ? null : _createSession,
+                    icon: const Icon(Icons.add_comment_rounded),
+                  ),
+                  IconButton(
+                    tooltip: AppLocalizations.of(context).refreshSessions,
+                    onPressed:
+                        widget.token == null ? null : () => _loadSessions(),
+                    icon: const Icon(Icons.refresh_rounded),
+                  ),
+                  const SizedBox(width: 4),
+                ],
+              )
+              : null,
+      body:
+          widget.token == null
+              ? _signedOut()
+              : isWide
               ? _wideLayout()
               : _sessionList(),
     );
   }
 
   Widget _signedOut() => Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.smart_toy_outlined, color: AppTheme.leaf, size: 54),
-            const SizedBox(height: 12),
-            Text(AppLocalizations.of(context).signInToUseAiAgent, style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w800)),
-            const SizedBox(height: 8),
-            Text(AppLocalizations.of(context).aiAgentSubtitle, style: const TextStyle(color: Color(0xFF70817D))),
-            const SizedBox(height: 16),
-            FilledButton.icon(
-              onPressed: widget.onLoginRequested,
-              icon: const Icon(Icons.login_rounded),
-              label: Text(AppLocalizations.of(context).goSignIn),
-            ),
-          ],
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Icon(Icons.smart_toy_outlined, color: AppTheme.leaf, size: 54),
+        const SizedBox(height: 12),
+        Text(
+          AppLocalizations.of(context).signInToUseAiAgent,
+          style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w800),
         ),
-      );
+        const SizedBox(height: 8),
+        Text(
+          AppLocalizations.of(context).aiAgentSubtitle,
+          style: const TextStyle(color: Color(0xFF70817D)),
+        ),
+        const SizedBox(height: 16),
+        FilledButton.icon(
+          onPressed: widget.onLoginRequested,
+          icon: const Icon(Icons.login_rounded),
+          label: Text(AppLocalizations.of(context).goSignIn),
+        ),
+      ],
+    ),
+  );
 
   Widget _wideLayout() => Row(
-        children: [
-          SizedBox(width: 300, child: _sessionList()),
-          const VerticalDivider(width: 1),
-          Expanded(
-            child: _active == null
+    children: [
+      SizedBox(width: 300, child: _sessionList()),
+      const VerticalDivider(width: 1),
+      Expanded(
+        child:
+            _active == null
                 ? Center(
-                    child: Text(AppLocalizations.of(context).selectOrCreateAiSession, style: const TextStyle(color: Color(0xFF70817D))),
-                  )
-                : AiThreadPage(
-                    key: ValueKey('wide-ai-${_active!.sessionId}'),
-                    api: widget.api,
-                    token: widget.token!,
-                    session: _active!,
-                    showBackButton: false,
-                    onSessionRenamed: (updated) {
-                      final index = _sessions.indexWhere((s) => s.sessionId == updated.sessionId);
-                      if (index >= 0) {
-                        setState(() {
-                          _sessions[index] = updated;
-                          _active = updated;
-                        });
-                      }
-                    },
+                  child: Text(
+                    AppLocalizations.of(context).selectOrCreateAiSession,
+                    style: const TextStyle(color: Color(0xFF70817D)),
                   ),
-          ),
-        ],
-      );
+                )
+                : AiThreadPage(
+                  key: ValueKey('wide-ai-${_active!.sessionId}'),
+                  api: widget.api,
+                  token: widget.token!,
+                  session: _active!,
+                  showBackButton: false,
+                  onSessionRenamed: (updated) {
+                    final index = _sessions.indexWhere(
+                      (s) => s.sessionId == updated.sessionId,
+                    );
+                    if (index >= 0) {
+                      setState(() {
+                        _sessions[index] = updated;
+                        _active = updated;
+                      });
+                    }
+                  },
+                ),
+      ),
+    ],
+  );
 
   Widget _sessionList() {
     return Column(
@@ -279,7 +316,13 @@ class _AiAgentPageState extends State<AiAgentPage> {
             child: Row(
               children: [
                 Expanded(
-                  child: Text(AppLocalizations.of(context).aiSessions, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+                  child: Text(
+                    AppLocalizations.of(context).aiSessions,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
                 IconButton(
                   tooltip: AppLocalizations.of(context).newChat,
@@ -297,53 +340,65 @@ class _AiAgentPageState extends State<AiAgentPage> {
         if (_error.isNotEmpty && _sessions.isEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(_error, style: const TextStyle(color: AppTheme.coral, fontSize: 13)),
+            child: Text(
+              _error,
+              style: const TextStyle(color: AppTheme.coral, fontSize: 13),
+            ),
           ),
         Expanded(
-          child: _loadingList && _sessions.isEmpty
-              ? const Center(child: CircularProgressIndicator())
-              : _sessions.isEmpty
+          child:
+              _loadingList && _sessions.isEmpty
+                  ? const Center(child: CircularProgressIndicator())
+                  : _sessions.isEmpty
                   ? _emptySessions()
                   : RefreshIndicator(
-                      onRefresh: _loadSessions,
-                      child: ListView.separated(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                        itemCount: _sessions.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 5),
-                        itemBuilder: (context, index) => _sessionTile(_sessions[index]),
-                      ),
+                    onRefresh: _loadSessions,
+                    child: ListView.separated(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                      itemCount: _sessions.length,
+                      separatorBuilder: (_, _) => const SizedBox(height: 5),
+                      itemBuilder:
+                          (context, index) => _sessionTile(_sessions[index]),
                     ),
+                  ),
         ),
       ],
     );
   }
 
   Widget _emptySessions() => Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.forum_outlined, size: 48, color: Color(0xFF70817D)),
-            const SizedBox(height: 12),
-            Text(AppLocalizations.of(context).noAiChatsYet, style: const TextStyle(fontWeight: FontWeight.w700)),
-            const SizedBox(height: 8),
-            Text(AppLocalizations.of(context).tapNewToStartChat, style: const TextStyle(color: Color(0xFF70817D), fontSize: 13)),
-            const SizedBox(height: 16),
-            FilledButton.tonalIcon(
-              onPressed: _busy ? null : _createSession,
-              icon: const Icon(Icons.add_rounded),
-              label: Text(AppLocalizations.of(context).newChat),
-            ),
-          ],
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const Icon(Icons.forum_outlined, size: 48, color: Color(0xFF70817D)),
+        const SizedBox(height: 12),
+        Text(
+          AppLocalizations.of(context).noAiChatsYet,
+          style: const TextStyle(fontWeight: FontWeight.w700),
         ),
-      );
+        const SizedBox(height: 8),
+        Text(
+          AppLocalizations.of(context).tapNewToStartChat,
+          style: const TextStyle(color: Color(0xFF70817D), fontSize: 13),
+        ),
+        const SizedBox(height: 16),
+        FilledButton.tonalIcon(
+          onPressed: _busy ? null : _createSession,
+          icon: const Icon(Icons.add_rounded),
+          label: Text(AppLocalizations.of(context).newChat),
+        ),
+      ],
+    ),
+  );
 
   Widget _sessionTile(AiSession session) {
     final active = _active?.sessionId == session.sessionId;
     return Material(
-      color: active
-          ? Theme.of(context).colorScheme.secondaryContainer
-          : Theme.of(context).colorScheme.surfaceContainerLow,
+      color:
+          active
+              ? Theme.of(context).colorScheme.secondaryContainer
+              : Theme.of(context).colorScheme.surfaceContainerLow,
       borderRadius: BorderRadius.circular(8),
       child: InkWell(
         borderRadius: BorderRadius.circular(8),
@@ -360,7 +415,11 @@ class _AiAgentPageState extends State<AiAgentPage> {
                   color: AppTheme.leaf.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(Icons.smart_toy_outlined, color: AppTheme.leaf, size: 22),
+                child: const Icon(
+                  Icons.smart_toy_outlined,
+                  color: AppTheme.leaf,
+                  size: 22,
+                ),
               ),
               const SizedBox(width: 11),
               Expanded(
@@ -377,7 +436,10 @@ class _AiAgentPageState extends State<AiAgentPage> {
                       const SizedBox(height: 3),
                       Text(
                         _shortTime(session.createTime!),
-                        style: const TextStyle(fontSize: 11, color: Color(0xFF70817D)),
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Color(0xFF70817D),
+                        ),
                       ),
                     ],
                   ],
@@ -387,7 +449,10 @@ class _AiAgentPageState extends State<AiAgentPage> {
                 tooltip: AppLocalizations.of(context).delete,
                 iconSize: 18,
                 onPressed: () => _deleteSession(session),
-                icon: const Icon(Icons.delete_outline_rounded, color: Color(0xFF70817D)),
+                icon: const Icon(
+                  Icons.delete_outline_rounded,
+                  color: Color(0xFF70817D),
+                ),
               ),
             ],
           ),
@@ -399,7 +464,9 @@ class _AiAgentPageState extends State<AiAgentPage> {
   String _shortTime(DateTime time) {
     final local = time.toLocal();
     final now = DateTime.now();
-    if (local.year == now.year && local.month == now.month && local.day == now.day) {
+    if (local.year == now.year &&
+        local.month == now.month &&
+        local.day == now.day) {
       return '${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
     }
     return '${local.month}/${local.day}';

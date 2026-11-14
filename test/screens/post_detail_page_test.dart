@@ -4,7 +4,7 @@ import 'package:chenge_world_app/models/blog_post.dart';
 import 'package:chenge_world_app/screens/post_detail_page.dart';
 import 'package:chenge_world_app/services/chenge_api.dart';
 import 'package:chenge_world_app/theme/app_theme.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:chenge_world_app/l10n/generated/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -44,7 +44,13 @@ void main() {
       }
       if (request.url.path == '/blog/like/toggle') {
         liked = true;
-        return http.Response(jsonEncode({'code': 200, 'data': {'liked': true}}), 200);
+        return http.Response(
+          jsonEncode({
+            'code': 200,
+            'data': {'liked': true},
+          }),
+          200,
+        );
       }
       if (request.url.path == '/blog/comment' && request.method == 'POST') {
         final body = jsonDecode(request.body) as Map<String, dynamic>;
@@ -73,13 +79,19 @@ void main() {
       'commentCount': 0,
     });
 
-    await tester.pumpWidget(MaterialApp(
+    await tester.pumpWidget(
+      MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         locale: const Locale('zh', 'CN'),
         theme: AppTheme.light,
-      home: PostDetailPage(api: ChengeApi(client: client, baseUrl: 'http://example.test'), post: post, token: 'session-token'),
-    ));
+        home: PostDetailPage(
+          api: ChengeApi(client: client, baseUrl: 'http://example.test'),
+          post: post,
+          token: 'session-token',
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('点赞 · 2'));

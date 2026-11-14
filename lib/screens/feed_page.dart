@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import '../l10n/generated/app_localizations.dart';
@@ -123,56 +123,56 @@ class _FeedPageState extends State<FeedPage> {
   double _lastScrollPixels = 0;
   double _chromeScrollAccum = 0;
 
-void _onScroll() {
-  if (!_scrollController.hasClients) return;
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
 
-  final offset = _scrollController.position.pixels;
+    final offset = _scrollController.position.pixels;
 
-  // Material 3 FAB:
-  // 顶部：展开
-  // 离开顶部：收起
-  final fabExpanded = offset <= 8;
+    // Material 3 FAB:
+    // 顶部：展开
+    // 离开顶部：收起
+    final fabExpanded = offset <= 8;
 
-  if (_fabExpanded != fabExpanded) {
-    setState(() {
-      _fabExpanded = fabExpanded;
-    });
-  }
+    if (_fabExpanded != fabExpanded) {
+      setState(() {
+        _fabExpanded = fabExpanded;
+      });
+    }
 
-  // AppBar / BottomBar 的自动隐藏逻辑
-  if (!widget.autoHideTopBar && !widget.autoHideBottomBar) return;
+    // AppBar / BottomBar 的自动隐藏逻辑
+    if (!widget.autoHideTopBar && !widget.autoHideBottomBar) return;
 
-  if (offset <= 8) {
-    _chromeScrollAccum = 0;
+    if (offset <= 8) {
+      _chromeScrollAccum = 0;
+      _lastScrollPixels = offset;
+      _setChromeVisible(true);
+      return;
+    }
+
+    final delta = offset - _lastScrollPixels;
     _lastScrollPixels = offset;
-    _setChromeVisible(true);
-    return;
+
+    if (delta == 0) return;
+
+    // Same direction as current intent: accumulate;
+    // reverse direction: reset and accumulate opposite.
+    if ((_chromeScrollAccum > 0 && delta < 0) ||
+        (_chromeScrollAccum < 0 && delta > 0)) {
+      _chromeScrollAccum = 0;
+    }
+
+    _chromeScrollAccum += delta;
+
+    if (_chromeScrollAccum > _chromeScrollThreshold) {
+      // Scrolling down
+      _chromeScrollAccum = 0;
+      _setChromeVisible(false);
+    } else if (_chromeScrollAccum < -_chromeScrollThreshold) {
+      // Scrolling up
+      _chromeScrollAccum = 0;
+      _setChromeVisible(true);
+    }
   }
-
-  final delta = offset - _lastScrollPixels;
-  _lastScrollPixels = offset;
-
-  if (delta == 0) return;
-
-  // Same direction as current intent: accumulate;
-  // reverse direction: reset and accumulate opposite.
-  if ((_chromeScrollAccum > 0 && delta < 0) ||
-      (_chromeScrollAccum < 0 && delta > 0)) {
-    _chromeScrollAccum = 0;
-  }
-
-  _chromeScrollAccum += delta;
-
-  if (_chromeScrollAccum > _chromeScrollThreshold) {
-    // Scrolling down
-    _chromeScrollAccum = 0;
-    _setChromeVisible(false);
-  } else if (_chromeScrollAccum < -_chromeScrollThreshold) {
-    // Scrolling up
-    _chromeScrollAccum = 0;
-    _setChromeVisible(true);
-  }
-}
 
   void _setChromeVisible(bool visible) {
     if (_chromeVisible == visible) return;
@@ -441,13 +441,14 @@ void _onScroll() {
         return IconButton(
           tooltip: AppLocalizations.of(context).notifications,
           onPressed: _openNotifications,
-          icon: count == 0
-              ? icon
-              : Badge(
-                  label: Text(count > 99 ? '99+' : '$count'),
-                  backgroundColor: AppTheme.coral,
-                  child: icon,
-                ),
+          icon:
+              count == 0
+                  ? icon
+                  : Badge(
+                    label: Text(count > 99 ? '99+' : '$count'),
+                    backgroundColor: AppTheme.coral,
+                    child: icon,
+                  ),
         );
       },
     );
@@ -541,8 +542,8 @@ void _onScroll() {
             ),
             label: Text(AppLocalizations.of(context).hideExternalPosts),
             selected: widget.hideExternalPosts,
-            onSelected: (selected) =>
-                widget.onHideExternalPostsChanged?.call(selected),
+            onSelected:
+                (selected) => widget.onHideExternalPostsChanged?.call(selected),
           ),
         ],
       ),
@@ -711,9 +712,8 @@ class _CreatePostFab extends StatelessWidget {
     required double bottomBarHeight,
     required double systemBottomInset,
   }) {
-    final overlay = docked && bottomBarHeight > 0
-        ? bottomBarHeight
-        : systemBottomInset;
+    final overlay =
+        docked && bottomBarHeight > 0 ? bottomBarHeight : systemBottomInset;
     return math.max(0, overlay + _gapAboveChrome - _scaffoldFabMargin);
   }
 
@@ -802,18 +802,11 @@ class _AnimatedExtendedFabState extends State<_AnimatedExtendedFab>
 
     final iconSize = fabTheme.iconSize ?? 24.0;
 
-    final textStyle =
-        fabTheme.extendedTextStyle ??
-        theme.textTheme.labelLarge!;
+    final textStyle = fabTheme.extendedTextStyle ?? theme.textTheme.labelLarge!;
 
-    final expandedWidth = _expandedWidth(
-      context,
-      textStyle,
-      iconSize,
-    );
+    final expandedWidth = _expandedWidth(context, textStyle, iconSize);
 
-    final backgroundColor =
-        fabTheme.backgroundColor ?? colors.primaryContainer;
+    final backgroundColor = fabTheme.backgroundColor ?? colors.primaryContainer;
 
     final foregroundColor =
         fabTheme.foregroundColor ?? colors.onPrimaryContainer;
@@ -821,31 +814,20 @@ class _AnimatedExtendedFabState extends State<_AnimatedExtendedFab>
     final shape =
         fabTheme.shape ??
         const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(16),
-          ),
+          borderRadius: BorderRadius.all(Radius.circular(16)),
         );
 
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, _) {
-        final progress = Curves.easeInOutCubic.transform(
-          _controller.value,
-        );
+        final progress = Curves.easeInOutCubic.transform(_controller.value);
 
-        final width = lerpDouble(
-          _collapsedWidth,
-          expandedWidth,
-          progress,
-        )!;
+        final width = lerpDouble(_collapsedWidth, expandedWidth, progress)!;
 
         // collapsed: icon 居中
         // expanded: icon 左侧 16dp
-        final iconStart = lerpDouble(
-          (_collapsedWidth - iconSize) / 2,
-          16,
-          progress,
-        )!;
+        final iconStart =
+            lerpDouble((_collapsedWidth - iconSize) / 2, 16, progress)!;
 
         return SizedBox(
           width: width,
@@ -900,15 +882,10 @@ class _AnimatedExtendedFabState extends State<_AnimatedExtendedFab>
                         child: Align(
                           alignment: Alignment.centerLeft,
                           child: DefaultTextStyle(
-                            style: textStyle.copyWith(
-                              color: foregroundColor,
-                            ),
+                            style: textStyle.copyWith(color: foregroundColor),
                             maxLines: 1,
                             overflow: TextOverflow.clip,
-                            child: Text(
-                              widget.label,
-                              softWrap: false,
-                            ),
+                            child: Text(widget.label, softWrap: false),
                           ),
                         ),
                       ),
@@ -929,22 +906,12 @@ class _AnimatedExtendedFabState extends State<_AnimatedExtendedFab>
     double iconSize,
   ) {
     final painter = TextPainter(
-      text: TextSpan(
-        text: widget.label,
-        style: textStyle,
-      ),
+      text: TextSpan(text: widget.label, style: textStyle),
       textDirection: Directionality.of(context),
       maxLines: 1,
     )..layout();
 
-    return math.max(
-      _collapsedWidth,
-      16 +
-          iconSize +
-          8 +
-          painter.width +
-          20,
-    );
+    return math.max(_collapsedWidth, 16 + iconSize + 8 + painter.width + 20);
   }
 
   @override

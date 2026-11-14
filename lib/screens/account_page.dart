@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../services/chenge_api.dart';
@@ -131,21 +131,22 @@ class _AccountPageState extends State<AccountPage> {
                 width: 60,
                 height: 60,
                 errorWidget:
-                    (_, __, ___) => Icon(
+                    (_, _, _) => Icon(
                       Icons.person_rounded,
                       color: scheme.onTertiaryContainer,
                       size: 30,
                     ),
-                placeholder: (context, _) => Center(
-                  child: SizedBox(
-                    width: 22,
-                    height: 22,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: scheme.onTertiaryContainer,
+                placeholder:
+                    (context, _) => Center(
+                      child: SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: scheme.onTertiaryContainer,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
               )
               : Icon(
                 signedIn
@@ -286,9 +287,7 @@ class _AccountPageState extends State<AccountPage> {
     if (token == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            AppLocalizations.of(context).signInToUseChengeCore,
-          ),
+          content: Text(AppLocalizations.of(context).signInToUseChengeCore),
         ),
       );
       return;
@@ -296,10 +295,7 @@ class _AccountPageState extends State<AccountPage> {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder:
-            (_) => ChengeCorePage(
-              baseUrl: widget.api.baseUrl,
-              token: token,
-            ),
+            (_) => ChengeCorePage(baseUrl: widget.api.baseUrl, token: token),
       ),
     );
   }
@@ -309,20 +305,14 @@ class _AccountPageState extends State<AccountPage> {
     if (token == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            AppLocalizations.of(context).signInToUseRaising,
-          ),
+          content: Text(AppLocalizations.of(context).signInToUseRaising),
         ),
       );
       return;
     }
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder:
-            (_) => NurturePage(
-              baseUrl: widget.api.baseUrl,
-              token: token,
-            ),
+        builder: (_) => NurturePage(baseUrl: widget.api.baseUrl, token: token),
       ),
     );
   }
@@ -386,7 +376,11 @@ class _AccountPageState extends State<AccountPage> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            signedIn ? AppLocalizations.of(context).accountConnected : AppLocalizations.of(context).signInForPersonalized,
+                            signedIn
+                                ? AppLocalizations.of(context).accountConnected
+                                : AppLocalizations.of(
+                                  context,
+                                ).signInForPersonalized,
                             style: TextStyle(
                               color:
                                   Theme.of(
@@ -401,7 +395,7 @@ class _AccountPageState extends State<AccountPage> {
                 ),
               ),
               const SizedBox(height: 18),
-                            Material(
+              Material(
                 color: Theme.of(context).colorScheme.surfaceContainerLow,
                 borderRadius: BorderRadius.circular(8),
                 child: ListTile(
@@ -433,7 +427,7 @@ class _AccountPageState extends State<AccountPage> {
                 ),
               ),
               const SizedBox(height: 12),
-Material(
+              Material(
                 color: Theme.of(context).colorScheme.surfaceContainerLow,
                 borderRadius: BorderRadius.circular(8),
                 child: ListTile(
@@ -508,7 +502,8 @@ Material(
               const SizedBox(height: 12),
               _actionTile(
                 icon: Icons.menu_book_outlined,
-                containerColor: Theme.of(context).colorScheme.secondaryContainer,
+                containerColor:
+                    Theme.of(context).colorScheme.secondaryContainer,
                 iconColor: Theme.of(context).colorScheme.onSecondaryContainer,
                 title: AppLocalizations.of(context).helpCenter,
                 subtitle: AppLocalizations.of(context).helpSubtitle,
@@ -526,7 +521,8 @@ Material(
               const SizedBox(height: 12),
               _actionTile(
                 icon: Icons.tune_rounded,
-                containerColor: Theme.of(context).colorScheme.secondaryContainer,
+                containerColor:
+                    Theme.of(context).colorScheme.secondaryContainer,
                 iconColor: Theme.of(context).colorScheme.onSecondaryContainer,
                 title: '用户设置',
                 subtitle: '通知、免打扰和隐私',
@@ -610,10 +606,7 @@ Material(
     }
     try {
       final current = await widget.api.currentUser(trimmed);
-      final result = <String, dynamic>{
-        'token': trimmed,
-        ...current,
-      };
+      final result = <String, dynamic>{'token': trimmed, ...current};
       if (result['user'] == null) {
         result['user'] = current['user'] ?? current;
       }
@@ -719,7 +712,6 @@ Material(
     await _loadAvatar();
   }
 
-
   Future<void> _showRegister(BuildContext context) async {
     final ok = await showDialog<bool>(
       context: context,
@@ -737,7 +729,9 @@ Material(
   static String? _pickAvatar(Map<String, dynamic> payload) {
     String? clean(Object? v) {
       final s = v?.toString().trim();
-      if (s == null || s.isEmpty || s == 'null' || s == 'undefined') return null;
+      if (s == null || s.isEmpty || s == 'null' || s == 'undefined') {
+        return null;
+      }
       return s;
     }
 
@@ -813,10 +807,7 @@ class _LoginDialogState extends State<_LoginDialog> {
     try {
       final current = await widget.api.currentUser(token);
       // 构造成与密码登录相近的结构，供 onLogin / 头像解析使用
-      final result = <String, dynamic>{
-        'token': token,
-        ...current,
-      };
+      final result = <String, dynamic>{'token': token, ...current};
       if (result['user'] == null) {
         result['user'] = current['user'] ?? current;
       }
@@ -882,9 +873,10 @@ class _LoginDialogState extends State<_LoginDialog> {
                 labelText: AppLocalizations.of(context).password,
                 prefixIcon: const Icon(Icons.lock_outline_rounded),
                 suffixIcon: IconButton(
-                  tooltip: _obscurePassword
-                      ? AppLocalizations.of(context).showPassword
-                      : AppLocalizations.of(context).hidePassword,
+                  tooltip:
+                      _obscurePassword
+                          ? AppLocalizations.of(context).showPassword
+                          : AppLocalizations.of(context).hidePassword,
                   onPressed:
                       () =>
                           setState(() => _obscurePassword = !_obscurePassword),
@@ -933,7 +925,9 @@ class _LoginDialogState extends State<_LoginDialog> {
                 )
                 : const Icon(Icons.login_rounded),
         label: Text(
-          _loading ? AppLocalizations.of(context).signingIn : AppLocalizations.of(context).signIn,
+          _loading
+              ? AppLocalizations.of(context).signingIn
+              : AppLocalizations.of(context).signIn,
         ),
       ),
     ],
@@ -1005,7 +999,6 @@ class _TokenLoginDialogState extends State<_TokenLoginDialog> {
     );
   }
 }
-
 
 class _RegisterDialog extends StatefulWidget {
   const _RegisterDialog({required this.api});
@@ -1083,9 +1076,7 @@ class _RegisterDialogState extends State<_RegisterDialog> {
         password: _password.text,
         email: _email.text.trim(),
         code: _code.text.trim(),
-        nickname: _nickname.text.trim().isEmpty
-            ? null
-            : _nickname.text.trim(),
+        nickname: _nickname.text.trim().isEmpty ? null : _nickname.text.trim(),
       );
       if (mounted) Navigator.pop(context, true);
     } on ApiException catch (e) {
@@ -1131,10 +1122,11 @@ class _RegisterDialogState extends State<_RegisterDialog> {
                     labelText: AppLocalizations.of(context).username,
                     prefixIcon: const Icon(Icons.person_outline_rounded),
                   ),
-                  validator: (v) =>
-                      (v == null || v.trim().isEmpty)
-                          ? AppLocalizations.of(context).enterUsername
-                          : null,
+                  validator:
+                      (v) =>
+                          (v == null || v.trim().isEmpty)
+                              ? AppLocalizations.of(context).enterUsername
+                              : null,
                 ),
                 const SizedBox(height: 12),
                 TextFormField(
@@ -1179,19 +1171,23 @@ class _RegisterDialogState extends State<_RegisterDialog> {
                           labelText: AppLocalizations.of(context).emailCode,
                           prefixIcon: const Icon(Icons.pin_outlined),
                         ),
-                        validator: (v) =>
-                            (v == null || v.trim().isEmpty)
-                                ? AppLocalizations.of(context).enterEmailCode
-                                : null,
+                        validator:
+                            (v) =>
+                                (v == null || v.trim().isEmpty)
+                                    ? AppLocalizations.of(
+                                      context,
+                                    ).enterEmailCode
+                                    : null,
                       ),
                     ),
                     const SizedBox(width: 8),
                     Padding(
                       padding: const EdgeInsets.only(top: 4),
                       child: FilledButton.tonal(
-                        onPressed: (_sendingCode || _countdown > 0 || _loading)
-                            ? null
-                            : _sendCode,
+                        onPressed:
+                            (_sendingCode || _countdown > 0 || _loading)
+                                ? null
+                                : _sendCode,
                         child: Text(
                           _countdown > 0
                               ? '${_countdown}s'
@@ -1214,8 +1210,10 @@ class _RegisterDialogState extends State<_RegisterDialog> {
                     labelText: AppLocalizations.of(context).passwordMinSix,
                     prefixIcon: const Icon(Icons.lock_outline_rounded),
                     suffixIcon: IconButton(
-                      onPressed: () =>
-                          setState(() => _obscurePassword = !_obscurePassword),
+                      onPressed:
+                          () => setState(
+                            () => _obscurePassword = !_obscurePassword,
+                          ),
                       icon: Icon(
                         _obscurePassword
                             ? Icons.visibility_outlined
@@ -1254,12 +1252,13 @@ class _RegisterDialogState extends State<_RegisterDialog> {
         ),
         FilledButton.icon(
           onPressed: _loading ? null : _submit,
-          icon: _loading
-              ? const SizedBox.square(
-                  dimension: 17,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : const Icon(Icons.person_add_alt_1_rounded),
+          icon:
+              _loading
+                  ? const SizedBox.square(
+                    dimension: 17,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                  : const Icon(Icons.person_add_alt_1_rounded),
           label: Text(
             _loading
                 ? AppLocalizations.of(context).registering

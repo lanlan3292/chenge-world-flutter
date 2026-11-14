@@ -32,7 +32,11 @@ class ApiException implements Exception {
 }
 
 class PostPage {
-  const PostPage({required this.posts, required this.total, required this.pages});
+  const PostPage({
+    required this.posts,
+    required this.total,
+    required this.pages,
+  });
 
   final List<BlogPost> posts;
   final int total;
@@ -70,15 +74,19 @@ class AiDrawModel {
   final String? modelLabel;
   final double? imagePrice;
 
-  String get title => label.isNotEmpty ? label : (modelLabel ?? modelName ?? task);
+  String get title =>
+      label.isNotEmpty ? label : (modelLabel ?? modelName ?? task);
 
   factory AiDrawModel.fromJson(Map<String, dynamic> json) => AiDrawModel(
-        task: json['task']?.toString().trim() ?? '',
-        label: json['label']?.toString().trim() ?? '',
-        modelName: json['model_name']?.toString(),
-        modelLabel: json['model_label']?.toString(),
-        imagePrice: json['image_price'] is num ? (json['image_price'] as num).toDouble() : null,
-      );
+    task: json['task']?.toString().trim() ?? '',
+    label: json['label']?.toString().trim() ?? '',
+    modelName: json['model_name']?.toString(),
+    modelLabel: json['model_label']?.toString(),
+    imagePrice:
+        json['image_price'] is num
+            ? (json['image_price'] as num).toDouble()
+            : null,
+  );
 }
 
 /// Owned emoji asset for the picker (from shop assets / my items).
@@ -100,11 +108,11 @@ class EmojiAsset {
   String get displayName => (title ?? key ?? '表情').trim();
 
   Map<String, dynamic> toSendJson() => {
-        'itemId': itemId,
-        if (key != null && key!.isNotEmpty) 'key': key,
-        if (fileId != null) 'fileId': fileId,
-        if (url != null && url!.isNotEmpty) 'url': url,
-      };
+    'itemId': itemId,
+    if (key != null && key!.isNotEmpty) 'key': key,
+    if (fileId != null) 'fileId': fileId,
+    if (url != null && url!.isNotEmpty) 'url': url,
+  };
 
   factory EmojiAsset.fromMap(Map<String, dynamic> json) {
     final itemId = _integer(json['itemId'] ?? json['id']);
@@ -117,7 +125,8 @@ class EmojiAsset {
     );
   }
 
-  static int _integer(Object? value) => value is num ? value.toInt() : int.tryParse('$value') ?? 0;
+  static int _integer(Object? value) =>
+      value is num ? value.toInt() : int.tryParse('$value') ?? 0;
   static String? _nullableText(Object? value) {
     final text = value?.toString().trim() ?? '';
     return text.isEmpty || text == 'null' ? null : text;
@@ -126,14 +135,17 @@ class EmojiAsset {
 
 class ChengeApi {
   ChengeApi({http.Client? client, String? baseUrl})
-      : _client = client ?? http.Client(),
-        _baseUrl = (baseUrl ?? const String.fromEnvironment(
-          'CHENGE_API_BASE_URL',
-          defaultValue: 'https://chengecore.cn',
-        )).replaceFirst(RegExp(r'/+$'), '');
+    : _client = client ?? http.Client(),
+      _baseUrl = (baseUrl ??
+              const String.fromEnvironment(
+                'CHENGE_API_BASE_URL',
+                defaultValue: 'https://chengecore.cn',
+              ))
+          .replaceFirst(RegExp(r'/+$'), '');
 
   final http.Client _client;
   final String _baseUrl;
+
   /// Session-local post like flags (detail API may omit liked for guests/filters).
   final Map<int, bool> _likedPostCache = {};
   static const _timeout = Duration(seconds: 25);
@@ -183,9 +195,10 @@ class ChengeApi {
       'code': code.trim(),
       'gender': gender,
       'roleCode': roleCode,
-      'nickname': (nickname == null || nickname.trim().isEmpty)
-          ? username.trim()
-          : nickname.trim(),
+      'nickname':
+          (nickname == null || nickname.trim().isEmpty)
+              ? username.trim()
+              : nickname.trim(),
     };
     if (avatar != null && avatar.trim().isNotEmpty) {
       body['avatar'] = avatar.trim();
@@ -212,13 +225,22 @@ class ChengeApi {
     // 0 = 站内原创（过滤站外 RSS），1 = 站外；null = 全部
     if (origin != null) query['origin'] = '$origin';
 
-    final data = await _request('GET', '/blog/post/list', query: query, token: token);
+    final data = await _request(
+      'GET',
+      '/blog/post/list',
+      query: query,
+      token: token,
+    );
     if (data is! Map<String, dynamic>) throw const ApiException('帖子列表格式不正确');
     final records = data['records'];
     return PostPage(
-      posts: records is List
-          ? records.whereType<Map<String, dynamic>>().map(BlogPost.fromJson).toList()
-          : const [],
+      posts:
+          records is List
+              ? records
+                  .whereType<Map<String, dynamic>>()
+                  .map(BlogPost.fromJson)
+                  .toList()
+              : const [],
       total: _integer(data['total']),
       pages: _integer(data['pages']),
     );
@@ -265,9 +287,16 @@ class ChengeApi {
   }
 
   Future<List<BlogComment>> postComments(int blogId) async {
-    final data = await _request('GET', '/blog/comment/list', query: {'blogId': '$blogId'});
+    final data = await _request(
+      'GET',
+      '/blog/comment/list',
+      query: {'blogId': '$blogId'},
+    );
     if (data is! List) throw const ApiException('评论列表格式不正确');
-    return data.whereType<Map<String, dynamic>>().map(BlogComment.fromJson).toList();
+    return data
+        .whereType<Map<String, dynamic>>()
+        .map(BlogComment.fromJson)
+        .toList();
   }
 
   Future<int> addPostComment({
@@ -317,7 +346,10 @@ class ChengeApi {
     _likedPostCache[blogId] = liked;
   }
 
-  Future<List<BlogCategory>> listCategories({String? token, bool onlyPublic = true}) async {
+  Future<List<BlogCategory>> listCategories({
+    String? token,
+    bool onlyPublic = true,
+  }) async {
     final data = await _request(
       'GET',
       '/blog/category/list',
@@ -342,7 +374,8 @@ class ChengeApi {
     final uri = Uri.parse('$_baseUrl/file-module/files/upload').replace(
       queryParameters: {
         'businessType': businessType,
-        if (businessId != null && businessId.isNotEmpty) 'businessId': businessId,
+        if (businessId != null && businessId.isNotEmpty)
+          'businessId': businessId,
       },
     );
     final request = http.MultipartRequest('POST', uri);
@@ -378,7 +411,11 @@ class ChengeApi {
       );
     }
     if (payload is! Map<String, dynamic> || payload['code'] != 200) {
-      throw ApiException(payload is Map ? (payload['msg']?.toString() ?? 'Upload failed') : 'Upload failed');
+      throw ApiException(
+        payload is Map
+            ? (payload['msg']?.toString() ?? 'Upload failed')
+            : 'Upload failed',
+      );
     }
     final data = payload['data'];
     if (data is Map && data['url'] != null) {
@@ -411,7 +448,12 @@ class ChengeApi {
       if (media != null && media.isNotEmpty) 'media': media,
       if (tags != null && tags.isNotEmpty) 'tags': tags,
     };
-    final data = await _request('POST', '/blog/post/publish', body: body, token: token);
+    final data = await _request(
+      'POST',
+      '/blog/post/publish',
+      body: body,
+      token: token,
+    );
     return _integer(data);
   }
 
@@ -423,9 +465,11 @@ class ChengeApi {
       token: token,
     );
     if (data is! List) throw const ApiException('Invalid hot tags response');
-    return data.whereType<Map<String, dynamic>>().map(BlogTag.fromJson).toList();
+    return data
+        .whereType<Map<String, dynamic>>()
+        .map(BlogTag.fromJson)
+        .toList();
   }
-
 
   static MediaType _guessImageMediaType(String filename) {
     final name = filename.toLowerCase();
@@ -445,7 +489,11 @@ class ChengeApi {
 
   /// 文件元信息（图片消息可能只带 fileId，需要换成 url）。
   Future<Map<String, dynamic>> fileInfo(int fileId, {String? token}) async {
-    final data = await _request('GET', '/file-module/files/info/$fileId', token: token);
+    final data = await _request(
+      'GET',
+      '/file-module/files/info/$fileId',
+      token: token,
+    );
     return data is Map<String, dynamic> ? data : const {};
   }
 
@@ -461,25 +509,37 @@ class ChengeApi {
     return '$_baseUrl/$trimmed';
   }
 
-  Future<List<FriendUser>> friends(String token) => _friendList('/friend/list', token: token);
+  Future<List<FriendUser>> friends(String token) =>
+      _friendList('/friend/list', token: token);
 
-  Future<List<FriendUser>> friendRequests(String token) => _friendList('/friend/requests', token: token);
+  Future<List<FriendUser>> friendRequests(String token) =>
+      _friendList('/friend/requests', token: token);
 
-  Future<List<FriendUser>> searchUsers(String keyword, String token) => _friendList(
+  Future<List<FriendUser>> searchUsers(String keyword, String token) =>
+      _friendList(
         '/friend/search',
         query: {'keyword': keyword.trim()},
         token: token,
       );
 
   Future<void> applyFriend(int friendId, String token) async {
-    await _request('POST', '/friend/apply', query: {'friendId': '$friendId'}, token: token);
+    await _request(
+      'POST',
+      '/friend/apply',
+      query: {'friendId': '$friendId'},
+      token: token,
+    );
   }
 
   Future<void> removeFriend(int friendId, String token) async {
     await _request('DELETE', '/friend/$friendId', token: token);
   }
 
-  Future<void> setFriendRemark(int friendId, String remark, String token) async {
+  Future<void> setFriendRemark(
+    int friendId,
+    String remark,
+    String token,
+  ) async {
     // Always send remark (including empty) so MyBatis can clear null-strategy fields.
     final query = <String, String>{
       'friendId': '$friendId',
@@ -507,17 +567,28 @@ class ChengeApi {
   }) async {
     final data = await _request('GET', path, query: query, token: token);
     if (data is! List) throw const ApiException('联系人列表格式不正确');
-    return data.whereType<Map<String, dynamic>>().map(FriendUser.fromJson).toList();
+    return data
+        .whereType<Map<String, dynamic>>()
+        .map(FriendUser.fromJson)
+        .toList();
   }
 
   Future<List<ChatConversation>> conversations(String token) async {
     final data = await _request('GET', '/chat/conversations', token: token);
     if (data is! List) throw const ApiException('会话列表格式不正确');
-    return data.whereType<Map<String, dynamic>>().map(ChatConversation.fromJson).toList();
+    return data
+        .whereType<Map<String, dynamic>>()
+        .map(ChatConversation.fromJson)
+        .toList();
   }
 
   Future<ChatConversation> openSingleChat(int peerId, String token) async {
-    final data = await _request('POST', '/chat/single', query: {'peerId': '$peerId'}, token: token);
+    final data = await _request(
+      'POST',
+      '/chat/single',
+      query: {'peerId': '$peerId'},
+      token: token,
+    );
     if (data is! Map<String, dynamic>) throw const ApiException('会话信息格式不正确');
     return ChatConversation.fromJson(data, fallbackPeerId: peerId);
   }
@@ -537,7 +608,10 @@ class ChengeApi {
     return ChatConversation.fromJson(data);
   }
 
-  Future<List<ChatConversation>> searchGroups(String keyword, String token) async {
+  Future<List<ChatConversation>> searchGroups(
+    String keyword,
+    String token,
+  ) async {
     final data = await _request(
       'GET',
       '/chat/search',
@@ -545,7 +619,10 @@ class ChengeApi {
       token: token,
     );
     if (data is! List) throw const ApiException('群聊搜索结果格式不正确');
-    return data.whereType<Map<String, dynamic>>().map(ChatConversation.fromJson).toList();
+    return data
+        .whereType<Map<String, dynamic>>()
+        .map(ChatConversation.fromJson)
+        .toList();
   }
 
   Future<void> joinGroup(int conversationId, String token) async {
@@ -553,15 +630,29 @@ class ChengeApi {
   }
 
   /// 群管理总览：群信息、可见频道（含 canSend）、权限、成员等。
-  Future<Map<String, dynamic>> groupOverview(int conversationId, String token) async {
-    final data = await _request('GET', '/chat/groups/$conversationId', token: token);
+  Future<Map<String, dynamic>> groupOverview(
+    int conversationId,
+    String token,
+  ) async {
+    final data = await _request(
+      'GET',
+      '/chat/groups/$conversationId',
+      token: token,
+    );
     if (data is! Map<String, dynamic>) throw const ApiException('群信息格式不正确');
     return data;
   }
 
   /// 群邀请详情（通知深链 `group_invite`）。
-  Future<Map<String, dynamic>> groupInviteRequest(int requestId, String token) async {
-    final data = await _request('GET', '/chat/groups/requests/$requestId', token: token);
+  Future<Map<String, dynamic>> groupInviteRequest(
+    int requestId,
+    String token,
+  ) async {
+    final data = await _request(
+      'GET',
+      '/chat/groups/requests/$requestId',
+      token: token,
+    );
     if (data is! Map<String, dynamic>) throw const ApiException('群邀请格式不正确');
     return data;
   }
@@ -592,9 +683,17 @@ class ChengeApi {
     final query = <String, String>{'size': '$size'};
     if (beforeId != null) query['beforeId'] = '$beforeId';
     if (channelId != null) query['channelId'] = '$channelId';
-    final data = await _request('GET', '/chat/$conversationId/messages', query: query, token: token);
+    final data = await _request(
+      'GET',
+      '/chat/$conversationId/messages',
+      query: query,
+      token: token,
+    );
     if (data is! List) throw const ApiException('消息列表格式不正确');
-    return data.whereType<Map<String, dynamic>>().map(ChatMessage.fromJson).toList();
+    return data
+        .whereType<Map<String, dynamic>>()
+        .map(ChatMessage.fromJson)
+        .toList();
   }
 
   Future<ChatMessage> sendChatMessage(
@@ -661,10 +760,7 @@ class ChengeApi {
     int? conversationId,
     int? channelId,
   }) async {
-    final query = <String, String>{
-      'keyword': keyword.trim(),
-      'scope': scope,
-    };
+    final query = <String, String>{'keyword': keyword.trim(), 'scope': scope};
     if (conversationId != null) query['conversationId'] = '$conversationId';
     if (channelId != null) query['channelId'] = '$channelId';
     final data = await _request(
@@ -674,7 +770,10 @@ class ChengeApi {
       token: token,
     );
     if (data is! List) throw const ApiException('消息搜索结果格式不正确');
-    return data.whereType<Map<String, dynamic>>().map(ChatMessage.fromJson).toList();
+    return data
+        .whereType<Map<String, dynamic>>()
+        .map(ChatMessage.fromJson)
+        .toList();
   }
 
   /// 定位到某条消息前后的上下文。
@@ -693,17 +792,43 @@ class ChengeApi {
       token: token,
     );
     if (data is! List) throw const ApiException('消息上下文格式不正确');
-    return data.whereType<Map<String, dynamic>>().map(ChatMessage.fromJson).toList();
+    return data
+        .whereType<Map<String, dynamic>>()
+        .map(ChatMessage.fromJson)
+        .toList();
   }
 
   /// 会话详情，含成员列表（用于 @）。
-  Future<Map<String, dynamic>> chatDetail(int conversationId, String token) async {
+  Future<Map<String, dynamic>> chatDetail(
+    int conversationId,
+    String token,
+  ) async {
     final data = await _request('GET', '/chat/$conversationId', token: token);
     if (data is! Map<String, dynamic>) throw const ApiException('会话详情格式不正确');
     return data;
   }
 
-  /// 用户偏好：主题 / 语言 / 通知 / 隐私。服务端会与默认值合并。
+  /// 当前会话可用的机器人指令，按机器人流程分组返回。
+  Future<List<Map<String, dynamic>>> chatCommands(
+    int conversationId,
+    String token, {
+    int? channelId,
+  }) async {
+    final query = <String, String>{};
+    if (channelId != null) query['channelId'] = '$channelId';
+    final data = await _request(
+      'GET',
+      '/chat/$conversationId/commands',
+      query: query.isEmpty ? null : query,
+      token: token,
+    );
+    if (data is! List) throw const ApiException('机器人指令格式不正确');
+    return data
+        .whereType<Map>()
+        .map((row) => Map<String, dynamic>.from(row))
+        .toList();
+  }
+
   Future<Map<String, dynamic>> userSettings(String token) async {
     final data = await _request('GET', '/home/settings', token: token);
     if (data is! Map<String, dynamic>) return const {};
@@ -714,7 +839,12 @@ class ChengeApi {
     Map<String, dynamic> body,
     String token,
   ) async {
-    final data = await _request('POST', '/home/settings', body: body, token: token);
+    final data = await _request(
+      'POST',
+      '/home/settings',
+      body: body,
+      token: token,
+    );
     if (data is! Map<String, dynamic>) return const {};
     return data;
   }
@@ -737,13 +867,19 @@ class ChengeApi {
       query: query,
       token: token,
     );
-    if (data is! Map) return (records: const <Map<String, dynamic>>[], total: 0);
+    if (data is! Map) {
+      return (records: const <Map<String, dynamic>>[], total: 0);
+    }
     final records = data['records'];
     final total = data['total'];
     return (
-      records: records is List
-          ? records.whereType<Map>().map((row) => Map<String, dynamic>.from(row)).toList()
-          : const <Map<String, dynamic>>[],
+      records:
+          records is List
+              ? records
+                  .whereType<Map>()
+                  .map((row) => Map<String, dynamic>.from(row))
+                  .toList()
+              : const <Map<String, dynamic>>[],
       total: total is num ? total.toInt() : int.tryParse('$total') ?? 0,
     );
   }
@@ -815,7 +951,8 @@ class ChengeApi {
     }
 
     void absorb(Map<String, dynamic> raw) {
-      final type = (raw['type'] ?? raw['itemType'] ?? '').toString().toLowerCase();
+      final type =
+          (raw['type'] ?? raw['itemType'] ?? '').toString().toLowerCase();
       if (type.isNotEmpty && type != 'emoji') return;
 
       final itemId = _integer(raw['itemId'] ?? raw['id']);
@@ -907,13 +1044,23 @@ class ChengeApi {
     String type = '',
     String keyword = '',
   }) async {
-    final query = <String, String>{'pageNum': '$page', 'pageSize': '$pageSize', 'sort': sort};
+    final query = <String, String>{
+      'pageNum': '$page',
+      'pageSize': '$pageSize',
+      'sort': sort,
+    };
     if (type.isNotEmpty) query['type'] = type;
     if (keyword.trim().isNotEmpty) query['keyword'] = keyword.trim();
     final data = await _request('GET', '/shop/items', query: query);
-    if (data is! Map<String, dynamic> || data['records'] is! List) throw const ApiException('商品列表格式不正确');
+    if (data is! Map<String, dynamic> || data['records'] is! List) {
+      throw const ApiException('商品列表格式不正确');
+    }
     return ShopItemPage(
-      items: (data['records'] as List).whereType<Map<String, dynamic>>().map(ShopItem.fromJson).toList(),
+      items:
+          (data['records'] as List)
+              .whereType<Map<String, dynamic>>()
+              .map(ShopItem.fromJson)
+              .toList(),
       total: _integer(data['total']),
     );
   }
@@ -931,7 +1078,11 @@ class ChengeApi {
     return coins is num ? coins.toDouble() : 0;
   }
 
-  Future<Map<String, dynamic>> buyShopItem(int itemId, int quantity, String token) async {
+  Future<Map<String, dynamic>> buyShopItem(
+    int itemId,
+    int quantity,
+    String token,
+  ) async {
     final data = await _request(
       'POST',
       '/shop/buy',
@@ -942,18 +1093,28 @@ class ChengeApi {
     return data;
   }
 
-  Future<List<Map<String, dynamic>>> shopAssets(String token) => _mapList('/shop/assets', token);
+  Future<List<Map<String, dynamic>>> shopAssets(String token) =>
+      _mapList('/shop/assets', token);
 
-  Future<List<Map<String, dynamic>>> shopOrders(String token) => _mapList('/shop/orders', token);
+  Future<List<Map<String, dynamic>>> shopOrders(String token) =>
+      _mapList('/shop/orders', token);
 
   Future<List<TaskItem>> tasks({String? token}) async {
     final data = await _request('GET', '/task/list', token: token);
     if (data is! List) throw const ApiException('任务列表格式不正确');
-    return data.whereType<Map<String, dynamic>>().map(TaskItem.fromJson).toList();
+    return data
+        .whereType<Map<String, dynamic>>()
+        .map(TaskItem.fromJson)
+        .toList();
   }
 
   Future<Map<String, dynamic>> claimTask(String code, String token) async {
-    final data = await _request('POST', '/task/claim', body: {'code': code}, token: token);
+    final data = await _request(
+      'POST',
+      '/task/claim',
+      body: {'code': code},
+      token: token,
+    );
     if (data is! Map<String, dynamic>) throw const ApiException('任务领取响应格式不正确');
     return data;
   }
@@ -968,7 +1129,10 @@ class ChengeApi {
   // ——— 站内通知 / 公告 ———
 
   /// `GET /home/notify/list?limit=`：列表与未读数一次返回。
-  Future<AppNotificationFeed> notifications(String token, {int limit = 60}) async {
+  Future<AppNotificationFeed> notifications(
+    String token, {
+    int limit = 60,
+  }) async {
     final data = await _request(
       'GET',
       '/home/notify/list',
@@ -1025,10 +1189,7 @@ class ChengeApi {
     final data = await _request(
       'GET',
       '/ai/knowledge/list',
-      query: {
-        'collection': collection,
-        if (q.trim().isNotEmpty) 'q': q.trim(),
-      },
+      query: {'collection': collection, if (q.trim().isNotEmpty) 'q': q.trim()},
       token: token,
     );
     if (data is! List) return const [];
@@ -1041,11 +1202,16 @@ class ChengeApi {
   /// 资料预览：md/txt 等文本类型直接读正文（二进制资料由调用方按 URL 处理）。
   Future<String> filePreviewText(int fileId, {String? token}) async {
     final uri = Uri.parse('$_baseUrl/file-module/files/$fileId/preview');
-    final response = await _client.get(uri, headers: {
-      'Accept': 'text/plain',
-      'Cache-Control': 'no-cache',
-      if (token != null) 'Authorization': 'Bearer $token',
-    }).timeout(_timeout);
+    final response = await _client
+        .get(
+          uri,
+          headers: {
+            'Accept': 'text/plain',
+            'Cache-Control': 'no-cache',
+            if (token != null) 'Authorization': 'Bearer $token',
+          },
+        )
+        .timeout(_timeout);
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw ApiException(
         '资料读取失败 (${response.statusCode})',
@@ -1075,7 +1241,10 @@ class ChengeApi {
 
   /// 图库索引（公开、非统一信封）：`GET /file-module/files/gallery/index`。
   Future<GalleryIndex> galleryIndex({String? token}) async {
-    final data = await _requestRaw('/file-module/files/gallery/index', token: token);
+    final data = await _requestRaw(
+      '/file-module/files/gallery/index',
+      token: token,
+    );
     if (data is! Map<String, dynamic>) throw const ApiException('图库索引格式不正确');
     return GalleryIndex.fromJson(data);
   }
@@ -1112,17 +1281,33 @@ class ChengeApi {
   }
 
   /// 非统一信封（裸 JSON）的 GET，图库公开接口使用。
-  Future<dynamic> _requestRaw(String path, {Map<String, String>? query, String? token}) async {
+  Future<dynamic> _requestRaw(
+    String path, {
+    Map<String, String>? query,
+    String? token,
+  }) async {
     final uri = Uri.parse('$_baseUrl$path').replace(queryParameters: query);
-    final response = await _client.get(uri, headers: {
-      'Accept': 'application/json',
-      if (token != null) 'Authorization': 'Bearer $token',
-    }).timeout(_timeout);
+    final response = await _client
+        .get(
+          uri,
+          headers: {
+            'Accept': 'application/json',
+            if (token != null) 'Authorization': 'Bearer $token',
+          },
+        )
+        .timeout(_timeout);
     if (response.statusCode == 401) {
-      throw const ApiException('未授权或 Token 无效', statusCode: 401, businessCode: 401);
+      throw const ApiException(
+        '未授权或 Token 无效',
+        statusCode: 401,
+        businessCode: 401,
+      );
     }
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw ApiException('请求失败 (${response.statusCode})', statusCode: response.statusCode);
+      throw ApiException(
+        '请求失败 (${response.statusCode})',
+        statusCode: response.statusCode,
+      );
     }
     final text = utf8.decode(response.bodyBytes, allowMalformed: true);
     try {
@@ -1180,7 +1365,10 @@ class ChengeApi {
   Future<List<AiSession>> aiSessions(String token) async {
     final data = await _request('GET', '/chatSession/list/my', token: token);
     if (data is! List) throw const ApiException('AI 会话列表格式不正确');
-    return data.whereType<Map<String, dynamic>>().map(AiSession.fromJson).toList();
+    return data
+        .whereType<Map<String, dynamic>>()
+        .map(AiSession.fromJson)
+        .toList();
   }
 
   Future<AiSession> createAiSession(String token, {String name = '新对话'}) async {
@@ -1190,7 +1378,9 @@ class ChengeApi {
       body: {'name': name},
       token: token,
     );
-    if (data is! Map<String, dynamic>) throw const ApiException('创建 AI 会话响应格式不正确');
+    if (data is! Map<String, dynamic>) {
+      throw const ApiException('创建 AI 会话响应格式不正确');
+    }
     return AiSession.fromJson(data);
   }
 
@@ -1198,7 +1388,11 @@ class ChengeApi {
     await _request('DELETE', '/chatSession/delete/$sessionId', token: token);
   }
 
-  Future<void> renameAiSession(String sessionId, String name, String token) async {
+  Future<void> renameAiSession(
+    String sessionId,
+    String name,
+    String token,
+  ) async {
     await _request(
       'POST',
       '/chatSession/rename',
@@ -1233,24 +1427,26 @@ class ChengeApi {
     String? quoteText,
   }) async* {
     final uri = Uri.parse('$_baseUrl/ai/agent/stream');
-    final request = http.Request('POST', uri)
-      ..headers.addAll({
-        'Accept': 'text/event-stream',
-        'Content-Type': 'application/json; charset=utf-8',
-        'Authorization': 'Bearer $token',
-      })
-      ..body = jsonEncode({
-        'session_id': sessionId,
-        'user_input': userInput,
-        if (turnId != null && turnId.isNotEmpty) 'turn_id': turnId,
-        if (webSearch != null) 'web_search': webSearch,
-        if (language != null && language.isNotEmpty) 'language': language,
-        if (draw != null && draw.isNotEmpty) 'draw': draw,
-        if (images != null && images.isNotEmpty) 'images': images,
-        if (quote != null && quote.isNotEmpty) 'quote': quote,
-        if (quoteRef != null && quoteRef.isNotEmpty) 'quote_ref': quoteRef,
-        if (quoteText != null && quoteText.isNotEmpty) 'quote_text': quoteText,
-      });
+    final request =
+        http.Request('POST', uri)
+          ..headers.addAll({
+            'Accept': 'text/event-stream',
+            'Content-Type': 'application/json; charset=utf-8',
+            'Authorization': 'Bearer $token',
+          })
+          ..body = jsonEncode({
+            'session_id': sessionId,
+            'user_input': userInput,
+            if (turnId != null && turnId.isNotEmpty) 'turn_id': turnId,
+            if (webSearch != null) 'web_search': webSearch,
+            if (language != null && language.isNotEmpty) 'language': language,
+            if (draw != null && draw.isNotEmpty) 'draw': draw,
+            if (images != null && images.isNotEmpty) 'images': images,
+            if (quote != null && quote.isNotEmpty) 'quote': quote,
+            if (quoteRef != null && quoteRef.isNotEmpty) 'quote_ref': quoteRef,
+            if (quoteText != null && quoteText.isNotEmpty)
+              'quote_text': quoteText,
+          });
 
     late http.StreamedResponse response;
     try {
@@ -1261,14 +1457,19 @@ class ChengeApi {
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       final body = await response.stream.bytesToString();
-      throw ApiException('AI 流式请求失败（${response.statusCode}）$body', statusCode: response.statusCode);
+      throw ApiException(
+        'AI 流式请求失败（${response.statusCode}）$body',
+        statusCode: response.statusCode,
+      );
     }
 
     var buffer = '';
     String? eventType;
     final dataLines = <String>[];
 
-    await for (final chunk in response.stream.transform(utf8.decoder).timeout(_streamTimeout)) {
+    await for (final chunk in response.stream
+        .transform(utf8.decoder)
+        .timeout(_streamTimeout)) {
       buffer += chunk;
       while (true) {
         final sep = buffer.indexOf('\n');
@@ -1289,7 +1490,9 @@ class ChengeApi {
               }
             }
             yield AiStreamEvent(type: eventType ?? 'message', data: parsed);
-            if ((eventType ?? '') == 'done' || (eventType ?? '') == 'error') return;
+            if ((eventType ?? '') == 'done' || (eventType ?? '') == 'error') {
+              return;
+            }
           }
           eventType = null;
           dataLines.clear();
@@ -1323,7 +1526,10 @@ class ChengeApi {
   Future<List<AiDrawModel>> aiDrawModels(String token) async {
     final data = await _request('GET', '/ai/draw/models', token: token);
     if (data is! List) return const [];
-    return data.whereType<Map<String, dynamic>>().map(AiDrawModel.fromJson).toList();
+    return data
+        .whereType<Map<String, dynamic>>()
+        .map(AiDrawModel.fromJson)
+        .toList();
   }
 
   /// 消息反馈：rating 1 赞 / -1 踩 / 0 取消。
@@ -1363,7 +1569,10 @@ class ChengeApi {
       token: token,
     );
     if (data is! List) return const [];
-    return data.whereType<Map<String, dynamic>>().map(AiSkill.fromJson).toList();
+    return data
+        .whereType<Map<String, dynamic>>()
+        .map(AiSkill.fromJson)
+        .toList();
   }
 
   /// 开启/关闭技能：`POST /ai/skills/pref`。
@@ -1447,8 +1656,12 @@ class ChengeApi {
   }) async {
     final uri = Uri.parse('$_baseUrl$path').replace(queryParameters: query);
     final headers = <String, String>{'Accept': 'application/json'};
-    if (body != null) headers['Content-Type'] = 'application/json; charset=utf-8';
-    if (token != null && token.isNotEmpty) headers['Authorization'] = 'Bearer $token';
+    if (body != null) {
+      headers['Content-Type'] = 'application/json; charset=utf-8';
+    }
+    if (token != null && token.isNotEmpty) {
+      headers['Authorization'] = 'Bearer $token';
+    }
 
     late http.Response response;
     try {
@@ -1470,7 +1683,10 @@ class ChengeApi {
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       final message = payload is Map ? payload['msg'] : null;
-      throw ApiException(message?.toString() ?? '请求失败（${response.statusCode}）', statusCode: response.statusCode);
+      throw ApiException(
+        message?.toString() ?? '请求失败（${response.statusCode}）',
+        statusCode: response.statusCode,
+      );
     }
     if (payload is! Map<String, dynamic>) throw const ApiException('服务响应格式不正确');
     if (payload['code'] != 200) {
@@ -1482,12 +1698,14 @@ class ChengeApi {
     return payload['data'];
   }
 
-  static int _integer(Object? value) => value is num ? value.toInt() : int.tryParse('$value') ?? 0;
+  static int _integer(Object? value) =>
+      value is num ? value.toInt() : int.tryParse('$value') ?? 0;
 
   static bool _isValidEmojiUrl(String url) {
     const localPrefix = '/file-module/files/local/';
     if (url.startsWith(localPrefix)) {
-      return !url.contains(r'\') && url.substring(localPrefix.length).trim().isNotEmpty;
+      return !url.contains(r'\') &&
+          url.substring(localPrefix.length).trim().isNotEmpty;
     }
     final uri = Uri.tryParse(url);
     return uri != null &&
@@ -1505,7 +1723,8 @@ class SessionStore {
 
   Future<String?> readToken() => _storage.read(key: _tokenKey);
 
-  Future<void> saveToken(String token) => _storage.write(key: _tokenKey, value: token);
+  Future<void> saveToken(String token) =>
+      _storage.write(key: _tokenKey, value: token);
 
   Future<void> clearToken() => _storage.delete(key: _tokenKey);
 

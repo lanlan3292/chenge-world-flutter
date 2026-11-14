@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:markdown/markdown.dart' as md;
 
 import '../l10n/generated/app_localizations.dart';
@@ -65,20 +65,63 @@ class ChatMarkdown extends StatelessWidget {
       em: TextStyle(color: textColor, fontStyle: FontStyle.italic),
       code: TextStyle(color: textColor, fontSize: fontSize - 1.5, backgroundColor: codeBackground),
       codeblockPadding: const EdgeInsets.all(10),
-      codeblockDecoration: BoxDecoration(color: codeBackground, borderRadius: BorderRadius.circular(8)),
-      blockquote: TextStyle(color: textColor.withValues(alpha: 0.8), fontSize: fontSize),
-      blockquoteDecoration: BoxDecoration(border: Border(left: BorderSide(color: textColor.withValues(alpha: 0.3), width: 3))),
+      codeblockDecoration: BoxDecoration(
+        color: codeBackground,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      blockquote: TextStyle(
+        color: textColor.withValues(alpha: 0.8),
+        fontSize: fontSize,
+      ),
+      blockquoteDecoration: BoxDecoration(
+        border: Border(
+          left: BorderSide(color: textColor.withValues(alpha: 0.3), width: 3),
+        ),
+      ),
       blockquotePadding: const EdgeInsets.only(left: 10, top: 2, bottom: 2),
       listBullet: TextStyle(color: textColor, fontSize: fontSize),
       listIndent: 18,
-      horizontalRuleDecoration: BoxDecoration(border: Border(top: BorderSide(color: textColor.withValues(alpha: 0.2)))),
-      h1: TextStyle(color: textColor, fontSize: fontSize + 5, fontWeight: FontWeight.w800),
-      h2: TextStyle(color: textColor, fontSize: fontSize + 3, fontWeight: FontWeight.w800),
-      h3: TextStyle(color: textColor, fontSize: fontSize + 1, fontWeight: FontWeight.w700),
-      h4: TextStyle(color: textColor, fontSize: fontSize, fontWeight: FontWeight.w700),
-      h5: TextStyle(color: textColor, fontSize: fontSize, fontWeight: FontWeight.w600),
-      h6: TextStyle(color: textColor, fontSize: fontSize - 1, fontWeight: FontWeight.w600),
-      tableHead: TextStyle(color: textColor, fontWeight: FontWeight.w700, fontSize: fontSize - 2),
+      horizontalRuleDecoration: BoxDecoration(
+        border: Border(
+          top: BorderSide(color: textColor.withValues(alpha: 0.2)),
+        ),
+      ),
+      h1: TextStyle(
+        color: textColor,
+        fontSize: fontSize + 5,
+        fontWeight: FontWeight.w800,
+      ),
+      h2: TextStyle(
+        color: textColor,
+        fontSize: fontSize + 3,
+        fontWeight: FontWeight.w800,
+      ),
+      h3: TextStyle(
+        color: textColor,
+        fontSize: fontSize + 1,
+        fontWeight: FontWeight.w700,
+      ),
+      h4: TextStyle(
+        color: textColor,
+        fontSize: fontSize,
+        fontWeight: FontWeight.w700,
+      ),
+      h5: TextStyle(
+        color: textColor,
+        fontSize: fontSize,
+        fontWeight: FontWeight.w600,
+      ),
+      h6: TextStyle(
+        color: textColor,
+        fontSize: fontSize - 1,
+        fontWeight: FontWeight.w600,
+      ),
+      tableHead: TextStyle(
+        color: textColor,
+        fontWeight: FontWeight.w700,
+        fontSize: fontSize - 2,
+      ),
+
       tableBody: TextStyle(color: textColor, fontSize: fontSize - 2),
       tableBorder: TableBorder.all(color: textColor.withValues(alpha: 0.2)),
       tableCellsPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
@@ -144,3 +187,4 @@ class _ResourceCard extends StatelessWidget {
     return InkWell(borderRadius: BorderRadius.circular(14), onTap: () => onTap!(kind, int.parse(refId)), child: content);
   }
 }
+

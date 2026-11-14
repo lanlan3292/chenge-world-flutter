@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -40,6 +40,7 @@ class ChatThreadPage extends StatefulWidget {
   final String token;
   final int? userId;
   final ChatConversation conversation;
+
   /// 可选：共享 WebSocket；为空时本页自行建连
   final ChatSocket? chatSocket;
   final bool showBackButton;
@@ -67,6 +68,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
   StreamSubscription<ChatMessage>? _wsSub;
   StreamSubscription<Map<String, dynamic>>? _wsRawSub;
   StreamSubscription<bool>? _wsConnectionSub;
+
   /// 断线时的轻量兜底轮询（仅在 WS 不可用时启用）
   Timer? _fallbackPoll;
   bool _pollInFlight = false;
@@ -93,6 +95,8 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
 
   /// 输入 `@` 或 `/` 后弹出的候选项。
   _ComposerHint? _composerHint;
+
+  List<Map<String, dynamic>> _commandGroups = const [];
 
   /// 本会话是否接收消息通知。服务端只有全局 `notify.types.message`。
   bool _receiveNotifications = true;
@@ -122,28 +126,57 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       _loadMessages();
     }
     _loadMentionCandidates();
+    _loadCommandGroups();
     _loadNotificationPreference();
     _bindSocket();
   }
+
   Future<void> _loadMentionCandidates() async {
     try {
-      final detail = await widget.api.chatDetail(_conversation.id, widget.token);
+      final detail = await widget.api.chatDetail(
+        _conversation.id,
+        widget.token,
+      );
       if (!mounted) return;
       final raw = detail['members'];
       final next = <_MentionCandidate>[];
       if (raw is List) {
         for (final item in raw.whereType<Map>()) {
-          final id = item['userId'] is num
-              ? (item['userId'] as num).toInt()
-              : int.tryParse('${item['userId']}') ?? 0;
+          final id =
+              item['userId'] is num
+                  ? (item['userId'] as num).toInt()
+                  : int.tryParse('${item['userId']}') ?? 0;
           if (id <= 0 || id == widget.userId) continue;
           final nickname = '${item['nickname'] ?? ''}'.trim();
-          next.add(_MentionCandidate(id, nickname.isEmpty ? '用户$id' : nickname));
+          next.add(
+            _MentionCandidate(id, nickname.isEmpty ? '用户$id' : nickname),
+          );
         }
       }
       setState(() => _mentions = next);
     } on ApiException {
       // @ 列表失败不影响发消息。
+    }
+  }
+
+  Future<void> _loadCommandGroups() async {
+    if (_isGroup && _channel == null) return;
+    try {
+      final groups = await widget.api.chatCommands(
+        _conversation.id,
+        widget.token,
+        channelId: _channel?.id,
+      );
+      if (!mounted) return;
+      setState(() {
+        _commandGroups = groups;
+      });
+    } on ApiException {
+      if (mounted) {
+        setState(() {
+          _commandGroups = const [];
+        });
+      }
     }
   }
 
@@ -174,12 +207,14 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     setState(() => _receiveNotifications = enabled);
     try {
       final current = await widget.api.userSettings(widget.token);
-      final notify = current['notify'] is Map
-          ? Map<String, dynamic>.from(current['notify'] as Map)
-          : <String, dynamic>{'site': true, 'types': <String, dynamic>{}};
-      final types = notify['types'] is Map
-          ? Map<String, dynamic>.from(notify['types'] as Map)
-          : <String, dynamic>{};
+      final notify =
+          current['notify'] is Map
+              ? Map<String, dynamic>.from(current['notify'] as Map)
+              : <String, dynamic>{'site': true, 'types': <String, dynamic>{}};
+      final types =
+          notify['types'] is Map
+              ? Map<String, dynamic>.from(notify['types'] as Map)
+              : <String, dynamic>{};
       types['message'] = enabled;
       notify['types'] = types;
       if (enabled) notify['site'] = true;
@@ -196,6 +231,45 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     final cursor = selection.isValid ? selection.baseOffset : value.length;
     final safeCursor = cursor < 0 ? value.length : cursor;
     final before = value.substring(0, safeCursor);
+    final slash = before.lastIndexOf('/');
+    if (slash >= 0 &&
+        (slash == 0 || RegExp(r'\s').hasMatch(before[slash - 1]))) {
+      final query = before.substring(slash + 1);
+      if (!query.contains(RegExp(r'\s'))) {
+        final commands = <_SlashCommand>[];
+        for (final group in _commandGroups) {
+          final botId = group['botId'];
+          final botName = '${group['botName'] ?? '机器人'}';
+          final raw = group['commands'];
+          if (raw is! List) continue;
+          for (final item in raw.whereType<Map>()) {
+            final name = '${item['name'] ?? ''}'.trim();
+            if (name.isEmpty ||
+                (query.isNotEmpty &&
+                    !name.toLowerCase().contains(query.toLowerCase()))) {
+              continue;
+            }
+            commands.add(
+              _SlashCommand(
+                name: name,
+                syntax: '${item['syntax'] ?? '/$name'}',
+                description: '${item['description'] ?? ''}',
+                botName: botName,
+                botId: botId,
+              ),
+            );
+          }
+        }
+        setState(
+          () =>
+              _composerHint =
+                  commands.isEmpty
+                      ? null
+                      : _ComposerHint.commands(commands, slash),
+        );
+        return;
+      }
+    }
     final at = before.lastIndexOf('@');
     if (at < 0 || (at > 0 && !RegExp(r'\s').hasMatch(before[at - 1]))) {
       if (_composerHint != null) setState(() => _composerHint = null);
@@ -206,11 +280,20 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       if (_composerHint != null) setState(() => _composerHint = null);
       return;
     }
-    final matches = _mentions
-        .where((item) => query.isEmpty || item.name.toLowerCase().contains(query.toLowerCase()))
-        .take(8)
-        .toList();
-    setState(() => _composerHint = matches.isEmpty ? null : _ComposerHint.mention(matches, at));
+    final matches =
+        _mentions
+            .where(
+              (item) =>
+                  query.isEmpty ||
+                  item.name.toLowerCase().contains(query.toLowerCase()),
+            )
+            .take(8)
+            .toList();
+    setState(
+      () =>
+          _composerHint =
+              matches.isEmpty ? null : _ComposerHint.mention(matches, at),
+    );
   }
 
   void _insertMention(_MentionCandidate candidate) {
@@ -219,8 +302,25 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     final text = _messageController.text;
     final cursor = _messageController.selection.baseOffset;
     final end = cursor < 0 ? text.length : cursor;
-    final next = '${text.substring(0, hint.start)}@${candidate.name} ${text.substring(end)}';
+    final next =
+        '${text.substring(0, hint.start)}@${candidate.name} ${text.substring(end)}';
     final caret = hint.start + candidate.name.length + 2;
+    _messageController.value = TextEditingValue(
+      text: next,
+      selection: TextSelection.collapsed(offset: caret),
+    );
+    setState(() => _composerHint = null);
+  }
+
+  void _insertCommand(_SlashCommand command) {
+    final hint = _composerHint;
+    if (hint == null) return;
+    final text = _messageController.text;
+    final cursor = _messageController.selection.baseOffset;
+    final end = cursor < 0 ? text.length : cursor;
+    final next =
+        '${text.substring(0, hint.start)}${command.syntax} ${text.substring(end)}';
+    final caret = hint.start + command.syntax.length + 1;
     _messageController.value = TextEditingValue(
       text: next,
       selection: TextSelection.collapsed(offset: caret),
@@ -233,13 +333,14 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      builder: (sheetContext) => _HistorySearchSheet(
-        api: widget.api,
-        token: widget.token,
-        conversationId: _conversation.id,
-        channelId: _channel?.id,
-        scope: _isGroup ? 'group-chat' : 'private-chat',
-      ),
+      builder:
+          (sheetContext) => _HistorySearchSheet(
+            api: widget.api,
+            token: widget.token,
+            conversationId: _conversation.id,
+            channelId: _channel?.id,
+            scope: _isGroup ? 'group-chat' : 'private-chat',
+          ),
     );
     if (picked == null || !mounted) return;
     await _jumpToMessage(picked);
@@ -284,18 +385,19 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       builder: (sheetContext) {
         var enabled = _receiveNotifications;
         return StatefulBuilder(
-          builder: (context, setSheetState) => SafeArea(
-            child: SwitchListTile(
-              secondary: const Icon(Icons.notifications_outlined),
-              title: const Text('接收此会话通知'),
-              subtitle: const Text('关闭后不再接收聊天消息通知'),
-              value: enabled,
-              onChanged: (value) async {
-                setSheetState(() => enabled = value);
-                await _setReceiveNotifications(value);
-              },
-            ),
-          ),
+          builder:
+              (context, setSheetState) => SafeArea(
+                child: SwitchListTile(
+                  secondary: const Icon(Icons.notifications_outlined),
+                  title: const Text('接收此会话通知'),
+                  subtitle: const Text('关闭后不再接收聊天消息通知'),
+                  value: enabled,
+                  onChanged: (value) async {
+                    setSheetState(() => enabled = value);
+                    await _setReceiveNotifications(value);
+                  },
+                ),
+              ),
         );
       },
     );
@@ -361,6 +463,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       if (selected == null) {
         setState(() => _contentReady = true);
       } else {
+        _loadCommandGroups();
         await _loadMessages();
       }
     } on ApiException catch (error) {
@@ -382,13 +485,16 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       _quoting = null;
       _contentReady = false;
     });
+    _loadCommandGroups();
     await _loadMessages();
   }
 
   void _showError(String message) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(message), backgroundColor: AppTheme.coral));
+      ..showSnackBar(
+        SnackBar(content: Text(message), backgroundColor: AppTheme.coral),
+      );
   }
 
   void _bindSocket() {
@@ -808,7 +914,9 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     _pinScheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _pinScheduled = false;
-      if (!mounted || !_stickToBottom || !_messageScrollController.hasClients) return;
+      if (!mounted || !_stickToBottom || !_messageScrollController.hasClients) {
+        return;
+      }
       final position = _messageScrollController.position;
       final gap = position.maxScrollExtent - position.pixels;
       if (gap > 1) position.jumpTo(position.maxScrollExtent);
@@ -826,7 +934,9 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       final position = _messageScrollController.position;
       final delta = position.maxScrollExtent - beforeExtent;
       if (delta <= 0) return;
-      position.jumpTo((beforeOffset + delta).clamp(0, position.maxScrollExtent));
+      position.jumpTo(
+        (beforeOffset + delta).clamp(0, position.maxScrollExtent),
+      );
     });
   }
 
@@ -861,7 +971,9 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     final channel = _channel;
     final onlineLabel =
         !isGroup && widget.peerOnline != null
-            ? (widget.peerOnline! ? localizations.online : localizations.offline)
+            ? (widget.peerOnline!
+                ? localizations.online
+                : localizations.offline)
             : '';
 
     return Scaffold(
@@ -889,8 +1001,8 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
               Text(
                 isGroup
                     ? (channel == null
-                          ? localizations.groupChat
-                          : '${channel.name} · ${localizations.groupChat}')
+                        ? localizations.groupChat
+                        : '${channel.name} · ${localizations.groupChat}')
                     : onlineLabel,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -937,37 +1049,37 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                     },
                     child: SizeChangedLayoutNotifier(
                       child: ListView.builder(
-                    controller: _messageScrollController,
-                    padding: const EdgeInsets.fromLTRB(14, 14, 14, 18),
-                    itemCount: _messages.length + (_hasMore ? 1 : 0),
-                    itemBuilder: (context, index) {
-                      if (_hasMore && index == 0) {
-                        return Center(
-                          child: TextButton.icon(
-                            onPressed: _loadingOlder ? null : _loadOlder,
-                            icon:
-                                _loadingOlder
-                                    ? const SizedBox.square(
-                                      dimension: 16,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                    : const Icon(Icons.expand_less_rounded),
-                            label: Text(localizations.loadOlderMessages),
-                          ),
-                        );
-                      }
-                      final messageIndex = index - (_hasMore ? 1 : 0);
-                      return _messageTile(
-                        _messages[messageIndex],
-                        showTime: _shouldShowTime(messageIndex),
-                      );
-                          },
-                        ),
+                        controller: _messageScrollController,
+                        padding: const EdgeInsets.fromLTRB(14, 14, 14, 18),
+                        itemCount: _messages.length + (_hasMore ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          if (_hasMore && index == 0) {
+                            return Center(
+                              child: TextButton.icon(
+                                onPressed: _loadingOlder ? null : _loadOlder,
+                                icon:
+                                    _loadingOlder
+                                        ? const SizedBox.square(
+                                          dimension: 16,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                          ),
+                                        )
+                                        : const Icon(Icons.expand_less_rounded),
+                                label: Text(localizations.loadOlderMessages),
+                              ),
+                            );
+                          }
+                          final messageIndex = index - (_hasMore ? 1 : 0);
+                          return _messageTile(
+                            _messages[messageIndex],
+                            showTime: _shouldShowTime(messageIndex),
+                          );
+                        },
                       ),
                     ),
                   ),
+                ),
                 if (!_contentReady)
                   ColoredBox(
                     color: Theme.of(context).colorScheme.surface,
@@ -988,8 +1100,8 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
           _composer(),
         ],
       ),
-  );
-}
+    );
+  }
 
   /// 群频道切换条。
   Widget _channelBar() {
@@ -1031,13 +1143,15 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.fromLTRB(12, 6, 12, 4),
         itemCount: _channels.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
           final channel = _channels[index];
           final selected = channel.id == _channel?.id;
           return ChoiceChip(
             avatar: Icon(
-              channel.isAnnouncement ? Icons.campaign_outlined : Icons.tag_rounded,
+              channel.isAnnouncement
+                  ? Icons.campaign_outlined
+                  : Icons.tag_rounded,
               size: 16,
             ),
             label: Row(
@@ -1047,7 +1161,10 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                 if (channel.unread > 0) ...[
                   const SizedBox(width: 5),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 5,
+                      vertical: 1,
+                    ),
                     decoration: BoxDecoration(
                       color: selected ? Colors.white : AppTheme.coral,
                       borderRadius: BorderRadius.circular(9),
@@ -1101,9 +1218,11 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       radius: 15,
       backgroundColor: const Color(0xFFFFE8C5),
       foregroundImage: url == null ? null : CachedNetworkImageProvider(url),
-      onForegroundImageError: url == null ? null : (_, __) {},
+      onForegroundImageError: url == null ? null : (_, _) {},
       child: Text(
-        name.isEmpty ? AppLocalizations.of(context).friendInitial : name.characters.first,
+        name.isEmpty
+            ? AppLocalizations.of(context).friendInitial
+            : name.characters.first,
         style: const TextStyle(
           color: AppTheme.ink,
           fontWeight: FontWeight.w700,
@@ -1133,55 +1252,55 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
         onDoubleTap: () => _startQuote(message),
         onLongPress: () => _showMessageActions(message),
         child: Row(
-        mainAxisAlignment:
-            mine ? MainAxisAlignment.end : MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          if (showOtherAvatar) ...[
-            avatarFor(
-              message.senderName ?? _conversation.name,
-              message.senderAvatar,
-            ),
-            const SizedBox(width: 8),
-          ],
-          Flexible(
-            child: Column(
-              crossAxisAlignment:
-                  mine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-              children: [
-                if (!mine)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 4, bottom: 4),
-                    child: Text(
-                      message.senderName ?? _conversation.name,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: Color(0xFF70817D),
-                      ),
-                    ),
-                  ),
-                if (showTime)
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 6),
+          mainAxisAlignment:
+              mine ? MainAxisAlignment.end : MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            if (showOtherAvatar) ...[
+              avatarFor(
+                message.senderName ?? _conversation.name,
+                message.senderAvatar,
+              ),
+              const SizedBox(width: 8),
+            ],
+            Flexible(
+              child: Column(
+                crossAxisAlignment:
+                    mine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                children: [
+                  if (!mine)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4, bottom: 4),
                       child: Text(
-                        _shortTime(message.createdAt),
+                        message.senderName ?? _conversation.name,
                         style: const TextStyle(
-                          fontSize: 10,
-                          color: Color(0xFF83918D),
+                          fontSize: 11,
+                          color: Color(0xFF70817D),
                         ),
                       ),
                     ),
-                  ),
-                _messageBubble(message, mine: mine),
-              ],
+                  if (showTime)
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        child: Text(
+                          _shortTime(message.createdAt),
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: Color(0xFF83918D),
+                          ),
+                        ),
+                      ),
+                    ),
+                  _messageBubble(message, mine: mine),
+                ],
+              ),
             ),
-          ),
-          if (showMineAvatar) ...[
-            const SizedBox(width: 8),
-            avatarFor(AppLocalizations.of(context).me, message.senderAvatar),
+            if (showMineAvatar) ...[
+              const SizedBox(width: 8),
+              avatarFor(AppLocalizations.of(context).me, message.senderAvatar),
+            ],
           ],
-        ],
         ),
       ),
     );
@@ -1198,7 +1317,8 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     final reactions = message.reactions.where((item) => item.isEmoji).toList();
     if (reactions.isEmpty) return body;
     return Column(
-      crossAxisAlignment: mine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment:
+          mine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         body,
@@ -1369,7 +1489,9 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
         message.recallDeadline != null &&
         message.recallDeadline!.isBefore(DateTime.now());
     final canRecall =
-        message.senderId == widget.userId && !overdue && message.type != 'system';
+        message.senderId == widget.userId &&
+        !overdue &&
+        message.type != 'system';
     final action = await showModalBottomSheet<String>(
       context: context,
       showDragHandle: true,
@@ -1399,7 +1521,10 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                 ),
                 if (canRecall)
                   ListTile(
-                    leading: const Icon(Icons.undo_rounded, color: AppTheme.coral),
+                    leading: const Icon(
+                      Icons.undo_rounded,
+                      color: AppTheme.coral,
+                    ),
                     title: Text(
                       l10n.chatRecall,
                       style: const TextStyle(color: AppTheme.coral),
@@ -1431,8 +1556,22 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
 
   Future<void> _pickReaction(ChatMessage message) async {
     const emojis = [
-      '👍', '❤️', '😂', '😮', '😢', '🎉', '🔥', '👀',
-      '🙏', '👏', '💯', '🤔', '😍', '😡', '🥳', '✅',
+      '👍',
+      '❤️',
+      '😂',
+      '😮',
+      '😢',
+      '🎉',
+      '🔥',
+      '👀',
+      '🙏',
+      '👏',
+      '💯',
+      '🤔',
+      '😍',
+      '😡',
+      '🥳',
+      '✅',
     ];
     final theme = Theme.of(context);
     final picked = await showModalBottomSheet<String>(
@@ -1470,7 +1609,10 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                               color: theme.colorScheme.surfaceContainerHigh,
                               borderRadius: BorderRadius.circular(22),
                             ),
-                            child: Text(emoji, style: const TextStyle(fontSize: 20)),
+                            child: Text(
+                              emoji,
+                              style: const TextStyle(fontSize: 20),
+                            ),
                           ),
                         ),
                     ],
@@ -1485,11 +1627,11 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
   }
 
   Future<void> _toggleReaction(ChatMessage message, String emoji) async {
-    final existing =
-        message.reactions.where(
-          (reaction) => reaction.isEmoji && reaction.emoji == emoji,
-        );
-    final active = existing.isEmpty || !existing.first.reactedBy(widget.userId ?? 0);
+    final existing = message.reactions.where(
+      (reaction) => reaction.isEmoji && reaction.emoji == emoji,
+    );
+    final active =
+        existing.isEmpty || !existing.first.reactedBy(widget.userId ?? 0);
     try {
       final updated = await widget.api.setChatReaction(
         _conversation.id,
@@ -1534,8 +1676,11 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       if (!mounted) return;
       _replaceMessage(
         message.id,
-        (item) =>
-            item.copyWith(type: 'recalled', content: l10n.chatRecalled, reactions: const []),
+        (item) => item.copyWith(
+          type: 'recalled',
+          content: l10n.chatRecalled,
+          reactions: const [],
+        ),
       );
     } on ApiException catch (error) {
       if (mounted) _showError(error.message);
@@ -1615,7 +1760,10 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     if (cached != null) return cached;
     try {
       final info = await widget.api.fileInfo(fileId, token: widget.token);
-      final raw = (info['url'] ?? info['fileUrl'] ?? info['path'] ?? '').toString().trim();
+      final raw =
+          (info['url'] ?? info['fileUrl'] ?? info['path'] ?? '')
+              .toString()
+              .trim();
       if (raw.isEmpty) return null;
       final url = widget.api.resolveMediaUrl(raw);
       _fileUrls[fileId] = url;
@@ -1636,14 +1784,15 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
           width: size,
           height: size,
           fit: BoxFit.cover,
-          memCacheWidth: (size * MediaQuery.devicePixelRatioOf(context)).round(),
+          memCacheWidth:
+              (size * MediaQuery.devicePixelRatioOf(context)).round(),
           placeholder:
-              (_, __) => _imagePlaceholder(
+              (_, _) => _imagePlaceholder(
                 AppLocalizations.of(context).chatImageLoading,
                 size: size,
               ),
           errorWidget:
-              (_, __, ___) => _imagePlaceholder(
+              (_, _, _) => _imagePlaceholder(
                 AppLocalizations.of(context).chatImageUnavailable,
                 size: size,
               ),
@@ -1675,117 +1824,127 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     showDialog<void>(
       context: context,
       barrierColor: Colors.black87,
-      builder: (dialogContext) => Dialog.fullscreen(
-        backgroundColor: Colors.black,
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: InteractiveViewer(
-                minScale: 0.8,
-                maxScale: 5,
-                child: Center(
-                  child: Image.network(
-                    url,
-                    fit: BoxFit.contain,
-                    filterQuality: FilterQuality.high,
-                    isAntiAlias: true,
-                    loadingBuilder: (context, child, progress) {
-                      if (progress == null) return child;
-                      final total = progress.expectedTotalBytes;
-                      return Center(
-                        child: SizedBox(
-                          width: 32,
-                          height: 32,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white70,
-                            value:
-                                total == null || total <= 0
-                                    ? null
-                                    : progress.cumulativeBytesLoaded / total,
-                          ),
-                        ),
-                      );
-                    },
-                    errorBuilder:
-                        (_, __, ___) => Text(
-                          AppLocalizations.of(context).chatImageUnavailable,
-                          style: const TextStyle(color: Colors.white70),
-                        ),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              top: 8,
-              left: 8,
-              child: SafeArea(
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white24,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (hdr) ...[
-                            const Icon(
-                              Icons.hdr_on,
-                              size: 14,
-                              color: Colors.white,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              l10n.chatHdr,
-                              style: const TextStyle(
-                                fontSize: 10.5,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
+      builder:
+          (dialogContext) => Dialog.fullscreen(
+            backgroundColor: Colors.black,
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: InteractiveViewer(
+                    minScale: 0.8,
+                    maxScale: 5,
+                    child: Center(
+                      child: Image.network(
+                        url,
+                        fit: BoxFit.contain,
+                        filterQuality: FilterQuality.high,
+                        isAntiAlias: true,
+                        loadingBuilder: (context, child, progress) {
+                          if (progress == null) return child;
+                          final total = progress.expectedTotalBytes;
+                          return Center(
+                            child: SizedBox(
+                              width: 32,
+                              height: 32,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white70,
+                                value:
+                                    total == null || total <= 0
+                                        ? null
+                                        : progress.cumulativeBytesLoaded /
+                                            total,
                               ),
                             ),
-                            const SizedBox(width: 8),
-                          ],
-                          Text(
-                            l10n.chatViewOriginal,
-                            style: const TextStyle(
-                              fontSize: 10.5,
-                              color: Colors.white70,
+                          );
+                        },
+                        errorBuilder:
+                            (_, _, _) => Text(
+                              AppLocalizations.of(context).chatImageUnavailable,
+                              style: const TextStyle(color: Colors.white70),
                             ),
-                          ),
-                        ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-            Positioned(
-              top: 8,
-              right: 8,
-              child: SafeArea(
-                child: IconButton.filledTonal(
-                  tooltip: AppLocalizations.of(context).close,
-                  onPressed: () => Navigator.pop(dialogContext),
-                  icon: const Icon(Icons.close_rounded),
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: SafeArea(
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white24,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (hdr) ...[
+                                const Icon(
+                                  Icons.hdr_on,
+                                  size: 14,
+                                  color: Colors.white,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  l10n.chatHdr,
+                                  style: const TextStyle(
+                                    fontSize: 10.5,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                              ],
+                              Text(
+                                l10n.chatViewOriginal,
+                                style: const TextStyle(
+                                  fontSize: 10.5,
+                                  color: Colors.white70,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: SafeArea(
+                    child: IconButton.filledTonal(
+                      tooltip: AppLocalizations.of(context).close,
+                      onPressed: () => Navigator.pop(dialogContext),
+                      icon: const Icon(Icons.close_rounded),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
   /// 判断是否 HDR / 宽色域图片（HEIC/AVIF/HDR/EXR 等），仅用于界面标识。
   bool _isHdrUrl(String url) {
     final lower = url.toLowerCase();
-    const markers = ['.hdr', '.exr', '.avif', '.heic', '.heif', 'hdr=1', 'hdr=on'];
+    const markers = [
+      '.hdr',
+      '.exr',
+      '.avif',
+      '.heic',
+      '.heif',
+      'hdr=1',
+      'hdr=on',
+    ];
     return markers.any(lower.contains);
   }
 
@@ -1797,11 +1956,10 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     final sourceLabel = isQq ? l10n.chatSourceQq : l10n.chatSourceGame;
     final text = data?.displayText ?? '';
     final images = data?.images ?? const <String>[];
-    final subtitle =
-        [data?.nickname, data?.groupName]
-            .whereType<String>()
-            .where((value) => value.isNotEmpty)
-            .join(' · ');
+    final subtitle = [
+      data?.nickname,
+      data?.groupName,
+    ].whereType<String>().where((value) => value.isNotEmpty).join(' · ');
 
     return Container(
       constraints: const BoxConstraints(maxWidth: 340),
@@ -1818,9 +1976,10 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
             behavior: HitTestBehavior.opaque,
             onDoubleTap: () => _startQuote(message),
             onLongPress: () => _showMessageActions(message),
-            onTap: data == null || data.details.isEmpty
-                ? null
-                : () => _showInteropDetails(data, sourceLabel),
+            onTap:
+                data == null || data.details.isEmpty
+                    ? null
+                    : () => _showInteropDetails(data, sourceLabel),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -1864,7 +2023,9 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
             Wrap(
               spacing: 6,
               runSpacing: 6,
-              children: [for (final url in images) _networkImage(url, size: 120)],
+              children: [
+                for (final url in images) _networkImage(url, size: 120),
+              ],
             ),
           ],
           if (text.isEmpty && images.isEmpty && data == null) ...[
@@ -1880,43 +2041,55 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
-      builder: (sheetContext) => SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                sourceLabel,
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
-              ),
-              const SizedBox(height: 8),
-              for (final line in data.details)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
-                  child: SelectableText(
-                    line,
+      builder:
+          (sheetContext) => SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    sourceLabel,
                     style: const TextStyle(
-                      fontSize: 13,
-                      height: 1.4,
-                      color: Color(0xFF3F514B),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
-                ),
-            ],
+                  const SizedBox(height: 8),
+                  for (final line in data.details)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: SelectableText(
+                        line,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          height: 1.4,
+                          color: Color(0xFF3F514B),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
     );
   }
 
   Widget _shareCard(ChatMessage message) {
     final isPost = message.type == 'post';
     final payload = _sharePayload(message.content);
-    final title = (payload['title'] ?? (isPost ? AppLocalizations.of(context).post : AppLocalizations.of(context).product)).toString();
-    final tag = isPost ? AppLocalizations.of(context).sharedPost : AppLocalizations.of(context).productOrder;
+    final title =
+        (payload['title'] ??
+                (isPost
+                    ? AppLocalizations.of(context).post
+                    : AppLocalizations.of(context).product))
+            .toString();
+    final tag =
+        isPost
+            ? AppLocalizations.of(context).sharedPost
+            : AppLocalizations.of(context).productOrder;
 
     return Material(
       color: Theme.of(context).colorScheme.surfaceContainerLow,
@@ -1988,12 +2161,19 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
           payload['id'],
     );
     if (id == null || id <= 0) {
-      _showShareError(isPost ? AppLocalizations.of(context).cannotOpenPostMissingId : AppLocalizations.of(context).cannotOpenProductMissingId);
+      _showShareError(
+        isPost
+            ? AppLocalizations.of(context).cannotOpenPostMissingId
+            : AppLocalizations.of(context).cannotOpenProductMissingId,
+      );
       return;
     }
 
     if (isPost) {
-      final title = _shareText(nestedPayload['title'], fallback: AppLocalizations.of(context).post);
+      final title = _shareText(
+        nestedPayload['title'],
+        fallback: AppLocalizations.of(context).post,
+      );
       final post = BlogPost(
         id: id,
         title: title,
@@ -2023,7 +2203,10 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
 
     final item = ShopItem(
       id: id,
-      title: _shareText(nestedPayload['title'], fallback: AppLocalizations.of(context).product),
+      title: _shareText(
+        nestedPayload['title'],
+        fallback: AppLocalizations.of(context).product,
+      ),
       type: _shareText(nestedPayload['type'], fallback: 'file'),
       price: _shareInt(nestedPayload['price']),
       stock: _shareInt(nestedPayload['stock']),
@@ -2036,7 +2219,10 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
               item: item,
               token: widget.token,
               userId: widget.userId,
-              onLoginRequested: () => _showShareError(AppLocalizations.of(context).signInToPurchase),
+              onLoginRequested:
+                  () => _showShareError(
+                    AppLocalizations.of(context).signInToPurchase,
+                  ),
             ),
       ),
     );
@@ -2120,63 +2306,67 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-              IconButton(
-                tooltip: AppLocalizations.of(context).sendImage,
-                onPressed:
-                    _sending || _uploadingImage || !_canSend ? null : _sendImage,
-                icon:
-                    _uploadingImage
-                        ? const SizedBox.square(
-                          dimension: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                        : const Icon(Icons.image_outlined),
-              ),
-              IconButton(
-                tooltip: AppLocalizations.of(context).emojiPacks,
-                onPressed: _sending || !_canSend ? null : _openEmojiPicker,
-                icon: const Icon(Icons.emoji_emotions_outlined),
-              ),
-              Expanded(
-                child: TextField(
-                  controller: _messageController,
-                  focusNode: _composerFocus,
-                  minLines: 1,
-                  maxLines: 5,
-                  textInputAction: TextInputAction.newline,
-                  enabled: _canSend,
-                  onChanged: (value) {
-                    setState(() {});
-                    _onComposerChanged(value);
-                  },
-                  decoration: InputDecoration(
-                    hintText:
-                        _canSend
-                            ? AppLocalizations.of(context).typeMessage
-                            : AppLocalizations.of(context).channelReadOnly,
-                    isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 12,
+                  IconButton(
+                    tooltip: AppLocalizations.of(context).sendImage,
+                    onPressed:
+                        _sending || _uploadingImage || !_canSend
+                            ? null
+                            : _sendImage,
+                    icon:
+                        _uploadingImage
+                            ? const SizedBox.square(
+                              dimension: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                            : const Icon(Icons.image_outlined),
+                  ),
+                  IconButton(
+                    tooltip: AppLocalizations.of(context).emojiPacks,
+                    onPressed: _sending || !_canSend ? null : _openEmojiPicker,
+                    icon: const Icon(Icons.emoji_emotions_outlined),
+                  ),
+                  Expanded(
+                    child: TextField(
+                      controller: _messageController,
+                      focusNode: _composerFocus,
+                      minLines: 1,
+                      maxLines: 5,
+                      textInputAction: TextInputAction.newline,
+                      enabled: _canSend,
+                      onChanged: (value) {
+                        setState(() {});
+                        _onComposerChanged(value);
+                      },
+                      decoration: InputDecoration(
+                        hintText:
+                            _canSend
+                                ? AppLocalizations.of(context).typeMessage
+                                : AppLocalizations.of(context).channelReadOnly,
+                        isDense: true,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              IconButton.filled(
-                tooltip: AppLocalizations.of(context).sendMessage,
-                onPressed:
-                    _sending || !_canSend || _messageController.text.trim().isEmpty
-                        ? null
-                        : _send,
-                icon:
-                    _sending
-                        ? const SizedBox.square(
-                          dimension: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                        : const Icon(Icons.send_rounded),
-              ),
+                  const SizedBox(width: 8),
+                  IconButton.filled(
+                    tooltip: AppLocalizations.of(context).sendMessage,
+                    onPressed:
+                        _sending ||
+                                !_canSend ||
+                                _messageController.text.trim().isEmpty
+                            ? null
+                            : _send,
+                    icon:
+                        _sending
+                            ? const SizedBox.square(
+                              dimension: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                            : const Icon(Icons.send_rounded),
+                  ),
                 ],
               ),
             ],
@@ -2206,6 +2396,15 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                 leading: const Icon(Icons.alternate_email_rounded, size: 18),
                 title: Text(candidate.name),
                 onTap: () => _insertMention(candidate),
+              ),
+          if (hint.commands != null)
+            for (final command in hint.commands!)
+              ListTile(
+                dense: true,
+                leading: const Icon(Icons.smart_toy_outlined, size: 18),
+                title: Text(command.syntax),
+                subtitle: Text('${command.botName} · ${command.description}'),
+                onTap: () => _insertCommand(command),
               ),
         ],
       ),
@@ -2299,7 +2498,10 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
           color: const Color(0xFFEAF2ED),
           borderRadius: BorderRadius.circular(9),
         ),
-        child: Text(AppLocalizations.of(context).emoji, style: const TextStyle(fontWeight: FontWeight.w700)),
+        child: Text(
+          AppLocalizations.of(context).emoji,
+          style: const TextStyle(fontWeight: FontWeight.w700),
+        ),
       );
     }
     return ClipRRect(
@@ -2311,21 +2513,23 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
         width: 132,
         height: 132,
         fit: BoxFit.contain,
-        placeholder: (_, __) => const SizedBox(
-          width: 132,
-          height: 84,
-          child: Center(
-            child: SizedBox.square(
-              dimension: 20,
-              child: CircularProgressIndicator(strokeWidth: 2),
+        placeholder:
+            (_, _) => const SizedBox(
+              width: 132,
+              height: 84,
+              child: Center(
+                child: SizedBox.square(
+                  dimension: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
             ),
-          ),
-        ),
-        errorWidget: (context, __, ___) => SizedBox(
-          width: 132,
-          height: 84,
-          child: Center(child: Text(AppLocalizations.of(context).emoji)),
-        ),
+        errorWidget:
+            (context, _, _) => SizedBox(
+              width: 132,
+              height: 84,
+              child: Center(child: Text(AppLocalizations.of(context).emoji)),
+            ),
       ),
     );
   }
@@ -2362,12 +2566,30 @@ class _MentionCandidate {
   final String name;
 }
 
+class _SlashCommand {
+  const _SlashCommand({
+    required this.name,
+    required this.syntax,
+    required this.description,
+    required this.botName,
+    this.botId,
+  });
+  final String name;
+  final String syntax;
+  final String description;
+  final String botName;
+  final Object? botId;
+}
+
 class _ComposerHint {
-  const _ComposerHint._({this.mentions, required this.start});
+  const _ComposerHint._({this.mentions, this.commands, required this.start});
   factory _ComposerHint.mention(List<_MentionCandidate> mentions, int start) =>
       _ComposerHint._(mentions: mentions, start: start);
+  factory _ComposerHint.commands(List<_SlashCommand> commands, int start) =>
+      _ComposerHint._(commands: commands, start: start);
 
   final List<_MentionCandidate>? mentions;
+  final List<_SlashCommand>? commands;
   final int start;
 }
 
@@ -2460,28 +2682,32 @@ class _HistorySearchSheetState extends State<_HistorySearchSheet> {
               Padding(padding: const EdgeInsets.all(16), child: Text(_error!))
             else
               Expanded(
-                child: _results.isEmpty
-                    ? const Center(child: Text('输入关键词搜索本会话'))
-                    : ListView.builder(
-                        itemCount: _results.length,
-                        itemBuilder: (context, index) {
-                          final message = _results[index];
-                          final preview = message.content.replaceAll(RegExp(r'\s+'), ' ').trim();
-                          return ListTile(
-                            title: Text(
-                              message.senderName ?? '消息',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            subtitle: Text(
-                              preview,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            onTap: () => Navigator.pop(context, message),
-                          );
-                        },
-                      ),
+                child:
+                    _results.isEmpty
+                        ? const Center(child: Text('输入关键词搜索本会话'))
+                        : ListView.builder(
+                          itemCount: _results.length,
+                          itemBuilder: (context, index) {
+                            final message = _results[index];
+                            final preview =
+                                message.content
+                                    .replaceAll(RegExp(r'\s+'), ' ')
+                                    .trim();
+                            return ListTile(
+                              title: Text(
+                                message.senderName ?? '消息',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              subtitle: Text(
+                                preview,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              onTap: () => Navigator.pop(context, message),
+                            );
+                          },
+                        ),
               ),
           ],
         ),
@@ -2489,3 +2715,4 @@ class _HistorySearchSheetState extends State<_HistorySearchSheet> {
     );
   }
 }
+

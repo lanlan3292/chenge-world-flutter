@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 import '../l10n/generated/app_localizations.dart';
@@ -28,6 +28,7 @@ class SettingsPage extends StatefulWidget {
   final Future<void> Function() onLogout;
   final String? token;
   final ChengeApi? api;
+
   /// 用户在设置里修改 Token 后回调（已通过 /home/me 校验）。
   final Future<void> Function(String token)? onTokenChanged;
 
@@ -104,10 +105,7 @@ class _SettingsPageState extends State<SettingsPage> {
     return SwitchListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 4),
       secondary: Icon(icon, color: Theme.of(context).colorScheme.primary),
-      title: Text(
-        title,
-        style: const TextStyle(fontWeight: FontWeight.w700),
-      ),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
       subtitle: Text(subtitle),
       value: value,
       onChanged: (nextValue) async {
@@ -300,9 +298,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text(
-                              '图标已切换。可能需要退出应用或重启桌面启动器后才能看到新图标。',
-                            ),
+                            content: Text('图标已切换。可能需要退出应用或重启桌面启动器后才能看到新图标。'),
                             duration: Duration(seconds: 4),
                           ),
                         );
@@ -312,7 +308,8 @@ class _SettingsPageState extends State<SettingsPage> {
                 _switchTile(
                   icon: Icons.wallpaper_rounded,
                   title: AppLocalizations.of(context).dynamicColor,
-                  subtitle: AppLocalizations.of(context).dynamicColorDescription,
+                  subtitle:
+                      AppLocalizations.of(context).dynamicColorDescription,
                   value: _useDynamic,
                   setValue: (value) => _useDynamic = value,
                   saveValue: widget.settings.setUseDynamicColor,
@@ -359,7 +356,8 @@ class _SettingsPageState extends State<SettingsPage> {
                 _switchTile(
                   icon: Icons.vertical_align_bottom_rounded,
                   title: AppLocalizations.of(context).navigationBarImmersive,
-                  subtitle: AppLocalizations.of(context).navigationBarDescription,
+                  subtitle:
+                      AppLocalizations.of(context).navigationBarDescription,
                   value: _navImmersive,
                   setValue: (value) => _navImmersive = value,
                   saveValue: widget.settings.setNavigationBarImmersive,
@@ -376,7 +374,10 @@ class _SettingsPageState extends State<SettingsPage> {
                 _switchTile(
                   icon: Icons.blur_on_rounded,
                   title: AppLocalizations.of(context).statusBarTopHideMask,
-                  subtitle: AppLocalizations.of(context).statusBarTopHideMaskDescription,
+                  subtitle:
+                      AppLocalizations.of(
+                        context,
+                      ).statusBarTopHideMaskDescription,
                   value: _statusBarTopHideMask,
                   setValue: (value) => _statusBarTopHideMask = value,
                   saveValue: widget.settings.setStatusBarTopHideMask,
@@ -384,7 +385,8 @@ class _SettingsPageState extends State<SettingsPage> {
                 _switchTile(
                   icon: Icons.vertical_align_bottom_rounded,
                   title: AppLocalizations.of(context).autoHideBottomBar,
-                  subtitle: AppLocalizations.of(context).autoHideBottomDescription,
+                  subtitle:
+                      AppLocalizations.of(context).autoHideBottomDescription,
                   value: _autoHideBottom,
                   setValue: (value) => _autoHideBottom = value,
                   saveValue: widget.settings.setAutoHideBottomBar,
@@ -393,7 +395,8 @@ class _SettingsPageState extends State<SettingsPage> {
                 _switchTile(
                   icon: Icons.account_circle_outlined,
                   title: AppLocalizations.of(context).showSelfAvatar,
-                  subtitle: AppLocalizations.of(context).showSelfAvatarDescription,
+                  subtitle:
+                      AppLocalizations.of(context).showSelfAvatarDescription,
                   value: _chatShowSelfAvatar,
                   setValue: (value) => _chatShowSelfAvatar = value,
                   saveValue: widget.settings.setChatShowSelfAvatar,
@@ -401,7 +404,8 @@ class _SettingsPageState extends State<SettingsPage> {
                 _switchTile(
                   icon: Icons.face_outlined,
                   title: AppLocalizations.of(context).showPeerAvatar,
-                  subtitle: AppLocalizations.of(context).showPeerAvatarDescription,
+                  subtitle:
+                      AppLocalizations.of(context).showPeerAvatarDescription,
                   value: _chatShowPeerAvatar,
                   setValue: (value) => _chatShowPeerAvatar = value,
                   saveValue: widget.settings.setChatShowPeerAvatar,
@@ -418,7 +422,8 @@ class _SettingsPageState extends State<SettingsPage> {
                 _switchTile(
                   icon: Icons.filter_alt_outlined,
                   title: AppLocalizations.of(context).hideExternalPosts,
-                  subtitle: AppLocalizations.of(context).hideExternalPostsDescription,
+                  subtitle:
+                      AppLocalizations.of(context).hideExternalPostsDescription,
                   value: _feedHideExternal,
                   setValue: (value) => _feedHideExternal = value,
                   saveValue: widget.settings.setFeedHideExternalPosts,
@@ -427,7 +432,8 @@ class _SettingsPageState extends State<SettingsPage> {
                 _switchTile(
                   icon: Icons.swipe_left_rounded,
                   title: AppLocalizations.of(context).predictiveBack,
-                  subtitle: AppLocalizations.of(context).predictiveBackDescription,
+                  subtitle:
+                      AppLocalizations.of(context).predictiveBackDescription,
                   value: _predictiveBack,
                   setValue: (value) => _predictiveBack = value,
                   saveValue: widget.settings.setPredictiveBack,
@@ -541,7 +547,9 @@ class _SettingsPageState extends State<SettingsPage> {
     if (api == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(AppLocalizations.of(context).cannotOpenSiteMissingConfig),
+          content: Text(
+            AppLocalizations.of(context).cannotOpenSiteMissingConfig,
+          ),
         ),
       );
       return;
@@ -549,11 +557,7 @@ class _SettingsPageState extends State<SettingsPage> {
     final token = widget.token ?? '';
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder:
-            (_) => OfficialSitePage(
-              baseUrl: api.baseUrl,
-              token: token,
-            ),
+        builder: (_) => OfficialSitePage(baseUrl: api.baseUrl, token: token),
       ),
     );
   }
@@ -565,10 +569,8 @@ class _SettingsPageState extends State<SettingsPage> {
       context: context,
       barrierDismissible: false,
       builder:
-          (dialogContext) => _EditTokenDialog(
-            initialToken: current,
-            api: widget.api,
-          ),
+          (dialogContext) =>
+              _EditTokenDialog(initialToken: current, api: widget.api),
     );
     if (result == null || !mounted) return;
 
@@ -578,24 +580,25 @@ class _SettingsPageState extends State<SettingsPage> {
         await cb(result);
       }
       if (mounted) {
-        final msg = result.trim().isEmpty
-            ? AppLocalizations.of(context).accessTokenCleared
-            : AppLocalizations.of(context).accessTokenUpdated;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(msg)),
-        );
+        final msg =
+            result.trim().isEmpty
+                ? AppLocalizations.of(context).accessTokenCleared
+                : AppLocalizations.of(context).accessTokenUpdated;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(msg)));
       }
     } on ApiException catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.message)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
       }
     }
   }
@@ -606,9 +609,7 @@ class _SettingsPageState extends State<SettingsPage> {
       builder:
           (dialogContext) => AlertDialog(
             title: Text(AppLocalizations.of(context).signOut),
-            content: Text(
-              AppLocalizations.of(context).confirmSignOut,
-            ),
+            content: Text(AppLocalizations.of(context).confirmSignOut),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(dialogContext, false),
@@ -678,19 +679,13 @@ class _SettingsPageState extends State<SettingsPage> {
   }) {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-      title: Text(
-        title,
-        style: const TextStyle(fontWeight: FontWeight.w700),
-      ),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
       trailing: DropdownButton<T>(
         value: value,
         underline: const SizedBox.shrink(),
         items: [
           for (final entry in items.entries)
-            DropdownMenuItem(
-              value: entry.key,
-              child: Text(entry.value),
-            ),
+            DropdownMenuItem(value: entry.key, child: Text(entry.value)),
         ],
         onChanged: (next) {
           if (next != null) onChanged(next);
@@ -745,10 +740,7 @@ class _ColorSwatch extends StatelessWidget {
 }
 
 class _EditTokenDialog extends StatefulWidget {
-  const _EditTokenDialog({
-    required this.initialToken,
-    this.api,
-  });
+  const _EditTokenDialog({required this.initialToken, this.api});
 
   final String initialToken;
   final ChengeApi? api;

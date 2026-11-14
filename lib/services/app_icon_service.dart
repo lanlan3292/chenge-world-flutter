@@ -48,8 +48,12 @@ class AppIconService {
 
     if (defaultTargetPlatform == TargetPlatform.android) {
       try {
-        final current = await _channel.invokeMethod<String>('getCurrentAppIcon');
-        if (current != null && availableIcons.contains(current) && current != stored) {
+        final current = await _channel.invokeMethod<String>(
+          'getCurrentAppIcon',
+        );
+        if (current != null &&
+            availableIcons.contains(current) &&
+            current != stored) {
           // Prefer system state if different
           await prefs.setString(_prefKey, current);
           return current;

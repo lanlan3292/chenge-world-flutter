@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -602,7 +602,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
                           _coverUrl!,
                           fit: BoxFit.cover,
                           errorBuilder:
-                              (_, __, ___) => ColoredBox(
+                              (_, _, _) => ColoredBox(
                                 color: scheme.surfaceContainerHighest,
                                 child: const Icon(Icons.broken_image_outlined),
                               ),
@@ -641,7 +641,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
                                 height: 88,
                                 fit: BoxFit.cover,
                                 errorBuilder:
-                                    (_, __, ___) => Container(
+                                    (_, _, _) => Container(
                                       width: 88,
                                       height: 88,
                                       color: scheme.surfaceContainerHighest,
@@ -726,12 +726,15 @@ class _CreatePostPageState extends State<CreatePostPage> {
                           ButtonSegment<bool>(
                             value: true,
                             label: Text(l10n.previewMarkdown),
-                            icon: const Icon(Icons.visibility_outlined, size: 16),
+                            icon: const Icon(
+                              Icons.visibility_outlined,
+                              size: 16,
+                            ),
                           ),
                         ],
                         selected: {_previewMode},
-                        onSelectionChanged: (s) =>
-                            setState(() => _previewMode = s.first),
+                        onSelectionChanged:
+                            (s) => setState(() => _previewMode = s.first),
                         style: const ButtonStyle(
                           visualDensity: VisualDensity.compact,
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -749,22 +752,25 @@ class _CreatePostPageState extends State<CreatePostPage> {
                         border: Border.all(color: scheme.outlineVariant),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: _contentController.text.trim().isEmpty
-                          ? Text(
-                              l10n.previewEmpty,
-                              style: TextStyle(color: scheme.onSurfaceVariant),
-                            )
-                          : MarkdownBody(
-                              data: _contentController.text,
-                              selectable: true,
-                              styleSheet: MarkdownStyleSheet(
-                                p: TextStyle(
-                                  fontSize: 15,
-                                  height: 1.6,
-                                  color: scheme.onSurface,
+                      child:
+                          _contentController.text.trim().isEmpty
+                              ? Text(
+                                l10n.previewEmpty,
+                                style: TextStyle(
+                                  color: scheme.onSurfaceVariant,
+                                ),
+                              )
+                              : MarkdownBody(
+                                data: _contentController.text,
+                                selectable: true,
+                                styleSheet: MarkdownStyleSheet(
+                                  p: TextStyle(
+                                    fontSize: 15,
+                                    height: 1.6,
+                                    color: scheme.onSurface,
+                                  ),
                                 ),
                               ),
-                            ),
                     )
                   else
                     TextField(

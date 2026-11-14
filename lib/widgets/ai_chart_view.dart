@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'ai_chart.dart';
 
@@ -29,7 +29,10 @@ class _AiChartCardState extends State<AiChartCard> {
     }
     if (error != null) {
       return _shell(
-        header: const Text('数据图表', style: TextStyle(fontWeight: FontWeight.w800)),
+        header: const Text(
+          '数据图表',
+          style: TextStyle(fontWeight: FontWeight.w800),
+        ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -69,7 +72,10 @@ class _AiChartCardState extends State<AiChartCard> {
               data.title.isEmpty ? '数据图表' : data.title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13.5),
+              style: const TextStyle(
+                fontWeight: FontWeight.w800,
+                fontSize: 13.5,
+              ),
             ),
           ),
           TextButton(
@@ -98,7 +104,10 @@ class _AiChartCardState extends State<AiChartCard> {
               padding: const EdgeInsets.only(bottom: 6),
               child: Text(
                 data.warning,
-                style: const TextStyle(fontSize: 11.5, color: Color(0xFF8A6D1F)),
+                style: const TextStyle(
+                  fontSize: 11.5,
+                  color: Color(0xFF8A6D1F),
+                ),
               ),
             ),
           SizedBox(
@@ -126,20 +135,22 @@ class _AiChartCardState extends State<AiChartCard> {
                       width: 9,
                       height: 9,
                       decoration: BoxDecoration(
-                        color: _AiChartPalette.colors[i % _AiChartPalette.colors.length],
+                        color:
+                            _AiChartPalette.colors[i %
+                                _AiChartPalette.colors.length],
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
                     const SizedBox(width: 4),
-                    Text(data.series[i].name, style: const TextStyle(fontSize: 11)),
+                    Text(
+                      data.series[i].name,
+                      style: const TextStyle(fontSize: 11),
+                    ),
                   ],
                 ),
             ],
           ),
-          if (_showTable) ...[
-            const SizedBox(height: 8),
-            _dataTable(data),
-          ],
+          if (_showTable) ...[const SizedBox(height: 8), _dataTable(data)],
           if (_showSource) ...[
             const SizedBox(height: 8),
             ConstrainedBox(
@@ -151,7 +162,10 @@ class _AiChartCardState extends State<AiChartCard> {
                   padding: const EdgeInsets.all(8),
                   child: SelectableText(
                     widget.source,
-                    style: const TextStyle(fontFamily: 'monospace', fontSize: 11),
+                    style: const TextStyle(
+                      fontFamily: 'monospace',
+                      fontSize: 11,
+                    ),
                   ),
                 ),
               ),
@@ -176,15 +190,15 @@ class _AiChartCardState extends State<AiChartCard> {
         dataRowMaxHeight: 30,
         columns: [
           for (final cell in header)
-            DataColumn(
-              label: Text(cell, style: const TextStyle(fontSize: 11)),
-            ),
+            DataColumn(label: Text(cell, style: const TextStyle(fontSize: 11))),
         ],
         rows: [
           for (var row = 0; row < data.x.length; row++)
             DataRow(
               cells: [
-                DataCell(Text(data.x[row], style: const TextStyle(fontSize: 11))),
+                DataCell(
+                  Text(data.x[row], style: const TextStyle(fontSize: 11)),
+                ),
                 for (final series in data.series)
                   DataCell(
                     Text(
@@ -212,7 +226,10 @@ class _AiChartCardState extends State<AiChartCard> {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        DefaultTextStyle.merge(style: const TextStyle(fontSize: 12), child: header),
+        DefaultTextStyle.merge(
+          style: const TextStyle(fontSize: 12),
+          child: header,
+        ),
         body,
       ],
     ),
@@ -290,9 +307,10 @@ class _AiChartPainter extends CustomPainter {
   }
 
   void _paintGrid(Canvas canvas, Rect plot, double min, double max) {
-    final paint = Paint()
-      ..color = const Color(0xFFD9D7C7)
-      ..strokeWidth = 1;
+    final paint =
+        Paint()
+          ..color = const Color(0xFFD9D7C7)
+          ..strokeWidth = 1;
     const steps = 4;
     final textPainter = TextPainter(textDirection: TextDirection.ltr);
     for (var i = 0; i <= steps; i++) {
@@ -302,7 +320,10 @@ class _AiChartPainter extends CustomPainter {
       textPainter
         ..text = TextSpan(
           text: _formatNumber(value),
-          style: TextStyle(fontSize: 9, color: textColor.withValues(alpha: 0.7)),
+          style: TextStyle(
+            fontSize: 9,
+            color: textColor.withValues(alpha: 0.7),
+          ),
         )
         ..layout();
       textPainter.paint(
@@ -320,7 +341,8 @@ class _AiChartPainter extends CustomPainter {
     final barWidth = math.max(2.0, (groupWidth * 0.8) / seriesCount);
     for (var i = 0; i < count; i++) {
       for (var s = 0; s < seriesCount; s++) {
-        final value = i < data.series[s].data.length ? data.series[s].data[i] : null;
+        final value =
+            i < data.series[s].data.length ? data.series[s].data[i] : null;
         if (value == null) continue;
         final normalized = (value.toDouble() - min) / (max - min);
         final height = plot.height * normalized;
@@ -329,7 +351,12 @@ class _AiChartPainter extends CustomPainter {
             groupWidth * i +
             (groupWidth - barWidth * seriesCount) / 2 +
             barWidth * s;
-        final rect = Rect.fromLTWH(left, plot.bottom - height, barWidth * 0.9, height);
+        final rect = Rect.fromLTWH(
+          left,
+          plot.bottom - height,
+          barWidth * 0.9,
+          height,
+        );
         canvas.drawRRect(
           RRect.fromRectAndRadius(rect, const Radius.circular(2)),
           Paint()..color = palette[s % palette.length],
@@ -338,7 +365,13 @@ class _AiChartPainter extends CustomPainter {
     }
   }
 
-  void _paintLines(Canvas canvas, Rect plot, double min, double max, {required bool fill}) {
+  void _paintLines(
+    Canvas canvas,
+    Rect plot,
+    double min,
+    double max, {
+    required bool fill,
+  }) {
     final count = data.x.length;
     if (count == 0) return;
     final stepX = count == 1 ? 0.0 : plot.width / (count - 1);
@@ -349,7 +382,8 @@ class _AiChartPainter extends CustomPainter {
       var started = false;
       var lastX = 0.0;
       for (var i = 0; i < count; i++) {
-        final value = i < data.series[s].data.length ? data.series[s].data[i] : null;
+        final value =
+            i < data.series[s].data.length ? data.series[s].data[i] : null;
         if (value == null) continue;
         final normalized = (value.toDouble() - min) / (max - min);
         final x = plot.left + stepX * i;
@@ -371,7 +405,10 @@ class _AiChartPainter extends CustomPainter {
         areaPath
           ..lineTo(lastX, plot.bottom)
           ..close();
-        canvas.drawPath(areaPath, Paint()..color = color.withValues(alpha: 0.18));
+        canvas.drawPath(
+          areaPath,
+          Paint()..color = color.withValues(alpha: 0.18),
+        );
       }
       canvas.drawPath(
         path,
@@ -381,7 +418,8 @@ class _AiChartPainter extends CustomPainter {
           ..strokeWidth = 2,
       );
       for (var i = 0; i < count; i++) {
-        final value = i < data.series[s].data.length ? data.series[s].data[i] : null;
+        final value =
+            i < data.series[s].data.length ? data.series[s].data[i] : null;
         if (value == null) continue;
         final normalized = (value.toDouble() - min) / (max - min);
         canvas.drawCircle(
@@ -401,7 +439,9 @@ class _AiChartPainter extends CustomPainter {
         final value = data.series[s].data[i];
         if (value == null) continue;
         final normalizedY = (value.toDouble() - min) / (max - min);
-        final x = plot.left + (count == 1 ? plot.width / 2 : plot.width * i / (count - 1));
+        final x =
+            plot.left +
+            (count == 1 ? plot.width / 2 : plot.width * i / (count - 1));
         canvas.drawCircle(
           Offset(x, plot.bottom - plot.height * normalizedY),
           3,
@@ -426,10 +466,16 @@ class _AiChartPainter extends CustomPainter {
       textPainter
         ..text = TextSpan(
           text: data.x[i],
-          style: TextStyle(fontSize: 9, color: textColor.withValues(alpha: 0.8)),
+          style: TextStyle(
+            fontSize: 9,
+            color: textColor.withValues(alpha: 0.8),
+          ),
         )
         ..layout(maxWidth: 60);
-      textPainter.paint(canvas, Offset(x - textPainter.width / 2, plot.bottom + 4));
+      textPainter.paint(
+        canvas,
+        Offset(x - textPainter.width / 2, plot.bottom + 4),
+      );
     }
   }
 
@@ -455,7 +501,10 @@ class _AiChartPainter extends CustomPainter {
       );
       start += sweep;
     }
-    final textPainter = TextPainter(textDirection: TextDirection.ltr, maxLines: 1);
+    final textPainter = TextPainter(
+      textDirection: TextDirection.ltr,
+      maxLines: 1,
+    );
     var y = 8.0;
     for (var i = 0; i < data.x.length && i < 12; i++) {
       final color = palette[i % palette.length];

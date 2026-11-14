@@ -39,29 +39,33 @@ class ChatMessage {
 
   bool get isRecalled => type == 'recalled';
 
-  EmojiMessageContent? get emoji => type == 'emoji' ? EmojiMessageContent.tryParse(content) : null;
+  EmojiMessageContent? get emoji =>
+      type == 'emoji' ? EmojiMessageContent.tryParse(content) : null;
 
   /// 图片消息（后端 type='image'，content 为 {url, fileId, alt}）。
-  ChatImageContent? get image => type == 'image' ? ChatImageContent.tryParse(content) : null;
+  ChatImageContent? get image =>
+      type == 'image' ? ChatImageContent.tryParse(content) : null;
 
   /// 跨平台互通消息（后端 type='qq' / 'game'）。
   ChatInteropContent? get interop =>
-      type == 'qq' || type == 'game' ? ChatInteropContent.tryParse(content) : null;
+      type == 'qq' || type == 'game'
+          ? ChatInteropContent.tryParse(content)
+          : null;
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) => ChatMessage(
-        id: _integer(json['id']),
-        conversationId: _integer(json['conversationId']),
-        senderId: _integer(json['senderId']),
-        type: _text(json['type'], fallback: 'text'),
-        content: _text(json['content']),
-        senderName: _nullableText(json['senderName']),
-        senderAvatar: _nullableText(json['senderAvatar']),
-        createdAt: DateTime.tryParse(_text(json['createdAt'])),
-        channelId: json['channelId'] == null ? null : _integer(json['channelId']),
-        reactions: ChatReaction.listFromJson(json['reactions']),
-        replyTo: ChatQuote.tryParse(json['reply']),
-        recallDeadline: _millis(json['recallDeadline']),
-      );
+    id: _integer(json['id']),
+    conversationId: _integer(json['conversationId']),
+    senderId: _integer(json['senderId']),
+    type: _text(json['type'], fallback: 'text'),
+    content: _text(json['content']),
+    senderName: _nullableText(json['senderName']),
+    senderAvatar: _nullableText(json['senderAvatar']),
+    createdAt: DateTime.tryParse(_text(json['createdAt'])),
+    channelId: json['channelId'] == null ? null : _integer(json['channelId']),
+    reactions: ChatReaction.listFromJson(json['reactions']),
+    replyTo: ChatQuote.tryParse(json['reply']),
+    recallDeadline: _millis(json['recallDeadline']),
+  );
 
   /// 撤回 / 回应等局部更新。
   ChatMessage copyWith({
@@ -88,7 +92,8 @@ class ChatMessage {
     return DateTime.fromMillisecondsSinceEpoch(value.toInt());
   }
 
-  static int _integer(Object? value) => value is num ? value.toInt() : int.tryParse('$value') ?? 0;
+  static int _integer(Object? value) =>
+      value is num ? value.toInt() : int.tryParse('$value') ?? 0;
   static String _text(Object? value, {String fallback = ''}) {
     final text = value?.toString().trim() ?? '';
     return text.isEmpty || text == 'null' ? fallback : text;
@@ -123,12 +128,14 @@ class EmojiMessageContent {
     }
   }
 
-  static int? _integer(Object? value) => value is num ? value.toInt() : int.tryParse('$value');
+  static int? _integer(Object? value) =>
+      value is num ? value.toInt() : int.tryParse('$value');
   static String? _nullableText(Object? value) {
     final text = value?.toString().trim() ?? '';
     return text.isEmpty || text == 'null' ? null : text;
   }
 }
+
 /// 图片消息内容：`{"url": "...", "fileId": 1, "alt": "..."}`。
 /// 旧消息可能只有 fileId，需要再用 /file-module/files/info/{id} 换 url。
 class ChatImageContent {
@@ -190,10 +197,11 @@ class ChatInteropContent {
   final List<String> images;
 
   /// 去掉 message 里的 Markdown 图片语法（图片单独渲染）。
-  String get displayText => message
-      .replaceAll(RegExp(r'!\[[^\]]*\]\(<?[^)>]*>?\)'), '')
-      .replaceAll(RegExp(r'\n{3,}'), '\n\n')
-      .trim();
+  String get displayText =>
+      message
+          .replaceAll(RegExp(r'!\[[^\]]*\]\(<?[^)>]*>?\)'), '')
+          .replaceAll(RegExp(r'\n{3,}'), '\n\n')
+          .trim();
 
   /// 弹窗里展示的来源细节。
   List<String> get details => [
@@ -293,7 +301,10 @@ class ChatQuote {
   static ChatQuote? tryParse(Object? raw) {
     if (raw is! Map) return null;
     final map = raw.cast<String, dynamic>();
-    final id = map['id'] is num ? (map['id'] as num).toInt() : int.tryParse('${map['id']}');
+    final id =
+        map['id'] is num
+            ? (map['id'] as num).toInt()
+            : int.tryParse('${map['id']}');
     if (id == null || id <= 0) return null;
     return ChatQuote(
       id: id,

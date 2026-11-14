@@ -38,13 +38,18 @@ class BlogComment {
       authorAvatar: _nullableText(json['authorAvatar']),
       parentId: _integer(json['parentId']),
       replyToName: _nullableText(json['replyToName']),
-      children: children is List
-          ? children.whereType<Map<String, dynamic>>().map(BlogComment.fromJson).toList()
-          : const [],
+      children:
+          children is List
+              ? children
+                  .whereType<Map<String, dynamic>>()
+                  .map(BlogComment.fromJson)
+                  .toList()
+              : const [],
     );
   }
 
-  static int _integer(Object? value) => value is num ? value.toInt() : int.tryParse('$value') ?? 0;
+  static int _integer(Object? value) =>
+      value is num ? value.toInt() : int.tryParse('$value') ?? 0;
 
   static String _text(Object? value) {
     final text = value?.toString().trim() ?? '';

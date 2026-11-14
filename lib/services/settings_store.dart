@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Persisted appearance and system UI preferences.
@@ -13,8 +13,7 @@ class SettingsStore {
   static const _navImmersiveKey = 'appearance_nav_bar_immersive';
   static const _autoHideTopKey = 'appearance_auto_hide_top_bar';
   static const _autoHideBottomKey = 'appearance_auto_hide_bottom_bar';
-  static const _statusBarTopHideMaskKey =
-      'appearance_status_bar_top_hide_mask';
+  static const _statusBarTopHideMaskKey = 'appearance_status_bar_top_hide_mask';
   static const _predictiveBackKey = 'appearance_predictive_back';
   static const _feedMinColumnsKey = 'layout_feed_min_columns';
   static const _feedMaxColumnsKey = 'layout_feed_max_columns';

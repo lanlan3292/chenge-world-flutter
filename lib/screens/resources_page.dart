@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/generated/app_localizations.dart';
@@ -40,7 +40,10 @@ class _ResourcesPageState extends State<ResourcesPage>
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.resources, style: const TextStyle(fontWeight: FontWeight.w800)),
+        title: Text(
+          l10n.resources,
+          style: const TextStyle(fontWeight: FontWeight.w800),
+        ),
         bottom: TabBar(
           controller: _tabs,
           tabs: [
@@ -53,9 +56,17 @@ class _ResourcesPageState extends State<ResourcesPage>
       body: TabBarView(
         controller: _tabs,
         children: [
-          _LibraryTab(api: widget.api, token: widget.token, onLoginRequested: widget.onLoginRequested),
+          _LibraryTab(
+            api: widget.api,
+            token: widget.token,
+            onLoginRequested: widget.onLoginRequested,
+          ),
           _GalleryTab(api: widget.api, token: widget.token),
-          _ExperienceTab(api: widget.api, token: widget.token, onLoginRequested: widget.onLoginRequested),
+          _ExperienceTab(
+            api: widget.api,
+            token: widget.token,
+            onLoginRequested: widget.onLoginRequested,
+          ),
         ],
       ),
     );
@@ -65,7 +76,11 @@ class _ResourcesPageState extends State<ResourcesPage>
 // ————————————————————————— 资料库 —————————————————————————
 
 class _LibraryTab extends StatefulWidget {
-  const _LibraryTab({required this.api, required this.token, this.onLoginRequested});
+  const _LibraryTab({
+    required this.api,
+    required this.token,
+    this.onLoginRequested,
+  });
 
   final ChengeApi api;
   final String? token;
@@ -153,7 +168,9 @@ class _LibraryTabState extends State<_LibraryTab> {
               hintText: l10n.resourceSearch,
               prefixIcon: const Icon(Icons.search_rounded),
               isDense: true,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           ),
           const SizedBox(height: 10),
@@ -186,9 +203,16 @@ class _LibraryTabState extends State<_LibraryTab> {
               padding: const EdgeInsets.symmetric(vertical: 48),
               child: Column(
                 children: [
-                  const Icon(Icons.menu_book_outlined, size: 42, color: Color(0xFF70817D)),
+                  const Icon(
+                    Icons.menu_book_outlined,
+                    size: 42,
+                    color: Color(0xFF70817D),
+                  ),
                   const SizedBox(height: 10),
-                  Text(l10n.resourceLibraryEmpty, style: const TextStyle(color: Color(0xFF70817D))),
+                  Text(
+                    l10n.resourceLibraryEmpty,
+                    style: const TextStyle(color: Color(0xFF70817D)),
+                  ),
                 ],
               ),
             )
@@ -233,19 +257,27 @@ class _LibraryTabState extends State<_LibraryTab> {
                 child: SizedBox(
                   width: 52,
                   height: 52,
-                  child: thumbnail == null
-                      ? Container(
-                          color: AppTheme.leaf.withValues(alpha: 0.10),
-                          child: Icon(_typeIcon(doc.fileType), color: AppTheme.leaf),
-                        )
-                      : CachedNetworkImage(
-                          imageUrl: widget.api.resolveMediaUrl(thumbnail),
-                          fit: BoxFit.cover,
-                          errorWidget: (_, __, ___) => Container(
+                  child:
+                      thumbnail == null
+                          ? Container(
                             color: AppTheme.leaf.withValues(alpha: 0.10),
-                            child: Icon(_typeIcon(doc.fileType), color: AppTheme.leaf),
+                            child: Icon(
+                              _typeIcon(doc.fileType),
+                              color: AppTheme.leaf,
+                            ),
+                          )
+                          : CachedNetworkImage(
+                            imageUrl: widget.api.resolveMediaUrl(thumbnail),
+                            fit: BoxFit.cover,
+                            errorWidget:
+                                (_, _, _) => Container(
+                                  color: AppTheme.leaf.withValues(alpha: 0.10),
+                                  child: Icon(
+                                    _typeIcon(doc.fileType),
+                                    color: AppTheme.leaf,
+                                  ),
+                                ),
                           ),
-                        ),
                 ),
               ),
               const SizedBox(width: 11),
@@ -257,19 +289,30 @@ class _LibraryTabState extends State<_LibraryTab> {
                       title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                      ),
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      [doc.fileType.toUpperCase(), doc.displayDate]
-                          .where((part) => part.isNotEmpty)
-                          .join(' · '),
-                      style: const TextStyle(fontSize: 11.5, color: Color(0xFF70817D)),
+                      [
+                        doc.fileType.toUpperCase(),
+                        doc.displayDate,
+                      ].where((part) => part.isNotEmpty).join(' · '),
+                      style: const TextStyle(
+                        fontSize: 11.5,
+                        color: Color(0xFF70817D),
+                      ),
                     ),
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right_rounded, size: 18, color: Color(0xFF9AA8A3)),
+              const Icon(
+                Icons.chevron_right_rounded,
+                size: 18,
+                color: Color(0xFF9AA8A3),
+              ),
             ],
           ),
         ),
@@ -305,7 +348,11 @@ class _LibraryTabState extends State<_LibraryTab> {
 
   Future<void> _openDoc(KnowledgeDoc doc) async {
     final type = doc.fileType.toLowerCase();
-    if (type == 'png' || type == 'jpg' || type == 'jpeg' || type == 'webp' || type == 'gif') {
+    if (type == 'png' ||
+        type == 'jpg' ||
+        type == 'jpeg' ||
+        type == 'webp' ||
+        type == 'gif') {
       final url = doc.thumbnail ?? doc.fileUrl;
       if (url.isNotEmpty) {
         await showDialog<void>(
@@ -319,7 +366,12 @@ class _LibraryTabState extends State<_LibraryTab> {
       }
       return;
     }
-    if (type == 'md' || type == 'markdown' || type == 'txt' || type == 'csv' || type == 'json' || type == 'log') {
+    if (type == 'md' ||
+        type == 'markdown' ||
+        type == 'txt' ||
+        type == 'csv' ||
+        type == 'json' ||
+        type == 'log') {
       await Navigator.of(context).push<void>(
         MaterialPageRoute<void>(
           builder:
@@ -342,14 +394,20 @@ class _LibraryTabState extends State<_LibraryTab> {
     }
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).docPreviewUnavailable)),
+        SnackBar(
+          content: Text(AppLocalizations.of(context).docPreviewUnavailable),
+        ),
       );
     }
   }
 }
 
 class _DocPreviewPage extends StatefulWidget {
-  const _DocPreviewPage({required this.api, required this.token, required this.doc});
+  const _DocPreviewPage({
+    required this.api,
+    required this.token,
+    required this.doc,
+  });
 
   final ChengeApi api;
   final String? token;
@@ -462,10 +520,12 @@ class _DocPreviewPageState extends State<_DocPreviewPage> {
                           width: itemWidth,
                           height: itemWidth,
                           child: CachedNetworkImage(
-                            imageUrl: widget.api.resolveMediaUrl(_images[i].url),
+                            imageUrl: widget.api.resolveMediaUrl(
+                              _images[i].url,
+                            ),
                             fit: BoxFit.cover,
                             placeholder:
-                                (_, __) => const ColoredBox(
+                                (_, _) => const ColoredBox(
                                   color: Color(0xFFEAF2ED),
                                   child: Center(
                                     child: SizedBox(
@@ -478,7 +538,7 @@ class _DocPreviewPageState extends State<_DocPreviewPage> {
                                   ),
                                 ),
                             errorWidget:
-                                (_, __, ___) => const ColoredBox(
+                                (_, _, _) => const ColoredBox(
                                   color: Color(0xFFEAF2ED),
                                   child: Center(
                                     child: Icon(
@@ -522,7 +582,9 @@ class _DocPreviewPageState extends State<_DocPreviewPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.doc.fileName.isEmpty ? l10n.resourceLibrary : widget.doc.fileName,
+          widget.doc.fileName.isEmpty
+              ? l10n.resourceLibrary
+              : widget.doc.fileName,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(fontWeight: FontWeight.w800),
@@ -532,120 +594,94 @@ class _DocPreviewPageState extends State<_DocPreviewPage> {
             IconButton(
               tooltip: l10n.openOriginal,
               onPressed: () async {
-                final uri = Uri.tryParse(widget.api.resolveMediaUrl(widget.doc.fileUrl));
-                if (uri != null) await launchUrl(uri, mode: LaunchMode.externalApplication);
+                final uri = Uri.tryParse(
+                  widget.api.resolveMediaUrl(widget.doc.fileUrl),
+                );
+                if (uri != null) {
+                  await launchUrl(uri, mode: LaunchMode.externalApplication);
+                }
               },
               icon: const Icon(Icons.open_in_new_rounded),
             ),
         ],
       ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _error.isNotEmpty
-          ? Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(_error, style: const TextStyle(color: AppTheme.coral)),
-                    const SizedBox(height: 8),
-                    TextButton(onPressed: _load, child: Text(l10n.retry)),
-                  ],
-                ),
-              ),
-            )
-          : isImage && _images.isEmpty && widget.doc.fileUrl.isNotEmpty
-          ? Center(
-              child: GestureDetector(
-                onTap: () => showDialog<void>(
-                  context: context,
-                  builder:
-                      (_) => _ImageViewerDialog(
-                        images: [widget.api.resolveMediaUrl(widget.doc.fileUrl)],
-                        initialIndex: 0,
+      body:
+          _loading
+              ? const Center(child: CircularProgressIndicator())
+              : _error.isNotEmpty
+              ? Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        _error,
+                        style: const TextStyle(color: AppTheme.coral),
                       ),
-                ),
-                child: CachedNetworkImage(
-                  imageUrl: widget.api.resolveMediaUrl(
-                    widget.doc.thumbnail ?? widget.doc.fileUrl,
+                      const SizedBox(height: 8),
+                      TextButton(onPressed: _load, child: Text(l10n.retry)),
+                    ],
                   ),
-                  fit: BoxFit.contain,
                 ),
-              ),
-            )
-          : SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (_content.trim().isNotEmpty)
-                    isMarkdown
-                        ? MarkdownBody(
+              )
+              : isImage && _images.isEmpty && widget.doc.fileUrl.isNotEmpty
+              ? Center(
+                child: GestureDetector(
+                  onTap:
+                      () => showDialog<void>(
+                        context: context,
+                        builder:
+                            (_) => _ImageViewerDialog(
+                              images: [
+                                widget.api.resolveMediaUrl(widget.doc.fileUrl),
+                              ],
+                              initialIndex: 0,
+                            ),
+                      ),
+                  child: CachedNetworkImage(
+                    imageUrl: widget.api.resolveMediaUrl(
+                      widget.doc.thumbnail ?? widget.doc.fileUrl,
+                    ),
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              )
+              : SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (_content.trim().isNotEmpty)
+                      isMarkdown
+                          ? MarkdownBody(
                             data: _content,
                             selectable: true,
-                            styleSheet: MarkdownStyleSheet.fromTheme(
-                              Theme.of(context),
-                            ).copyWith(
+                            styleSheet: MarkdownStyleSheet().copyWith(
                               p: const TextStyle(fontSize: 15, height: 1.7),
                             ),
-                            sizedImageBuilder: (config) {
-                              final url = widget.api.resolveMediaUrl(
-                                config.uri.toString(),
-                              );
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 6),
-                                child: GestureDetector(
-                                  onTap: () => showDialog<void>(
-                                    context: context,
-                                    builder:
-                                        (_) => _ImageViewerDialog(
-                                          images: [url],
-                                          initialIndex: 0,
-                                        ),
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
-                                    child: CachedNetworkImage(
-                                      imageUrl: url,
-                                      fit: BoxFit.contain,
-                                      errorWidget:
-                                          (_, __, ___) => const SizedBox(
-                                            height: 40,
-                                            child: Center(
-                                              child: Text(
-                                                '图片加载失败',
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: Color(0xFF9AA8A3),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
                           )
-                        : Padding(
+                          : Padding(
                             padding: const EdgeInsets.fromLTRB(18, 14, 18, 20),
                             child: SelectableText(
                               _content,
-                              style: const TextStyle(fontSize: 14, height: 1.55),
+                              style: const TextStyle(
+                                fontSize: 14,
+                                height: 1.55,
+                              ),
                             ),
                           ),
-                  if (_images.isNotEmpty) _imagesSection(l10n),
-                  if (_content.trim().isEmpty && _images.isEmpty)
-                    Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Text(
-                        l10n.docPreviewUnavailable,
-                        style: const TextStyle(color: Color(0xFF7B8C86)),
+                    if (_images.isNotEmpty) _imagesSection(l10n),
+                    if (_content.trim().isEmpty && _images.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Text(
+                          l10n.docPreviewUnavailable,
+                          style: const TextStyle(color: Color(0xFF7B8C86)),
+                        ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
-            ),
     );
   }
 }
@@ -703,9 +739,16 @@ class _GalleryTabState extends State<_GalleryTab> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.photo_library_outlined, size: 42, color: Color(0xFF70817D)),
+            const Icon(
+              Icons.photo_library_outlined,
+              size: 42,
+              color: Color(0xFF70817D),
+            ),
             const SizedBox(height: 10),
-            Text(l10n.galleryEmpty, style: const TextStyle(color: Color(0xFF70817D))),
+            Text(
+              l10n.galleryEmpty,
+              style: const TextStyle(color: Color(0xFF70817D)),
+            ),
           ],
         ),
       );
@@ -748,7 +791,9 @@ class _GalleryTabState extends State<_GalleryTab> {
                     CachedNetworkImage(
                       imageUrl: widget.api.resolveMediaUrl(day.cover),
                       fit: BoxFit.cover,
-                      errorWidget: (_, __, ___) => const ColoredBox(color: Color(0xFFE7EEE9)),
+                      errorWidget:
+                          (_, _, _) =>
+                              const ColoredBox(color: Color(0xFFE7EEE9)),
                     )
                   else
                     const ColoredBox(color: Color(0xFFE7EEE9)),
@@ -778,7 +823,10 @@ class _GalleryTabState extends State<_GalleryTab> {
                           ),
                           Text(
                             l10n.galleryDayCount(day.count),
-                            style: const TextStyle(color: Colors.white70, fontSize: 11),
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 11,
+                            ),
                           ),
                         ],
                       ),
@@ -795,7 +843,11 @@ class _GalleryTabState extends State<_GalleryTab> {
 }
 
 class _GalleryDayPage extends StatefulWidget {
-  const _GalleryDayPage({required this.api, required this.token, required this.day});
+  const _GalleryDayPage({
+    required this.api,
+    required this.token,
+    required this.day,
+  });
 
   final ChengeApi api;
   final String? token;
@@ -822,7 +874,10 @@ class _GalleryDayPageState extends State<_GalleryDayPage> {
       _error = '';
     });
     try {
-      final day = await widget.api.galleryDay(widget.day.day, token: widget.token);
+      final day = await widget.api.galleryDay(
+        widget.day.day,
+        token: widget.token,
+      );
       if (!mounted) return;
       setState(() => _day = day);
     } on ApiException catch (error) {
@@ -848,46 +903,57 @@ class _GalleryDayPageState extends State<_GalleryDayPage> {
           style: const TextStyle(fontWeight: FontWeight.w800),
         ),
       ),
-      body: _loading && photos.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : _error.isNotEmpty && photos.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(_error, style: const TextStyle(color: AppTheme.coral)),
-                  const SizedBox(height: 8),
-                  TextButton(onPressed: _load, child: Text(AppLocalizations.of(context).retry)),
-                ],
-              ),
-            )
-          : GridView.builder(
-              padding: const EdgeInsets.all(10),
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 140,
-                mainAxisSpacing: 6,
-                crossAxisSpacing: 6,
-              ),
-              itemCount: photos.length,
-              itemBuilder: (context, index) {
-                final photo = photos[index];
-                final url = widget.api.resolveMediaUrl(photo.url);
-                return InkWell(
-                  onTap: () => showDialog<void>(
-                    context: context,
-                    builder: (_) => _ImageViewerDialog(images: urls, initialIndex: index),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: CachedNetworkImage(
-                      imageUrl: url,
-                      fit: BoxFit.cover,
-                      errorWidget: (_, __, ___) => const ColoredBox(color: Color(0xFFE7EEE9)),
+      body:
+          _loading && photos.isEmpty
+              ? const Center(child: CircularProgressIndicator())
+              : _error.isNotEmpty && photos.isEmpty
+              ? Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(_error, style: const TextStyle(color: AppTheme.coral)),
+                    const SizedBox(height: 8),
+                    TextButton(
+                      onPressed: _load,
+                      child: Text(AppLocalizations.of(context).retry),
                     ),
-                  ),
-                );
-              },
-            ),
+                  ],
+                ),
+              )
+              : GridView.builder(
+                padding: const EdgeInsets.all(10),
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 140,
+                  mainAxisSpacing: 6,
+                  crossAxisSpacing: 6,
+                ),
+                itemCount: photos.length,
+                itemBuilder: (context, index) {
+                  final photo = photos[index];
+                  final url = widget.api.resolveMediaUrl(photo.url);
+                  return InkWell(
+                    onTap:
+                        () => showDialog<void>(
+                          context: context,
+                          builder:
+                              (_) => _ImageViewerDialog(
+                                images: urls,
+                                initialIndex: index,
+                              ),
+                        ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: CachedNetworkImage(
+                        imageUrl: url,
+                        fit: BoxFit.cover,
+                        errorWidget:
+                            (_, _, _) =>
+                                const ColoredBox(color: Color(0xFFE7EEE9)),
+                      ),
+                    ),
+                  );
+                },
+              ),
     );
   }
 }
@@ -903,7 +969,9 @@ class _ImageViewerDialog extends StatefulWidget {
 }
 
 class _ImageViewerDialogState extends State<_ImageViewerDialog> {
-  late final PageController _controller = PageController(initialPage: widget.initialIndex);
+  late final PageController _controller = PageController(
+    initialPage: widget.initialIndex,
+  );
   late int _index = widget.initialIndex;
 
   @override
@@ -922,17 +990,25 @@ class _ImageViewerDialogState extends State<_ImageViewerDialog> {
             controller: _controller,
             itemCount: widget.images.length,
             onPageChanged: (value) => setState(() => _index = value),
-            itemBuilder: (context, position) => InteractiveViewer(
-              maxScale: 4,
-              child: Center(
-                child: CachedNetworkImage(
-                  imageUrl: widget.images[position],
-                  fit: BoxFit.contain,
-                  placeholder: (_, __) => const Center(child: CircularProgressIndicator()),
-                  errorWidget: (_, __, ___) => const Icon(Icons.broken_image_outlined, color: Colors.white54, size: 42),
+            itemBuilder:
+                (context, position) => InteractiveViewer(
+                  maxScale: 4,
+                  child: Center(
+                    child: CachedNetworkImage(
+                      imageUrl: widget.images[position],
+                      fit: BoxFit.contain,
+                      placeholder:
+                          (_, _) =>
+                              const Center(child: CircularProgressIndicator()),
+                      errorWidget:
+                          (_, _, _) => const Icon(
+                            Icons.broken_image_outlined,
+                            color: Colors.white54,
+                            size: 42,
+                          ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
           ),
           Positioned(
             top: 0,
@@ -967,7 +1043,11 @@ class _ImageViewerDialogState extends State<_ImageViewerDialog> {
 // ————————————————————————— 经验库 —————————————————————————
 
 class _ExperienceTab extends StatefulWidget {
-  const _ExperienceTab({required this.api, required this.token, this.onLoginRequested});
+  const _ExperienceTab({
+    required this.api,
+    required this.token,
+    this.onLoginRequested,
+  });
 
   final ChengeApi api;
   final String? token;
@@ -1096,7 +1176,9 @@ class _ExperienceTabState extends State<_ExperienceTab> {
               hintText: l10n.experienceSearch,
               prefixIcon: const Icon(Icons.search_rounded),
               isDense: true,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           ),
           const SizedBox(height: 8),
@@ -1105,11 +1187,17 @@ class _ExperienceTabState extends State<_ExperienceTab> {
               Expanded(
                 child: Text(
                   _total > 0 ? l10n.experienceTotal(_total) : '',
-                  style: const TextStyle(fontSize: 12, color: Color(0xFF70817D)),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF70817D),
+                  ),
                 ),
               ),
               if (_error.isNotEmpty)
-                Text(_error, style: const TextStyle(fontSize: 12, color: AppTheme.coral)),
+                Text(
+                  _error,
+                  style: const TextStyle(fontSize: 12, color: AppTheme.coral),
+                ),
             ],
           ),
           const SizedBox(height: 4),
@@ -1123,9 +1211,16 @@ class _ExperienceTabState extends State<_ExperienceTab> {
               padding: const EdgeInsets.symmetric(vertical: 48),
               child: Column(
                 children: [
-                  const Icon(Icons.auto_stories_outlined, size: 42, color: Color(0xFF70817D)),
+                  const Icon(
+                    Icons.auto_stories_outlined,
+                    size: 42,
+                    color: Color(0xFF70817D),
+                  ),
                   const SizedBox(height: 10),
-                  Text(l10n.experienceEmpty, style: const TextStyle(color: Color(0xFF70817D))),
+                  Text(
+                    l10n.experienceEmpty,
+                    style: const TextStyle(color: Color(0xFF70817D)),
+                  ),
                 ],
               ),
             )
@@ -1144,9 +1239,14 @@ class _ExperienceTabState extends State<_ExperienceTab> {
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
-                            color: (record.polarity == 1 ? AppTheme.leaf : AppTheme.coral)
+                            color: (record.polarity == 1
+                                    ? AppTheme.leaf
+                                    : AppTheme.coral)
                                 .withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(6),
                           ),
@@ -1155,7 +1255,10 @@ class _ExperienceTabState extends State<_ExperienceTab> {
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w700,
-                              color: record.polarity == 1 ? AppTheme.leaf : AppTheme.coral,
+                              color:
+                                  record.polarity == 1
+                                      ? AppTheme.leaf
+                                      : AppTheme.coral,
                             ),
                           ),
                         ),
@@ -1166,7 +1269,10 @@ class _ExperienceTabState extends State<_ExperienceTab> {
                               '${l10n.skillLabel}: ${record.skill}',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(fontSize: 11, color: Color(0xFF70817D)),
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: Color(0xFF70817D),
+                              ),
                             ),
                           ),
                         ],
@@ -1175,13 +1281,21 @@ class _ExperienceTabState extends State<_ExperienceTab> {
                     const SizedBox(height: 6),
                     Text(
                       record.pattern,
-                      style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700, height: 1.45),
+                      style: const TextStyle(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w700,
+                        height: 1.45,
+                      ),
                     ),
                     if (record.rule.isNotEmpty) ...[
                       const SizedBox(height: 4),
                       Text(
                         record.rule,
-                        style: const TextStyle(fontSize: 13, height: 1.5, color: Color(0xFF3F514B)),
+                        style: const TextStyle(
+                          fontSize: 13,
+                          height: 1.5,
+                          color: Color(0xFF3F514B),
+                        ),
                       ),
                     ],
                   ],
@@ -1192,7 +1306,10 @@ class _ExperienceTabState extends State<_ExperienceTab> {
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 12),
               child: Center(
-                child: SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2)),
+                child: SizedBox.square(
+                  dimension: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
               ),
             ),
         ],
@@ -1215,7 +1332,11 @@ Widget _locked({
       children: [
         Icon(icon, size: 46, color: const Color(0xFF70817D)),
         const SizedBox(height: 12),
-        Text(title, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.w700)),
+        Text(
+          title,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontWeight: FontWeight.w700),
+        ),
         const SizedBox(height: 14),
         action,
       ],
@@ -1223,13 +1344,21 @@ Widget _locked({
   ),
 );
 
-Widget _errorBox(BuildContext context, String message, VoidCallback onRetry) => Center(
-  child: Column(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      Text(message, style: const TextStyle(color: AppTheme.coral), textAlign: TextAlign.center),
-      const SizedBox(height: 8),
-      TextButton(onPressed: onRetry, child: Text(AppLocalizations.of(context).retry)),
-    ],
-  ),
-);
+Widget _errorBox(BuildContext context, String message, VoidCallback onRetry) =>
+    Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            message,
+            style: const TextStyle(color: AppTheme.coral),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          TextButton(
+            onPressed: onRetry,
+            child: Text(AppLocalizations.of(context).retry),
+          ),
+        ],
+      ),
+    );

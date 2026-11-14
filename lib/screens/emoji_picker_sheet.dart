@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../l10n/generated/app_localizations.dart';
 
@@ -78,7 +78,9 @@ class _EmojiPickerSheetState extends State<EmojiPickerSheet> {
     for (final asset in _assets) {
       categories.putIfAbsent(
         asset.itemId,
-        () => asset.title ?? AppLocalizations.of(context).emojiPackTitle(asset.itemId),
+        () =>
+            asset.title ??
+            AppLocalizations.of(context).emojiPackTitle(asset.itemId),
       );
     }
     final visibleAssets =
@@ -116,9 +118,8 @@ class _EmojiPickerSheetState extends State<EmojiPickerSheet> {
                   ),
                   IconButton(
                     tooltip: AppLocalizations.of(context).close,
-                    onPressed: _closingForResize
-                        ? null
-                        : () => Navigator.pop(context),
+                    onPressed:
+                        _closingForResize ? null : () => Navigator.pop(context),
                     icon: const Icon(Icons.close_rounded),
                   ),
                 ],
@@ -198,11 +199,15 @@ class _EmojiPickerSheetState extends State<EmojiPickerSheet> {
                                   asset.url?.isNotEmpty == true
                                       ? CachedNetworkImage(
                                         imageUrl: asset.url!,
-                                        fadeInDuration: const Duration(milliseconds: 120),
-                                        fadeOutDuration: const Duration(milliseconds: 80),
+                                        fadeInDuration: const Duration(
+                                          milliseconds: 120,
+                                        ),
+                                        fadeOutDuration: const Duration(
+                                          milliseconds: 80,
+                                        ),
                                         fit: BoxFit.contain,
                                         errorWidget:
-                                            (_, __, ___) => Center(
+                                            (_, _, _) => Center(
                                               child: Text(
                                                 (asset.key ?? asset.displayName)
                                                     .characters

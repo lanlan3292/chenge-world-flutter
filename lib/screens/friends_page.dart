@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../models/chat_conversation.dart';
@@ -130,7 +130,11 @@ class _FriendsPageState extends State<FriendsPage> {
   Future<void> _search() async {
     final keyword = _searchController.text.trim();
     if (keyword.isEmpty) {
-      _showMessage(_searchMode == 'group' ? AppLocalizations.of(context).enterGroupNameKeyword : AppLocalizations.of(context).enterUserSearchHint);
+      _showMessage(
+        _searchMode == 'group'
+            ? AppLocalizations.of(context).enterGroupNameKeyword
+            : AppLocalizations.of(context).enterUserSearchHint,
+      );
       return;
     }
     final token = widget.token;
@@ -198,7 +202,9 @@ class _FriendsPageState extends State<FriendsPage> {
   Future<void> _apply(FriendUser user) => _runAction(
     user,
     () => widget.api.applyFriend(user.userId, widget.token!),
-    user.iReceived ? AppLocalizations.of(context).friendAddedBack : AppLocalizations.of(context).friendRequestSent,
+    user.iReceived
+        ? AppLocalizations.of(context).friendAddedBack
+        : AppLocalizations.of(context).friendRequestSent,
     updateSearch: true,
   );
 
@@ -207,11 +213,19 @@ class _FriendsPageState extends State<FriendsPage> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: Text(reject ? AppLocalizations.of(context).rejectFriendRequest : AppLocalizations.of(context).removeFriend),
+            title: Text(
+              reject
+                  ? AppLocalizations.of(context).rejectFriendRequest
+                  : AppLocalizations.of(context).removeFriend,
+            ),
             content: Text(
               reject
-                  ? AppLocalizations.of(context).confirmRejectFriendRequest(user.displayName)
-                  : AppLocalizations.of(context).confirmRemoveFriend(user.displayName),
+                  ? AppLocalizations.of(
+                    context,
+                  ).confirmRejectFriendRequest(user.displayName)
+                  : AppLocalizations.of(
+                    context,
+                  ).confirmRemoveFriend(user.displayName),
             ),
             actions: [
               TextButton(
@@ -220,7 +234,11 @@ class _FriendsPageState extends State<FriendsPage> {
               ),
               FilledButton.tonal(
                 onPressed: () => Navigator.pop(context, true),
-                child: Text(reject ? AppLocalizations.of(context).reject : AppLocalizations.of(context).remove),
+                child: Text(
+                  reject
+                      ? AppLocalizations.of(context).reject
+                      : AppLocalizations.of(context).remove,
+                ),
               ),
             ],
           ),
@@ -229,7 +247,9 @@ class _FriendsPageState extends State<FriendsPage> {
     await _runAction(
       user,
       () => widget.api.removeFriend(user.userId, widget.token!),
-      reject ? AppLocalizations.of(context).friendRequestRejected : AppLocalizations.of(context).friendRemoved,
+      reject
+          ? AppLocalizations.of(context).friendRequestRejected
+          : AppLocalizations.of(context).friendRemoved,
       updateSearch: true,
     );
   }
@@ -237,15 +257,17 @@ class _FriendsPageState extends State<FriendsPage> {
   Future<void> _editRemark(FriendUser user) async {
     final remark = await showDialog<String>(
       context: context,
-      builder: (dialogContext) => _EditRemarkDialog(
-        initialRemark: user.remark ?? '',
-      ),
+      builder:
+          (dialogContext) =>
+              _EditRemarkDialog(initialRemark: user.remark ?? ''),
     );
     if (remark == null || !mounted) return;
     await _runAction(
       user,
       () => widget.api.setFriendRemark(user.userId, remark, widget.token!),
-      remark.isEmpty ? AppLocalizations.of(context).remarkCleared : AppLocalizations.of(context).remarkSaved,
+      remark.isEmpty
+          ? AppLocalizations.of(context).remarkCleared
+          : AppLocalizations.of(context).remarkSaved,
     );
   }
 
@@ -288,7 +310,9 @@ class _FriendsPageState extends State<FriendsPage> {
         token: token,
       );
       if (!mounted) return;
-      _showMessage(AppLocalizations.of(context).groupCreated(conversation.name));
+      _showMessage(
+        AppLocalizations.of(context).groupCreated(conversation.name),
+      );
       await _refreshLists();
       widget.onOpenConversation?.call(conversation.id);
     } on ApiException catch (error) {
@@ -366,7 +390,9 @@ class _FriendsPageState extends State<FriendsPage> {
                                 Icons.group_add_rounded,
                                 size: 18,
                               ),
-                              label: Text(AppLocalizations.of(context).createGroupChat),
+                              label: Text(
+                                AppLocalizations.of(context).createGroupChat,
+                              ),
                             ),
                           ),
                         _sectionSelector(),
@@ -450,7 +476,7 @@ class _FriendsPageState extends State<FriendsPage> {
     children: [
       SegmentedButton<String>(
         showSelectedIcon: false,
-        segments:  [
+        segments: [
           ButtonSegment(
             value: 'user',
             label: Text(AppLocalizations.of(context).searchUsers),
@@ -478,10 +504,16 @@ class _FriendsPageState extends State<FriendsPage> {
         textInputAction: TextInputAction.search,
         onSubmitted: (_) => _search(),
         decoration: InputDecoration(
-          hintText: _searchMode == 'group' ? AppLocalizations.of(context).groupNameKeyword : AppLocalizations.of(context).userSearchHint,
+          hintText:
+              _searchMode == 'group'
+                  ? AppLocalizations.of(context).groupNameKeyword
+                  : AppLocalizations.of(context).userSearchHint,
           prefixIcon: const Icon(Icons.search_rounded),
           suffixIcon: IconButton(
-            tooltip: _searchMode == 'group' ? AppLocalizations.of(context).searchGroupsTooltip : AppLocalizations.of(context).searchUsersTooltip,
+            tooltip:
+                _searchMode == 'group'
+                    ? AppLocalizations.of(context).searchGroupsTooltip
+                    : AppLocalizations.of(context).searchUsersTooltip,
             onPressed: _searching ? null : _search,
             icon:
                 _searching
@@ -533,21 +565,35 @@ class _FriendsPageState extends State<FriendsPage> {
       }
       if (!_searched) {
         return _empty(
-          _searchMode == 'group' ? AppLocalizations.of(context).searchPublicGroups : AppLocalizations.of(context).searchChengeUsers,
-          _searchMode == 'group' ? AppLocalizations.of(context).searchPublicGroupsHint : AppLocalizations.of(context).searchUsersHint,
+          _searchMode == 'group'
+              ? AppLocalizations.of(context).searchPublicGroups
+              : AppLocalizations.of(context).searchChengeUsers,
+          _searchMode == 'group'
+              ? AppLocalizations.of(context).searchPublicGroupsHint
+              : AppLocalizations.of(context).searchUsersHint,
         );
       }
       if (_searchMode == 'group') {
         if (_searching && _groupResults.isEmpty) {
           return const Center(child: CircularProgressIndicator());
         }
-        if (_groupResults.isEmpty) return _empty(AppLocalizations.of(context).noMatchingGroups, AppLocalizations.of(context).tryOtherKeywords);
+        if (_groupResults.isEmpty) {
+          return _empty(
+            AppLocalizations.of(context).noMatchingGroups,
+            AppLocalizations.of(context).tryOtherKeywords,
+          );
+        }
         return _groupList(_groupResults, searchable: true);
       }
       if (_searching && _results.isEmpty) {
         return const Center(child: CircularProgressIndicator());
       }
-      if (_results.isEmpty) return _empty(AppLocalizations.of(context).noMatchingPeople, AppLocalizations.of(context).tryOtherKeywords);
+      if (_results.isEmpty) {
+        return _empty(
+          AppLocalizations.of(context).noMatchingPeople,
+          AppLocalizations.of(context).tryOtherKeywords,
+        );
+      }
       return _userList(_results, kind: _FriendListKind.search);
     }
 
@@ -555,7 +601,12 @@ class _FriendsPageState extends State<FriendsPage> {
       if (_loading && _groups.isEmpty) {
         return const Center(child: CircularProgressIndicator());
       }
-      if (_groups.isEmpty) return _empty(AppLocalizations.of(context).noGroupsYet, AppLocalizations.of(context).noGroupsHint);
+      if (_groups.isEmpty) {
+        return _empty(
+          AppLocalizations.of(context).noGroupsYet,
+          AppLocalizations.of(context).noGroupsHint,
+        );
+      }
       return _groupList(_groups, searchable: false);
     }
 
@@ -565,8 +616,14 @@ class _FriendsPageState extends State<FriendsPage> {
     }
     if (users.isEmpty) {
       return _section == 'friends'
-          ? _empty(AppLocalizations.of(context).noFriendsYet, AppLocalizations.of(context).noFriendsHint)
-          : _empty(AppLocalizations.of(context).noPendingRequests, AppLocalizations.of(context).noPendingRequestsHint);
+          ? _empty(
+            AppLocalizations.of(context).noFriendsYet,
+            AppLocalizations.of(context).noFriendsHint,
+          )
+          : _empty(
+            AppLocalizations.of(context).noPendingRequests,
+            AppLocalizations.of(context).noPendingRequestsHint,
+          );
     }
     return _userList(
       users,
@@ -586,16 +643,13 @@ class _FriendsPageState extends State<FriendsPage> {
         physics: const AlwaysScrollableScrollPhysics(),
         padding: EdgeInsets.only(bottom: bottomClearance),
         itemCount: users.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 8),
+        separatorBuilder: (_, _) => const SizedBox(height: 8),
         itemBuilder: (context, index) => _userTile(users[index], kind),
       ),
     );
   }
 
-  Widget _groupList(
-    List<ChatConversation> groups, {
-    required bool searchable,
-  }) {
+  Widget _groupList(List<ChatConversation> groups, {required bool searchable}) {
     final bottomClearance =
         MediaQuery.paddingOf(context).bottom + kBottomNavigationBarHeight + 12;
     return RefreshIndicator(
@@ -604,7 +658,7 @@ class _FriendsPageState extends State<FriendsPage> {
         physics: const AlwaysScrollableScrollPhysics(),
         padding: EdgeInsets.only(bottom: bottomClearance),
         itemCount: groups.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 8),
+        separatorBuilder: (_, _) => const SizedBox(height: 8),
         itemBuilder:
             (context, index) =>
                 _groupTile(groups[index], searchable: searchable),
@@ -635,7 +689,7 @@ class _FriendsPageState extends State<FriendsPage> {
                     foregroundImage:
                         user.avatar == null ? null : NetworkImage(user.avatar!),
                     onForegroundImageError:
-                        user.avatar == null ? null : (_, __) {},
+                        user.avatar == null ? null : (_, _) {},
                     child: Icon(
                       Icons.person_rounded,
                       color: Theme.of(context).colorScheme.onTertiaryContainer,
@@ -726,8 +780,7 @@ class _FriendsPageState extends State<FriendsPage> {
                     Theme.of(context).colorScheme.secondaryContainer,
                 foregroundImage:
                     group.avatar == null ? null : NetworkImage(group.avatar!),
-                onForegroundImageError:
-                    group.avatar == null ? null : (_, __) {},
+                onForegroundImageError: group.avatar == null ? null : (_, _) {},
                 child: Icon(
                   Icons.groups_rounded,
                   color: Theme.of(context).colorScheme.onSecondaryContainer,
@@ -746,7 +799,9 @@ class _FriendsPageState extends State<FriendsPage> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      searchable ? AppLocalizations.of(context).groupTapToJoin : AppLocalizations.of(context).groupChat,
+                      searchable
+                          ? AppLocalizations.of(context).groupTapToJoin
+                          : AppLocalizations.of(context).groupChat,
                       style: TextStyle(
                         fontSize: 12,
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -787,12 +842,19 @@ class _FriendsPageState extends State<FriendsPage> {
   }
 
   String _subtitle(FriendUser user, _FriendListKind kind) {
-    if (kind == _FriendListKind.request) return AppLocalizations.of(context).requestAddYou(user.username);
+    if (kind == _FriendListKind.request) {
+      return AppLocalizations.of(context).requestAddYou(user.username);
+    }
     if (kind == _FriendListKind.friend) {
       final online = _online[user.userId] == true;
-      final status = online ? AppLocalizations.of(context).online : AppLocalizations.of(context).offline;
+      final status =
+          online
+              ? AppLocalizations.of(context).online
+              : AppLocalizations.of(context).offline;
       if (user.remark?.isNotEmpty == true) {
-        return AppLocalizations.of(context).onlineWithRemark(status, user.remark ?? '', user.username);
+        return AppLocalizations.of(
+          context,
+        ).onlineWithRemark(status, user.remark ?? '', user.username);
       }
       return '$status · @${user.username}';
     }
@@ -801,7 +863,9 @@ class _FriendsPageState extends State<FriendsPage> {
 
   Widget _actions(FriendUser user, _FriendListKind kind) {
     if (kind == _FriendListKind.search) {
-      if (user.mutual) return _statusPill(AppLocalizations.of(context).friend, AppTheme.leaf);
+      if (user.mutual) {
+        return _statusPill(AppLocalizations.of(context).friend, AppTheme.leaf);
+      }
       if (user.iReceived) {
         return FilledButton.tonal(
           onPressed: () => _apply(user),
@@ -812,7 +876,12 @@ class _FriendsPageState extends State<FriendsPage> {
           child: Text(AppLocalizations.of(context).addBack),
         );
       }
-      if (user.iSent) return _statusPill(AppLocalizations.of(context).requested, const Color(0xFF8A5A08));
+      if (user.iSent) {
+        return _statusPill(
+          AppLocalizations.of(context).requested,
+          const Color(0xFF8A5A08),
+        );
+      }
       return FilledButton.tonal(
         onPressed: () => _apply(user),
         style: FilledButton.styleFrom(
@@ -849,12 +918,22 @@ class _FriendsPageState extends State<FriendsPage> {
       },
       itemBuilder:
           (_) => [
-            PopupMenuItem(value: 'chat', child: Text(AppLocalizations.of(context).sendMessageAction)),
+            PopupMenuItem(
+              value: 'chat',
+              child: Text(AppLocalizations.of(context).sendMessageAction),
+            ),
             PopupMenuItem(
               value: 'remark',
-              child: Text(user.remark?.isNotEmpty == true ? AppLocalizations.of(context).editRemark : AppLocalizations.of(context).setRemark),
+              child: Text(
+                user.remark?.isNotEmpty == true
+                    ? AppLocalizations.of(context).editRemark
+                    : AppLocalizations.of(context).setRemark,
+              ),
             ),
-            PopupMenuItem(value: 'remove', child: Text(AppLocalizations.of(context).removeFriendRelation)),
+            PopupMenuItem(
+              value: 'remove',
+              child: Text(AppLocalizations.of(context).removeFriendRelation),
+            ),
           ],
       child: const SizedBox.square(
         dimension: 42,
@@ -915,7 +994,6 @@ class _FriendsPageState extends State<FriendsPage> {
 }
 
 enum _FriendListKind { friend, request, search }
-
 
 /// 修改备注弹窗：由 StatefulWidget 持有 TextEditingController，
 /// 避免在 Dialog 路由退场动画期间 dispose controller 触发
@@ -1054,40 +1132,41 @@ class _CreateGroupDialogState extends State<_CreateGroupDialog> {
             const SizedBox(height: 6),
             ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: 220),
-              child: widget.friends.isEmpty
-                  ? Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      child: Text(
-                        AppLocalizations.of(context).noFriendsToInvite,
-                        style: TextStyle(color: scheme.onSurfaceVariant),
+              child:
+                  widget.friends.isEmpty
+                      ? Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        child: Text(
+                          AppLocalizations.of(context).noFriendsToInvite,
+                          style: TextStyle(color: scheme.onSurfaceVariant),
+                        ),
+                      )
+                      : ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: widget.friends.length,
+                        itemBuilder: (context, index) {
+                          final user = widget.friends[index];
+                          final checked = _selected.contains(user.userId);
+                          return CheckboxListTile(
+                            dense: true,
+                            value: checked,
+                            title: Text(user.displayName),
+                            subtitle: Text(
+                              '@${user.username}',
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                            onChanged: (v) {
+                              setState(() {
+                                if (v == true) {
+                                  _selected.add(user.userId);
+                                } else {
+                                  _selected.remove(user.userId);
+                                }
+                              });
+                            },
+                          );
+                        },
                       ),
-                    )
-                  : ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: widget.friends.length,
-                      itemBuilder: (context, index) {
-                        final user = widget.friends[index];
-                        final checked = _selected.contains(user.userId);
-                        return CheckboxListTile(
-                          dense: true,
-                          value: checked,
-                          title: Text(user.displayName),
-                          subtitle: Text(
-                            '@${user.username}',
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                          onChanged: (v) {
-                            setState(() {
-                              if (v == true) {
-                                _selected.add(user.userId);
-                              } else {
-                                _selected.remove(user.userId);
-                              }
-                            });
-                          },
-                        );
-                      },
-                    ),
             ),
           ],
         ),

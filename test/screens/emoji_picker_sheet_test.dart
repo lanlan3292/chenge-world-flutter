@@ -4,7 +4,7 @@ import 'package:chenge_world_app/models/chat_conversation.dart';
 import 'package:chenge_world_app/screens/chat_thread_page.dart';
 import 'package:chenge_world_app/screens/emoji_picker_sheet.dart';
 import 'package:chenge_world_app/services/chenge_api.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:chenge_world_app/l10n/generated/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -95,7 +95,9 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('closes picker when resizing from wide to narrow', (tester) async {
+  testWidgets('closes picker when resizing from wide to narrow', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(1000, 800);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
@@ -108,20 +110,24 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         locale: const Locale('zh', 'CN'),
         home: Builder(
-          builder: (context) => Scaffold(
-            body: Column(
-              children: [
-                const Text('主页'),
-                TextButton(
-                  onPressed: () => showModalBottomSheet<void>(
-                    context: context,
-                    builder: (_) => EmojiPickerSheet(api: api, token: 'token'),
-                  ),
-                  child: const Text('打开'),
+          builder:
+              (context) => Scaffold(
+                body: Column(
+                  children: [
+                    const Text('主页'),
+                    TextButton(
+                      onPressed:
+                          () => showModalBottomSheet<void>(
+                            context: context,
+                            builder:
+                                (_) =>
+                                    EmojiPickerSheet(api: api, token: 'token'),
+                          ),
+                      child: const Text('打开'),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
+              ),
         ),
       ),
     );

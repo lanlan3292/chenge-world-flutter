@@ -81,16 +81,18 @@ class AiInteractionQuestion {
   final bool multiple;
   final String customLabel;
 
-  factory AiInteractionQuestion.fromJson(Map<String, dynamic> json) => AiInteractionQuestion(
-    id: (json['id'] ?? '').toString(),
-    question: (json['question'] ?? '').toString(),
-    options: [
-      for (final option in (json['options'] is List ? json['options'] as List : const []))
-        option.toString(),
-    ],
-    multiple: json['multiple'] == true,
-    customLabel: (json['customLabel'] ?? '自行回答').toString(),
-  );
+  factory AiInteractionQuestion.fromJson(Map<String, dynamic> json) =>
+      AiInteractionQuestion(
+        id: (json['id'] ?? '').toString(),
+        question: (json['question'] ?? '').toString(),
+        options: [
+          for (final option
+              in (json['options'] is List ? json['options'] as List : const []))
+            option.toString(),
+        ],
+        multiple: json['multiple'] == true,
+        customLabel: (json['customLabel'] ?? '自行回答').toString(),
+      );
 }
 
 class AiInteraction {
@@ -110,28 +112,31 @@ class AiInteraction {
   final List<AiTaskItem> tasks;
   final List<AiInteractionQuestion> questions;
 
-  AiInteraction copyWith({String? status, List<AiTaskItem>? tasks}) => AiInteraction(
-    id: id,
-    sessionId: sessionId,
-    mode: mode,
-    status: status ?? this.status,
-    tasks: tasks ?? this.tasks,
-    questions: questions,
-  );
+  AiInteraction copyWith({String? status, List<AiTaskItem>? tasks}) =>
+      AiInteraction(
+        id: id,
+        sessionId: sessionId,
+        mode: mode,
+        status: status ?? this.status,
+        tasks: tasks ?? this.tasks,
+        questions: questions,
+      );
 
   factory AiInteraction.fromJson(Map<String, dynamic> json) => AiInteraction(
     id: (json['id'] ?? '').toString(),
     sessionId: (json['sessionId'] ?? '').toString(),
     mode: (json['mode'] ?? 'chat').toString(),
     status: (json['status'] ?? 'pending').toString(),
-    tasks: (json['tasks'] is List ? json['tasks'] as List : const [])
-        .whereType<Map<String, dynamic>>()
-        .map(AiTaskItem.fromJson)
-        .toList(),
-    questions: (json['questions'] is List ? json['questions'] as List : const [])
-        .whereType<Map<String, dynamic>>()
-        .map(AiInteractionQuestion.fromJson)
-        .toList(),
+    tasks:
+        (json['tasks'] is List ? json['tasks'] as List : const [])
+            .whereType<Map<String, dynamic>>()
+            .map(AiTaskItem.fromJson)
+            .toList(),
+    questions:
+        (json['questions'] is List ? json['questions'] as List : const [])
+            .whereType<Map<String, dynamic>>()
+            .map(AiInteractionQuestion.fromJson)
+            .toList(),
   );
 }
 
@@ -154,15 +159,18 @@ class AiPendingOp {
   String get paramsText {
     final prompt = params['prompt']?.toString();
     if (prompt != null && prompt.isNotEmpty) return prompt;
-    return params.entries.map((entry) => '${entry.key}: ${entry.value}').join(', ');
+    return params.entries
+        .map((entry) => '${entry.key}: ${entry.value}')
+        .join(', ');
   }
 
   factory AiPendingOp.fromJson(Map<String, dynamic> json) => AiPendingOp(
     proposalId: (json['proposalId'] ?? '').toString(),
     op: (json['op'] ?? '').toString(),
-    params: json['params'] is Map<String, dynamic>
-        ? json['params'] as Map<String, dynamic>
-        : const {},
+    params:
+        json['params'] is Map<String, dynamic>
+            ? json['params'] as Map<String, dynamic>
+            : const {},
     lastError: (json['lastError'] ?? '').toString(),
   );
 }

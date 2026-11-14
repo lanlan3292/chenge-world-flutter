@@ -56,7 +56,9 @@ class AppNotification {
     avatar: avatar,
   );
 
-  factory AppNotification.fromJson(Map<String, dynamic> json) => AppNotification(
+  factory AppNotification.fromJson(
+    Map<String, dynamic> json,
+  ) => AppNotification(
     id: json['id'] is num ? (json['id'] as num).toInt() : 0,
     type: (json['type'] ?? '').toString(),
     actorId: json['actorId'] is num ? (json['actorId'] as num).toInt() : null,
@@ -71,17 +73,19 @@ class AppNotification {
   );
 
   /// 处理 WebSocket `type=notify` 推送帧。
-  factory AppNotification.fromSocket(Map<String, dynamic> json) => AppNotification(
-    id: json['id'] is num ? (json['id'] as num).toInt() : 0,
-    type: (json['ntype'] ?? json['type'] ?? '').toString(),
-    actorId: json['actorId'] is num ? (json['actorId'] as num).toInt() : null,
-    title: (json['title'] ?? '').toString(),
-    body: (json['body'] ?? '').toString(),
-    targetType: (json['targetType'] ?? '').toString(),
-    targetId: (json['targetId'] ?? '').toString(),
-    createdAt: _date(json['at']),
-    avatar: json['avatar']?.toString(),
-  );
+  factory AppNotification.fromSocket(Map<String, dynamic> json) =>
+      AppNotification(
+        id: json['id'] is num ? (json['id'] as num).toInt() : 0,
+        type: (json['ntype'] ?? json['type'] ?? '').toString(),
+        actorId:
+            json['actorId'] is num ? (json['actorId'] as num).toInt() : null,
+        title: (json['title'] ?? '').toString(),
+        body: (json['body'] ?? '').toString(),
+        targetType: (json['targetType'] ?? '').toString(),
+        targetId: (json['targetId'] ?? '').toString(),
+        createdAt: _date(json['at']),
+        avatar: json['avatar']?.toString(),
+      );
 }
 
 /// 通知列表 + 未读统计（一次请求同时喂列表和角标）。
@@ -110,9 +114,8 @@ class AppNotificationFeed {
           byType is Map
               ? {
                 for (final entry in byType.entries)
-                  entry.key.toString(): entry.value is num
-                      ? (entry.value as num).toInt()
-                      : 0,
+                  entry.key.toString():
+                      entry.value is num ? (entry.value as num).toInt() : 0,
               }
               : const {},
     );

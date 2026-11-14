@@ -1,5 +1,6 @@
 import 'package:dynamic_color/dynamic_color.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:cupertino_ui/cupertino_ui.dart' as cupertino_ui;
 import 'package:flutter/services.dart';
 import 'l10n/generated/app_localizations.dart';
 import 'screens/account_page.dart';
@@ -154,8 +155,14 @@ class _ChengeWorldAppState extends State<ChengeWorldApp>
             'en_US' => const Locale('en', 'US'),
             'zh_CN' => const Locale('zh', 'CN'),
             'zh_TW' => const Locale('zh', 'TW'),
-            'zh_Hans' => const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
-            'zh_Hant' => const Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
+            'zh_Hans' => const Locale.fromSubtags(
+              languageCode: 'zh',
+              scriptCode: 'Hans',
+            ),
+            'zh_Hant' => const Locale.fromSubtags(
+              languageCode: 'zh',
+              scriptCode: 'Hant',
+            ),
             'ko_KR' => const Locale('ko', 'KR'),
             'ja_JP' => const Locale('ja', 'JP'),
             _ => null,
@@ -167,9 +174,12 @@ class _ChengeWorldAppState extends State<ChengeWorldApp>
             Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hans'),
             Locale.fromSubtags(languageCode: 'zh', scriptCode: 'Hant'),
             Locale('ko', 'KR'),
-            Locale('ja', 'JP')
+            Locale('ja', 'JP'),
           ],
-          localeResolutionCallback: (Locale? locale, Iterable<Locale> supportedLocales) {
+          localeResolutionCallback: (
+            Locale? locale,
+            Iterable<Locale> supportedLocales,
+          ) {
             if (locale == null) {
               return supportedLocales.first;
             }
@@ -183,7 +193,11 @@ class _ChengeWorldAppState extends State<ChengeWorldApp>
 
             return supportedLocales.first;
           },
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: [
+            ...AppLocalizations.localizationsDelegates,
+            GlobalMaterialLocalizations.delegate,
+            cupertino_ui.GlobalCupertinoLocalizations.delegate,
+          ],
           home: AppShell(
             settings: _settings,
             onSettingsChanged: _onSettingsChanged,
@@ -396,9 +410,8 @@ class _AppShellState extends State<AppShell> {
     final shellBottomInset = MediaQuery.viewPaddingOf(context).bottom;
     // Material 3 `NavigationBar` default material height (destinations row).
     const shellNavBarHeight = 80.0;
-    final shellBottomBarHeight = wide
-        ? 0.0
-        : shellNavBarHeight + shellBottomInset;
+    final shellBottomBarHeight =
+        wide ? 0.0 : shellNavBarHeight + shellBottomInset;
 
     // Reset chrome across wide↔narrow flips so a bar hidden on narrow
     // cannot remain hidden after returning from wide layout.
@@ -494,56 +507,58 @@ class _AppShellState extends State<AppShell> {
         children: [
           Row(
             children: [
-          if (wide)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 16, 8, 16),
-              child: NavigationRail(
-                selectedIndex: _selectedIndex,
-                onDestinationSelected:
-                    (index) => setState(() {
-                      _selectedIndex = index;
-                      _chromeVisible.value = true;
-                    }),
-                labelType: NavigationRailLabelType.all,
-                leading: Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(),
-                    child: SizedBox(
-                      width: 48,
-                      height: 48,
-                      child: Image.asset(
-                        'assets/images/logo.png',
-                        fit: BoxFit.contain,
+              if (wide)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(12, 16, 8, 16),
+                  child: NavigationRail(
+                    selectedIndex: _selectedIndex,
+                    onDestinationSelected:
+                        (index) => setState(() {
+                          _selectedIndex = index;
+                          _chromeVisible.value = true;
+                        }),
+                    labelType: NavigationRailLabelType.all,
+                    leading: Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(),
+                        child: SizedBox(
+                          width: 48,
+                          height: 48,
+                          child: Image.asset(
+                            'assets/images/logo.png',
+                            fit: BoxFit.contain,
+                          ),
+                        ),
                       ),
                     ),
+                    destinations: [
+                      NavigationRailDestination(
+                        icon: Icon(Icons.dynamic_feed_outlined),
+                        selectedIcon: Icon(Icons.dynamic_feed_rounded),
+                        label: Text(AppLocalizations.of(context).discover),
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.people_outline_rounded),
+                        selectedIcon: Icon(Icons.people_rounded),
+                        label: Text(AppLocalizations.of(context).social),
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.storefront_outlined),
+                        selectedIcon: Icon(Icons.storefront_rounded),
+                        label: Text(AppLocalizations.of(context).store),
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.person_outline_rounded),
+                        selectedIcon: Icon(Icons.person_rounded),
+                        label: Text(AppLocalizations.of(context).account),
+                      ),
+                    ],
                   ),
                 ),
-                destinations: [
-                  NavigationRailDestination(
-                    icon: Icon(Icons.dynamic_feed_outlined),
-                    selectedIcon: Icon(Icons.dynamic_feed_rounded),
-                    label: Text(AppLocalizations.of(context).discover),
-                  ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.people_outline_rounded),
-                    selectedIcon: Icon(Icons.people_rounded),
-                    label: Text(AppLocalizations.of(context).social),
-                  ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.storefront_outlined),
-                    selectedIcon: Icon(Icons.storefront_rounded),
-                    label: Text(AppLocalizations.of(context).store),
-                  ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.person_outline_rounded),
-                    selectedIcon: Icon(Icons.person_rounded),
-                    label: Text(AppLocalizations.of(context).account),
-                  ),
-                ],
+              Expanded(
+                child: IndexedStack(index: _selectedIndex, children: pages),
               ),
-            ),
-          Expanded(child: IndexedStack(index: _selectedIndex, children: pages)),
             ],
           ),
           ListenableBuilder(
@@ -589,7 +604,9 @@ class _AppShellState extends State<AppShell> {
                     child: Material(
                       elevation: shown ? 3 : 0,
                       color:
-                          Theme.of(context).navigationBarTheme.backgroundColor ??
+                          Theme.of(
+                            context,
+                          ).navigationBarTheme.backgroundColor ??
                           Colors.white,
                       child: NavigationBar(
                         selectedIndex: _selectedIndex,

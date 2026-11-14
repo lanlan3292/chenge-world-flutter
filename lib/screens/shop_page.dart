@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../models/shop_item.dart';
@@ -361,12 +361,18 @@ class _ShopPageState extends State<ShopPage> {
         else if (_error.isNotEmpty && _items.isEmpty)
           SliverFillRemaining(
             hasScrollBody: false,
-            child: _empty(AppLocalizations.of(context).shopUnavailable, AppLocalizations.of(context).checkNetworkAndRetry),
+            child: _empty(
+              AppLocalizations.of(context).shopUnavailable,
+              AppLocalizations.of(context).checkNetworkAndRetry,
+            ),
           )
         else if (_items.isEmpty)
           SliverFillRemaining(
             hasScrollBody: false,
-            child: _empty(AppLocalizations.of(context).noProducts, AppLocalizations.of(context).tryOtherSearch),
+            child: _empty(
+              AppLocalizations.of(context).noProducts,
+              AppLocalizations.of(context).tryOtherSearch,
+            ),
           )
         else ...[
           SliverPadding(
@@ -427,7 +433,9 @@ class _ShopPageState extends State<ShopPage> {
         SliverFillRemaining(
           hasScrollBody: false,
           child: _empty(
-            _view == 'assets' ? AppLocalizations.of(context).noAssets : AppLocalizations.of(context).noOrders,
+            _view == 'assets'
+                ? AppLocalizations.of(context).noAssets
+                : AppLocalizations.of(context).noOrders,
             AppLocalizations.of(context).purchasesShowHere,
           ),
         ),
@@ -608,7 +616,8 @@ class _ShopPageState extends State<ShopPage> {
                     children: [
                       Expanded(
                         child: Text(
-                          item.sellerName ?? AppLocalizations.of(context).communityMerchant,
+                          item.sellerName ??
+                              AppLocalizations.of(context).communityMerchant,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -636,7 +645,8 @@ class _ShopPageState extends State<ShopPage> {
   );
 
   Widget _privateRow(Map<String, dynamic> row, {required bool isAsset}) {
-    final title = row['title']?.toString() ?? AppLocalizations.of(context).product;
+    final title =
+        row['title']?.toString() ?? AppLocalizations.of(context).product;
     final cover = row['cover']?.toString();
     final price =
         row['price'] is num ? (row['price'] as num).toDouble() / 100 : 0.0;
@@ -683,7 +693,10 @@ class _ShopPageState extends State<ShopPage> {
                     const SizedBox(height: 5),
                     Text(
                       isAsset
-                          ? AppLocalizations.of(context).holdingQuantityType(row['quantity'] ?? 0, shopTypeLabel(context, row['type']?.toString()))
+                          ? AppLocalizations.of(context).holdingQuantityType(
+                            row['quantity'] ?? 0,
+                            shopTypeLabel(context, row['type']?.toString()),
+                          )
                           : '${price.toStringAsFixed(2)} CC × ${row['quantity'] ?? 1} · ${_orderStatus(context, row['status']?.toString())}',
                       style: const TextStyle(
                         fontSize: 12,
@@ -766,7 +779,10 @@ class _ShopPageState extends State<ShopPage> {
       children: [
         const Icon(Icons.lock_outline_rounded, size: 44, color: AppTheme.leaf),
         const SizedBox(height: 10),
-        Text(AppLocalizations.of(context).noAssetsOrOrdersSignIn, style: const TextStyle(fontWeight: FontWeight.w700)),
+        Text(
+          AppLocalizations.of(context).noAssetsOrOrdersSignIn,
+          style: const TextStyle(fontWeight: FontWeight.w700),
+        ),
         const SizedBox(height: 10),
         FilledButton.icon(
           onPressed: widget.onLoginRequested,
@@ -846,7 +862,7 @@ class _ShopPageState extends State<ShopPage> {
       width: double.infinity,
       height: double.infinity,
       fit: BoxFit.cover,
-      errorBuilder: (_, __, ___) => _imagePlaceholder(title),
+      errorBuilder: (_, _, _) => _imagePlaceholder(title),
       loadingBuilder:
           (context, child, progress) =>
               progress == null ? child : _imagePlaceholder(title),
@@ -858,7 +874,9 @@ class _ShopPageState extends State<ShopPage> {
     color: const Color(0xFFDDECE5),
     child: Center(
       child: Text(
-        title.isEmpty ? AppLocalizations.of(context).productInitial : title.characters.first,
+        title.isEmpty
+            ? AppLocalizations.of(context).productInitial
+            : title.characters.first,
         style: const TextStyle(
           fontSize: 28,
           fontWeight: FontWeight.w900,
