@@ -908,8 +908,9 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     _pinScheduled = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _pinScheduled = false;
-      if (!mounted || !_stickToBottom || !_messageScrollController.hasClients)
+      if (!mounted || !_stickToBottom || !_messageScrollController.hasClients) {
         return;
+      }
       final position = _messageScrollController.position;
       final gap = position.maxScrollExtent - position.pixels;
       if (gap > 1) position.jumpTo(position.maxScrollExtent);

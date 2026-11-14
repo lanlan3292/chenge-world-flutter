@@ -867,8 +867,9 @@ class ChengeApi {
       query: query,
       token: token,
     );
-    if (data is! Map)
+    if (data is! Map) {
       return (records: const <Map<String, dynamic>>[], total: 0);
+    }
     final records = data['records'];
     final total = data['total'];
     return (
@@ -1051,8 +1052,9 @@ class ChengeApi {
     if (type.isNotEmpty) query['type'] = type;
     if (keyword.trim().isNotEmpty) query['keyword'] = keyword.trim();
     final data = await _request('GET', '/shop/items', query: query);
-    if (data is! Map<String, dynamic> || data['records'] is! List)
+    if (data is! Map<String, dynamic> || data['records'] is! List) {
       throw const ApiException('商品列表格式不正确');
+    }
     return ShopItemPage(
       items:
           (data['records'] as List)
@@ -1376,8 +1378,9 @@ class ChengeApi {
       body: {'name': name},
       token: token,
     );
-    if (data is! Map<String, dynamic>)
+    if (data is! Map<String, dynamic>) {
       throw const ApiException('创建 AI 会话响应格式不正确');
+    }
     return AiSession.fromJson(data);
   }
 
@@ -1487,8 +1490,9 @@ class ChengeApi {
               }
             }
             yield AiStreamEvent(type: eventType ?? 'message', data: parsed);
-            if ((eventType ?? '') == 'done' || (eventType ?? '') == 'error')
+            if ((eventType ?? '') == 'done' || (eventType ?? '') == 'error') {
               return;
+            }
           }
           eventType = null;
           dataLines.clear();
@@ -1652,10 +1656,12 @@ class ChengeApi {
   }) async {
     final uri = Uri.parse('$_baseUrl$path').replace(queryParameters: query);
     final headers = <String, String>{'Accept': 'application/json'};
-    if (body != null)
+    if (body != null) {
       headers['Content-Type'] = 'application/json; charset=utf-8';
-    if (token != null && token.isNotEmpty)
+    }
+    if (token != null && token.isNotEmpty) {
       headers['Authorization'] = 'Bearer $token';
+    }
 
     late http.Response response;
     try {
