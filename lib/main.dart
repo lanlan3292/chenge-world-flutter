@@ -1,5 +1,6 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:cupertino_ui/cupertino_ui.dart' as cupertino_ui;
 import 'package:flutter/services.dart';
 import 'l10n/generated/app_localizations.dart';
 import 'screens/account_page.dart';
@@ -192,7 +193,11 @@ class _ChengeWorldAppState extends State<ChengeWorldApp>
 
             return supportedLocales.first;
           },
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: [
+            ...AppLocalizations.localizationsDelegates,
+            GlobalMaterialLocalizations.delegate,
+            cupertino_ui.GlobalCupertinoLocalizations.delegate,
+          ],
           home: AppShell(
             settings: _settings,
             onSettingsChanged: _onSettingsChanged,
