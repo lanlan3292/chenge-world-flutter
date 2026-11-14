@@ -10,7 +10,7 @@ import 'app_localizations_ja.dart';
 import 'app_localizations_ko.dart';
 import 'app_localizations_zh.dart';
 
-// ignore_for_file: type=lint
+// ignore_for_file: type=lint, deprecated_member_use
 
 /// Callers can lookup localized strings with an instance of AppLocalizations
 /// returned by `AppLocalizations.of(context)`.

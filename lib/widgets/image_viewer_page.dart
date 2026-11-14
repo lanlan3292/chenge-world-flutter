@@ -1,5 +1,5 @@
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Full-screen image viewer with pinch-to-zoom and horizontal paging
 /// (touch swipe + mouse drag).
@@ -22,19 +22,21 @@ class ImageViewerPage extends StatefulWidget {
     int initialIndex = 0,
     Object? heroTag,
   }) {
-    final urls = imageUrls.map((u) => u.trim()).where((u) => u.isNotEmpty).toList();
+    final urls =
+        imageUrls.map((u) => u.trim()).where((u) => u.isNotEmpty).toList();
     if (urls.isEmpty) return Future.value();
     final index = initialIndex.clamp(0, urls.length - 1);
     return Navigator.of(context).push(
       PageRouteBuilder<void>(
         opaque: false,
         barrierColor: Colors.black87,
-        pageBuilder: (_, __, ___) => ImageViewerPage(
-          imageUrls: urls,
-          initialIndex: index,
-          heroTag: heroTag,
-        ),
-        transitionsBuilder: (_, animation, __, child) {
+        pageBuilder:
+            (_, _, _) => ImageViewerPage(
+              imageUrls: urls,
+              initialIndex: index,
+              heroTag: heroTag,
+            ),
+        transitionsBuilder: (_, animation, _, child) {
           return FadeTransition(opacity: animation, child: child);
         },
       ),
@@ -109,11 +111,12 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
                     child: Image.network(
                       url,
                       fit: BoxFit.contain,
-                      errorBuilder: (_, __, ___) => const Icon(
-                        Icons.broken_image_outlined,
-                        color: Colors.white54,
-                        size: 64,
-                      ),
+                      errorBuilder:
+                          (_, _, _) => const Icon(
+                            Icons.broken_image_outlined,
+                            color: Colors.white54,
+                            size: 64,
+                          ),
                     ),
                   ),
                 );
@@ -130,7 +133,8 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
                 Align(
                   alignment: Alignment.topRight,
                   child: IconButton(
-                    tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
+                    tooltip:
+                        MaterialLocalizations.of(context).closeButtonTooltip,
                     onPressed: () => Navigator.pop(context),
                     icon: const Icon(Icons.close_rounded, color: Colors.white),
                   ),

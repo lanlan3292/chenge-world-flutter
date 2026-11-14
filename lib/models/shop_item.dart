@@ -63,27 +63,29 @@ class ShopItem {
   bool get isPurchasable => isPublished && !isSoldOut;
 
   factory ShopItem.fromJson(Map<String, dynamic> json) => ShopItem(
-        id: _integer(json['id']),
-        title: _text(json['title'], fallback: '未命名商品'),
-        type: _text(json['type'], fallback: 'file'),
-        price: _integer(json['price']),
-        stock: _integer(json['stock']),
-        summary: _nullableText(json['summary']),
-        detail: _nullableText(json['detail']),
-        cover: _nullableText(json['cover']),
-        fileUrl: _nullableText(json['fileUrl']),
-        content: _nullableText(json['content']),
-        sellerId: json['sellerId'] == null ? null : _integer(json['sellerId']),
-        sellerName: _nullableText(json['sellerName']),
-        soldCount: _integer(json['soldCount']),
-        rating: _number(json['rating']),
-        ratingCount: _integer(json['ratingCount']),
-        status: _text(json['status'], fallback: statusPublished),
-        reviewNote: _nullableText(json['reviewNote']),
-      );
+    id: _integer(json['id']),
+    title: _text(json['title'], fallback: '未命名商品'),
+    type: _text(json['type'], fallback: 'file'),
+    price: _integer(json['price']),
+    stock: _integer(json['stock']),
+    summary: _nullableText(json['summary']),
+    detail: _nullableText(json['detail']),
+    cover: _nullableText(json['cover']),
+    fileUrl: _nullableText(json['fileUrl']),
+    content: _nullableText(json['content']),
+    sellerId: json['sellerId'] == null ? null : _integer(json['sellerId']),
+    sellerName: _nullableText(json['sellerName']),
+    soldCount: _integer(json['soldCount']),
+    rating: _number(json['rating']),
+    ratingCount: _integer(json['ratingCount']),
+    status: _text(json['status'], fallback: statusPublished),
+    reviewNote: _nullableText(json['reviewNote']),
+  );
 
-  static int _integer(Object? value) => value is num ? value.toInt() : int.tryParse('$value') ?? 0;
-  static double _number(Object? value) => value is num ? value.toDouble() : double.tryParse('$value') ?? 0;
+  static int _integer(Object? value) =>
+      value is num ? value.toInt() : int.tryParse('$value') ?? 0;
+  static double _number(Object? value) =>
+      value is num ? value.toDouble() : double.tryParse('$value') ?? 0;
   static String _text(Object? value, {String fallback = ''}) {
     final text = value?.toString().trim() ?? '';
     return text.isEmpty || text == 'null' ? fallback : text;

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:chenge_world_app/screens/shop_page.dart';
 import 'package:chenge_world_app/services/chenge_api.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:chenge_world_app/l10n/generated/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -12,27 +12,42 @@ void main() {
   testWidgets('renders the shop feed and pagination slivers', (tester) async {
     final api = ChengeApi(
       baseUrl: 'http://example.test',
-      client: MockClient((_) async => http.Response(
-        jsonEncode({
-          'code': 200,
-          'data': {
-            'records': [
-              {'id': 5, 'title': '社区图标', 'type': 'file', 'price': 300, 'stock': 4},
-            ],
-            'total': 1,
-          },
-        }),
-        200,
-        headers: {'content-type': 'application/json; charset=utf-8'},
-      )),
+      client: MockClient(
+        (_) async => http.Response(
+          jsonEncode({
+            'code': 200,
+            'data': {
+              'records': [
+                {
+                  'id': 5,
+                  'title': '社区图标',
+                  'type': 'file',
+                  'price': 300,
+                  'stock': 4,
+                },
+              ],
+              'total': 1,
+            },
+          }),
+          200,
+          headers: {'content-type': 'application/json; charset=utf-8'},
+        ),
+      ),
     );
 
-    await tester.pumpWidget(MaterialApp(
+    await tester.pumpWidget(
+      MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         locale: const Locale('zh', 'CN'),
-        home: ShopPage(api: api, token: null, userId: null, onLoginRequested: () {}),
-    ));
+        home: ShopPage(
+          api: api,
+          token: null,
+          userId: null,
+          onLoginRequested: () {},
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('发现好物'), findsOneWidget);
@@ -52,7 +67,13 @@ void main() {
             'code': 200,
             'data': {
               'records': [
-                {'id': page, 'title': '商品 $page', 'type': 'file', 'price': 300, 'stock': 4},
+                {
+                  'id': page,
+                  'title': '商品 $page',
+                  'type': 'file',
+                  'price': 300,
+                  'stock': 4,
+                },
               ],
               'total': 25,
             },
@@ -62,12 +83,19 @@ void main() {
         );
       }),
     );
-    await tester.pumpWidget(MaterialApp(
+    await tester.pumpWidget(
+      MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         locale: const Locale('zh', 'CN'),
-        home: ShopPage(api: api, token: null, userId: null, onLoginRequested: () {}),
-    ));
+        home: ShopPage(
+          api: api,
+          token: null,
+          userId: null,
+          onLoginRequested: () {},
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
 
     await tester.ensureVisible(find.byTooltip('下一页'));
@@ -80,37 +108,49 @@ void main() {
     expect(find.text('第 2 / 3 页'), findsOneWidget);
   });
 
-  testWidgets('shop view selector stays below the pinned shop app bar', (tester) async {
+  testWidgets('shop view selector stays below the pinned shop app bar', (
+    tester,
+  ) async {
     final api = ChengeApi(
       baseUrl: 'http://example.test',
-      client: MockClient((_) async => http.Response(
-        jsonEncode({
-          'code': 200,
-          'data': {
-            'records': List.generate(
-              24,
-              (index) => {'id': index + 1, 'title': '商品 $index', 'type': 'file', 'price': 300, 'stock': 4},
-            ),
-            'total': 24,
-          },
-        }),
-        200,
-        headers: {'content-type': 'application/json; charset=utf-8'},
-      )),
+      client: MockClient(
+        (_) async => http.Response(
+          jsonEncode({
+            'code': 200,
+            'data': {
+              'records': List.generate(
+                24,
+                (index) => {
+                  'id': index + 1,
+                  'title': '商品 $index',
+                  'type': 'file',
+                  'price': 300,
+                  'stock': 4,
+                },
+              ),
+              'total': 24,
+            },
+          }),
+          200,
+          headers: {'content-type': 'application/json; charset=utf-8'},
+        ),
+      ),
     );
 
-    await tester.pumpWidget(MaterialApp(
+    await tester.pumpWidget(
+      MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         locale: const Locale('zh', 'CN'),
         home: ShopPage(
-        api: api,
-        token: null,
-        userId: null,
-        onLoginRequested: () {},
-        autoHideTopBar: false,
+          api: api,
+          token: null,
+          userId: null,
+          onLoginRequested: () {},
+          autoHideTopBar: false,
+        ),
       ),
-    ));
+    );
     await tester.pumpAndSettle();
 
     await tester.drag(find.byType(CustomScrollView), const Offset(0, -500));
@@ -122,31 +162,48 @@ void main() {
     expect(selectorTop, lessThan(160));
   });
 
-  testWidgets('shop view selector hides with the floating shop app bar', (tester) async {
+  testWidgets('shop view selector hides with the floating shop app bar', (
+    tester,
+  ) async {
     final api = ChengeApi(
       baseUrl: 'http://example.test',
-      client: MockClient((_) async => http.Response(
-        jsonEncode({
-          'code': 200,
-          'data': {
-            'records': List.generate(
-              24,
-              (index) => {'id': index + 1, 'title': '商品 $index', 'type': 'file', 'price': 300, 'stock': 4},
-            ),
-            'total': 24,
-          },
-        }),
-        200,
-        headers: {'content-type': 'application/json; charset=utf-8'},
-      )),
+      client: MockClient(
+        (_) async => http.Response(
+          jsonEncode({
+            'code': 200,
+            'data': {
+              'records': List.generate(
+                24,
+                (index) => {
+                  'id': index + 1,
+                  'title': '商品 $index',
+                  'type': 'file',
+                  'price': 300,
+                  'stock': 4,
+                },
+              ),
+              'total': 24,
+            },
+          }),
+          200,
+          headers: {'content-type': 'application/json; charset=utf-8'},
+        ),
+      ),
     );
 
-    await tester.pumpWidget(MaterialApp(
+    await tester.pumpWidget(
+      MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         locale: const Locale('zh', 'CN'),
-        home: ShopPage(api: api, token: null, userId: null, onLoginRequested: () {}),
-    ));
+        home: ShopPage(
+          api: api,
+          token: null,
+          userId: null,
+          onLoginRequested: () {},
+        ),
+      ),
+    );
     await tester.pumpAndSettle();
 
     await tester.drag(find.byType(CustomScrollView), const Offset(0, -600));

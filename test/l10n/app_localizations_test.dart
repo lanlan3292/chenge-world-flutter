@@ -1,7 +1,7 @@
 import 'package:chenge_world_app/l10n/generated/app_localizations.dart';
 import 'package:chenge_world_app/services/settings_store.dart';
 import 'package:chenge_world_app/theme/app_theme.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

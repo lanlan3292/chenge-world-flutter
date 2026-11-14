@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../models/system_guide.dart';
@@ -106,7 +106,10 @@ class _HelpPageState extends State<HelpPage> {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.helpCenter, style: const TextStyle(fontWeight: FontWeight.w800)),
+        title: Text(
+          l10n.helpCenter,
+          style: const TextStyle(fontWeight: FontWeight.w800),
+        ),
       ),
       body: RefreshIndicator(
         onRefresh: _load,
@@ -126,17 +129,20 @@ class _HelpPageState extends State<HelpPage> {
               decoration: InputDecoration(
                 hintText: l10n.searchGuides,
                 prefixIcon: const Icon(Icons.search_rounded),
-                suffixIcon: _searchController.text.isEmpty
-                    ? null
-                    : IconButton(
-                        tooltip: l10n.clear,
-                        onPressed: () {
-                          _searchController.clear();
-                          _load();
-                        },
-                        icon: const Icon(Icons.close_rounded),
-                      ),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                suffixIcon:
+                    _searchController.text.isEmpty
+                        ? null
+                        : IconButton(
+                          tooltip: l10n.clear,
+                          onPressed: () {
+                            _searchController.clear();
+                            _load();
+                          },
+                          icon: const Icon(Icons.close_rounded),
+                        ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 isDense: true,
               ),
             ),
@@ -167,9 +173,16 @@ class _HelpPageState extends State<HelpPage> {
                 padding: const EdgeInsets.symmetric(vertical: 48),
                 child: Column(
                   children: [
-                    const Icon(Icons.menu_book_outlined, size: 42, color: Color(0xFF70817D)),
+                    const Icon(
+                      Icons.menu_book_outlined,
+                      size: 42,
+                      color: Color(0xFF70817D),
+                    ),
                     const SizedBox(height: 10),
-                    Text(l10n.noGuides, style: const TextStyle(color: Color(0xFF70817D))),
+                    Text(
+                      l10n.noGuides,
+                      style: const TextStyle(color: Color(0xFF70817D)),
+                    ),
                   ],
                 ),
               )
@@ -222,7 +235,10 @@ class _HelpPageState extends State<HelpPage> {
       children: [
         Text(message, style: const TextStyle(color: AppTheme.coral)),
         const SizedBox(height: 8),
-        TextButton(onPressed: _load, child: Text(AppLocalizations.of(context).retry)),
+        TextButton(
+          onPressed: _load,
+          child: Text(AppLocalizations.of(context).retry),
+        ),
       ],
     ),
   );
@@ -245,12 +261,21 @@ class _HelpPageState extends State<HelpPage> {
                     [
                       guide.module,
                       if (guide.revision > 0)
-                        AppLocalizations.of(context).guideRevision(guide.revision),
+                        AppLocalizations.of(
+                          context,
+                        ).guideRevision(guide.revision),
                     ].where((item) => item.isNotEmpty).join(' · '),
-                    style: const TextStyle(fontSize: 11, color: Color(0xFF70817D)),
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: Color(0xFF70817D),
+                    ),
                   ),
                 ),
-                const Icon(Icons.chevron_right_rounded, size: 18, color: Color(0xFF70817D)),
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  size: 18,
+                  color: Color(0xFF70817D),
+                ),
               ],
             ),
             const SizedBox(height: 4),
@@ -262,7 +287,11 @@ class _HelpPageState extends State<HelpPage> {
               const SizedBox(height: 4),
               Text(
                 guide.summary,
-                style: const TextStyle(fontSize: 13, height: 1.4, color: Color(0xFF3F514B)),
+                style: const TextStyle(
+                  fontSize: 13,
+                  height: 1.4,
+                  color: Color(0xFF3F514B),
+                ),
               ),
             ],
           ],
@@ -321,9 +350,13 @@ class _HelpGuidePageState extends State<HelpGuidePage> {
       setState(() => _guide = guide);
     } on ApiException catch (error) {
       if (!mounted) return;
-      setState(() => _error = error.message.isEmpty
-          ? AppLocalizations.of(context).guideUnavailable
-          : error.message);
+      setState(
+        () =>
+            _error =
+                error.message.isEmpty
+                    ? AppLocalizations.of(context).guideUnavailable
+                    : error.message,
+      );
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -362,7 +395,9 @@ class _HelpGuidePageState extends State<HelpGuidePage> {
         }
         Navigator.of(context).push<void>(
           MaterialPageRoute<void>(
-            builder: (_) => ChengeCorePage(baseUrl: widget.api.baseUrl, token: token),
+            builder:
+                (_) =>
+                    ChengeCorePage(baseUrl: widget.api.baseUrl, token: token),
           ),
         );
         return;
@@ -402,9 +437,9 @@ class _HelpGuidePageState extends State<HelpGuidePage> {
           ..showSnackBar(
             SnackBar(
               content: Text(
-                AppLocalizations.of(context).guideActionUnavailable(
-                  step.actionLabel ?? target,
-                ),
+                AppLocalizations.of(
+                  context,
+                ).guideActionUnavailable(step.actionLabel ?? target),
               ),
             ),
           );
@@ -432,114 +467,142 @@ class _HelpGuidePageState extends State<HelpGuidePage> {
           style: const TextStyle(fontWeight: FontWeight.w800),
         ),
       ),
-      body: _loading && guide == null
-          ? const Center(child: CircularProgressIndicator())
-          : _error.isNotEmpty && guide == null
-          ? ListView(
-              padding: const EdgeInsets.all(20),
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFF1EE),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(_error, style: const TextStyle(color: AppTheme.coral)),
-                      const SizedBox(height: 8),
-                      TextButton(onPressed: _load, child: Text(l10n.retry)),
-                    ],
-                  ),
-                ),
-              ],
-            )
-          : guide == null
-          ? const SizedBox.shrink()
-          : RefreshIndicator(
-              onRefresh: _load,
-              child: ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(18, 8, 18, 28),
+      body:
+          _loading && guide == null
+              ? const Center(child: CircularProgressIndicator())
+              : _error.isNotEmpty && guide == null
+              ? ListView(
+                padding: const EdgeInsets.all(20),
                 children: [
-                  Text(
-                    [
-                      l10n.officialGuide,
-                      guide.module,
-                      if (guide.revision > 0) l10n.guideRevision(guide.revision),
-                    ].where((item) => item.isNotEmpty).join(' · '),
-                    style: const TextStyle(fontSize: 11, color: Color(0xFF70817D)),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    guide.title,
-                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
-                  ),
-                  if (guide.summary.isNotEmpty) ...[
-                    const SizedBox(height: 6),
-                    Text(
-                      guide.summary,
-                      style: const TextStyle(fontSize: 14, height: 1.5, color: Color(0xFF3F514B)),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFF1EE),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                  ],
-                  if (guide.appliesTo.isNotEmpty) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      '${l10n.guideAppliesTo}: ${guide.appliesTo.join(', ')}',
-                      style: const TextStyle(fontSize: 12, color: Color(0xFF70817D)),
-                    ),
-                  ],
-                  if (guide.requirements.isNotEmpty) ...[
-                    const SizedBox(height: 18),
-                    _sectionTitle(l10n.guideBeforeStart),
-                    for (final item in guide.requirements)
-                      _bullet(
-                        Text(item, style: const TextStyle(fontSize: 13, height: 1.5)),
-                      ),
-                  ],
-                  if (guide.steps.isNotEmpty) ...[
-                    const SizedBox(height: 18),
-                    _sectionTitle(l10n.guideSteps),
-                    for (var i = 0; i < guide.steps.length; i++)
-                      _stepCard(guide.steps[i], i + 1),
-                  ],
-                  if (guide.troubleshooting.isNotEmpty) ...[
-                    const SizedBox(height: 18),
-                    _sectionTitle(l10n.guideTroubleshooting),
-                    for (final item in guide.troubleshooting) _troubleCard(item),
-                  ],
-                  if (guide.relatedGuides.isNotEmpty) ...[
-                    const SizedBox(height: 18),
-                    _sectionTitle(l10n.guideRelated),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        for (final key in guide.relatedGuides)
-                          ActionChip(
-                            label: Text(key),
-                            onPressed: () => _openRelated(key),
-                          ),
+                        Text(
+                          _error,
+                          style: const TextStyle(color: AppTheme.coral),
+                        ),
+                        const SizedBox(height: 8),
+                        TextButton(onPressed: _load, child: Text(l10n.retry)),
                       ],
                     ),
-                  ],
-                  if (guide.revision > 0) ...[
-                    const SizedBox(height: 22),
-                    Text(
-                      l10n.guideStableLink(guide.guideKey, guide.revision),
-                      style: const TextStyle(fontSize: 11, color: Color(0xFF9AA8A3)),
-                    ),
-                  ],
+                  ),
                 ],
+              )
+              : guide == null
+              ? const SizedBox.shrink()
+              : RefreshIndicator(
+                onRefresh: _load,
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.fromLTRB(18, 8, 18, 28),
+                  children: [
+                    Text(
+                      [
+                        l10n.officialGuide,
+                        guide.module,
+                        if (guide.revision > 0)
+                          l10n.guideRevision(guide.revision),
+                      ].where((item) => item.isNotEmpty).join(' · '),
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: Color(0xFF70817D),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      guide.title,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    if (guide.summary.isNotEmpty) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        guide.summary,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          height: 1.5,
+                          color: Color(0xFF3F514B),
+                        ),
+                      ),
+                    ],
+                    if (guide.appliesTo.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        '${l10n.guideAppliesTo}: ${guide.appliesTo.join(', ')}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF70817D),
+                        ),
+                      ),
+                    ],
+                    if (guide.requirements.isNotEmpty) ...[
+                      const SizedBox(height: 18),
+                      _sectionTitle(l10n.guideBeforeStart),
+                      for (final item in guide.requirements)
+                        _bullet(
+                          Text(
+                            item,
+                            style: const TextStyle(fontSize: 13, height: 1.5),
+                          ),
+                        ),
+                    ],
+                    if (guide.steps.isNotEmpty) ...[
+                      const SizedBox(height: 18),
+                      _sectionTitle(l10n.guideSteps),
+                      for (var i = 0; i < guide.steps.length; i++)
+                        _stepCard(guide.steps[i], i + 1),
+                    ],
+                    if (guide.troubleshooting.isNotEmpty) ...[
+                      const SizedBox(height: 18),
+                      _sectionTitle(l10n.guideTroubleshooting),
+                      for (final item in guide.troubleshooting)
+                        _troubleCard(item),
+                    ],
+                    if (guide.relatedGuides.isNotEmpty) ...[
+                      const SizedBox(height: 18),
+                      _sectionTitle(l10n.guideRelated),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          for (final key in guide.relatedGuides)
+                            ActionChip(
+                              label: Text(key),
+                              onPressed: () => _openRelated(key),
+                            ),
+                        ],
+                      ),
+                    ],
+                    if (guide.revision > 0) ...[
+                      const SizedBox(height: 22),
+                      Text(
+                        l10n.guideStableLink(guide.guideKey, guide.revision),
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Color(0xFF9AA8A3),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
               ),
-            ),
     );
   }
 
   Widget _sectionTitle(String text) => Padding(
     padding: const EdgeInsets.only(bottom: 8),
-    child: Text(text, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+    child: Text(
+      text,
+      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+    ),
   );
 
   Widget _bullet(Widget child) => Padding(
@@ -576,14 +639,21 @@ class _HelpGuidePageState extends State<HelpGuidePage> {
               ),
               child: Text(
                 '$index',
-                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Colors.white),
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                ),
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
                 step.title,
-                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
             ),
           ],
@@ -592,7 +662,11 @@ class _HelpGuidePageState extends State<HelpGuidePage> {
           const SizedBox(height: 6),
           Text(
             step.description,
-            style: const TextStyle(fontSize: 13, height: 1.5, color: Color(0xFF3F514B)),
+            style: const TextStyle(
+              fontSize: 13,
+              height: 1.5,
+              color: Color(0xFF3F514B),
+            ),
           ),
         ],
         if (step.actionTarget != null) ...[
@@ -618,7 +692,10 @@ class _HelpGuidePageState extends State<HelpGuidePage> {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(item.symptom, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800)),
+        Text(
+          item.symptom,
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
+        ),
         const SizedBox(height: 6),
         for (final check in item.checks)
           _bullet(
@@ -628,7 +705,9 @@ class _HelpGuidePageState extends State<HelpGuidePage> {
             ),
           ),
         for (final line in item.resolution)
-          _bullet(Text(line, style: const TextStyle(fontSize: 13, height: 1.45))),
+          _bullet(
+            Text(line, style: const TextStyle(fontSize: 13, height: 1.45)),
+          ),
       ],
     ),
   );

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../models/chat_conversation.dart';
@@ -50,6 +50,7 @@ class _ChatPageState extends State<ChatPage> {
   ChatConversation? _active;
   ChatSocket? _chatSocket;
   StreamSubscription? _wsSub;
+
   /// 仅作 WebSocket 断线兜底
   Timer? _fallbackPoll;
   String _error = '';
@@ -446,7 +447,7 @@ class _ChatPageState extends State<ChatPage> {
                       physics: const AlwaysScrollableScrollPhysics(),
                       padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
                       itemCount: visible.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 5),
+                      separatorBuilder: (_, _) => const SizedBox(height: 5),
                       itemBuilder:
                           (context, index) => _conversationTile(visible[index]),
                     ),
@@ -593,7 +594,9 @@ class _ChatPageState extends State<ChatPage> {
           const Icon(Icons.forum_outlined, size: 48, color: AppTheme.leaf),
           const SizedBox(height: 10),
           Text(
-            _listQuery.isNotEmpty ? AppLocalizations.of(context).noMatchingConversations : AppLocalizations.of(context).noConversationsYet,
+            _listQuery.isNotEmpty
+                ? AppLocalizations.of(context).noMatchingConversations
+                : AppLocalizations.of(context).noConversationsYet,
             style: const TextStyle(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 6),
@@ -617,7 +620,7 @@ class _ChatPageState extends State<ChatPage> {
     backgroundColor:
         isGroup ? const Color(0xFFE8F0FF) : const Color(0xFFFFE8C5),
     foregroundImage: url == null ? null : NetworkImage(url),
-    onForegroundImageError: url == null ? null : (_, __) {},
+    onForegroundImageError: url == null ? null : (_, _) {},
     child:
         isGroup
             ? const Icon(
@@ -626,7 +629,9 @@ class _ChatPageState extends State<ChatPage> {
               size: 22,
             )
             : Text(
-              name.isEmpty ? AppLocalizations.of(context).friendInitial : name.characters.first,
+              name.isEmpty
+                  ? AppLocalizations.of(context).friendInitial
+                  : name.characters.first,
               style: const TextStyle(
                 color: AppTheme.ink,
                 fontWeight: FontWeight.w700,

@@ -22,7 +22,8 @@ class SystemGuideSummary {
         module: (json['module'] ?? '').toString(),
         title: (json['title'] ?? '').toString(),
         summary: (json['summary'] ?? '').toString(),
-        revision: json['revision'] is num ? (json['revision'] as num).toInt() : 0,
+        revision:
+            json['revision'] is num ? (json['revision'] as num).toInt() : 0,
         kind: (json['kind'] ?? '').toString(),
       );
 }
@@ -120,10 +121,15 @@ class SystemGuide {
     steps:
         (json['steps'] is List ? json['steps'] as List : const [])
             .whereType<Map>()
-            .map((item) => SystemGuideStep.fromJson(Map<String, dynamic>.from(item)))
+            .map(
+              (item) =>
+                  SystemGuideStep.fromJson(Map<String, dynamic>.from(item)),
+            )
             .toList(),
     troubleshooting:
-        (json['troubleshooting'] is List ? json['troubleshooting'] as List : const [])
+        (json['troubleshooting'] is List
+                ? json['troubleshooting'] as List
+                : const [])
             .whereType<Map>()
             .map(
               (item) => SystemGuideTroubleshooting.fromJson(

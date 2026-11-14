@@ -4,7 +4,7 @@ import 'package:chenge_world_app/screens/chat_page.dart';
 import 'package:chenge_world_app/screens/chat_thread_page.dart';
 import 'package:chenge_world_app/services/chenge_api.dart';
 import 'package:chenge_world_app/services/settings_store.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:chenge_world_app/l10n/generated/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -23,10 +23,10 @@ void main() {
       late StateSetter updateHarness;
       await tester.pumpWidget(
         MaterialApp(
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: const Locale('zh', 'CN'),
-        home: StatefulBuilder(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('zh', 'CN'),
+          home: StatefulBuilder(
             builder: (context, setState) {
               updateHarness = setState;
               return ChatPage(

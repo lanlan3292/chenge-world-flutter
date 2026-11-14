@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../l10n/generated/app_localizations.dart';
@@ -6,11 +6,7 @@ import '../services/chenge_api.dart';
 import '../theme/app_theme.dart';
 
 class EditProfilePage extends StatefulWidget {
-  const EditProfilePage({
-    super.key,
-    required this.api,
-    required this.token,
-  });
+  const EditProfilePage({super.key, required this.api, required this.token});
 
   final ChengeApi api;
   final String token;
@@ -77,7 +73,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
       String? pick(String key) {
         final fromProfile = profileMap?[key]?.toString().trim();
-        if (fromProfile != null && fromProfile.isNotEmpty && fromProfile != 'null') {
+        if (fromProfile != null &&
+            fromProfile.isNotEmpty &&
+            fromProfile != 'null') {
           return fromProfile;
         }
         final fromUser = userMap?[key]?.toString().trim();
@@ -209,138 +207,163 @@ class _EditProfilePageState extends State<EditProfilePage> {
             padding: const EdgeInsets.only(right: 12),
             child: FilledButton(
               onPressed: (_saving || _loading || _uploading) ? null : _save,
-              child: _saving
-                  ? const SizedBox.square(
-                      dimension: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Text(l10n.saveProfile),
+              child:
+                  _saving
+                      ? const SizedBox.square(
+                        dimension: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                      : Text(l10n.saveProfile),
             ),
           ),
         ],
       ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : ListView(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
-              children: [
-                if (_error != null) ...[
-                  Material(
-                    color: scheme.errorContainer,
-                    borderRadius: BorderRadius.circular(12),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Text(
-                        _error!,
-                        style: TextStyle(color: scheme.onErrorContainer),
+      body:
+          _loading
+              ? const Center(child: CircularProgressIndicator())
+              : ListView(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+                children: [
+                  if (_error != null) ...[
+                    Material(
+                      color: scheme.errorContainer,
+                      borderRadius: BorderRadius.circular(12),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Text(
+                          _error!,
+                          style: TextStyle(color: scheme.onErrorContainer),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                  Center(
+                    child: Column(
+                      children: [
+                        CircleAvatar(
+                          radius: 48,
+                          backgroundColor: scheme.tertiaryContainer,
+                          backgroundImage:
+                              _avatarUrl == null || _avatarUrl!.isEmpty
+                                  ? null
+                                  : NetworkImage(_avatarUrl!),
+                          child:
+                              _avatarUrl == null || _avatarUrl!.isEmpty
+                                  ? Icon(
+                                    Icons.person_rounded,
+                                    size: 40,
+                                    color: scheme.onTertiaryContainer,
+                                  )
+                                  : null,
+                        ),
+                        const SizedBox(height: 10),
+                        OutlinedButton.icon(
+                          onPressed: _uploading ? null : _pickAvatar,
+                          icon:
+                              _uploading
+                                  ? const SizedBox.square(
+                                    dimension: 16,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                  : const Icon(Icons.photo_camera_outlined),
+                          label: Text(l10n.changeAvatar),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  TextField(
+                    controller: _nickname,
+                    maxLength: 32,
+                    decoration: InputDecoration(
+                      labelText: l10n.nickname,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                   ),
                   const SizedBox(height: 12),
-                ],
-                Center(
-                  child: Column(
-                    children: [
-                      CircleAvatar(
-                        radius: 48,
-                        backgroundColor: scheme.tertiaryContainer,
-                        backgroundImage: _avatarUrl == null || _avatarUrl!.isEmpty
-                            ? null
-                            : NetworkImage(_avatarUrl!),
-                        child: _avatarUrl == null || _avatarUrl!.isEmpty
-                            ? Icon(
-                                Icons.person_rounded,
-                                size: 40,
-                                color: scheme.onTertiaryContainer,
-                              )
-                            : null,
-                      ),
-                      const SizedBox(height: 10),
-                      OutlinedButton.icon(
-                        onPressed: _uploading ? null : _pickAvatar,
-                        icon: _uploading
-                            ? const SizedBox.square(
-                                dimension: 16,
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              )
-                            : const Icon(Icons.photo_camera_outlined),
-                        label: Text(l10n.changeAvatar),
-                      ),
+                  Text(
+                    l10n.gender,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: 8),
+                  SegmentedButton<int?>(
+                    emptySelectionAllowed: true,
+                    segments: [
+                      ButtonSegment(value: 0, label: Text(l10n.genderSecret)),
+                      ButtonSegment(value: 1, label: Text(l10n.genderMale)),
+                      ButtonSegment(value: 2, label: Text(l10n.genderFemale)),
                     ],
+                    selected: {_gender},
+                    onSelectionChanged:
+                        (s) => setState(
+                          () => _gender = s.isEmpty ? null : s.first,
+                        ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                TextField(
-                  controller: _nickname,
-                  maxLength: 32,
-                  decoration: InputDecoration(
-                    labelText: l10n.nickname,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _birthday,
+                    readOnly: true,
+                    onTap: _pickBirthday,
+                    decoration: InputDecoration(
+                      labelText: l10n.birthday,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      suffixIcon: const Icon(Icons.calendar_today_outlined),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Text(l10n.gender, style: const TextStyle(fontWeight: FontWeight.w700)),
-                const SizedBox(height: 8),
-                SegmentedButton<int?>(
-                  emptySelectionAllowed: true,
-                  segments: [
-                    ButtonSegment(value: 0, label: Text(l10n.genderSecret)),
-                    ButtonSegment(value: 1, label: Text(l10n.genderMale)),
-                    ButtonSegment(value: 2, label: Text(l10n.genderFemale)),
-                  ],
-                  selected: {_gender},
-                  onSelectionChanged: (s) => setState(() => _gender = s.isEmpty ? null : s.first),
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _birthday,
-                  readOnly: true,
-                  onTap: _pickBirthday,
-                  decoration: InputDecoration(
-                    labelText: l10n.birthday,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                    suffixIcon: const Icon(Icons.calendar_today_outlined),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _bio,
+                    maxLines: 3,
+                    maxLength: 200,
+                    decoration: InputDecoration(
+                      labelText: l10n.bio,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _bio,
-                  maxLines: 3,
-                  maxLength: 200,
-                  decoration: InputDecoration(
-                    labelText: l10n.bio,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _website,
+                    keyboardType: TextInputType.url,
+                    decoration: InputDecoration(
+                      labelText: l10n.website,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _website,
-                  keyboardType: TextInputType.url,
-                  decoration: InputDecoration(
-                    labelText: l10n.website,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _email,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      labelText: l10n.email,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _email,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    labelText: l10n.email,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _phone,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      labelText: l10n.phone,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: _phone,
-                  keyboardType: TextInputType.phone,
-                  decoration: InputDecoration(
-                    labelText: l10n.phone,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                ),
-              ],
-            ),
+                ],
+              ),
     );
   }
 }

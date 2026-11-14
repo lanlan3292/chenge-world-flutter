@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -1137,7 +1137,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.fromLTRB(12, 6, 12, 4),
         itemCount: _channels.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (context, index) {
           final channel = _channels[index];
           final selected = channel.id == _channel?.id;
@@ -1212,7 +1212,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       radius: 15,
       backgroundColor: const Color(0xFFFFE8C5),
       foregroundImage: url == null ? null : CachedNetworkImageProvider(url),
-      onForegroundImageError: url == null ? null : (_, __) {},
+      onForegroundImageError: url == null ? null : (_, _) {},
       child: Text(
         name.isEmpty
             ? AppLocalizations.of(context).friendInitial
@@ -1779,12 +1779,12 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
           memCacheWidth:
               (size * MediaQuery.devicePixelRatioOf(context)).round(),
           placeholder:
-              (_, __) => _imagePlaceholder(
+              (_, _) => _imagePlaceholder(
                 AppLocalizations.of(context).chatImageLoading,
                 size: size,
               ),
           errorWidget:
-              (_, __, ___) => _imagePlaceholder(
+              (_, _, _) => _imagePlaceholder(
                 AppLocalizations.of(context).chatImageUnavailable,
                 size: size,
               ),
@@ -1851,7 +1851,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                           );
                         },
                         errorBuilder:
-                            (_, __, ___) => Text(
+                            (_, _, _) => Text(
                               AppLocalizations.of(context).chatImageUnavailable,
                               style: const TextStyle(color: Colors.white70),
                             ),
@@ -2472,7 +2472,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
         height: 132,
         fit: BoxFit.contain,
         placeholder:
-            (_, __) => const SizedBox(
+            (_, _) => const SizedBox(
               width: 132,
               height: 84,
               child: Center(
@@ -2483,7 +2483,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
               ),
             ),
         errorWidget:
-            (context, __, ___) => SizedBox(
+            (context, _, _) => SizedBox(
               width: 132,
               height: 84,
               child: Center(child: Text(AppLocalizations.of(context).emoji)),

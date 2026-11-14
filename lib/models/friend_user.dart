@@ -19,7 +19,8 @@ class FriendUser {
   final bool iSent;
   final bool iReceived;
 
-  String get displayName => nickname?.trim().isNotEmpty == true ? nickname!.trim() : username;
+  String get displayName =>
+      nickname?.trim().isNotEmpty == true ? nickname!.trim() : username;
 
   factory FriendUser.fromJson(Map<String, dynamic> json) {
     return FriendUser(
@@ -34,7 +35,8 @@ class FriendUser {
     );
   }
 
-  static int _integer(Object? value) => value is num ? value.toInt() : int.tryParse('$value') ?? 0;
+  static int _integer(Object? value) =>
+      value is num ? value.toInt() : int.tryParse('$value') ?? 0;
 
   static String _text(Object? value, {String fallback = ''}) {
     final text = value?.toString().trim() ?? '';

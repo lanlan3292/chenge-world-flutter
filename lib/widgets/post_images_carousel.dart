@@ -1,5 +1,5 @@
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'image_viewer_page.dart';
 
@@ -104,12 +104,13 @@ class _PostImagesCarouselState extends State<PostImagesCarousel> {
                       child: Image.network(
                         images[i],
                         fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) => Center(
-                          child: Icon(
-                            Icons.broken_image_outlined,
-                            color: scheme.onSurfaceVariant,
-                          ),
-                        ),
+                        errorBuilder:
+                            (_, _, _) => Center(
+                              child: Icon(
+                                Icons.broken_image_outlined,
+                                color: scheme.onSurfaceVariant,
+                              ),
+                            ),
                       ),
                     );
                   },

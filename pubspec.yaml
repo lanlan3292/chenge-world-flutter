@@ -1,7 +1,7 @@
 name: chenge_world_app
-description: ChengeWorld community client for Android.
+description: ChengeWorld community client.
 publish_to: none
-version: 1.0.4+5
+version: 1.0.5+6
 
 environment:
   sdk: ">=3.7.0 <4.0.0"
@@ -13,8 +13,7 @@ dependencies:
     sdk: flutter
   intl: any
   http_parser: ^4.1.2
-  flutter_secure_storage: ^9.2.4
-  flutter_markdown: ^0.7.7
+  flutter_secure_storage: ^11.2.0
   markdown: ^7.3.1
   http: ^1.5.0
   url_launcher: ^6.3.2
@@ -24,15 +23,18 @@ dependencies:
   flutter_staggered_grid_view: ^0.7.0
   image_picker: ^1.1.2
   # 图片磁盘+内存缓存
-  cached_network_image: ^3.4.1
+  cached_network_image: ^4.0.7
   flutter_cache_manager: ^3.4.5
   # 实时聊天 WebSocket
   web_socket_channel: ^3.0.2
 
+  material_ui: any
+  flutter_markdown_plus: ^1.0.12
+  cupertino_ui: any
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
 flutter:
   generate: true

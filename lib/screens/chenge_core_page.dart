@@ -1,17 +1,13 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../l10n/generated/app_localizations.dart';
 
 /// ChengeCore: aqua skin, route `#/chengecore`
 class ChengeCorePage extends StatelessWidget {
-  const ChengeCorePage({
-    super.key,
-    required this.baseUrl,
-    required this.token,
-  });
+  const ChengeCorePage({super.key, required this.baseUrl, required this.token});
 
   final String baseUrl;
   final String token;
@@ -38,11 +34,7 @@ class ChengeCorePage extends StatelessWidget {
 /// Nurture: cute skin, route `#/intelligence?mode=nurture`
 /// Separate page so skin/state is not shared with ChengeCore.
 class NurturePage extends StatelessWidget {
-  const NurturePage({
-    super.key,
-    required this.baseUrl,
-    required this.token,
-  });
+  const NurturePage({super.key, required this.baseUrl, required this.token});
 
   final String baseUrl;
   final String token;
@@ -55,9 +47,7 @@ class NurturePage extends StatelessWidget {
       title: AppLocalizations.of(context).raising,
       hashRoute: '#/intelligence?mode=nurture',
       themeSkin: 'cute',
-      hideXPaths: const [
-        '/html/body/div[10]/div/div/div/button[1]',
-      ],
+      hideXPaths: const ['/html/body/div[10]/div/div/div/button[1]'],
     );
   }
 }
@@ -242,10 +232,9 @@ class _SiteWebViewPageState extends State<_SiteWebViewPage> {
       setState(() {
         _unsupported = true;
         _loading = false;
-        _error = AppLocalizations.of(context).webViewInitFailed(
-          e.runtimeType.toString(),
-          e.toString(),
-        );
+        _error = AppLocalizations.of(
+          context,
+        ).webViewInitFailed(e.runtimeType.toString(), e.toString());
       });
     }
   }

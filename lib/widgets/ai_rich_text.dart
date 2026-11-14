@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
 import 'ai_chart_view.dart';
 import 'ai_data_fence.dart';
@@ -36,7 +36,9 @@ class AiRichText extends StatelessWidget {
         segments.add(AiChartCard(source: body));
       } else if (language == 'history') {
         segments.add(AiHistoryCard(source: body));
-      } else if (language == 'timeline' || language == 'table' || language == 'tree') {
+      } else if (language == 'timeline' ||
+          language == 'table' ||
+          language == 'tree') {
         segments.add(AiDataFenceCard(type: language, source: body));
       } else {
         segments.add(_codeBlock(body, language));
@@ -55,11 +57,8 @@ class AiRichText extends StatelessWidget {
     );
   }
 
-  Widget _markdown(String data) => MarkdownBody(
-    data: data,
-    selectable: selectable,
-    styleSheet: styleSheet,
-  );
+  Widget _markdown(String data) =>
+      MarkdownBody(data: data, selectable: selectable, styleSheet: styleSheet);
 
   Widget _codeBlock(String body, String language) => Container(
     width: double.infinity,
@@ -82,7 +81,11 @@ class AiRichText extends StatelessWidget {
           ),
         SelectableText(
           body.trimRight(),
-          style: const TextStyle(fontFamily: 'monospace', fontSize: 11.5, height: 1.5),
+          style: const TextStyle(
+            fontFamily: 'monospace',
+            fontSize: 11.5,
+            height: 1.5,
+          ),
         ),
       ],
     ),

@@ -33,8 +33,7 @@ class ChatSocket {
   /// 连接状态：true = 已连接
   Stream<bool> get connectionState => _connectionController.stream;
 
-  bool get isConnected =>
-      _channel != null && _sub != null && !_manualClose;
+  bool get isConnected => _channel != null && _sub != null && !_manualClose;
 
   /// 建立或复用连接。token 变化时会先断开再连。
   void connect(String token) {
