@@ -1501,10 +1501,34 @@ class SessionStore {
 
   static const _storage = FlutterSecureStorage();
   static const _tokenKey = 'chenge_access_token';
+  static const _accountsKey = 'chenge_saved_accounts';
 
   Future<String?> readToken() => _storage.read(key: _tokenKey);
 
   Future<void> saveToken(String token) => _storage.write(key: _tokenKey, value: token);
 
   Future<void> clearToken() => _storage.delete(key: _tokenKey);
+
+  /// 保存多个账号的令牌，当前账号仍由 [_tokenKey] 指向。
+  Future<List<String>> readAccounts() async {
+    final raw = await _storage.read(key: _accountsKey);
+    if (raw == null || raw.trim().isEmpty) return const [];
+    return raw
+        .split('|')
+        .map((token) => token.trim())
+        .where((token) => token.isNotEmpty)
+        .toSet()
+        .toList(growable: false);
+  }
+
+  Future<void> saveAccount(String token) async {
+    final current = await readAccounts();
+    final next = <String>[token.trim(), ...current.where((item) => item != token.trim())];
+    await _storage.write(key: _accountsKey, value: next.join('|'));
+  }
+
+  Future<void> removeAccount(String token) async {
+    final next = (await readAccounts()).where((item) => item != token).join('|');
+    await _storage.write(key: _accountsKey, value: next);
+  }
 }

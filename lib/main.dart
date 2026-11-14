@@ -239,6 +239,15 @@ class _AppShellState extends State<AppShell> {
     super.dispose();
   }
 
+  int? _extractUserId(Map<String, dynamic> payload) {
+    Object? value(Object? candidate) => candidate;
+    final user = payload['user'];
+    final raw = user is Map ? value(user['id']) : null;
+    final fallback = raw ?? payload['id'];
+    if (fallback is num) return fallback.toInt();
+    return int.tryParse(fallback?.toString() ?? '');
+  }
+
   Future<void> _restoreSession() async {
     final token = await _sessionStore.readToken();
     String? username;
@@ -249,10 +258,7 @@ class _AppShellState extends State<AppShell> {
         final current = await _api.currentUser(token);
         final user = current['user'];
         username = user is Map ? user['username']?.toString() : null;
-        userId =
-            user is Map && user['id'] is num
-                ? (user['id'] as num).toInt()
-                : null;
+        userId = _extractUserId(current);
       } on ApiException catch (error) {
         if (error.statusCode == 401 || error.businessCode == 401) {
           await _sessionStore.clearToken();
@@ -311,13 +317,14 @@ class _AppShellState extends State<AppShell> {
     }
 
     final user = result['user'];
+    final profile = user is Map ? user : result;
     await _sessionStore.saveToken(token);
+    await _sessionStore.saveAccount(token);
     if (!mounted) return;
     setState(() {
       _token = token;
-      _username = user is Map ? user['username']?.toString() : null;
-      _userId =
-          user is Map && user['id'] is num ? (user['id'] as num).toInt() : null;
+      _username = profile['username']?.toString();
+      _userId = _extractUserId(result);
     });
     _notificationBadge.bind(_api, _token);
     _maybeAutoCheckin();

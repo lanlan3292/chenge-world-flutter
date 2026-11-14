@@ -58,6 +58,14 @@ class _AccountPageState extends State<AccountPage> {
   void initState() {
     super.initState();
     _loadAvatar();
+    _migrateCurrentAccount();
+  }
+
+  Future<void> _migrateCurrentAccount() async {
+    final token = widget.token?.trim();
+    if (token == null || token.isEmpty) return;
+    await const SessionStore().saveAccount(token);
+    if (mounted) setState(() {});
   }
 
   @override
@@ -567,6 +575,10 @@ Material(
                 ),
               ),
               const SizedBox(height: 24),
+              if (signedIn) ...[
+                _accountsTile(context),
+                const SizedBox(height: 12),
+              ],
               if (!signedIn) ...[
                 FilledButton.icon(
                   onPressed: () => _showLogin(context),
@@ -626,6 +638,64 @@ Material(
               api: widget.api,
               onTokenChanged: _applyToken,
             ),
+      ),
+    );
+  }
+
+  Widget _accountsTile(BuildContext context) => FutureBuilder<List<String>>(
+    future: const SessionStore().readAccounts(),
+    builder: (context, snapshot) {
+      final count = snapshot.data?.length ?? 0;
+      return _actionTile(
+        icon: Icons.switch_account_rounded,
+        containerColor: Theme.of(context).colorScheme.primaryContainer,
+        iconColor: Theme.of(context).colorScheme.onPrimaryContainer,
+        title: AppLocalizations.of(context).account,
+        subtitle: '${AppLocalizations.of(context).account}: $count',
+        onTap: () => _openAccounts(context),
+      );
+    },
+  );
+
+  Future<List<Map<String, dynamic>>> _accountSummaries() async {
+    final tokens = await const SessionStore().readAccounts();
+    final result = <Map<String, dynamic>>[];
+    for (final token in tokens) {
+      try {
+        final data = await widget.api.currentUser(token);
+        final profile = data['profiles'] is Map ? Map<String, dynamic>.from(data['profiles'] as Map) : const <String, dynamic>{};
+        result.add({'token': token, 'name': (profile['nickname'] ?? data['nickname'] ?? data['username'] ?? '账户').toString(), 'avatar': (profile['avatar'] ?? data['avatar'] ?? '').toString(), 'current': token == widget.token});
+      } on ApiException {
+        result.add({'token': token, 'name': '账户 ${result.length + 1}', 'avatar': '', 'current': token == widget.token});
+      }
+    }
+    return result;
+  }
+
+  Future<void> _openAccounts(BuildContext context) async {
+    final store = const SessionStore();
+    await showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => FutureBuilder<List<Map<String, dynamic>>>(
+        future: _accountSummaries(),
+        builder: (builderContext, snapshot) {
+          final accounts = snapshot.data ?? const <Map<String, dynamic>>[];
+          return SafeArea(child: ListView(shrinkWrap: true, padding: const EdgeInsets.fromLTRB(16, 4, 16, 20), children: [
+            Text(AppLocalizations.of(context).account, style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 8),
+            for (final account in accounts) ListTile(
+              leading: CircleAvatar(child: Text((account['name'] as String).characters.first)),
+              title: Text(account['current'] == true ? '${account['name']} (${AppLocalizations.of(context).account})' : account['name'] as String),
+              subtitle: Text(AppLocalizations.of(context).accountConnected),
+              trailing: account['current'] == true ? const Icon(Icons.check_circle) : IconButton(icon: const Icon(Icons.delete_outline), onPressed: () async { await store.removeAccount(account['token'] as String); if (sheetContext.mounted) Navigator.pop(sheetContext); if (this.context.mounted) setState(() {}); }),
+              onTap: account['current'] == true ? null : () async { await widget.onLogin({'token': account['token']}); if (sheetContext.mounted) Navigator.pop(sheetContext); if (this.context.mounted) setState(() {}); },
+            ),
+            const Divider(),
+            ListTile(leading: const Icon(Icons.login_rounded), title: Text(AppLocalizations.of(context).signInAccount), subtitle: Text(AppLocalizations.of(context).accountSettingsSignIn), onTap: () async { Navigator.pop(sheetContext); await _showLogin(this.context); }),
+            ListTile(leading: const Icon(Icons.person_add_alt_1_rounded), title: Text(AppLocalizations.of(context).registerAccount), subtitle: Text(AppLocalizations.of(context).registerTitle), onTap: () async { Navigator.pop(sheetContext); await _showRegister(this.context); }),
+          ]));
+        },
       ),
     );
   }
