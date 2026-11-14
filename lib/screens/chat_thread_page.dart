@@ -19,6 +19,7 @@ import '../widgets/chat_markdown.dart';
 import 'emoji_picker_sheet.dart';
 import 'post_detail_page.dart';
 import 'shop_detail_page.dart';
+import 'user_profile_page.dart';
 
 class ChatThreadPage extends StatefulWidget {
   const ChatThreadPage({
@@ -67,8 +68,11 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
   StreamSubscription<ChatMessage>? _wsSub;
   StreamSubscription<Map<String, dynamic>>? _wsRawSub;
 
+  StreamSubscription<bool>? _wsConnectionSub;
+
   /// 断线时的轻量兜底轮询（仅在 WS 不可用时启用）
   Timer? _fallbackPoll;
+  bool _pollInFlight = false;
   bool _loading = false;
   bool _loadingOlder = false;
   bool _sending = false;
@@ -496,21 +500,23 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
 
   void _bindSocket() {
     final shared = widget.chatSocket;
-    if (shared != null) {
-      shared.connect(widget.token);
-      _wsSub = shared.messages.listen(_onWsMessage);
-      _wsRawSub = shared.rawEvents.listen(_onWsEvent);
-      return;
-    }
-    final socket = ChatSocket(baseUrl: widget.api.baseUrl);
-    _ownedSocket = socket;
-    socket.connect(widget.token);
+    final socket = shared ?? ChatSocket(baseUrl: widget.api.baseUrl);
+    if (shared == null) _ownedSocket = socket;
     _wsSub = socket.messages.listen(_onWsMessage);
     _wsRawSub = socket.rawEvents.listen(_onWsEvent);
-    // 若 12s 内仍无连接成功的消息活动，启动兜底轮询
-    _fallbackPoll = Timer.periodic(const Duration(seconds: 12), (_) {
+    _wsConnectionSub = socket.connectionState.listen((connected) {
       if (!mounted) return;
-      _loadMessages(silent: true);
+      if (connected) {
+        // 重连后补拉断线期间的消息，避免只依赖 WS 推送造成漏消息。
+        _loadMessages(silent: true);
+      }
+    });
+    socket.connect(widget.token);
+    // 无论 socket 是共享还是本页创建，断线期间都要定期补偿同步。
+    _fallbackPoll = Timer.periodic(const Duration(seconds: 3), (_) {
+      if (!mounted || _pollInFlight || socket.isConnected) return;
+      _pollInFlight = true;
+      _loadMessages(silent: true).whenComplete(() => _pollInFlight = false);
     });
   }
 
@@ -609,6 +615,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     _fallbackPoll?.cancel();
     _wsSub?.cancel();
     _wsRawSub?.cancel();
+    _wsConnectionSub?.cancel();
     _ownedSocket?.dispose();
     _messageController.dispose();
     _composerFocus.dispose();
@@ -1373,6 +1380,8 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
               source: message.content,
               textColor: foreground,
               linkColor: mine ? Colors.white : null,
+               onResourceTap: _openResourceCard,
+               onResourcePreview: _previewResourceCard,
             )
           else
             SelectableText(
@@ -2218,6 +2227,40 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
             ),
       ),
     );
+  }
+
+  Future<Map<String, String>> _previewResourceCard(String kind, int id) async {
+    if (kind == 'cPost') {
+      final post = await widget.api.postDetail(id, token: widget.token);
+      return {'title': post.title, 'subtitle': '${post.authorName} · ${post.viewCount} 次浏览', 'body': post.summary.isNotEmpty ? post.summary : post.content, 'meta': '♥ ${post.likeCount}   💬 ${post.commentCount}   点击查看详情'};
+    }
+    if (kind == 'cShop') {
+      final item = await widget.api.shopItem(id, token: widget.token);
+      return {'title': item.title, 'subtitle': '${item.type} · ${item.sellerName ?? 'Chenge 商城'}', 'body': item.summary ?? item.detail ?? '', 'meta': '${item.priceCoins.toStringAsFixed(2)} 金币   库存 ${item.stock}   点击查看详情'};
+    }
+    final data = await widget.api.currentUser(widget.token);
+    final profiles = data['profiles'] is Map ? Map<String, dynamic>.from(data['profiles'] as Map) : const <String, dynamic>{};
+    final name = (profiles['nickname'] ?? data['nickname'] ?? data['username'] ?? '用户').toString();
+    return {'title': name, 'subtitle': '用户 ID：$id', 'body': (profiles['bio'] ?? data['bio'] ?? '这个用户还没有填写个人简介').toString(), 'meta': '点击查看用户资料'};
+  }
+
+  Future<void> _openResourceCard(String kind, int id) async {
+    try {
+      if (kind == 'cPost') {
+        final post = await widget.api.postDetail(id, token: widget.token);
+        if (!mounted) return;
+        await Navigator.of(context).push(MaterialPageRoute(builder: (_) => PostDetailPage(api: widget.api, post: post, token: widget.token)));
+      } else if (kind == 'cShop') {
+        final item = await widget.api.shopItem(id, token: widget.token);
+        if (!mounted) return;
+        await Navigator.of(context).push(MaterialPageRoute(builder: (_) => ShopDetailPage(api: widget.api, item: item, token: widget.token, userId: widget.userId, onLoginRequested: () => _showShareError(AppLocalizations.of(context).signInToPurchase))));
+      } else if (kind == '用户') {
+        if (!mounted) return;
+        await Navigator.of(context).push(MaterialPageRoute(builder: (_) => UserProfilePage(api: widget.api, token: widget.token, userId: id)));
+      }
+    } on ApiException catch (error) {
+      if (mounted) _showShareError(error.message);
+    }
   }
 
   void _showShareError(String message) {
