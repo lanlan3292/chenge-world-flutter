@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../models/app_notification.dart';
@@ -93,7 +93,8 @@ class _NotificationsPageState extends State<NotificationsPage>
 
   void _maybeShowForceRead() {
     if (_forceReadShown || !mounted) return;
-    final pending = _announcements.where((a) => a.isUnread && a.forceRead).toList();
+    final pending =
+        _announcements.where((a) => a.isUnread && a.forceRead).toList();
     if (pending.isEmpty) return;
     _forceReadShown = true;
     final announcement = pending.first;
@@ -102,34 +103,38 @@ class _NotificationsPageState extends State<NotificationsPage>
       await showDialog<void>(
         context: context,
         barrierDismissible: false,
-        builder: (sheetContext) => AlertDialog(
-          title: Text(
-            AppLocalizations.of(sheetContext).systemAnnouncement,
-            style: const TextStyle(fontWeight: FontWeight.w800),
-          ),
-          content: SizedBox(
-            width: 460,
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    announcement.title,
-                    style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
-                  ),
-                  const SizedBox(height: 8),
-                  MarkdownBody(data: announcement.content),
-                ],
+        builder:
+            (sheetContext) => AlertDialog(
+              title: Text(
+                AppLocalizations.of(sheetContext).systemAnnouncement,
+                style: const TextStyle(fontWeight: FontWeight.w800),
               ),
+              content: SizedBox(
+                width: 460,
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        announcement.title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      MarkdownBody(data: announcement.content),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                FilledButton(
+                  onPressed: () => Navigator.pop(sheetContext),
+                  child: Text(AppLocalizations.of(sheetContext).gotIt),
+                ),
+              ],
             ),
-          ),
-          actions: [
-            FilledButton(
-              onPressed: () => Navigator.pop(sheetContext),
-              child: Text(AppLocalizations.of(sheetContext).gotIt),
-            ),
-          ],
-        ),
       );
       await _markAnnouncement(announcement);
       _maybeShowForceRead();
@@ -187,19 +192,22 @@ class _NotificationsPageState extends State<NotificationsPage>
     final l10n = AppLocalizations.of(context);
     final ok = await showDialog<bool>(
       context: context,
-      builder: (sheetContext) => AlertDialog(
-        content: Text(l10n.clearNotificationsConfirm),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(sheetContext, false),
-            child: Text(AppLocalizations.of(sheetContext).cancel),
+      builder:
+          (sheetContext) => AlertDialog(
+            content: Text(l10n.clearNotificationsConfirm),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(sheetContext, false),
+                child: Text(AppLocalizations.of(sheetContext).cancel),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(sheetContext, true),
+                child: Text(
+                  AppLocalizations.of(sheetContext).clearNotifications,
+                ),
+              ),
+            ],
           ),
-          FilledButton(
-            onPressed: () => Navigator.pop(sheetContext, true),
-            child: Text(AppLocalizations.of(sheetContext).clearNotifications),
-          ),
-        ],
-      ),
     );
     if (ok != true || _busy) return;
     setState(() => _busy = true);
@@ -229,7 +237,9 @@ class _NotificationsPageState extends State<NotificationsPage>
       );
       if (!mounted) return;
       setState(() {
-        final index = _announcements.indexWhere((item) => item.id == announcement.id);
+        final index = _announcements.indexWhere(
+          (item) => item.id == announcement.id,
+        );
         if (index >= 0) {
           _announcements[index] = _announcements[index].copyWith(
             readAt: DateTime.now(),
@@ -244,7 +254,9 @@ class _NotificationsPageState extends State<NotificationsPage>
   void _showError(String message) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(message), backgroundColor: AppTheme.coral));
+      ..showSnackBar(
+        SnackBar(content: Text(message), backgroundColor: AppTheme.coral),
+      );
   }
 
   Future<void> _openNotification(AppNotification item) async {
@@ -263,7 +275,9 @@ class _NotificationsPageState extends State<NotificationsPage>
           if (!mounted) return;
           await Navigator.of(context).push<void>(
             MaterialPageRoute<void>(
-              builder: (_) => PostDetailPage(api: widget.api, post: post, token: token),
+              builder:
+                  (_) =>
+                      PostDetailPage(api: widget.api, post: post, token: token),
             ),
           );
         } on ApiException catch (error) {
@@ -299,9 +313,10 @@ class _NotificationsPageState extends State<NotificationsPage>
         await _showTextDialog(item.title, item.body);
         return;
       default:
-        final text = [item.title, item.body]
-            .where((part) => part.trim().isNotEmpty)
-            .join('\n\n');
+        final text = [
+          item.title,
+          item.body,
+        ].where((part) => part.trim().isNotEmpty).join('\n\n');
         if (text.isEmpty) return;
         await _showTextDialog(item.title, text);
     }
@@ -345,32 +360,39 @@ class _NotificationsPageState extends State<NotificationsPage>
     final requestId = int.tryParse(item.targetId);
     if (requestId == null) return;
     try {
-      final request = await widget.api.groupInviteRequest(requestId, widget.token);
+      final request = await widget.api.groupInviteRequest(
+        requestId,
+        widget.token,
+      );
       if (!mounted) return;
-      final groupName = (request['group_name'] ?? request['groupName'] ?? '').toString();
+      final groupName =
+          (request['group_name'] ?? request['groupName'] ?? '').toString();
       final accept = await showDialog<bool>(
         context: context,
-        builder: (sheetContext) => AlertDialog(
-          title: Text(
-            AppLocalizations.of(sheetContext).notifyGroupInvite,
-            style: const TextStyle(fontWeight: FontWeight.w800),
-          ),
-          content: Text(
-            groupName.isEmpty
-                ? (request['status']?.toString() ?? '')
-                : AppLocalizations.of(sheetContext).groupInvitePrompt(groupName),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(sheetContext, false),
-              child: Text(AppLocalizations.of(sheetContext).decline),
+        builder:
+            (sheetContext) => AlertDialog(
+              title: Text(
+                AppLocalizations.of(sheetContext).notifyGroupInvite,
+                style: const TextStyle(fontWeight: FontWeight.w800),
+              ),
+              content: Text(
+                groupName.isEmpty
+                    ? (request['status']?.toString() ?? '')
+                    : AppLocalizations.of(
+                      sheetContext,
+                    ).groupInvitePrompt(groupName),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(sheetContext, false),
+                  child: Text(AppLocalizations.of(sheetContext).decline),
+                ),
+                FilledButton(
+                  onPressed: () => Navigator.pop(sheetContext, true),
+                  child: Text(AppLocalizations.of(sheetContext).accept),
+                ),
+              ],
             ),
-            FilledButton(
-              onPressed: () => Navigator.pop(sheetContext, true),
-              child: Text(AppLocalizations.of(sheetContext).accept),
-            ),
-          ],
-        ),
       );
       if (accept == null) return;
       final result = await widget.api.respondGroupInvite(
@@ -416,58 +438,68 @@ class _NotificationsPageState extends State<NotificationsPage>
 
   Future<void> _showTextDialog(String title, String body) => showDialog<void>(
     context: context,
-    builder: (sheetContext) => AlertDialog(
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
-      content: SingleChildScrollView(child: Text(body)),
-      actions: [
-        FilledButton(
-          onPressed: () => Navigator.pop(sheetContext),
-          child: Text(AppLocalizations.of(sheetContext).gotIt),
+    builder:
+        (sheetContext) => AlertDialog(
+          title: Text(
+            title,
+            style: const TextStyle(fontWeight: FontWeight.w800),
+          ),
+          content: SingleChildScrollView(child: Text(body)),
+          actions: [
+            FilledButton(
+              onPressed: () => Navigator.pop(sheetContext),
+              child: Text(AppLocalizations.of(sheetContext).gotIt),
+            ),
+          ],
         ),
-      ],
-    ),
   );
 
   Future<void> _openAnnouncement(Announcement announcement) async {
     await showDialog<void>(
       context: context,
-      builder: (sheetContext) => AlertDialog(
-        title: Text(
-          announcement.title,
-          style: const TextStyle(fontWeight: FontWeight.w800),
-        ),
-        content: SizedBox(
-          width: 520,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (announcement.publishedAt != null)
-                  Text(
-                    _formatDate(announcement.publishedAt!),
-                    style: const TextStyle(fontSize: 11, color: Color(0xFF70817D)),
+      builder:
+          (sheetContext) => AlertDialog(
+            title: Text(
+              announcement.title,
+              style: const TextStyle(fontWeight: FontWeight.w800),
+            ),
+            content: SizedBox(
+              width: 520,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (announcement.publishedAt != null)
+                      Text(
+                        _formatDate(announcement.publishedAt!),
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Color(0xFF70817D),
+                        ),
+                      ),
+                    const SizedBox(height: 8),
+                    MarkdownBody(data: announcement.content),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              if (announcement.isUnread)
+                TextButton(
+                  onPressed: () async {
+                    Navigator.pop(sheetContext);
+                    await _markAnnouncement(announcement);
+                  },
+                  child: Text(
+                    AppLocalizations.of(sheetContext).markAnnouncementRead,
                   ),
-                const SizedBox(height: 8),
-                MarkdownBody(data: announcement.content),
-              ],
-            ),
+                ),
+              FilledButton(
+                onPressed: () => Navigator.pop(sheetContext),
+                child: Text(AppLocalizations.of(sheetContext).gotIt),
+              ),
+            ],
           ),
-        ),
-        actions: [
-          if (announcement.isUnread)
-            TextButton(
-              onPressed: () async {
-                Navigator.pop(sheetContext);
-                await _markAnnouncement(announcement);
-              },
-              child: Text(AppLocalizations.of(sheetContext).markAnnouncementRead),
-            ),
-          FilledButton(
-            onPressed: () => Navigator.pop(sheetContext),
-            child: Text(AppLocalizations.of(sheetContext).gotIt),
-          ),
-        ],
-      ),
     );
   }
 
@@ -573,7 +605,10 @@ class _NotificationsPageState extends State<NotificationsPage>
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.notifications, style: const TextStyle(fontWeight: FontWeight.w800)),
+        title: Text(
+          l10n.notifications,
+          style: const TextStyle(fontWeight: FontWeight.w800),
+        ),
         actions: [
           IconButton(
             tooltip: l10n.refresh,
@@ -626,7 +661,11 @@ class _NotificationsPageState extends State<NotificationsPage>
     ),
     child: Text(
       count > 99 ? '99+' : '$count',
-      style: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.w800),
+      style: const TextStyle(
+        fontSize: 10,
+        color: Colors.white,
+        fontWeight: FontWeight.w800,
+      ),
     ),
   );
 
@@ -638,9 +677,10 @@ class _NotificationsPageState extends State<NotificationsPage>
     if (_error.isNotEmpty && _items.isEmpty) {
       return _errorView(l10n.retry, _load);
     }
-    final filtered = _typeFilter.isEmpty
-        ? _items
-        : _items.where((item) => item.type == _typeFilter).toList();
+    final filtered =
+        _typeFilter.isEmpty
+            ? _items
+            : _items.where((item) => item.type == _typeFilter).toList();
     return RefreshIndicator(
       onRefresh: _load,
       child: ListView(
@@ -652,7 +692,10 @@ class _NotificationsPageState extends State<NotificationsPage>
               Expanded(
                 child: Text(
                   l10n.notificationCount(_items.length),
-                  style: const TextStyle(fontSize: 12, color: Color(0xFF70817D)),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF70817D),
+                  ),
                 ),
               ),
               TextButton.icon(
@@ -676,7 +719,8 @@ class _NotificationsPageState extends State<NotificationsPage>
                   _typeChip(l10n.allModules, ''),
                   for (final type in _presentTypes)
                     _typeChip(
-                      '${_typeLabel(context, type)} ${_unreadByType[type] ?? ''}'.trim(),
+                      '${_typeLabel(context, type)} ${_unreadByType[type] ?? ''}'
+                          .trim(),
                       type,
                     ),
                 ],
@@ -688,9 +732,16 @@ class _NotificationsPageState extends State<NotificationsPage>
               padding: const EdgeInsets.symmetric(vertical: 56),
               child: Column(
                 children: [
-                  const Icon(Icons.notifications_none_rounded, size: 44, color: Color(0xFF70817D)),
+                  const Icon(
+                    Icons.notifications_none_rounded,
+                    size: 44,
+                    color: Color(0xFF70817D),
+                  ),
                   const SizedBox(height: 10),
-                  Text(l10n.notificationsEmpty, style: const TextStyle(color: Color(0xFF70817D))),
+                  Text(
+                    l10n.notificationsEmpty,
+                    style: const TextStyle(color: Color(0xFF70817D)),
+                  ),
                 ],
               ),
             )
@@ -720,9 +771,12 @@ class _NotificationsPageState extends State<NotificationsPage>
   Widget _notificationTile(AppNotification item) {
     final unread = !item.isRead;
     return Material(
-      color: unread
-          ? Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.28)
-          : Theme.of(context).colorScheme.surfaceContainerLow,
+      color:
+          unread
+              ? Theme.of(
+                context,
+              ).colorScheme.primaryContainer.withValues(alpha: 0.28)
+              : Theme.of(context).colorScheme.surfaceContainerLow,
       borderRadius: BorderRadius.circular(10),
       child: InkWell(
         borderRadius: BorderRadius.circular(10),
@@ -739,7 +793,11 @@ class _NotificationsPageState extends State<NotificationsPage>
                   color: AppTheme.leaf.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(11),
                 ),
-                child: Icon(_typeIcon(item.type), size: 19, color: AppTheme.leaf),
+                child: Icon(
+                  _typeIcon(item.type),
+                  size: 19,
+                  color: AppTheme.leaf,
+                ),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -750,25 +808,34 @@ class _NotificationsPageState extends State<NotificationsPage>
                       children: [
                         Flexible(
                           child: Text(
-                            item.title.isEmpty ? _typeLabel(context, item.type) : item.title,
+                            item.title.isEmpty
+                                ? _typeLabel(context, item.type)
+                                : item.title,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              fontWeight: unread ? FontWeight.w800 : FontWeight.w600,
+                              fontWeight:
+                                  unread ? FontWeight.w800 : FontWeight.w600,
                               fontSize: 14,
                             ),
                           ),
                         ),
                         const SizedBox(width: 6),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 5,
+                            vertical: 1,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0xFFEFF3F0),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
                             _typeLabel(context, item.type),
-                            style: const TextStyle(fontSize: 10, color: Color(0xFF5B6B66)),
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: Color(0xFF5B6B66),
+                            ),
                           ),
                         ),
                       ],
@@ -779,13 +846,20 @@ class _NotificationsPageState extends State<NotificationsPage>
                         item.body,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 12.5, height: 1.4, color: Color(0xFF4A5A55)),
+                        style: const TextStyle(
+                          fontSize: 12.5,
+                          height: 1.4,
+                          color: Color(0xFF4A5A55),
+                        ),
                       ),
                     ],
                     const SizedBox(height: 3),
                     Text(
                       _relativeTime(item.createdAt),
-                      style: const TextStyle(fontSize: 11, color: Color(0xFF9AA8A3)),
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: Color(0xFF9AA8A3),
+                      ),
                     ),
                   ],
                 ),
@@ -795,7 +869,10 @@ class _NotificationsPageState extends State<NotificationsPage>
                   margin: const EdgeInsets.only(left: 6, top: 6),
                   width: 8,
                   height: 8,
-                  decoration: const BoxDecoration(color: AppTheme.coral, shape: BoxShape.circle),
+                  decoration: const BoxDecoration(
+                    color: AppTheme.coral,
+                    shape: BoxShape.circle,
+                  ),
                 ),
             ],
           ),
@@ -817,9 +894,16 @@ class _NotificationsPageState extends State<NotificationsPage>
             padding: const EdgeInsets.symmetric(vertical: 64),
             child: Column(
               children: [
-                const Icon(Icons.campaign_outlined, size: 44, color: Color(0xFF70817D)),
+                const Icon(
+                  Icons.campaign_outlined,
+                  size: 44,
+                  color: Color(0xFF70817D),
+                ),
                 const SizedBox(height: 10),
-                Text(l10n.noAnnouncements, style: const TextStyle(color: Color(0xFF70817D))),
+                Text(
+                  l10n.noAnnouncements,
+                  style: const TextStyle(color: Color(0xFF70817D)),
+                ),
               ],
             ),
           ),
@@ -832,7 +916,7 @@ class _NotificationsPageState extends State<NotificationsPage>
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(14, 12, 14, 24),
         itemCount: _announcements.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 10),
+        separatorBuilder: (_, _) => const SizedBox(height: 10),
         itemBuilder: (context, index) {
           final announcement = _announcements[index];
           return Material(
@@ -852,7 +936,10 @@ class _NotificationsPageState extends State<NotificationsPage>
                           Container(
                             width: 7,
                             height: 7,
-                            decoration: const BoxDecoration(color: AppTheme.coral, shape: BoxShape.circle),
+                            decoration: const BoxDecoration(
+                              color: AppTheme.coral,
+                              shape: BoxShape.circle,
+                            ),
                           ),
                           const SizedBox(width: 6),
                         ],
@@ -861,23 +948,35 @@ class _NotificationsPageState extends State<NotificationsPage>
                             announcement.title,
                             style: TextStyle(
                               fontSize: 15,
-                              fontWeight: announcement.isUnread ? FontWeight.w800 : FontWeight.w600,
+                              fontWeight:
+                                  announcement.isUnread
+                                      ? FontWeight.w800
+                                      : FontWeight.w600,
                             ),
                           ),
                         ),
                         if (announcement.publishedAt != null)
                           Text(
                             _formatDate(announcement.publishedAt!),
-                            style: const TextStyle(fontSize: 11, color: Color(0xFF9AA8A3)),
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: Color(0xFF9AA8A3),
+                            ),
                           ),
                       ],
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      announcement.content.replaceAll(RegExp(r'[#*`>\-]'), ' ').trim(),
+                      announcement.content
+                          .replaceAll(RegExp(r'[#*`>\-]'), ' ')
+                          .trim(),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 12.5, height: 1.45, color: Color(0xFF4A5A55)),
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        height: 1.45,
+                        color: Color(0xFF4A5A55),
+                      ),
                     ),
                   ],
                 ),
@@ -893,7 +992,11 @@ class _NotificationsPageState extends State<NotificationsPage>
     child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(_error, style: const TextStyle(color: AppTheme.coral), textAlign: TextAlign.center),
+        Text(
+          _error,
+          style: const TextStyle(color: AppTheme.coral),
+          textAlign: TextAlign.center,
+        ),
         const SizedBox(height: 8),
         TextButton(onPressed: onRetry, child: Text(retry)),
       ],

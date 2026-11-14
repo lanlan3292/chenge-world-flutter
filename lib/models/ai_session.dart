@@ -16,9 +16,10 @@ class AiSession {
   final DateTime? createTime;
 
   factory AiSession.fromJson(Map<String, dynamic> json) {
-    final sessionId = _text(json['sessionId']).isNotEmpty
-        ? _text(json['sessionId'])
-        : _text(json['session_id']);
+    final sessionId =
+        _text(json['sessionId']).isNotEmpty
+            ? _text(json['sessionId'])
+            : _text(json['session_id']);
     return AiSession(
       id: _nullableInt(json['id']),
       sessionId: sessionId,
@@ -99,19 +100,28 @@ class AiChatBubble {
   static List<String> _imagesOf(Map<String, dynamic> map) {
     final raw = map['images'] ?? map['image_refs'] ?? map['imageRefs'];
     if (raw is! List) return const [];
-    return raw.map((item) => '$item').where((url) => url.startsWith('http')).toList();
+    return raw
+        .map((item) => '$item')
+        .where((url) => url.startsWith('http'))
+        .toList();
   }
 
   static String _roleOf(Map<String, dynamic> map) {
-    final role = (map['role'] ?? map['type'] ?? map['sender'] ?? 'assistant').toString().toLowerCase();
-    if (role.contains('human') || role == 'user' || role == 'human') return 'user';
+    final role =
+        (map['role'] ?? map['type'] ?? map['sender'] ?? 'assistant')
+            .toString()
+            .toLowerCase();
+    if (role.contains('human') || role == 'user' || role == 'human') {
+      return 'user';
+    }
     if (role.contains('system')) return 'system';
     if (role.contains('tool')) return 'tool';
     return 'assistant';
   }
 
   static String _contentOf(Map<String, dynamic> map) {
-    final content = map['content'] ?? map['text'] ?? map['message'] ?? map['user_input'];
+    final content =
+        map['content'] ?? map['text'] ?? map['message'] ?? map['user_input'];
     if (content is String) return content;
     if (content is List) {
       final parts = <String>[];

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// 数据类围栏：```timeline、```table、```tree。
 ///
@@ -35,7 +35,9 @@ bool _isNumber(Object? value) => value is num && value.isFinite;
 
 String _text(Object? value, String name, {bool optional = false}) {
   if (value == null && optional) return '';
-  if (value is! String || value.length > 4000 || (!optional && value.trim().isEmpty)) {
+  if (value is! String ||
+      value.length > 4000 ||
+      (!optional && value.trim().isEmpty)) {
     _fail('$name 需要非空文字（最多4000字符）');
   }
   return value;
@@ -101,7 +103,9 @@ class AiTimelineData {
         _fail('JSON 格式无效');
       }
       final root = _object(decoded);
-      if (root['version'] != 1 && root['version'] != 1.0) _fail('version 必须为 1');
+      if (root['version'] != 1 && root['version'] != 1.0) {
+        _fail('version 必须为 1');
+      }
       final ids = <String>{};
       final rawEvents = _list(root['events'], 300, 'events');
       final events = <AiTimelineEvent>[];
@@ -110,7 +114,9 @@ class AiTimelineData {
         final id = _text(map['id'], 'id');
         if (!ids.add(id)) _fail('id 不能重复');
         final timeType = map['timeType'];
-        if (timeType != 'actual' && timeType != 'planned' && timeType != 'estimated') {
+        if (timeType != 'actual' &&
+            timeType != 'planned' &&
+            timeType != 'estimated') {
           _fail('timeType 必须为 actual/planned/estimated，明确实际/计划/估计');
         }
         final status = map['status'] ?? 'pending';
@@ -124,7 +130,11 @@ class AiTimelineData {
             time: _text(map['time'], 'time'),
             timeType: timeType as String,
             status: status as String,
-            description: _text(map['description'], 'description', optional: true),
+            description: _text(
+              map['description'],
+              'description',
+              optional: true,
+            ),
           ),
         );
       }
@@ -132,7 +142,11 @@ class AiTimelineData {
       return AiFenceResult.ok(
         AiTimelineData(
           title: _text(root['title'], 'title', optional: true),
-          description: _text(root['description'], 'description', optional: true),
+          description: _text(
+            root['description'],
+            'description',
+            optional: true,
+          ),
           source: _text(root['source'], 'source', optional: true),
           events: events,
         ),
@@ -188,13 +202,18 @@ class AiTableData {
         _fail('JSON 格式无效');
       }
       final root = _object(decoded);
-      if (root['version'] != 1 && root['version'] != 1.0) _fail('version 必须为 1');
+      if (root['version'] != 1 && root['version'] != 1.0) {
+        _fail('version 必须为 1');
+      }
       final keys = <String>{};
       final columns = <AiTableColumn>[];
       for (final item in _list(root['columns'], 30, 'columns')) {
         final map = _object(item);
         final key = _text(map['key'], '列 key');
-        if (!keys.add(key) || key == '__proto__' || key == 'constructor' || key == 'prototype') {
+        if (!keys.add(key) ||
+            key == '__proto__' ||
+            key == 'constructor' ||
+            key == 'prototype') {
           _fail('列 key 重复或不可用');
         }
         final type = (map['type'] ?? 'text').toString();
@@ -224,9 +243,13 @@ class AiTableData {
           }
           switch (column.type) {
             case 'number':
-              if (!_isNumber(value)) _fail('第${i + 1}行 ${column.label} 类型应为 number');
+              if (!_isNumber(value)) {
+                _fail('第${i + 1}行 ${column.label} 类型应为 number');
+              }
             case 'boolean':
-              if (value is! bool) _fail('第${i + 1}行 ${column.label} 类型应为 boolean');
+              if (value is! bool) {
+                _fail('第${i + 1}行 ${column.label} 类型应为 boolean');
+              }
             case 'date':
               if (value is! String ||
                   (value.length > 4000) ||
@@ -234,7 +257,9 @@ class AiTableData {
                 _fail('日期使用 YYYY-MM-DD 或 ISO 时间');
               }
             default:
-              if (value is! String) _fail('第${i + 1}行 ${column.label} 类型应为 text');
+              if (value is! String) {
+                _fail('第${i + 1}行 ${column.label} 类型应为 text');
+              }
               if (value.length > 4000) _fail('单元格文字过长');
           }
           row[column.key] = value as Object?;
@@ -244,9 +269,17 @@ class AiTableData {
       return AiFenceResult.ok(
         AiTableData(
           title: _text(root['title'], 'title', optional: true),
-          description: _text(root['description'], 'description', optional: true),
+          description: _text(
+            root['description'],
+            'description',
+            optional: true,
+          ),
           source: _text(root['source'], 'source', optional: true),
-          methodology: _text(root['methodology'], 'methodology', optional: true),
+          methodology: _text(
+            root['methodology'],
+            'methodology',
+            optional: true,
+          ),
           columns: columns,
           rows: rows,
         ),
@@ -298,7 +331,9 @@ class AiTreeData {
         _fail('JSON 格式无效');
       }
       final root = _object(decoded);
-      if (root['version'] != 1 && root['version'] != 1.0) _fail('version 必须为 1');
+      if (root['version'] != 1 && root['version'] != 1.0) {
+        _fail('version 必须为 1');
+      }
       final ids = <String>{};
       var count = 0;
       List<AiTreeNode> walk(Object? value, int depth) {
@@ -310,7 +345,13 @@ class AiTreeData {
           final id = _text(map['id'], 'id');
           if (!ids.add(id)) _fail('id 不能重复');
           final kind = (map['kind'] ?? 'item').toString();
-          if (!const ['folder', 'file', 'module', 'class', 'item'].contains(kind)) {
+          if (!const [
+            'folder',
+            'file',
+            'module',
+            'class',
+            'item',
+          ].contains(kind)) {
             _fail('节点 kind 不支持');
           }
           final children = map['children'];
@@ -319,9 +360,16 @@ class AiTreeData {
             AiTreeNode(
               id: id,
               label: _text(map['label'], '节点 label'),
-              description: _text(map['description'], 'description', optional: true),
+              description: _text(
+                map['description'],
+                'description',
+                optional: true,
+              ),
               kind: kind,
-              children: children is List && children.isNotEmpty ? walk(children, depth + 1) : const [],
+              children:
+                  children is List && children.isNotEmpty
+                      ? walk(children, depth + 1)
+                      : const [],
             ),
           );
         }
@@ -333,7 +381,11 @@ class AiTreeData {
       return AiFenceResult.ok(
         AiTreeData(
           title: _text(root['title'], 'title', optional: true),
-          description: _text(root['description'], 'description', optional: true),
+          description: _text(
+            root['description'],
+            'description',
+            optional: true,
+          ),
           source: _text(root['source'], 'source', optional: true),
           nodes: nodes,
         ),
@@ -373,13 +425,14 @@ class AiDataFenceCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: _line),
       ),
-      child: error.isNotEmpty
-          ? _errorBox(error)
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [body!],
-            ),
+      child:
+          error.isNotEmpty
+              ? _errorBox(error)
+              : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [body!],
+              ),
     );
   }
 
@@ -402,9 +455,10 @@ class AiDataFenceCard extends StatelessWidget {
   }
 
   Widget _timelineRow(AiTimelineEvent event) {
-    final dot = event.status == 'active'
-        ? const Color(0xFF5E8550)
-        : const Color(0xFF9AB67C);
+    final dot =
+        event.status == 'active'
+            ? const Color(0xFF5E8550)
+            : const Color(0xFF9AB67C);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
@@ -419,11 +473,17 @@ class AiDataFenceCard extends StatelessWidget {
                 children: [
                   Text(
                     event.time,
-                    style: const TextStyle(fontSize: 12, color: Color(0xFF5A724D)),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Color(0xFF5A724D),
+                    ),
                   ),
                   Text(
                     event.timeTypeLabel,
-                    style: const TextStyle(fontSize: 10, color: Color(0xFF7C896E)),
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: Color(0xFF7C896E),
+                    ),
                   ),
                 ],
               ),
@@ -468,7 +528,10 @@ class AiDataFenceCard extends StatelessWidget {
                             padding: const EdgeInsets.only(top: 2),
                             child: Text(
                               event.statusLabel,
-                              style: const TextStyle(fontSize: 10, color: Color(0xFF748267)),
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: Color(0xFF748267),
+                              ),
                             ),
                           ),
                         ],
@@ -525,7 +588,9 @@ class AiDataFenceCard extends StatelessWidget {
                   DataColumn(
                     numeric: column.isNumber,
                     label: Text(
-                      column.unit.isEmpty ? column.label : '${column.label} / ${column.unit}',
+                      column.unit.isEmpty
+                          ? column.label
+                          : '${column.label} / ${column.unit}',
                     ),
                   ),
               ],
@@ -652,7 +717,11 @@ class AiDataFenceCard extends StatelessWidget {
               padding: const EdgeInsets.only(top: 4),
               child: Text(
                 description,
-                style: const TextStyle(fontSize: 12.5, height: 1.6, color: _muted),
+                style: const TextStyle(
+                  fontSize: 12.5,
+                  height: 1.6,
+                  color: _muted,
+                ),
               ),
             ),
         ],
@@ -663,8 +732,13 @@ class AiDataFenceCard extends StatelessWidget {
   Widget _note(String message) => Container(
     width: double.infinity,
     padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
-    decoration: const BoxDecoration(border: Border(top: BorderSide(color: Color(0xFFE1E8D8)))),
-    child: Text(message, style: const TextStyle(fontSize: 11.5, color: Color(0xFF65765B))),
+    decoration: const BoxDecoration(
+      border: Border(top: BorderSide(color: Color(0xFFE1E8D8))),
+    ),
+    child: Text(
+      message,
+      style: const TextStyle(fontSize: 11.5, color: Color(0xFF65765B)),
+    ),
   );
 
   Widget _errorBox(String error) => Padding(
@@ -679,7 +753,11 @@ class AiDataFenceCard extends StatelessWidget {
         const SizedBox(height: 8),
         SelectableText(
           source.trimRight(),
-          style: const TextStyle(fontFamily: 'monospace', fontSize: 11, height: 1.5),
+          style: const TextStyle(
+            fontFamily: 'monospace',
+            fontSize: 11,
+            height: 1.5,
+          ),
         ),
       ],
     ),

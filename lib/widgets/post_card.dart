@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../models/blog_post.dart';
 
@@ -34,7 +34,8 @@ class PostCard extends StatelessWidget {
       builder: (context, constraints) {
         final w = constraints.maxWidth;
         final hasBoundedHeight =
-            constraints.maxHeight.isFinite && constraints.maxHeight < double.infinity;
+            constraints.maxHeight.isFinite &&
+            constraints.maxHeight < double.infinity;
         final narrow = w < 200;
         final veryNarrow = w < 150;
         final padH = narrow ? 10.0 : 14.0;
@@ -46,7 +47,8 @@ class PostCard extends StatelessWidget {
         final body = Padding(
           padding: EdgeInsets.fromLTRB(padH, padV, padH, padV),
           child: Column(
-            mainAxisSize: hasBoundedHeight ? MainAxisSize.max : MainAxisSize.min,
+            mainAxisSize:
+                hasBoundedHeight ? MainAxisSize.max : MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (hasTag)
@@ -112,7 +114,8 @@ class PostCard extends StatelessWidget {
           child: InkWell(
             onTap: onTap,
             child: Column(
-              mainAxisSize: hasBoundedHeight ? MainAxisSize.max : MainAxisSize.min,
+              mainAxisSize:
+                  hasBoundedHeight ? MainAxisSize.max : MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 AspectRatio(
@@ -153,7 +156,12 @@ class PostCard extends StatelessWidget {
             ),
           ),
         ),
-        _metric(context, Icons.visibility_outlined, post.viewCount, compact: narrow),
+        _metric(
+          context,
+          Icons.visibility_outlined,
+          post.viewCount,
+          compact: narrow,
+        ),
         SizedBox(width: narrow ? 5 : 8),
         _metric(
           context,
@@ -167,9 +175,10 @@ class PostCard extends StatelessWidget {
 
   Widget _cover(BuildContext context, {required double width}) {
     final rawUrl = post.displayCoverImage;
-    final imageUrl = rawUrl == null || rawUrl.isEmpty
-        ? null
-        : (resolveMediaUrl?.call(rawUrl) ?? rawUrl);
+    final imageUrl =
+        rawUrl == null || rawUrl.isEmpty
+            ? null
+            : (resolveMediaUrl?.call(rawUrl) ?? rawUrl);
     if (imageUrl == null || imageUrl.isEmpty) return _coverPlaceholder(context);
 
     // 按展示宽度限制解码尺寸，避免瀑布流里按原图解码导致卡顿
@@ -187,8 +196,8 @@ class PostCard extends StatelessWidget {
       maxWidthDiskCache: memW,
       filterQuality: FilterQuality.low,
       // 静态占位，避免每张图一个转圈动画
-      placeholder: (_, __) => _coverPlaceholder(context),
-      errorWidget: (_, __, ___) => _coverPlaceholder(context),
+      placeholder: (_, _) => _coverPlaceholder(context),
+      errorWidget: (_, _, _) => _coverPlaceholder(context),
     );
     // Match the destination Hero in PostDetailPage so opening a post animates
     // the cover instead of popping in with no transition.
@@ -196,40 +205,43 @@ class PostCard extends StatelessWidget {
   }
 
   Widget _coverPlaceholder(BuildContext context) => Container(
-        width: double.infinity,
-        height: double.infinity,
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        child: Stack(
-          children: [
-            Positioned(
-              right: -18,
-              top: -34,
-              child: _shape(125, Theme.of(context).colorScheme.surfaceContainerHigh),
-            ),
-            Positioned(
-              left: 24,
-              bottom: -45,
-              child: _shape(110, Theme.of(context).colorScheme.tertiaryContainer),
-            ),
-            Center(
-              child: Icon(
-                Icons.article_rounded,
-                size: 34,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
+    width: double.infinity,
+    height: double.infinity,
+    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+    child: Stack(
+      children: [
+        Positioned(
+          right: -18,
+          top: -34,
+          child: _shape(
+            125,
+            Theme.of(context).colorScheme.surfaceContainerHigh,
+          ),
         ),
-      );
+        Positioned(
+          left: 24,
+          bottom: -45,
+          child: _shape(110, Theme.of(context).colorScheme.tertiaryContainer),
+        ),
+        Center(
+          child: Icon(
+            Icons.article_rounded,
+            size: 34,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    ),
+  );
 
   Widget _shape(double size, Color color) => Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(size * 0.34),
-        ),
-      );
+    width: size,
+    height: size,
+    decoration: BoxDecoration(
+      color: color,
+      borderRadius: BorderRadius.circular(size * 0.34),
+    ),
+  );
 
   Widget _label(
     String label,
@@ -237,29 +249,28 @@ class PostCard extends StatelessWidget {
     Color foreground, {
     double maxWidth = 150,
     bool compact = false,
-  }) =>
-      Container(
-        constraints: BoxConstraints(maxWidth: maxWidth),
-        padding: EdgeInsets.symmetric(
-          horizontal: compact ? 6 : 8,
-          vertical: compact ? 2 : 3,
-        ),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text(
-          label,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(
-            color: foreground,
-            fontSize: compact ? 9.5 : 10,
-            fontWeight: FontWeight.w700,
-            height: 1.1,
-          ),
-        ),
-      );
+  }) => Container(
+    constraints: BoxConstraints(maxWidth: maxWidth),
+    padding: EdgeInsets.symmetric(
+      horizontal: compact ? 6 : 8,
+      vertical: compact ? 2 : 3,
+    ),
+    decoration: BoxDecoration(
+      color: color.withValues(alpha: 0.1),
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: Text(
+      label,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: TextStyle(
+        color: foreground,
+        fontSize: compact ? 9.5 : 10,
+        fontWeight: FontWeight.w700,
+        height: 1.1,
+      ),
+    ),
+  );
 
   Widget _avatar(BuildContext context, {double radius = 12}) {
     final avatar = post.authorAvatar;
@@ -292,16 +303,18 @@ class PostCard extends StatelessWidget {
           memCacheWidth: px,
           maxWidthDiskCache: px,
           filterQuality: FilterQuality.low,
-          placeholder: (_, __) => Icon(
-            Icons.person_rounded,
-            size: radius + 2,
-            color: Theme.of(context).colorScheme.onTertiaryContainer,
-          ),
-          errorWidget: (_, __, ___) => Icon(
-            Icons.person_rounded,
-            size: radius + 2,
-            color: Theme.of(context).colorScheme.onTertiaryContainer,
-          ),
+          placeholder:
+              (_, _) => Icon(
+                Icons.person_rounded,
+                size: radius + 2,
+                color: Theme.of(context).colorScheme.onTertiaryContainer,
+              ),
+          errorWidget:
+              (_, _, _) => Icon(
+                Icons.person_rounded,
+                size: radius + 2,
+                color: Theme.of(context).colorScheme.onTertiaryContainer,
+              ),
         ),
       ),
     );
@@ -312,26 +325,25 @@ class PostCard extends StatelessWidget {
     IconData icon,
     int value, {
     bool compact = false,
-  }) =>
-      Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            size: compact ? 12 : 13,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
-          const SizedBox(width: 2),
-          Text(
-            '$value',
-            style: TextStyle(
-              fontSize: compact ? 9.5 : 10,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-              height: 1.1,
-            ),
-          ),
-        ],
-      );
+  }) => Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Icon(
+        icon,
+        size: compact ? 12 : 13,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+      ),
+      const SizedBox(width: 2),
+      Text(
+        '$value',
+        style: TextStyle(
+          fontSize: compact ? 9.5 : 10,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+          height: 1.1,
+        ),
+      ),
+    ],
+  );
 
   static String _dateLabel(DateTime? date) {
     if (date == null) return '刚刚';

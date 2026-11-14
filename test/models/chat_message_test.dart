@@ -8,7 +8,8 @@ void main() {
       'conversationId': 3,
       'senderId': 7,
       'type': 'emoji',
-      'content': '{"itemId":185,"key":"TSQ","fileId":984,"url":"https://example.test/emoji.png"}',
+      'content':
+          '{"itemId":185,"key":"TSQ","fileId":984,"url":"https://example.test/emoji.png"}',
     });
 
     expect(message.emoji?.itemId, 185);

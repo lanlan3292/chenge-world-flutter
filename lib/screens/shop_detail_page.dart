@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/generated/app_localizations.dart';
@@ -81,9 +81,11 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
     try {
       await widget.api.buyShopItem(item.id, _quantity, token);
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).productPurchaseSuccess)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context).productPurchaseSuccess),
+        ),
+      );
       setState(() => _buying = false);
       Navigator.pop(context, true);
       routeClosed = true;
@@ -171,13 +173,25 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
               spacing: 16,
               runSpacing: 8,
               children: [
-                _stat(Icons.inventory_2_outlined, AppLocalizations.of(context).stockCount(item.stock)),
-                _stat(Icons.shopping_bag_outlined, AppLocalizations.of(context).soldCount(item.soldCount)),
+                _stat(
+                  Icons.inventory_2_outlined,
+                  AppLocalizations.of(context).stockCount(item.stock),
+                ),
+                _stat(
+                  Icons.shopping_bag_outlined,
+                  AppLocalizations.of(context).soldCount(item.soldCount),
+                ),
                 _stat(
                   Icons.star_outline_rounded,
-                  AppLocalizations.of(context).ratingReviews(item.rating.toStringAsFixed(1), item.ratingCount),
+                  AppLocalizations.of(context).ratingReviews(
+                    item.rating.toStringAsFixed(1),
+                    item.ratingCount,
+                  ),
                 ),
-                _stat(Icons.category_outlined, shopTypeLabel(context, item.type)),
+                _stat(
+                  Icons.category_outlined,
+                  shopTypeLabel(context, item.type),
+                ),
               ],
             ),
             if (_typeHint(item.type) != null) ...[
@@ -236,7 +250,10 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
               const SizedBox(height: 20),
               Text(
                 AppLocalizations.of(context).productDescription,
-                style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
               const SizedBox(height: 8),
               MarkdownBody(data: item.detail!, selectable: true),
@@ -246,7 +263,10 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
               const SizedBox(height: 20),
               Text(
                 AppLocalizations.of(context).purchasedContent,
-                style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
               const SizedBox(height: 8),
               SelectableText(
@@ -279,7 +299,9 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: Text(
-                  AppLocalizations.of(context).balanceCc(_balance!.toStringAsFixed(2)),
+                  AppLocalizations.of(
+                    context,
+                  ).balanceCc(_balance!.toStringAsFixed(2)),
                   style: const TextStyle(color: Color(0xFF70817D)),
                 ),
               ),
@@ -324,7 +346,11 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
                               ),
                             )
                             : const Icon(Icons.shopping_bag_outlined),
-                    label: Text(_buying ? AppLocalizations.of(context).buying : AppLocalizations.of(context).buy),
+                    label: Text(
+                      _buying
+                          ? AppLocalizations.of(context).buying
+                          : AppLocalizations.of(context).buy,
+                    ),
                   ),
                 ],
               ),
@@ -354,7 +380,10 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
         Icons.hourglass_top_rounded,
         l10n.productUnderReview,
       ),
-      ShopItem.statusRejected => (Icons.error_outline_rounded, l10n.productRejected),
+      ShopItem.statusRejected => (
+        Icons.error_outline_rounded,
+        l10n.productRejected,
+      ),
       _ => (Icons.visibility_off_outlined, l10n.productUnavailable),
     };
     final note = item.reviewNote?.trim() ?? '';
@@ -398,7 +427,9 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
         color: const Color(0xFFDDECE5),
         child: Center(
           child: Text(
-            item.title.isEmpty ? AppLocalizations.of(context).productInitial : item.title.characters.first,
+            item.title.isEmpty
+                ? AppLocalizations.of(context).productInitial
+                : item.title.characters.first,
             style: const TextStyle(
               fontSize: 64,
               fontWeight: FontWeight.w900,
@@ -413,11 +444,13 @@ class _ShopDetailPageState extends State<ShopDetailPage> {
       fit: BoxFit.cover,
       width: double.infinity,
       errorBuilder:
-          (_, __, ___) => Container(
+          (_, _, _) => Container(
             color: const Color(0xFFDDECE5),
             child: Center(
               child: Text(
-                item.title.isEmpty ? AppLocalizations.of(context).productInitial : item.title.characters.first,
+                item.title.isEmpty
+                    ? AppLocalizations.of(context).productInitial
+                    : item.title.characters.first,
                 style: const TextStyle(
                   fontSize: 64,
                   fontWeight: FontWeight.w900,

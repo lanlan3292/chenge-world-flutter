@@ -65,14 +65,23 @@ class BlogPost {
       categoryName: _nullableText(json['categoryName']),
       liked: _asBool(json['liked']),
       origin: _integer(json['origin']),
-      tags: tags is List ? tags.map((tag) => _text(tag)).where((tag) => tag.isNotEmpty).toList() : const [],
-      images: images is List
-          ? images.map((item) => _text(item)).where((item) => item.isNotEmpty).toList()
-          : const [],
+      tags:
+          tags is List
+              ? tags
+                  .map((tag) => _text(tag))
+                  .where((tag) => tag.isNotEmpty)
+                  .toList()
+              : const [],
+      images:
+          images is List
+              ? images
+                  .map((item) => _text(item))
+                  .where((item) => item.isNotEmpty)
+                  .toList()
+              : const [],
       media: _stringList(media),
     );
   }
-
 
   /// Image that represents this post in lists and detail headers.
   ///
@@ -160,7 +169,10 @@ class BlogPost {
 
   static List<String> _stringList(Object? value) {
     if (value is List) {
-      return value.map((item) => _text(item)).where((item) => item.isNotEmpty).toList();
+      return value
+          .map((item) => _text(item))
+          .where((item) => item.isNotEmpty)
+          .toList();
     }
     if (value is String && value.trim().isNotEmpty) {
       // Backend may store newline-joined media.
@@ -173,7 +185,8 @@ class BlogPost {
     return const [];
   }
 
-  static int _integer(Object? value) => value is num ? value.toInt() : int.tryParse('$value') ?? 0;
+  static int _integer(Object? value) =>
+      value is num ? value.toInt() : int.tryParse('$value') ?? 0;
 
   static String _text(Object? value, {String fallback = ''}) {
     final text = value?.toString().trim() ?? '';
@@ -185,10 +198,14 @@ class BlogPost {
     return text.isEmpty ? null : text;
   }
 
-  static String _plainText(String markdown) => markdown
-      .replaceAll(RegExp(r'!\[[^\]]*\]\([^)]*\)'), '')
-      .replaceAllMapped(RegExp(r'\[([^\]]+)\]\([^)]*\)'), (match) => match.group(1) ?? '')
-      .replaceAll(RegExp(r'[#>*_`~]'), '')
-      .replaceAll(RegExp(r'\s+'), ' ')
-      .trim();
+  static String _plainText(String markdown) =>
+      markdown
+          .replaceAll(RegExp(r'!\[[^\]]*\]\([^)]*\)'), '')
+          .replaceAllMapped(
+            RegExp(r'\[([^\]]+)\]\([^)]*\)'),
+            (match) => match.group(1) ?? '',
+          )
+          .replaceAll(RegExp(r'[#>*_`~]'), '')
+          .replaceAll(RegExp(r'\s+'), ' ')
+          .trim();
 }

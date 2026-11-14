@@ -41,7 +41,10 @@ class KnowledgeDoc {
     return '${local.year}-${local.month.toString().padLeft(2, '0')}-${local.day.toString().padLeft(2, '0')}';
   }
 
-  bool get isImage => fileType.toLowerCase() == 'png' || fileType.toLowerCase() == 'jpg' || fileType.toLowerCase() == 'jpeg';
+  bool get isImage =>
+      fileType.toLowerCase() == 'png' ||
+      fileType.toLowerCase() == 'jpg' ||
+      fileType.toLowerCase() == 'jpeg';
 
   /// 缩略图：优先资料内嵌图片，其次图片型资料本身。
   String? get thumbnail {
@@ -60,7 +63,11 @@ class KnowledgeDoc {
     if (type == 'pptx' || type == 'ppt') return 'pptx';
     if (type == 'pdf') return 'pdf';
     if (type == 'xlsx' || type == 'xls' || type == 'csv') return 'sheet';
-    if (type == 'png' || type == 'jpg' || type == 'jpeg' || type == 'gif' || type == 'webp') {
+    if (type == 'png' ||
+        type == 'jpg' ||
+        type == 'jpeg' ||
+        type == 'gif' ||
+        type == 'webp') {
       return 'image';
     }
     return 'doc';
@@ -76,7 +83,8 @@ class KnowledgeDoc {
     resourceKind: (json['resourceKind'] ?? '').toString(),
     status: (json['status'] ?? '').toString(),
     createdAt: _date(json['createdAt']),
-    createdBy: json['createdBy'] is num ? (json['createdBy'] as num).toInt() : null,
+    createdBy:
+        json['createdBy'] is num ? (json['createdBy'] as num).toInt() : null,
     errorMsg: (json['errorMsg'] ?? '').toString(),
     sourceImages: _sourceImageUrls(json['sourceImages']),
   );
@@ -118,6 +126,7 @@ List<dynamic> _decodeJsonArray(String raw) {
     return const [];
   }
 }
+
 /// 资料附带的图片：来源图 + 解析文档时抠出的图片。
 ///
 /// 后端 `GET /ai/knowledge/{docId}/images` 返回同一份列表，图片本身可能只存在
@@ -138,11 +147,11 @@ class KnowledgeDocImage {
   factory KnowledgeDocImage.fromJson(Map<String, dynamic> json) {
     final rawId = json['file_id'] ?? json['image_id'] ?? json['id'];
     return KnowledgeDocImage(
-      fileId: rawId is num
-          ? rawId.toInt()
-          : int.tryParse(rawId?.toString() ?? ''),
+      fileId:
+          rawId is num ? rawId.toInt() : int.tryParse(rawId?.toString() ?? ''),
       url: (json['url'] ?? json['src'] ?? '').toString().trim(),
-      caption: (json['caption'] ?? json['original_name'] ?? '').toString().trim(),
+      caption:
+          (json['caption'] ?? json['original_name'] ?? '').toString().trim(),
       description: (json['description'] ?? '').toString().trim(),
     );
   }
@@ -197,7 +206,12 @@ class GalleryIndex {
 }
 
 class GalleryPhoto {
-  const GalleryPhoto({required this.id, this.name = '', this.url = '', this.size = 0});
+  const GalleryPhoto({
+    required this.id,
+    this.name = '',
+    this.url = '',
+    this.size = 0,
+  });
 
   final int id;
   final String name;
@@ -230,14 +244,16 @@ class ExperienceRecord {
   final String pattern;
   final String rule;
 
-  factory ExperienceRecord.fromJson(Map<String, dynamic> json) => ExperienceRecord(
-    id: json['id'] is num ? (json['id'] as num).toInt() : 0,
-    scene: (json['scene'] ?? 'normal').toString(),
-    skill: (json['skill'] ?? '').toString(),
-    polarity: json['polarity'] is num ? (json['polarity'] as num).toInt() : 1,
-    pattern: (json['pattern'] ?? '').toString(),
-    rule: (json['rule'] ?? '').toString(),
-  );
+  factory ExperienceRecord.fromJson(Map<String, dynamic> json) =>
+      ExperienceRecord(
+        id: json['id'] is num ? (json['id'] as num).toInt() : 0,
+        scene: (json['scene'] ?? 'normal').toString(),
+        skill: (json['skill'] ?? '').toString(),
+        polarity:
+            json['polarity'] is num ? (json['polarity'] as num).toInt() : 1,
+        pattern: (json['pattern'] ?? '').toString(),
+        rule: (json['rule'] ?? '').toString(),
+      );
 }
 
 class ExperiencePage {

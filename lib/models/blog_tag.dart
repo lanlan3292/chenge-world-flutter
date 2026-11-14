@@ -1,9 +1,5 @@
 class BlogTag {
-  const BlogTag({
-    required this.id,
-    required this.name,
-    this.postCount = 0,
-  });
+  const BlogTag({required this.id, required this.name, this.postCount = 0});
 
   final int id;
   final String name;
@@ -13,7 +9,9 @@ class BlogTag {
     return BlogTag(
       id: _integer(json['id']),
       name: _text(json['name'] ?? json['tagName']),
-      postCount: _integer(json['postCount'] ?? json['count'] ?? json['useCount']),
+      postCount: _integer(
+        json['postCount'] ?? json['count'] ?? json['useCount'],
+      ),
     );
   }
 

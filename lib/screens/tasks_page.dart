@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../models/task_item.dart';
@@ -142,14 +142,20 @@ class _TasksPageState extends State<TasksPage> {
       children: [
         _summary(pending.length, completed.length),
         const SizedBox(height: 20),
-        _sectionHeader(AppLocalizations.of(context).tasksInProgress, pending.length),
+        _sectionHeader(
+          AppLocalizations.of(context).tasksInProgress,
+          pending.length,
+        ),
         if (pending.isEmpty)
           _emptySection(AppLocalizations.of(context).tasksNoInProgress)
         else
           ...pending.map(_taskCard),
         if (completed.isNotEmpty) ...[
           const SizedBox(height: 22),
-          _sectionHeader(AppLocalizations.of(context).tasksCompletedSection, completed.length),
+          _sectionHeader(
+            AppLocalizations.of(context).tasksCompletedSection,
+            completed.length,
+          ),
           ...completed.map(_taskCard),
         ],
         const SizedBox(height: 12),
@@ -299,8 +305,15 @@ class _TasksPageState extends State<TasksPage> {
                           ),
                         ),
                         if (task.claimable && !task.rewarded)
-                          _badge(AppLocalizations.of(context).taskClaimable, AppTheme.coral),
-                        if (task.rewarded) _badge(AppLocalizations.of(context).taskCompletedBadge, AppTheme.leaf),
+                          _badge(
+                            AppLocalizations.of(context).taskClaimable,
+                            AppTheme.coral,
+                          ),
+                        if (task.rewarded)
+                          _badge(
+                            AppLocalizations.of(context).taskCompletedBadge,
+                            AppTheme.leaf,
+                          ),
                       ],
                     ),
                     if (task.description?.isNotEmpty == true) ...[
@@ -343,7 +356,9 @@ class _TasksPageState extends State<TasksPage> {
                       if (task.type == 'checkin' && task.streak > 0) ...[
                         const SizedBox(height: 5),
                         Text(
-                          AppLocalizations.of(context).taskCheckinStreak(task.streak, task.totalDays),
+                          AppLocalizations.of(
+                            context,
+                          ).taskCheckinStreak(task.streak, task.totalDays),
                           style: const TextStyle(
                             fontSize: 11,
                             color: Color(0xFF70817D),
@@ -383,8 +398,12 @@ class _TasksPageState extends State<TasksPage> {
                                         )
                                         : Text(
                                           task.type == 'checkin'
-                                              ? AppLocalizations.of(context).checkIn
-                                              : AppLocalizations.of(context).claim,
+                                              ? AppLocalizations.of(
+                                                context,
+                                              ).checkIn
+                                              : AppLocalizations.of(
+                                                context,
+                                              ).claim,
                                         ),
                               )
                               : OutlinedButton(

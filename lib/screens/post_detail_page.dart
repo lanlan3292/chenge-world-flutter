@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../models/blog_comment.dart';
@@ -301,11 +301,14 @@ class _PostDetailPageState extends State<PostDetailPage> {
             const SizedBox(height: 12),
             if (post.displayCoverImage != null) ...[
               GestureDetector(
-                onTap: () => ImageViewerPage.openSingle(
-                  context,
-                  imageUrl: widget.api.resolveMediaUrl(post.displayCoverImage!),
-                  heroTag: 'post-cover-${post.id}',
-                ),
+                onTap:
+                    () => ImageViewerPage.openSingle(
+                      context,
+                      imageUrl: widget.api.resolveMediaUrl(
+                        post.displayCoverImage!,
+                      ),
+                      heroTag: 'post-cover-${post.id}',
+                    ),
                 child: Hero(
                   tag: 'post-cover-${post.id}',
                   child: ClipRRect(
@@ -316,14 +319,16 @@ class _PostDetailPageState extends State<PostDetailPage> {
                         widget.api.resolveMediaUrl(post.displayCoverImage!),
                         width: double.infinity,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => ColoredBox(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .surfaceContainerHighest,
-                          child: const Center(
-                            child: Icon(Icons.broken_image_outlined),
-                          ),
-                        ),
+                        errorBuilder:
+                            (_, _, _) => ColoredBox(
+                              color:
+                                  Theme.of(
+                                    context,
+                                  ).colorScheme.surfaceContainerHighest,
+                              child: const Center(
+                                child: Icon(Icons.broken_image_outlined),
+                              ),
+                            ),
                       ),
                     ),
                   ),
@@ -448,27 +453,6 @@ class _PostDetailPageState extends State<PostDetailPage> {
             MarkdownBody(
               data: post.content.isNotEmpty ? post.content : post.summary,
               selectable: true,
-              sizedImageBuilder: (image) {
-                final url = widget.api.resolveMediaUrl(image.uri.toString());
-                return GestureDetector(
-                  onTap: () => ImageViewerPage.openSingle(context, imageUrl: url),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        url,
-                        width: image.width,
-                        height: image.height,
-                        fit: BoxFit.contain,
-                        errorBuilder:
-                            (_, __, ___) =>
-                                const Icon(Icons.broken_image_outlined),
-                      ),
-                    ),
-                  ),
-                );
-              },
               styleSheet: MarkdownStyleSheet(
                 p: TextStyle(
                   fontSize: 16,
@@ -761,7 +745,6 @@ class _PostDetailPageState extends State<PostDetailPage> {
     ],
   );
 
-
   static final _imageExt = RegExp(
     r'\.(png|jpe?g|gif|webp|bmp|svg|avif)(\?.*)?$',
     caseSensitive: false,
@@ -807,9 +790,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
   Widget _biliTile(BuildContext context, String url) {
     final l10n = AppLocalizations.of(context);
     final bvid = _parseBvid(url);
-    final openUrl = bvid != null
-        ? 'https://www.bilibili.com/video/$bvid'
-        : url;
+    final openUrl = bvid != null ? 'https://www.bilibili.com/video/$bvid' : url;
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(

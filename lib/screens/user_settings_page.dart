@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../services/chenge_api.dart';
 
@@ -55,16 +55,24 @@ class _UserSettingsPageState extends State<UserSettingsPage> {
   }
 
   Map<String, dynamic> get _notify =>
-      _settings['notify'] is Map ? Map<String, dynamic>.from(_settings['notify'] as Map) : {};
+      _settings['notify'] is Map
+          ? Map<String, dynamic>.from(_settings['notify'] as Map)
+          : {};
 
   Map<String, dynamic> get _types =>
-      _notify['types'] is Map ? Map<String, dynamic>.from(_notify['types'] as Map) : {};
+      _notify['types'] is Map
+          ? Map<String, dynamic>.from(_notify['types'] as Map)
+          : {};
 
   Map<String, dynamic> get _dnd =>
-      _notify['dnd'] is Map ? Map<String, dynamic>.from(_notify['dnd'] as Map) : {};
+      _notify['dnd'] is Map
+          ? Map<String, dynamic>.from(_notify['dnd'] as Map)
+          : {};
 
   Map<String, dynamic> get _privacy =>
-      _settings['privacy'] is Map ? Map<String, dynamic>.from(_settings['privacy'] as Map) : {};
+      _settings['privacy'] is Map
+          ? Map<String, dynamic>.from(_settings['privacy'] as Map)
+          : {};
 
   Future<void> _save(Map<String, dynamic> next) async {
     final previous = _settings;
@@ -76,7 +84,9 @@ class _UserSettingsPageState extends State<UserSettingsPage> {
     } on ApiException catch (error) {
       if (!mounted) return;
       setState(() => _settings = previous);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.message)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error.message)));
     }
   }
 
@@ -91,67 +101,85 @@ class _UserSettingsPageState extends State<UserSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('用户设置', style: TextStyle(fontWeight: FontWeight.w800))),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
+      appBar: AppBar(
+        title: const Text(
+          '用户设置',
+          style: TextStyle(fontWeight: FontWeight.w800),
+        ),
+      ),
+      body:
+          _loading
+              ? const Center(child: CircularProgressIndicator())
+              : _error != null
               ? Center(child: Text(_error!))
               : ListView(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-                  children: [
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                children: [
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('站内通知'),
+                    subtitle: const Text('关闭后不再接收任何站内通知'),
+                    value: _notify['site'] != false,
+                    onChanged:
+                        (value) => _patchNotify({..._notify, 'site': value}),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 8, bottom: 4),
+                    child: Text(
+                      '通知类型',
+                      style: TextStyle(fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                  for (final entry in _typeLabels.entries)
                     SwitchListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: const Text('站内通知'),
-                      subtitle: const Text('关闭后不再接收任何站内通知'),
-                      value: _notify['site'] != false,
-                      onChanged: (value) => _patchNotify({..._notify, 'site': value}),
+                      title: Text(entry.value),
+                      value: _types[entry.key] != false,
+                      onChanged: (value) => _setType(entry.key, value),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 8, bottom: 4),
-                      child: Text('通知类型', style: TextStyle(fontWeight: FontWeight.w800)),
+                  const Divider(),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('免打扰'),
+                    subtitle: Text(
+                      '${_dnd['start'] ?? '23:00'} – ${_dnd['end'] ?? '07:00'}',
                     ),
-                    for (final entry in _typeLabels.entries)
-                      SwitchListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: Text(entry.value),
-                        value: _types[entry.key] != false,
-                        onChanged: (value) => _setType(entry.key, value),
-                      ),
-                    const Divider(),
-                    SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: const Text('免打扰'),
-                      subtitle: Text('${_dnd['start'] ?? '23:00'} – ${_dnd['end'] ?? '07:00'}'),
-                      value: _dnd['enabled'] == true,
-                      onChanged: (value) => _patchNotify({
-                        ..._notify,
-                        'dnd': {..._dnd, 'enabled': value},
-                      }),
+                    value: _dnd['enabled'] == true,
+                    onChanged:
+                        (value) => _patchNotify({
+                          ..._notify,
+                          'dnd': {..._dnd, 'enabled': value},
+                        }),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 12, bottom: 4),
+                    child: Text(
+                      '隐私',
+                      style: TextStyle(fontWeight: FontWeight.w800),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 12, bottom: 4),
-                      child: Text('隐私', style: TextStyle(fontWeight: FontWeight.w800)),
-                    ),
-                    SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: const Text('显示在线状态'),
-                      value: _privacy['onlineVisible'] != false,
-                      onChanged: (value) => _save({
-                        ..._settings,
-                        'privacy': {..._privacy, 'onlineVisible': value},
-                      }),
-                    ),
-                    SwitchListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: const Text('显示位置'),
-                      value: _privacy['locationVisible'] != false,
-                      onChanged: (value) => _save({
-                        ..._settings,
-                        'privacy': {..._privacy, 'locationVisible': value},
-                      }),
-                    ),
-                  ],
-                ),
+                  ),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('显示在线状态'),
+                    value: _privacy['onlineVisible'] != false,
+                    onChanged:
+                        (value) => _save({
+                          ..._settings,
+                          'privacy': {..._privacy, 'onlineVisible': value},
+                        }),
+                  ),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('显示位置'),
+                    value: _privacy['locationVisible'] != false,
+                    onChanged:
+                        (value) => _save({
+                          ..._settings,
+                          'privacy': {..._privacy, 'locationVisible': value},
+                        }),
+                  ),
+                ],
+              ),
     );
   }
 }

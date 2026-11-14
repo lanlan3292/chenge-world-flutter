@@ -23,14 +23,14 @@ class ChatChannel {
   bool get isAnnouncement => type == 'announcement';
 
   factory ChatChannel.fromJson(Map<String, dynamic> json) => ChatChannel(
-        id: _integer(json['id']),
-        name: _text(json['name'], fallback: '频道'),
-        type: _text(json['type'], fallback: 'text'),
-        topic: _text(json['topic']),
-        position: _integer(json['position']),
-        unread: _integer(json['unread']),
-        canSend: _asBool(json['canSend']),
-      );
+    id: _integer(json['id']),
+    name: _text(json['name'], fallback: '频道'),
+    type: _text(json['type'], fallback: 'text'),
+    topic: _text(json['topic']),
+    position: _integer(json['position']),
+    unread: _integer(json['unread']),
+    canSend: _asBool(json['canSend']),
+  );
 
   /// 从群总览响应中解析可见频道列表。
   static List<ChatChannel> listFromOverview(Map<String, dynamic> overview) {

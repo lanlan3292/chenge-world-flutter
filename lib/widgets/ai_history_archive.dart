@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// AI 输出的 ```history fenced JSON（史官档案），按 web HistoryArchive 的结构精简渲染。
 class AiHistoryArchive {
@@ -50,7 +50,9 @@ class AiHistoryArchive {
     }
     if (decoded is! Map) throw const FormatException('内容必须为 JSON 对象');
     final version = (decoded['schema_version'] ?? '').toString();
-    if (version != '1.0') throw const FormatException('schema_version 必须为字符串 "1.0"');
+    if (version != '1.0') {
+      throw const FormatException('schema_version 必须为字符串 "1.0"');
+    }
     List<Map<String, dynamic>> maps(String key) =>
         (decoded[key] is List ? decoded[key] as List : const [])
             .whereType<Map<String, dynamic>>()
@@ -66,9 +68,10 @@ class AiHistoryArchive {
       evidence: maps('evidence').map(AiEvidence.fromJson).toList(),
       disputes: maps('disputes').map(AiHistoryDispute.fromJson).toList(),
       openQuestions: [
-        for (final item in (decoded['open_questions'] is List
-            ? decoded['open_questions'] as List
-            : const []))
+        for (final item
+            in (decoded['open_questions'] is List
+                ? decoded['open_questions'] as List
+                : const []))
           if (item != null) item.toString(),
       ],
     );
@@ -92,17 +95,23 @@ class AiHistoryEntity {
   final List<String> aliases;
   final List<AiHistoryFact> facts;
 
-  factory AiHistoryEntity.fromJson(Map<String, dynamic> json) => AiHistoryEntity(
-    id: (json['id'] ?? '').toString(),
-    name: (json['name'] ?? '').toString(),
-    type: (json['type'] ?? '').toString(),
-    summary: (json['summary'] ?? '').toString(),
-    aliases: [for (final alias in (json['aliases'] is List ? json['aliases'] as List : const [])) alias.toString()],
-    facts: (json['facts'] is List ? json['facts'] as List : const [])
-        .whereType<Map<String, dynamic>>()
-        .map(AiHistoryFact.fromJson)
-        .toList(),
-  );
+  factory AiHistoryEntity.fromJson(Map<String, dynamic> json) =>
+      AiHistoryEntity(
+        id: (json['id'] ?? '').toString(),
+        name: (json['name'] ?? '').toString(),
+        type: (json['type'] ?? '').toString(),
+        summary: (json['summary'] ?? '').toString(),
+        aliases: [
+          for (final alias
+              in (json['aliases'] is List ? json['aliases'] as List : const []))
+            alias.toString(),
+        ],
+        facts:
+            (json['facts'] is List ? json['facts'] as List : const [])
+                .whereType<Map<String, dynamic>>()
+                .map(AiHistoryFact.fromJson)
+                .toList(),
+      );
 }
 
 class AiHistoryFact {
@@ -165,21 +174,31 @@ class AiHistoryEvent {
 }
 
 class AiHistoryRelation {
-  const AiHistoryRelation({this.label = '', this.type = '', this.description = ''});
+  const AiHistoryRelation({
+    this.label = '',
+    this.type = '',
+    this.description = '',
+  });
 
   final String label;
   final String type;
   final String description;
 
-  factory AiHistoryRelation.fromJson(Map<String, dynamic> json) => AiHistoryRelation(
-    label: (json['label'] ?? '').toString(),
-    type: (json['type'] ?? '').toString(),
-    description: (json['description'] ?? '').toString(),
-  );
+  factory AiHistoryRelation.fromJson(Map<String, dynamic> json) =>
+      AiHistoryRelation(
+        label: (json['label'] ?? '').toString(),
+        type: (json['type'] ?? '').toString(),
+        description: (json['description'] ?? '').toString(),
+      );
 }
 
 class AiEvidence {
-  const AiEvidence({this.title = '', this.quote = '', this.sourceType = '', this.locator = ''});
+  const AiEvidence({
+    this.title = '',
+    this.quote = '',
+    this.sourceType = '',
+    this.locator = '',
+  });
 
   final String title;
   final String quote;
@@ -195,20 +214,26 @@ class AiEvidence {
 }
 
 class AiHistoryDispute {
-  const AiHistoryDispute({this.title = '', this.claims = const [], this.resolution = ''});
+  const AiHistoryDispute({
+    this.title = '',
+    this.claims = const [],
+    this.resolution = '',
+  });
 
   final String title;
   final List<String> claims;
   final String resolution;
 
-  factory AiHistoryDispute.fromJson(Map<String, dynamic> json) => AiHistoryDispute(
-    title: (json['title'] ?? '').toString(),
-    claims: [
-      for (final claim in (json['claims'] is List ? json['claims'] as List : const []))
-        if (claim is Map && claim['text'] != null) claim['text'].toString(),
-    ],
-    resolution: (json['resolution'] ?? '').toString(),
-  );
+  factory AiHistoryDispute.fromJson(Map<String, dynamic> json) =>
+      AiHistoryDispute(
+        title: (json['title'] ?? '').toString(),
+        claims: [
+          for (final claim
+              in (json['claims'] is List ? json['claims'] as List : const []))
+            if (claim is Map && claim['text'] != null) claim['text'].toString(),
+        ],
+        resolution: (json['resolution'] ?? '').toString(),
+      );
 }
 
 /// 史官档案卡片。
@@ -280,7 +305,11 @@ class _AiHistoryCardState extends State<AiHistoryCard> {
               Expanded(
                 child: Text(
                   '${data.resultLabel} · 史料考证',
-                  style: const TextStyle(fontSize: 11, color: Color(0xFF7A6A4F), fontWeight: FontWeight.w700),
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: Color(0xFF7A6A4F),
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
               TextButton(
@@ -295,7 +324,10 @@ class _AiHistoryCardState extends State<AiHistoryCard> {
           ),
           if (data.summary.isNotEmpty) ...[
             const SizedBox(height: 6),
-            Text(data.summary, style: const TextStyle(fontSize: 13, height: 1.55)),
+            Text(
+              data.summary,
+              style: const TextStyle(fontSize: 13, height: 1.55),
+            ),
           ],
           const SizedBox(height: 8),
           Wrap(
@@ -305,7 +337,8 @@ class _AiHistoryCardState extends State<AiHistoryCard> {
               _pill('${data.entities.length} 个对象'),
               _pill('${data.events.length} 件事迹'),
               _pill('${data.evidence.length} 份引证'),
-              if (data.disputes.isNotEmpty) _pill('${data.disputes.length} 项分歧'),
+              if (data.disputes.isNotEmpty)
+                _pill('${data.disputes.length} 项分歧'),
             ],
           ),
           if (_showSource)
@@ -336,9 +369,11 @@ class _AiHistoryCardState extends State<AiHistoryCard> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 4),
                   child: Text(
-                    [relation.label, relation.type, relation.description]
-                        .where((part) => part.isNotEmpty)
-                        .join(' · '),
+                    [
+                      relation.label,
+                      relation.type,
+                      relation.description,
+                    ].where((part) => part.isNotEmpty).join(' · '),
                     style: const TextStyle(fontSize: 12.5, height: 1.45),
                   ),
                 ),
@@ -352,13 +387,25 @@ class _AiHistoryCardState extends State<AiHistoryCard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(dispute.title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5)),
+                      Text(
+                        dispute.title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 12.5,
+                        ),
+                      ),
                       for (final claim in dispute.claims)
-                        Text('· $claim', style: const TextStyle(fontSize: 12, height: 1.45)),
+                        Text(
+                          '· $claim',
+                          style: const TextStyle(fontSize: 12, height: 1.45),
+                        ),
                       if (dispute.resolution.isNotEmpty)
                         Text(
                           dispute.resolution,
-                          style: const TextStyle(fontSize: 12, color: Color(0xFF6B5A3E)),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Color(0xFF6B5A3E),
+                          ),
                         ),
                     ],
                   ),
@@ -368,7 +415,10 @@ class _AiHistoryCardState extends State<AiHistoryCard> {
               const SizedBox(height: 10),
               _section('待考问题'),
               for (final question in data.openQuestions)
-                Text('· $question', style: const TextStyle(fontSize: 12, height: 1.45)),
+                Text(
+                  '· $question',
+                  style: const TextStyle(fontSize: 12, height: 1.45),
+                ),
             ],
             if (data.evidence.isNotEmpty) ...[
               const SizedBox(height: 10),
@@ -380,13 +430,22 @@ class _AiHistoryCardState extends State<AiHistoryCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        evidence.title.isEmpty ? evidence.sourceType : evidence.title,
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                        evidence.title.isEmpty
+                            ? evidence.sourceType
+                            : evidence.title,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                       if (evidence.quote.isNotEmpty)
                         Text(
                           '“${evidence.quote}”',
-                          style: const TextStyle(fontSize: 12, height: 1.45, color: Color(0xFF4A4030)),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            height: 1.45,
+                            color: Color(0xFF4A4030),
+                          ),
                         ),
                     ],
                   ),
@@ -400,7 +459,10 @@ class _AiHistoryCardState extends State<AiHistoryCard> {
 
   Widget _section(String title) => Padding(
     padding: const EdgeInsets.only(bottom: 6),
-    child: Text(title, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
+    child: Text(
+      title,
+      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800),
+    ),
   );
 
   Widget _pill(String text) => Container(
@@ -409,7 +471,10 @@ class _AiHistoryCardState extends State<AiHistoryCard> {
       color: const Color(0xFFE7E0CB),
       borderRadius: BorderRadius.circular(7),
     ),
-    child: Text(text, style: const TextStyle(fontSize: 10.5, color: Color(0xFF5C4C34))),
+    child: Text(
+      text,
+      style: const TextStyle(fontSize: 10.5, color: Color(0xFF5C4C34)),
+    ),
   );
 
   Widget _eventTile(AiHistoryEvent event) => Container(
@@ -427,7 +492,10 @@ class _AiHistoryCardState extends State<AiHistoryCard> {
             Expanded(
               child: Text(
                 event.title,
-                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12.5,
+                ),
               ),
             ),
             Text(
@@ -437,9 +505,15 @@ class _AiHistoryCardState extends State<AiHistoryCard> {
           ],
         ),
         if (event.timeText.isNotEmpty)
-          Text(event.timeText, style: const TextStyle(fontSize: 11, color: Color(0xFF7A6A4F))),
+          Text(
+            event.timeText,
+            style: const TextStyle(fontSize: 11, color: Color(0xFF7A6A4F)),
+          ),
         if (event.description.isNotEmpty)
-          Text(event.description, style: const TextStyle(fontSize: 12, height: 1.45)),
+          Text(
+            event.description,
+            style: const TextStyle(fontSize: 12, height: 1.45),
+          ),
         if (event.reasoning.isNotEmpty)
           Text(
             '推断依据：${event.reasoning}',
@@ -455,7 +529,10 @@ class _AiHistoryCardState extends State<AiHistoryCard> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          [entity.name, entity.type].where((part) => part.isNotEmpty).join(' · '),
+          [
+            entity.name,
+            entity.type,
+          ].where((part) => part.isNotEmpty).join(' · '),
           style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5),
         ),
         if (entity.aliases.isNotEmpty)
@@ -464,7 +541,10 @@ class _AiHistoryCardState extends State<AiHistoryCard> {
             style: const TextStyle(fontSize: 11.5, color: Color(0xFF7A6A4F)),
           ),
         if (entity.summary.isNotEmpty)
-          Text(entity.summary, style: const TextStyle(fontSize: 12, height: 1.45)),
+          Text(
+            entity.summary,
+            style: const TextStyle(fontSize: 12, height: 1.45),
+          ),
         for (final fact in entity.facts)
           Text(
             '${fact.label}：${fact.value}',

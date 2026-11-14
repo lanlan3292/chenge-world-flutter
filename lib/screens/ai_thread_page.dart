@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../l10n/generated/app_localizations.dart';
@@ -118,7 +118,10 @@ class _AiThreadPageState extends State<AiThreadPage> {
   Future<void> _loadHistory() async {
     setState(() => _contentReady = false);
     try {
-      final history = await widget.api.aiChatHistory(_session.sessionId, widget.token);
+      final history = await widget.api.aiChatHistory(
+        _session.sessionId,
+        widget.token,
+      );
       if (!mounted) return;
       final bubbles = history.map(AiChatBubble.fromHistory).toList();
       // 历史消息没有 messageKey 时补一个稳定键，点赞点踩仍可用。
@@ -141,7 +144,12 @@ class _AiThreadPageState extends State<AiThreadPage> {
         setState(() => _contentReady = true);
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
-          ..showSnackBar(SnackBar(content: Text(error.message), backgroundColor: AppTheme.coral));
+          ..showSnackBar(
+            SnackBar(
+              content: Text(error.message),
+              backgroundColor: AppTheme.coral,
+            ),
+          );
       }
     }
   }
@@ -188,135 +196,145 @@ class _AiThreadPageState extends State<AiThreadPage> {
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      builder: (sheetContext) => StatefulBuilder(
-        builder: (sheetContext, setSheetState) {
-          void update(VoidCallback change) {
-            setSheetState(change);
-            setState(change);
-          }
+      builder:
+          (sheetContext) => StatefulBuilder(
+            builder: (sheetContext, setSheetState) {
+              void update(VoidCallback change) {
+                setSheetState(change);
+                setState(change);
+              }
 
-          return SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(18, 4, 18, 18),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.aiDrawing,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    l10n.aiDrawModel,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF70817D),
-                    ),
-                  ),
-                  if (_drawModelsLoading)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      child: Center(child: CircularProgressIndicator()),
-                    )
-                  else if (_drawModels.isEmpty)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      child: Text(
-                        l10n.aiDrawNoModels,
-                        style: const TextStyle(color: Color(0xFF70817D)),
+              return SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(18, 4, 18, 18),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.aiDrawing,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
-                    )
-                  else
-                    RadioGroup<String>(
-                      groupValue: _drawModel?.task ?? '',
-                      onChanged: (value) {
-                        update(() {
-                          _drawModel = value == null || value.isEmpty
-                              ? null
-                              : _drawModels.firstWhere(
-                                  (model) => model.task == value,
-                                  orElse: () => _drawModels.first,
-                                );
-                        });
-                      },
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
+                      const SizedBox(height: 6),
+                      Text(
+                        l10n.aiDrawModel,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF70817D),
+                        ),
+                      ),
+                      if (_drawModelsLoading)
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16),
+                          child: Center(child: CircularProgressIndicator()),
+                        )
+                      else if (_drawModels.isEmpty)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          child: Text(
+                            l10n.aiDrawNoModels,
+                            style: const TextStyle(color: Color(0xFF70817D)),
+                          ),
+                        )
+                      else
+                        RadioGroup<String>(
+                          groupValue: _drawModel?.task ?? '',
+                          onChanged: (value) {
+                            update(() {
+                              _drawModel =
+                                  value == null || value.isEmpty
+                                      ? null
+                                      : _drawModels.firstWhere(
+                                        (model) => model.task == value,
+                                        orElse: () => _drawModels.first,
+                                      );
+                            });
+                          },
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              for (final model in _drawModels)
+                                RadioListTile<String>(
+                                  contentPadding: EdgeInsets.zero,
+                                  dense: true,
+                                  value: model.task,
+                                  title: Text(model.title),
+                                ),
+                            ],
+                          ),
+                        ),
+                      const SizedBox(height: 8),
+                      Text(
+                        l10n.aiDrawAspect,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF70817D),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Wrap(
+                        spacing: 8,
                         children: [
-                          for (final model in _drawModels)
-                            RadioListTile<String>(
-                              contentPadding: EdgeInsets.zero,
-                              dense: true,
-                              value: model.task,
-                              title: Text(model.title),
+                          for (final aspect in const [
+                            '1:1',
+                            '3:4',
+                            '4:3',
+                            '9:16',
+                            '16:9',
+                          ])
+                            ChoiceChip(
+                              label: Text(aspect),
+                              selected: _drawAspect == aspect,
+                              onSelected:
+                                  (_) => update(() => _drawAspect = aspect),
                             ),
                         ],
                       ),
-                    ),
-                  const SizedBox(height: 8),
-                  Text(
-                    l10n.aiDrawAspect,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF70817D),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Wrap(
-                    spacing: 8,
-                    children: [
-                      for (final aspect in const ['1:1', '3:4', '4:3', '9:16', '16:9'])
-                        ChoiceChip(
-                          label: Text(aspect),
-                          selected: _drawAspect == aspect,
-                          onSelected: (_) => update(() => _drawAspect = aspect),
+                      const SizedBox(height: 12),
+                      Text(
+                        l10n.aiDrawQuality,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF70817D),
                         ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    l10n.aiDrawQuality,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF70817D),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Wrap(
-                    spacing: 8,
-                    children: [
-                      for (final quality in const ['standard', 'high'])
-                        ChoiceChip(
-                          label: Text(quality),
-                          selected: _drawQuality == quality,
-                          onSelected: (_) => update(() => _drawQuality = quality),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 14),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () => update(() => _drawModel = null),
-                          child: Text(l10n.close),
-                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Wrap(
+                        spacing: 8,
+                        children: [
+                          for (final quality in const ['standard', 'high'])
+                            ChoiceChip(
+                              label: Text(quality),
+                              selected: _drawQuality == quality,
+                              onSelected:
+                                  (_) => update(() => _drawQuality = quality),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 14),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () => update(() => _drawModel = null),
+                              child: Text(l10n.close),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
+                ),
+              );
+            },
+          ),
     );
   }
 
@@ -351,7 +369,10 @@ class _AiThreadPageState extends State<AiThreadPage> {
       if (node is String) {
         final url = node.trim();
         if (url.startsWith('http') &&
-            (RegExp(r'\.(png|jpe?g|webp|gif)(\?|$)', caseSensitive: false).hasMatch(url) ||
+            (RegExp(
+                  r'\.(png|jpe?g|webp|gif)(\?|$)',
+                  caseSensitive: false,
+                ).hasMatch(url) ||
                 url.contains('/image/') ||
                 url.contains('/file/'))) {
           urls.add(url);
@@ -365,7 +386,14 @@ class _AiThreadPageState extends State<AiThreadPage> {
         return;
       }
       if (node is Map) {
-        for (final entry in const ['url', 'file_url', 'fileUrl', 'image', 'images', 'src']) {
+        for (final entry in const [
+          'url',
+          'file_url',
+          'fileUrl',
+          'image',
+          'images',
+          'src',
+        ]) {
           if (!node.containsKey(entry)) continue;
           final value = node[entry];
           if (value is String && value.startsWith('http')) {
@@ -387,7 +415,9 @@ class _AiThreadPageState extends State<AiThreadPage> {
   void _showError(String message) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(message), backgroundColor: AppTheme.coral));
+      ..showSnackBar(
+        SnackBar(content: Text(message), backgroundColor: AppTheme.coral),
+      );
   }
 
   Future<void> _send() async {
@@ -410,13 +440,14 @@ class _AiThreadPageState extends State<AiThreadPage> {
       messageKey: '${_session.sessionId}-a-$turnId',
     );
 
-    final draw = _historian || _drawModel == null
-        ? null
-        : <String, dynamic>{
-            'task': _drawModel!.task,
-            'aspect': _drawAspect,
-            'quality': _drawQuality,
-          };
+    final draw =
+        _historian || _drawModel == null
+            ? null
+            : <String, dynamic>{
+              'task': _drawModel!.task,
+              'aspect': _drawAspect,
+              'quality': _drawQuality,
+            };
 
     setState(() {
       _sending = true;
@@ -442,25 +473,35 @@ class _AiThreadPageState extends State<AiThreadPage> {
         final data = event.data;
 
         if (type == 'error') {
-          final message = data is Map
-              ? (data['message'] ?? data['msg'] ?? AppLocalizations.of(context).aiRequestFailed).toString()
-              : '$data';
+          final message =
+              data is Map
+                  ? (data['message'] ??
+                          data['msg'] ??
+                          AppLocalizations.of(context).aiRequestFailed)
+                      .toString()
+                  : '$data';
           setState(() {
             assistantBubble
               ..streaming = false
               ..status = null
-              ..content = assistantBubble.content.isEmpty ? message : assistantBubble.content;
+              ..content =
+                  assistantBubble.content.isEmpty
+                      ? message
+                      : assistantBubble.content;
           });
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
-            ..showSnackBar(SnackBar(content: Text(message), backgroundColor: AppTheme.coral));
+            ..showSnackBar(
+              SnackBar(content: Text(message), backgroundColor: AppTheme.coral),
+            );
           break;
         }
 
         if (type == 'status') {
-          final status = data is Map
-              ? '${data['message'] ?? data['status'] ?? data['text'] ?? ''}'
-              : '$data';
+          final status =
+              data is Map
+                  ? '${data['message'] ?? data['status'] ?? data['text'] ?? ''}'
+                  : '$data';
           if (status.isNotEmpty) {
             setState(() => assistantBubble.status = status);
           }
@@ -489,13 +530,19 @@ class _AiThreadPageState extends State<AiThreadPage> {
               assistantBubble.content = finalText;
             }
             if (assistantBubble.content.isEmpty) {
-              assistantBubble.content = AppLocalizations.of(context).noTextReply;
+              assistantBubble.content =
+                  AppLocalizations.of(context).noTextReply;
             }
           });
-          if (_session.name == AppLocalizations.of(context).newConversation || _session.name.isEmpty) {
+          if (_session.name == AppLocalizations.of(context).newConversation ||
+              _session.name.isEmpty) {
             final title = text.length > 18 ? '${text.substring(0, 18)}…' : text;
             try {
-              await widget.api.renameAiSession(_session.sessionId, title, widget.token);
+              await widget.api.renameAiSession(
+                _session.sessionId,
+                title,
+                widget.token,
+              );
               if (mounted) {
                 final updated = AiSession(
                   id: _session.id,
@@ -528,22 +575,25 @@ class _AiThreadPageState extends State<AiThreadPage> {
             if (_stickToBottom) _scrollToBottom(animate: true);
           }
           setState(
-            () => assistantBubble.status = AppLocalizations.of(
-              context,
-            ).receivedType(type),
+            () =>
+                assistantBubble.status = AppLocalizations.of(
+                  context,
+                ).receivedType(type),
           );
           continue;
         }
 
         if (type == 'pending') {
-          final ops = data is Map && data['ops'] is List
-              ? (data['ops'] as List)
-                    .whereType<Map<String, dynamic>>()
-                    .map(AiPendingOp.fromJson)
-                    .toList()
-              : const <AiPendingOp>[];
+          final ops =
+              data is Map && data['ops'] is List
+                  ? (data['ops'] as List)
+                      .whereType<Map<String, dynamic>>()
+                      .map(AiPendingOp.fromJson)
+                      .toList()
+                  : const <AiPendingOp>[];
           setState(() {
-            assistantBubble.status = AppLocalizations.of(context).waitingConfirm;
+            assistantBubble.status =
+                AppLocalizations.of(context).waitingConfirm;
             if (ops.isNotEmpty) _pendingOps = ops;
           });
           continue;
@@ -554,7 +604,8 @@ class _AiThreadPageState extends State<AiThreadPage> {
             final interaction = AiInteraction.fromJson(data);
             setState(() {
               _interaction = interaction;
-              assistantBubble.status = AppLocalizations.of(context).aiTasksReady;
+              assistantBubble.status =
+                  AppLocalizations.of(context).aiTasksReady;
             });
             if (_stickToBottom) _scrollToBottom(animate: true);
           }
@@ -565,7 +616,9 @@ class _AiThreadPageState extends State<AiThreadPage> {
           final id = data is Map ? (data['id'] ?? '').toString() : '';
           final status = data is Map ? (data['status'] ?? '').toString() : '';
           final current = _interaction;
-          if (current != null && (id.isEmpty || current.id == id) && status.isNotEmpty) {
+          if (current != null &&
+              (id.isEmpty || current.id == id) &&
+              status.isNotEmpty) {
             setState(() => _interaction = current.copyWith(status: status));
           }
           continue;
@@ -575,9 +628,10 @@ class _AiThreadPageState extends State<AiThreadPage> {
           final message = data is Map ? (data['message'] ?? '').toString() : '';
           setState(() {
             if (message.isNotEmpty) assistantBubble.content = message;
-            assistantBubble.status = type == 'archive_preview'
-                ? AppLocalizations.of(context).aiArchivePreview
-                : AppLocalizations.of(context).aiArchiveSaving;
+            assistantBubble.status =
+                type == 'archive_preview'
+                    ? AppLocalizations.of(context).aiArchivePreview
+                    : AppLocalizations.of(context).aiArchiveSaving;
           });
           if (_stickToBottom) _scrollToBottom(animate: true);
           continue;
@@ -589,18 +643,27 @@ class _AiThreadPageState extends State<AiThreadPage> {
           assistantBubble
             ..streaming = false
             ..status = null
-            ..content = assistantBubble.content.isEmpty ? error.message : assistantBubble.content;
+            ..content =
+                assistantBubble.content.isEmpty
+                    ? error.message
+                    : assistantBubble.content;
         });
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
-          ..showSnackBar(SnackBar(content: Text(error.message), backgroundColor: AppTheme.coral));
+          ..showSnackBar(
+            SnackBar(
+              content: Text(error.message),
+              backgroundColor: AppTheme.coral,
+            ),
+          );
       }
     } finally {
       if (mounted) {
         setState(() {
           _sending = false;
           assistantBubble.streaming = false;
-          if (assistantBubble.content.isEmpty && assistantBubble.status != null) {
+          if (assistantBubble.content.isEmpty &&
+              assistantBubble.status != null) {
             assistantBubble.content = assistantBubble.status!;
             assistantBubble.status = null;
           }
@@ -612,7 +675,8 @@ class _AiThreadPageState extends State<AiThreadPage> {
 
   String _extractDelta(dynamic data) {
     if (data is Map) {
-      final delta = data['delta'] ?? data['content'] ?? data['text'] ?? data['message'];
+      final delta =
+          data['delta'] ?? data['content'] ?? data['text'] ?? data['message'];
       return delta?.toString() ?? '';
     }
     return data?.toString() ?? '';
@@ -620,7 +684,8 @@ class _AiThreadPageState extends State<AiThreadPage> {
 
   String _extractFinal(dynamic data) {
     if (data is Map) {
-      final text = data['content'] ?? data['text'] ?? data['message'] ?? data['answer'];
+      final text =
+          data['content'] ?? data['text'] ?? data['message'] ?? data['answer'];
       return text?.toString() ?? '';
     }
     return data?.toString() ?? '';
@@ -664,13 +729,14 @@ class _AiThreadPageState extends State<AiThreadPage> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: widget.showBackButton,
-        leading: widget.showBackButton
-            ? IconButton(
-                tooltip: AppLocalizations.of(context).backToSessionList,
-                onPressed: () => Navigator.of(context).pop(false),
-                icon: const Icon(Icons.arrow_back_rounded),
-              )
-            : null,
+        leading:
+            widget.showBackButton
+                ? IconButton(
+                  tooltip: AppLocalizations.of(context).backToSessionList,
+                  onPressed: () => Navigator.of(context).pop(false),
+                  icon: const Icon(Icons.arrow_back_rounded),
+                )
+                : null,
         title: Text(
           _session.name,
           maxLines: 1,
@@ -681,24 +747,26 @@ class _AiThreadPageState extends State<AiThreadPage> {
           if (!_historian)
             IconButton(
               tooltip: AppLocalizations.of(context).aiWebSearch,
-            onPressed:
-                _sending ? null : () => setState(() => _webSearch = !_webSearch),
-            color: _webSearch ? AppTheme.leaf : null,
-            icon: Icon(
-              _webSearch
-                  ? Icons.travel_explore_rounded
-                  : Icons.travel_explore_outlined,
+              onPressed:
+                  _sending
+                      ? null
+                      : () => setState(() => _webSearch = !_webSearch),
+              color: _webSearch ? AppTheme.leaf : null,
+              icon: Icon(
+                _webSearch
+                    ? Icons.travel_explore_rounded
+                    : Icons.travel_explore_outlined,
+              ),
             ),
-          ),
           if (!_historian)
             IconButton(
               tooltip: AppLocalizations.of(context).aiDrawing,
-            onPressed: _sending ? null : _openDrawSettings,
-            color: _drawModel == null ? null : AppTheme.leaf,
-            icon: Icon(
-              _drawModel == null ? Icons.image_outlined : Icons.image_rounded,
+              onPressed: _sending ? null : _openDrawSettings,
+              color: _drawModel == null ? null : AppTheme.leaf,
+              icon: Icon(
+                _drawModel == null ? Icons.image_outlined : Icons.image_rounded,
+              ),
             ),
-          ),
         ],
       ),
       body: Column(
@@ -722,7 +790,10 @@ class _AiThreadPageState extends State<AiThreadPage> {
                   )
                 else if (_messages.isEmpty)
                   Center(
-                    child: Text(AppLocalizations.of(context).sendMessageToStart, style: const TextStyle(color: Color(0xFF70817D))),
+                    child: Text(
+                      AppLocalizations.of(context).sendMessageToStart,
+                      style: const TextStyle(color: Color(0xFF70817D)),
+                    ),
                   ),
               ],
             ),
@@ -735,7 +806,9 @@ class _AiThreadPageState extends State<AiThreadPage> {
 
   /// 去掉史官模式的内部前缀/尾注，避免污染展示。
   String _displayContent(String content) {
-    var text = content.replaceAll('__GENERAL_LIBRARY_QA__', '').replaceAll('【AI史官】', '');
+    var text = content
+        .replaceAll('__GENERAL_LIBRARY_QA__', '')
+        .replaceAll('【AI史官】', '');
     const tail = '请依据站内史料查证、对照并整理带证据的 history 档案。';
     final trimmed = text.trimRight();
     if (trimmed.endsWith(tail)) {
@@ -747,7 +820,10 @@ class _AiThreadPageState extends State<AiThreadPage> {
   Future<void> _pickAttachment() async {
     if (_sending) return;
     try {
-      final files = await _picker.pickMultiImage(imageQuality: 82, maxWidth: 1600);
+      final files = await _picker.pickMultiImage(
+        imageQuality: 82,
+        maxWidth: 1600,
+      );
       if (files.isEmpty) return;
       final picked = <_AiAttachment>[];
       for (final file in files.take(4 - _attachments.length)) {
@@ -780,7 +856,10 @@ class _AiThreadPageState extends State<AiThreadPage> {
     if (_skillsLoading) return;
     setState(() => _skillsLoading = true);
     try {
-      final skills = await widget.api.aiSkills(_session.sessionId, widget.token);
+      final skills = await widget.api.aiSkills(
+        _session.sessionId,
+        widget.token,
+      );
       if (!mounted) return;
       setState(() => _skills = skills);
     } on ApiException catch (error) {
@@ -808,13 +887,19 @@ class _AiThreadPageState extends State<AiThreadPage> {
                     children: [
                       Text(
                         l10n.aiSkillsTitle,
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
                       const SizedBox(height: 6),
                       if (_skills.isEmpty)
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 20),
-                          child: Text(l10n.aiSkillsEmpty, style: const TextStyle(color: Color(0xFF70817D))),
+                          child: Text(
+                            l10n.aiSkillsEmpty,
+                            style: const TextStyle(color: Color(0xFF70817D)),
+                          ),
                         )
                       else
                         ConstrainedBox(
@@ -834,53 +919,74 @@ class _AiThreadPageState extends State<AiThreadPage> {
                                       if (skill.isPurchased) ...[
                                         const SizedBox(width: 6),
                                         Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 5,
+                                            vertical: 1,
+                                          ),
                                           decoration: BoxDecoration(
-                                            color: AppTheme.leaf.withValues(alpha: 0.12),
-                                            borderRadius: BorderRadius.circular(4),
+                                            color: AppTheme.leaf.withValues(
+                                              alpha: 0.12,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              4,
+                                            ),
                                           ),
                                           child: Text(
                                             l10n.aiSkillPurchased,
-                                            style: const TextStyle(fontSize: 10, color: AppTheme.leaf),
+                                            style: const TextStyle(
+                                              fontSize: 10,
+                                              color: AppTheme.leaf,
+                                            ),
                                           ),
                                         ),
                                       ],
                                     ],
                                   ),
                                   subtitle: Text(
-                                    skill.description.isEmpty ? '（无描述）' : skill.description,
+                                    skill.description.isEmpty
+                                        ? '（无描述）'
+                                        : skill.description,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
-                                  onChanged: _sending
-                                      ? null
-                                      : (next) async {
-                                          final previous = skill.enabled;
-                                          setSheetState(() {
-                                            _skills = [
-                                              for (final item in _skills)
-                                                item.key == skill.key ? item.copyWith(enabled: next) : item,
-                                            ];
-                                          });
-                                          try {
-                                            await widget.api.setAiSkill(
-                                              token: widget.token,
-                                              sessionId: _session.sessionId,
-                                              key: skill.key,
-                                              enabled: next,
-                                            );
-                                          } on ApiException catch (error) {
+                                  onChanged:
+                                      _sending
+                                          ? null
+                                          : (next) async {
+                                            final previous = skill.enabled;
                                             setSheetState(() {
                                               _skills = [
                                                 for (final item in _skills)
                                                   item.key == skill.key
-                                                      ? item.copyWith(enabled: previous)
+                                                      ? item.copyWith(
+                                                        enabled: next,
+                                                      )
                                                       : item,
                                               ];
                                             });
-                                            if (mounted) _showError(error.message);
-                                          }
-                                        },
+                                            try {
+                                              await widget.api.setAiSkill(
+                                                token: widget.token,
+                                                sessionId: _session.sessionId,
+                                                key: skill.key,
+                                                enabled: next,
+                                              );
+                                            } on ApiException catch (error) {
+                                              setSheetState(() {
+                                                _skills = [
+                                                  for (final item in _skills)
+                                                    item.key == skill.key
+                                                        ? item.copyWith(
+                                                          enabled: previous,
+                                                        )
+                                                        : item,
+                                                ];
+                                              });
+                                              if (mounted) {
+                                                _showError(error.message);
+                                              }
+                                            }
+                                          },
                                 ),
                             ],
                           ),
@@ -923,18 +1029,27 @@ class _AiThreadPageState extends State<AiThreadPage> {
                         if (pendingInteraction != null) ...[
                           Text(
                             l10n.aiTasksTitle,
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                            ),
                           ),
                           const SizedBox(height: 8),
                           if (pendingInteraction.tasks.isEmpty)
-                            Text(l10n.aiTasksEmpty, style: const TextStyle(color: Color(0xFF70817D)))
+                            Text(
+                              l10n.aiTasksEmpty,
+                              style: const TextStyle(color: Color(0xFF70817D)),
+                            )
                           else
                             for (final task in pendingInteraction.tasks)
                               Container(
                                 margin: const EdgeInsets.only(bottom: 6),
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                  color: Theme.of(context).colorScheme.surfaceContainerLow,
+                                  color:
+                                      Theme.of(
+                                        context,
+                                      ).colorScheme.surfaceContainerLow,
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Row(
@@ -942,29 +1057,46 @@ class _AiThreadPageState extends State<AiThreadPage> {
                                   children: [
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          Text(task.title, style: const TextStyle(fontWeight: FontWeight.w700)),
+                                          Text(
+                                            task.title,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
                                           if (task.detail.isNotEmpty)
                                             Padding(
-                                              padding: const EdgeInsets.only(top: 2),
+                                              padding: const EdgeInsets.only(
+                                                top: 2,
+                                              ),
                                               child: Text(
                                                 task.detail,
-                                                style: const TextStyle(fontSize: 12, color: Color(0xFF5B6B66)),
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  color: Color(0xFF5B6B66),
+                                                ),
                                               ),
                                             ),
                                         ],
                                       ),
                                     ),
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 6,
+                                        vertical: 2,
+                                      ),
                                       decoration: BoxDecoration(
                                         color: const Color(0xFFE7EEE9),
                                         borderRadius: BorderRadius.circular(6),
                                       ),
                                       child: Text(
                                         _taskStatusLabel(l10n, task.status),
-                                        style: const TextStyle(fontSize: 10.5, color: Color(0xFF3F514B)),
+                                        style: const TextStyle(
+                                          fontSize: 10.5,
+                                          color: Color(0xFF3F514B),
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -976,7 +1108,10 @@ class _AiThreadPageState extends State<AiThreadPage> {
                               pendingInteraction.questions.first.multiple
                                   ? l10n.aiQuestionMultiHint
                                   : l10n.aiQuestionSingleHint,
-                              style: const TextStyle(fontSize: 12, color: Color(0xFF70817D)),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Color(0xFF70817D),
+                              ),
                             ),
                             for (final question in pendingInteraction.questions)
                               Padding(
@@ -986,7 +1121,9 @@ class _AiThreadPageState extends State<AiThreadPage> {
                                   children: [
                                     Text(
                                       question.question,
-                                      style: const TextStyle(fontWeight: FontWeight.w700),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                      ),
                                     ),
                                     const SizedBox(height: 6),
                                     Wrap(
@@ -996,20 +1133,29 @@ class _AiThreadPageState extends State<AiThreadPage> {
                                         for (final option in question.options)
                                           FilterChip(
                                             label: Text(option),
-                                            selected: ((answers[question.id]?['selected']) as List?)
+                                            selected:
+                                                ((answers[question
+                                                            .id]?['selected'])
+                                                        as List?)
                                                     ?.contains(option) ??
                                                 false,
                                             onSelected: (selected) {
                                               final entry = answers.putIfAbsent(
                                                 question.id,
-                                                () => {'selected': <String>[], 'custom': ''},
+                                                () => {
+                                                  'selected': <String>[],
+                                                  'custom': '',
+                                                },
                                               );
                                               final selectedList =
-                                                  (entry['selected'] as List).cast<String>();
+                                                  (entry['selected'] as List)
+                                                      .cast<String>();
                                               if (question.multiple) {
                                                 selected
                                                     ? selectedList.add(option)
-                                                    : selectedList.remove(option);
+                                                    : selectedList.remove(
+                                                      option,
+                                                    );
                                               } else {
                                                 selectedList
                                                   ..clear()
@@ -1022,13 +1168,17 @@ class _AiThreadPageState extends State<AiThreadPage> {
                                     ),
                                     TextField(
                                       decoration: InputDecoration(
-                                        hintText: '${question.customLabel} · ${l10n.aiQuestionCustomHint}',
+                                        hintText:
+                                            '${question.customLabel} · ${l10n.aiQuestionCustomHint}',
                                         isDense: true,
                                       ),
                                       onChanged: (value) {
                                         final entry = answers.putIfAbsent(
                                           question.id,
-                                          () => {'selected': <String>[], 'custom': ''},
+                                          () => {
+                                            'selected': <String>[],
+                                            'custom': '',
+                                          },
                                         );
                                         entry['custom'] = value;
                                       },
@@ -1040,7 +1190,10 @@ class _AiThreadPageState extends State<AiThreadPage> {
                           const SizedBox(height: 12),
                           Text(
                             l10n.aiTasksFooter(pendingInteraction.tasks.length),
-                            style: const TextStyle(fontSize: 11, color: Color(0xFF70817D)),
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: Color(0xFF70817D),
+                            ),
                           ),
                           const SizedBox(height: 6),
                           Row(
@@ -1049,7 +1202,10 @@ class _AiThreadPageState extends State<AiThreadPage> {
                               TextButton(
                                 onPressed: () async {
                                   Navigator.pop(context);
-                                  await _respondInteraction(pendingInteraction, approve: false);
+                                  await _respondInteraction(
+                                    pendingInteraction,
+                                    approve: false,
+                                  );
                                 },
                                 child: Text(l10n.aiTasksCancel),
                               ),
@@ -1061,10 +1217,18 @@ class _AiThreadPageState extends State<AiThreadPage> {
                                     pendingInteraction,
                                     approve: true,
                                     answers: [
-                                      for (final question in pendingInteraction.questions)
+                                      for (final question
+                                          in pendingInteraction.questions)
                                         {
-                                          'selected': (answers[question.id]?['selected'] as List?) ?? const [],
-                                          'custom': (answers[question.id]?['custom'] ?? '').toString(),
+                                          'selected':
+                                              (answers[question.id]?['selected']
+                                                  as List?) ??
+                                              const [],
+                                          'custom':
+                                              (answers[question
+                                                          .id]?['custom'] ??
+                                                      '')
+                                                  .toString(),
                                         },
                                     ],
                                   );
@@ -1078,13 +1242,20 @@ class _AiThreadPageState extends State<AiThreadPage> {
                           const SizedBox(height: 8),
                           Text(
                             l10n.aiPendingTitle(_pendingOps.length),
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                            ),
                           ),
                           for (final op in _pendingOps)
                             ListTile(
                               contentPadding: EdgeInsets.zero,
                               title: Text(op.label),
-                              subtitle: Text(op.paramsText, maxLines: 2, overflow: TextOverflow.ellipsis),
+                              subtitle: Text(
+                                op.paramsText,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
@@ -1172,7 +1343,13 @@ class _AiThreadPageState extends State<AiThreadPage> {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(
-          SnackBar(content: Text(message?.isNotEmpty == true ? message! : AppLocalizations.of(context).aiPendingSubmitted)),
+          SnackBar(
+            content: Text(
+              message?.isNotEmpty == true
+                  ? message!
+                  : AppLocalizations.of(context).aiPendingSubmitted,
+            ),
+          ),
         );
     } on ApiException catch (error) {
       if (mounted) _showError(error.message);
@@ -1187,7 +1364,9 @@ class _AiThreadPageState extends State<AiThreadPage> {
     return Align(
       alignment: align,
       child: Container(
-        constraints: BoxConstraints(maxWidth: MediaQuery.sizeOf(context).width * 0.78),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.sizeOf(context).width * 0.78,
+        ),
         margin: const EdgeInsets.symmetric(vertical: 4),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
@@ -1213,18 +1392,16 @@ class _AiThreadPageState extends State<AiThreadPage> {
             if (bubble.content.isNotEmpty)
               isUser
                   ? SelectableText(
-                      bubble.content,
-                      style: TextStyle(color: fg, height: 1.4),
-                    )
+                    bubble.content,
+                    style: TextStyle(color: fg, height: 1.4),
+                  )
                   : AiRichText(
-                      content: _displayContent(bubble.content),
-                      styleSheet: MarkdownStyleSheet.fromTheme(
-                        Theme.of(context),
-                      ).copyWith(
-                        p: TextStyle(color: fg, height: 1.45),
-                        listBullet: TextStyle(color: fg),
-                      ),
-                    )
+                    content: _displayContent(bubble.content),
+                    styleSheet: MarkdownStyleSheet().copyWith(
+                      p: TextStyle(color: fg, height: 1.45),
+                      listBullet: TextStyle(color: fg),
+                    ),
+                  )
             else if (bubble.streaming)
               SizedBox(
                 width: 18,
@@ -1249,7 +1426,7 @@ class _AiThreadPageState extends State<AiThreadPage> {
                         height: 168,
                         fit: BoxFit.cover,
                         errorBuilder:
-                            (_, __, ___) => Container(
+                            (_, _, _) => Container(
                               width: 168,
                               height: 168,
                               color: const Color(0xFFEAF2ED),
@@ -1286,9 +1463,10 @@ class _AiThreadPageState extends State<AiThreadPage> {
       iconSize: 17,
       tooltip: rating > 0 ? l10n.aiFeedbackHelpful : l10n.aiFeedbackNotHelpful,
       onPressed: () => _rateMessage(bubble, rating),
-      color: selected
-          ? (rating > 0 ? AppTheme.leaf : AppTheme.coral)
-          : const Color(0xFF9AA9A4),
+      color:
+          selected
+              ? (rating > 0 ? AppTheme.leaf : AppTheme.coral)
+              : const Color(0xFF9AA9A4),
       icon: Icon(icon),
     );
   }
@@ -1313,12 +1491,17 @@ class _AiThreadPageState extends State<AiThreadPage> {
                   ),
                   segments: [
                     ButtonSegment(value: false, label: Text(l10n.aiModeChat)),
-                    ButtonSegment(value: true, label: Text(l10n.aiModeHistorian)),
+                    ButtonSegment(
+                      value: true,
+                      label: Text(l10n.aiModeHistorian),
+                    ),
                   ],
                   selected: {_historian},
-                  onSelectionChanged: _sending
-                      ? null
-                      : (selection) => setState(() => _historian = selection.first),
+                  onSelectionChanged:
+                      _sending
+                          ? null
+                          : (selection) =>
+                              setState(() => _historian = selection.first),
                 ),
                 const Spacer(),
                 if (!_historian)
@@ -1328,7 +1511,9 @@ class _AiThreadPageState extends State<AiThreadPage> {
                     onPressed: _sending ? null : _openSkills,
                     icon: Badge(
                       isLabelVisible: _skills.any((skill) => skill.enabled),
-                      label: Text('${_skills.where((skill) => skill.enabled).length}'),
+                      label: Text(
+                        '${_skills.where((skill) => skill.enabled).length}',
+                      ),
                       backgroundColor: AppTheme.leaf,
                       child: const Icon(Icons.auto_awesome_outlined, size: 20),
                     ),
@@ -1337,10 +1522,13 @@ class _AiThreadPageState extends State<AiThreadPage> {
                   IconButton(
                     visualDensity: VisualDensity.compact,
                     tooltip: l10n.aiTasksTitle,
-                    onPressed: _sending && _interaction == null ? null : _openTasks,
+                    onPressed:
+                        _sending && _interaction == null ? null : _openTasks,
                     icon: Badge(
                       isLabelVisible: hasTasks,
-                      label: Text('${_interaction?.tasks.length ?? _pendingOps.length}'),
+                      label: Text(
+                        '${_interaction?.tasks.length ?? _pendingOps.length}',
+                      ),
                       backgroundColor: AppTheme.coral,
                       child: const Icon(Icons.checklist_rounded, size: 20),
                     ),
@@ -1361,7 +1549,9 @@ class _AiThreadPageState extends State<AiThreadPage> {
                           ClipRRect(
                             borderRadius: BorderRadius.circular(8),
                             child: Image.memory(
-                              base64Decode(_attachments[i].dataUrl.split(',').last),
+                              base64Decode(
+                                _attachments[i].dataUrl.split(',').last,
+                              ),
                               width: 56,
                               height: 56,
                               fit: BoxFit.cover,
@@ -1371,11 +1561,17 @@ class _AiThreadPageState extends State<AiThreadPage> {
                             top: -6,
                             right: -6,
                             child: GestureDetector(
-                              onTap: () => setState(() => _attachments.removeAt(i)),
+                              onTap:
+                                  () =>
+                                      setState(() => _attachments.removeAt(i)),
                               child: const CircleAvatar(
                                 radius: 9,
                                 backgroundColor: Color(0xFF3F514B),
-                                child: Icon(Icons.close_rounded, size: 12, color: Colors.white),
+                                child: Icon(
+                                  Icons.close_rounded,
+                                  size: 12,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
@@ -1389,7 +1585,10 @@ class _AiThreadPageState extends State<AiThreadPage> {
                 padding: const EdgeInsets.only(top: 6, bottom: 2),
                 child: Text(
                   l10n.aiHistorianHint,
-                  style: const TextStyle(fontSize: 11.5, color: Color(0xFF7A6A4F)),
+                  style: const TextStyle(
+                    fontSize: 11.5,
+                    color: Color(0xFF7A6A4F),
+                  ),
                 ),
               ),
             Row(
@@ -1409,9 +1608,14 @@ class _AiThreadPageState extends State<AiThreadPage> {
                     onSubmitted: (_) => _send(),
                     enabled: !_sending,
                     decoration: InputDecoration(
-                      hintText: _historian ? l10n.aiHistorianPlaceholder : l10n.askAiAgent,
+                      hintText:
+                          _historian
+                              ? l10n.aiHistorianPlaceholder
+                              : l10n.askAiAgent,
                       prefixIcon: Icon(
-                        _historian ? Icons.history_edu_rounded : Icons.smart_toy_outlined,
+                        _historian
+                            ? Icons.history_edu_rounded
+                            : Icons.smart_toy_outlined,
                       ),
                     ),
                   ),
@@ -1419,13 +1623,17 @@ class _AiThreadPageState extends State<AiThreadPage> {
                 const SizedBox(width: 8),
                 IconButton.filled(
                   onPressed: _sending ? null : _send,
-                  icon: _sending
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                        )
-                      : const Icon(Icons.send_rounded),
+                  icon:
+                      _sending
+                          ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                          : const Icon(Icons.send_rounded),
                 ),
               ],
             ),

@@ -29,6 +29,20 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Generate localization files
+        run: flutter gen-l10n
+
+      - name: Patch localization delegates
+        shell: pwsh
+        run: |
+          $path = 'lib/l10n/generated/app_localizations.dart'
+          $text = Get-Content $path -Raw
+          $text = $text -replace "import 'package:flutter_localizations/flutter_localizations.dart';", "import 'package:flutter_localizations/flutter_localizations.dart' as flutter_localizations;`nimport 'package:material_ui/material_ui.dart' as material_ui;`nimport 'package:cupertino_ui/cupertino_ui.dart' as cupertino_ui;"
+          $text = $text -replace 'GlobalMaterialLocalizations\.delegate', 'material_ui.GlobalMaterialLocalizations.delegate'
+          $text = $text -replace 'GlobalCupertinoLocalizations\.delegate', 'cupertino_ui.GlobalCupertinoLocalizations.delegate'
+          $text = $text -replace 'GlobalWidgetsLocalizations\.delegate', 'flutter_localizations.GlobalWidgetsLocalizations.delegate'
+          Set-Content $path $text -Encoding utf8
+
       - name: Analyze Dart code
         run: flutter analyze
 

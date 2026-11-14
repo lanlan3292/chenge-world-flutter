@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:math' as math;
 
-
 /// AI 输出的 ```chart fenced JSON（协议与 web 的 visualFence 保持一致）。
 class AiChartSeries {
   const AiChartSeries({required this.name, required this.data});

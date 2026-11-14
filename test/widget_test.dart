@@ -5,14 +5,16 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:chenge_world_app/main.dart';
 
 void main() {
-  testWidgets('app shows its loading screen while settings load', (tester) async {
+  testWidgets('app shows its loading screen while settings load', (
+    tester,
+  ) async {
     SharedPreferences.setMockInitialValues({});
 
     await tester.pumpWidget(const ChengeWorldApp());

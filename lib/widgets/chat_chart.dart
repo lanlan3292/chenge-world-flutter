@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../l10n/generated/app_localizations.dart';
 
@@ -127,7 +127,10 @@ class ChatChartSpec {
   final String? unit;
 
   List<String> get legend =>
-      series.where((item) => item.name.isNotEmpty).map((item) => item.name).toList();
+      series
+          .where((item) => item.name.isNotEmpty)
+          .map((item) => item.name)
+          .toList();
 
   static ChatChartSpec? parse(String source) {
     try {
@@ -220,7 +223,12 @@ class _ChartPainter extends CustomPainter {
     const bottom = 22.0;
     const top = 8.0;
     const right = 8.0;
-    final plot = Rect.fromLTRB(left, top, size.width - right, size.height - bottom);
+    final plot = Rect.fromLTRB(
+      left,
+      top,
+      size.width - right,
+      size.height - bottom,
+    );
     if (plot.width <= 8 || plot.height <= 8) return;
 
     if (spec.type == 'scatter') {
@@ -238,18 +246,22 @@ class _ChartPainter extends CustomPainter {
     final rawMax = values.reduce(math.max);
     final rawMin = values.reduce(math.min);
     var maxValue = rawMax;
-    var minValue = spec.type == 'bar' || spec.type == 'area' ? math.min(0.0, rawMin) : rawMin;
+    var minValue =
+        spec.type == 'bar' || spec.type == 'area'
+            ? math.min(0.0, rawMin)
+            : rawMin;
     if (maxValue == minValue) {
       maxValue = maxValue + 1;
       minValue = minValue - 1;
     }
     if (spec.stacked) {
       final totals = <double>[];
-      final count = spec.x.isNotEmpty
-          ? spec.x.length
-          : spec.series
-              .map((item) => item.points.length)
-              .reduce((a, b) => math.max(a, b));
+      final count =
+          spec.x.isNotEmpty
+              ? spec.x.length
+              : spec.series
+                  .map((item) => item.points.length)
+                  .reduce((a, b) => math.max(a, b));
       for (var i = 0; i < count; i++) {
         var total = 0.0;
         for (final item in spec.series) {
@@ -264,11 +276,13 @@ class _ChartPainter extends CustomPainter {
     }
     final range = maxValue - minValue;
 
-    double yOf(double value) => plot.bottom - (value - minValue) / range * plot.height;
+    double yOf(double value) =>
+        plot.bottom - (value - minValue) / range * plot.height;
 
-    final gridPaint = Paint()
-      ..color = textColor.withValues(alpha: 0.16)
-      ..strokeWidth = 1;
+    final gridPaint =
+        Paint()
+          ..color = textColor.withValues(alpha: 0.16)
+          ..strokeWidth = 1;
     for (var i = 0; i <= 4; i++) {
       final value = minValue + range * i / 4;
       final y = yOf(value);
@@ -287,23 +301,28 @@ class _ChartPainter extends CustomPainter {
       spec.x.length,
       spec.series.map((item) => item.points.length).fold<int>(0, math.max),
     );
-    final step = categoryCount <= 1 ? plot.width : plot.width / (categoryCount - 1);
+    final step =
+        categoryCount <= 1 ? plot.width : plot.width / (categoryCount - 1);
 
     if (spec.type == 'bar' || spec.type == 'area') {
-      final groupWidth = categoryCount == 0 ? plot.width : plot.width / categoryCount;
+      final groupWidth =
+          categoryCount == 0 ? plot.width : plot.width / categoryCount;
       if (spec.type == 'bar' && !spec.horizontal) {
         final bars = spec.stacked ? 1 : spec.series.length;
         final barWidth = (groupWidth * 0.62 / bars).clamp(1.0, 48.0);
         for (var c = 0; c < categoryCount; c++) {
-          final groupLeft = plot.left + groupWidth * c + (groupWidth - barWidth * bars) / 2;
+          final groupLeft =
+              plot.left + groupWidth * c + (groupWidth - barWidth * bars) / 2;
           var stackBase = 0.0;
           for (var s = 0; s < spec.series.length; s++) {
             final item = spec.series[s];
-            final value = c < item.points.length ? item.points[c][1] : double.nan;
+            final value =
+                c < item.points.length ? item.points[c][1] : double.nan;
             if (value.isNaN) continue;
             final paint = Paint()..color = _palette[s % _palette.length];
             final startValue = spec.stacked ? stackBase : math.min(0.0, value);
-            final endValue = spec.stacked ? stackBase + value : math.max(0.0, value);
+            final endValue =
+                spec.stacked ? stackBase + value : math.max(0.0, value);
             final rect = Rect.fromLTRB(
               groupLeft + barWidth * (spec.stacked ? 0 : s),
               yOf(endValue),
@@ -323,7 +342,8 @@ class _ChartPainter extends CustomPainter {
           final centerY = plot.top + groupWidth * c + groupWidth / 2;
           for (var s = 0; s < spec.series.length; s++) {
             final item = spec.series[s];
-            final value = c < item.points.length ? item.points[c][1] : double.nan;
+            final value =
+                c < item.points.length ? item.points[c][1] : double.nan;
             if (value.isNaN) continue;
             final width = (value - minValue) / range * plot.width;
             final paint = Paint()..color = _palette[s % _palette.length];
@@ -368,13 +388,15 @@ class _ChartPainter extends CustomPainter {
           }
         }
         if (spec.type == 'area' && points.isNotEmpty) {
-          final fill = Path.from(path)
-            ..lineTo(points.last.dx, plot.bottom)
-            ..lineTo(points.first.dx, plot.bottom)
-            ..close();
+          final fill =
+              Path.from(path)
+                ..lineTo(points.last.dx, plot.bottom)
+                ..lineTo(points.first.dx, plot.bottom)
+                ..close();
           canvas.drawPath(
             fill,
-            Paint()..color = _palette[s % _palette.length].withValues(alpha: 0.18),
+            Paint()
+              ..color = _palette[s % _palette.length].withValues(alpha: 0.18),
           );
         }
         canvas.drawPath(
@@ -397,12 +419,7 @@ class _ChartPainter extends CustomPainter {
     }
 
     if ((spec.unit ?? '').isNotEmpty) {
-      _drawText(
-        canvas,
-        spec.unit!,
-        Offset(plot.left, plot.top - 2),
-        size: 9,
-      );
+      _drawText(canvas, spec.unit!, Offset(plot.left, plot.top - 2), size: 9);
     }
   }
 
@@ -412,9 +429,12 @@ class _ChartPainter extends CustomPainter {
     double Function(double) yOf,
     double step,
   ) {
-    final count = spec.x.isNotEmpty
-        ? spec.x.length
-        : spec.series.map((item) => item.points.length).fold<int>(0, math.max);
+    final count =
+        spec.x.isNotEmpty
+            ? spec.x.length
+            : spec.series
+                .map((item) => item.points.length)
+                .fold<int>(0, math.max);
     if (count == 0) return;
     final cumulative = List<double>.filled(count, 0);
     for (var s = 0; s < spec.series.length; s++) {
@@ -451,19 +471,15 @@ class _ChartPainter extends CustomPainter {
     }
   }
 
-  void _drawCategoryLabels(
-    Canvas canvas,
-    Rect plot,
-    int count,
-    double step,
-  ) {
+  void _drawCategoryLabels(Canvas canvas, Rect plot, int count, double step) {
     if (spec.x.isEmpty || count == 0) return;
     final maxLabels = math.max(2, (plot.width / 46).floor());
     final stride = math.max(1, (count / maxLabels).ceil());
     for (var i = 0; i < spec.x.length && i < count; i += stride) {
-      final x = spec.x.length == count
-          ? plot.left + step * i + (spec.type == 'bar' ? step / 2 : 0)
-          : plot.left + step * i;
+      final x =
+          spec.x.length == count
+              ? plot.left + step * i + (spec.type == 'bar' ? step / 2 : 0)
+              : plot.left + step * i;
       final label = spec.x[i];
       if (label.isEmpty) continue;
       _drawText(
@@ -534,9 +550,10 @@ class _ChartPainter extends CustomPainter {
     final rangeX = maxX - minX == 0 ? 1.0 : maxX - minX;
     final rangeY = maxY - minY == 0 ? 1.0 : maxY - minY;
 
-    final gridPaint = Paint()
-      ..color = textColor.withValues(alpha: 0.16)
-      ..strokeWidth = 1;
+    final gridPaint =
+        Paint()
+          ..color = textColor.withValues(alpha: 0.16)
+          ..strokeWidth = 1;
     for (var i = 0; i <= 4; i++) {
       final y = plot.bottom - plot.height * i / 4;
       canvas.drawLine(Offset(plot.left, y), Offset(plot.right, y), gridPaint);
@@ -597,7 +614,9 @@ class _ChartPainter extends CustomPainter {
     final abs = value.abs();
     if (abs >= 1000000) return '${(value / 1000000).toStringAsFixed(1)}M';
     if (abs >= 1000) return '${(value / 1000).toStringAsFixed(1)}k';
-    if (abs >= 10 || abs == abs.roundToDouble()) return value.toStringAsFixed(0);
+    if (abs >= 10 || abs == abs.roundToDouble()) {
+      return value.toStringAsFixed(0);
+    }
     return value.toStringAsFixed(1);
   }
 
@@ -651,7 +670,9 @@ class ChatDiagram extends StatelessWidget {
           final from = (edge['from'] ?? '').toString();
           final to = (edge['to'] ?? '').toString();
           if (from.isEmpty || to.isEmpty) continue;
-          edges.add(ChatDiagramEdge(from, to, (edge['label'] ?? '').toString()));
+          edges.add(
+            ChatDiagramEdge(from, to, (edge['label'] ?? '').toString()),
+          );
         }
       }
       if (nodes.isEmpty) return _FenceFallback(textColor: textColor);
@@ -689,7 +710,10 @@ class ChatDiagram extends StatelessWidget {
             children: [
               for (final node in nodes)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 5,
+                  ),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.surfaceContainerHigh,
                     borderRadius: BorderRadius.circular(8),
@@ -698,7 +722,11 @@ class ChatDiagram extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(_kindIcon(node.kind), size: 13, color: _kindColor(node.kind)),
+                      Icon(
+                        _kindIcon(node.kind),
+                        size: 13,
+                        color: _kindColor(node.kind),
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         node.label,
@@ -722,19 +750,27 @@ class ChatDiagram extends StatelessWidget {
                   children: [
                     Text(
                       _labelOf(edge.from),
-                      style: TextStyle(fontSize: 11.5, color: textColor.withValues(alpha: 0.85)),
+                      style: TextStyle(
+                        fontSize: 11.5,
+                        color: textColor.withValues(alpha: 0.85),
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
                       child: Icon(
-                        direction == 'LR' ? Icons.arrow_forward : Icons.arrow_downward,
+                        direction == 'LR'
+                            ? Icons.arrow_forward
+                            : Icons.arrow_downward,
                         size: 12,
                         color: textColor.withValues(alpha: 0.5),
                       ),
                     ),
                     Text(
                       _labelOf(edge.to),
-                      style: TextStyle(fontSize: 11.5, color: textColor.withValues(alpha: 0.85)),
+                      style: TextStyle(
+                        fontSize: 11.5,
+                        color: textColor.withValues(alpha: 0.85),
+                      ),
                     ),
                     if (edge.label.isNotEmpty) ...[
                       const SizedBox(width: 4),
@@ -845,16 +881,20 @@ class ChatFenceTable extends StatelessWidget {
         for (final item in rawRows.take(200)) {
           if (item is Map) {
             final row = item.cast<String, dynamic>();
-            rows.add([
-              for (final column in columns) _cell(row[column.key]),
-            ]);
+            rows.add([for (final column in columns) _cell(row[column.key])]);
           } else if (item is List) {
             rows.add([for (final cell in item) _cell(cell)]);
           }
         }
       }
-      if (columns.isEmpty && rows.isEmpty) return _FenceFallback(textColor: textColor);
-      return ChatFenceTable._(columns: columns, rows: rows, textColor: textColor);
+      if (columns.isEmpty && rows.isEmpty) {
+        return _FenceFallback(textColor: textColor);
+      }
+      return ChatFenceTable._(
+        columns: columns,
+        rows: rows,
+        textColor: textColor,
+      );
     } catch (_) {
       return _FenceFallback(textColor: textColor);
     }
@@ -880,11 +920,16 @@ class ChatFenceTable extends StatelessWidget {
           children: [
             if (columns.isNotEmpty)
               TableRow(
-                decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerHigh),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerHigh,
+                ),
                 children: [
                   for (final column in columns)
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 6,
+                      ),
                       child: Text(
                         column.label,
                         style: TextStyle(
@@ -901,7 +946,10 @@ class ChatFenceTable extends StatelessWidget {
                 children: [
                   for (var i = 0; i < math.max(columns.length, row.length); i++)
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 5,
+                      ),
                       child: Text(
                         i < row.length ? row[i] : '',
                         style: TextStyle(fontSize: 11.5, color: textColor),
@@ -939,7 +987,10 @@ class _FenceFallback extends StatelessWidget {
       ),
       child: Text(
         AppLocalizations.of(context).chatChartUnavailable,
-        style: TextStyle(fontSize: 11.5, color: textColor.withValues(alpha: 0.6)),
+        style: TextStyle(
+          fontSize: 11.5,
+          color: textColor.withValues(alpha: 0.6),
+        ),
       ),
     );
   }

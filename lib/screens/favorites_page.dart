@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../services/chenge_api.dart';
 
@@ -65,29 +65,43 @@ class _FavoritesPageState extends State<FavoritesPage> {
       await _load();
     } on ApiException catch (error) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.message)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error.message)));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('收藏', style: TextStyle(fontWeight: FontWeight.w800))),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
+      appBar: AppBar(
+        title: const Text('收藏', style: TextStyle(fontWeight: FontWeight.w800)),
+      ),
+      body:
+          _loading
+              ? const Center(child: CircularProgressIndicator())
+              : _error != null
               ? Center(child: Text(_error!))
               : RefreshIndicator(
-                  onRefresh: _load,
-                  child: _rows.isEmpty
-                      ? ListView(children: const [SizedBox(height: 120), Center(child: Text('还没有收藏'))])
-                      : ListView.separated(
+                onRefresh: _load,
+                child:
+                    _rows.isEmpty
+                        ? ListView(
+                          children: const [
+                            SizedBox(height: 120),
+                            Center(child: Text('还没有收藏')),
+                          ],
+                        )
+                        : ListView.separated(
                           itemCount: _rows.length,
-                          separatorBuilder: (_, __) => const Divider(height: 1),
+                          separatorBuilder: (_, _) => const Divider(height: 1),
                           itemBuilder: (context, index) {
                             final row = _rows[index];
                             final business = '${row['business'] ?? ''}';
-                            final content = '${row['content'] ?? ''}'.replaceAll(RegExp(r'\s+'), ' ').trim();
+                            final content =
+                                '${row['content'] ?? ''}'
+                                    .replaceAll(RegExp(r'\s+'), ' ')
+                                    .trim();
                             return ListTile(
                               leading: const Icon(Icons.star_rounded),
                               title: Text(
@@ -108,7 +122,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                             );
                           },
                         ),
-                ),
+              ),
     );
   }
 }
