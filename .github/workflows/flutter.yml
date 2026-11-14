@@ -43,6 +43,7 @@ jobs:
           $text = $text -replace 'GlobalWidgetsLocalizations\.delegate', 'flutter_localizations.GlobalWidgetsLocalizations.delegate'
           Set-Content $path $text -Encoding utf8
 
+      - name: Analyze Dart code
         run: flutter analyze
 
       - name: Run tests
