@@ -1,10 +1,10 @@
+// ignore_for_file: deprecated_member_use
+
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_localizations/flutter_localizations.dart' hide GlobalMaterialLocalizations, GlobalCupertinoLocalizations;
-import 'package:material_ui/material_ui.dart' as material_ui;
-import 'package:cupertino_ui/cupertino_ui.dart' as cupertino_ui;
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_en.dart';
@@ -82,7 +82,7 @@ abstract class AppLocalizations {
   /// delegates.
   ///
   /// Returns a list of localizations delegates containing this delegate along with
-  /// material_ui.GlobalMaterialLocalizations.delegate, cupertino_ui.GlobalCupertinoLocalizations.delegate,
+  /// GlobalMaterialLocalizations.delegate, GlobalCupertinoLocalizations.delegate,
   /// and GlobalWidgetsLocalizations.delegate.
   ///
   /// Additional delegates can be added by appending to this list in
@@ -91,8 +91,8 @@ abstract class AppLocalizations {
   static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
       <LocalizationsDelegate<dynamic>>[
         delegate,
-        material_ui.GlobalMaterialLocalizations.delegate,
-        cupertino_ui.GlobalCupertinoLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
       ];
 
@@ -3555,4 +3555,3 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
     'that was used.',
   );
 }
-
