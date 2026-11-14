@@ -243,8 +243,9 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
             final name = '${item['name'] ?? ''}'.trim();
             if (name.isEmpty ||
                 (query.isNotEmpty &&
-                    !name.toLowerCase().contains(query.toLowerCase())))
+                    !name.toLowerCase().contains(query.toLowerCase()))) {
               continue;
+            }
             commands.add(
               _SlashCommand(
                 name: name,
