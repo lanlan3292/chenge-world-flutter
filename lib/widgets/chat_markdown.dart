@@ -9,14 +9,25 @@ import '../l10n/generated/app_localizations.dart';
 import 'chat_chart.dart';
 
 class ChatMarkdown extends StatelessWidget {
-  const ChatMarkdown({super.key, required this.source, required this.textColor, this.linkColor, this.fontSize = 15, this.onResourceTap, this.onResourcePreview});
+  const ChatMarkdown({
+    super.key,
+    required this.source,
+    required this.textColor,
+    this.linkColor,
+    this.fontSize = 15,
+    this.onResourceTap,
+    this.onResourcePreview,
+  });
   final String source;
   final Color textColor;
   final Color? linkColor;
   final double fontSize;
   final Future<void> Function(String kind, int id)? onResourceTap;
-  final Future<Map<String, String>> Function(String kind, int id)? onResourcePreview;
-  static final RegExp _fencePattern = RegExp(r'```([A-Za-z0-9_+-]*)[ \t]*\r?\n([\s\S]*?)```');
+  final Future<Map<String, String>> Function(String kind, int id)?
+  onResourcePreview;
+  static final RegExp _fencePattern = RegExp(
+    r'```([A-Za-z0-9_+-]*)[ \t]*\r?\n([\s\S]*?)```',
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +41,10 @@ class ChatMarkdown extends StatelessWidget {
       }
       final lang = (match.group(1) ?? '').toLowerCase().trim();
       final body = match.group(2) ?? '';
-      blocks.add(_visualFence(lang, body) ?? _markdown(context, theme, '```$lang\n$body```'));
+      blocks.add(
+        _visualFence(lang, body) ??
+            _markdown(context, theme, '```$lang\n$body```'),
+      );
       cursor = match.end;
     }
     if (cursor < source.length) {
@@ -38,16 +52,49 @@ class ChatMarkdown extends StatelessWidget {
       if (tail.trim().isNotEmpty) blocks.add(_markdown(context, theme, tail));
     }
     if (blocks.isEmpty) blocks.add(_markdown(context, theme, source));
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [for (var i = 0; i < blocks.length; i++) ...[if (i > 0) const SizedBox(height: 4), blocks[i]]]);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var i = 0; i < blocks.length; i++) ...[
+          if (i > 0) const SizedBox(height: 4),
+          blocks[i],
+        ],
+      ],
+    );
   }
 
   Widget? _visualFence(String lang, String body) => switch (lang) {
     'chart' => ChatChart.fromSource(body, textColor: textColor),
-    'diagram' || 'mermaid' || 'flowchart' || 'graph' => ChatDiagram.fromSource(body, textColor: textColor),
+    'diagram' ||
+    'mermaid' ||
+    'flowchart' ||
+    'graph' => ChatDiagram.fromSource(body, textColor: textColor),
     'table' => ChatFenceTable.fromSource(body, textColor: textColor),
-    'user' => _ResourceCard(kind: '用户', refId: body.trim(), icon: Icons.person_outline, textColor: textColor, onTap: onResourceTap, onPreview: onResourcePreview),
-    'cpost' => _ResourceCard(kind: 'cPost', refId: body.trim(), icon: Icons.article_outlined, textColor: textColor, onTap: onResourceTap, onPreview: onResourcePreview),
-    'cshop' => _ResourceCard(kind: 'cShop', refId: body.trim(), icon: Icons.shopping_bag_outlined, textColor: textColor, onTap: onResourceTap, onPreview: onResourcePreview),
+    'user' => _ResourceCard(
+      kind: '用户',
+      refId: body.trim(),
+      icon: Icons.person_outline,
+      textColor: textColor,
+      onTap: onResourceTap,
+      onPreview: onResourcePreview,
+    ),
+    'cpost' => _ResourceCard(
+      kind: 'cPost',
+      refId: body.trim(),
+      icon: Icons.article_outlined,
+      textColor: textColor,
+      onTap: onResourceTap,
+      onPreview: onResourcePreview,
+    ),
+    'cshop' => _ResourceCard(
+      kind: 'cShop',
+      refId: body.trim(),
+      icon: Icons.shopping_bag_outlined,
+      textColor: textColor,
+      onTap: onResourceTap,
+      onPreview: onResourcePreview,
+    ),
     _ => null,
   };
 
@@ -63,7 +110,11 @@ class ChatMarkdown extends StatelessWidget {
       ),
       strong: TextStyle(color: textColor, fontWeight: FontWeight.w700),
       em: TextStyle(color: textColor, fontStyle: FontStyle.italic),
-      code: TextStyle(color: textColor, fontSize: fontSize - 1.5, backgroundColor: codeBackground),
+      code: TextStyle(
+        color: textColor,
+        fontSize: fontSize - 1.5,
+        backgroundColor: codeBackground,
+      ),
       codeblockPadding: const EdgeInsets.all(10),
       codeblockDecoration: BoxDecoration(
         color: codeBackground,
@@ -140,12 +191,23 @@ class ChatMarkdown extends StatelessWidget {
   void _onTapLink(BuildContext context, String? href) {
     if (href == null || href.isEmpty) return;
     unawaited(Clipboard.setData(ClipboardData(text: href)));
-    ScaffoldMessenger.of(context)..hideCurrentSnackBar()..showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).chatCopied)));
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context).chatCopied)),
+      );
   }
 }
 
 class _ResourceCard extends StatelessWidget {
-  const _ResourceCard({required this.kind, required this.refId, required this.icon, required this.textColor, this.onTap, this.onPreview});
+  const _ResourceCard({
+    required this.kind,
+    required this.refId,
+    required this.icon,
+    required this.textColor,
+    this.onTap,
+    this.onPreview,
+  });
   final String kind;
   final String refId;
   final IconData icon;
@@ -158,13 +220,26 @@ class _ResourceCard extends StatelessWidget {
     final accent = Theme.of(context).colorScheme.primary;
     final valid = RegExp(r'^\d+$').hasMatch(refId);
     if (!valid) return _card(context, accent, const {'title': '内容 ID 不合法'});
-    if (onPreview == null) return _card(context, accent, {'title': kind, 'subtitle': '点击查看详情 · ID：$refId'});
+    if (onPreview == null) {
+      return _card(context, accent, {
+        'title': kind,
+        'subtitle': '点击查看详情 · ID：$refId',
+      });
+    }
     return FutureBuilder<Map<String, String>>(
       future: onPreview!(kind, int.parse(refId)),
       builder: (context, snapshot) {
         final data = snapshot.data ?? const <String, String>{};
-        if (snapshot.connectionState == ConnectionState.waiting && data.isEmpty) return _card(context, accent, {'title': kind, 'subtitle': '正在加载预览…'});
-        return _card(context, accent, data.isEmpty ? {'title': kind, 'subtitle': '点击查看详情 · ID：$refId'} : data);
+        if (snapshot.connectionState == ConnectionState.waiting && data.isEmpty) {
+          return _card(context, accent, {'title': kind, 'subtitle': '正在加载预览…'});
+        }
+        return _card(
+          context,
+          accent,
+          data.isEmpty
+              ? {'title': kind, 'subtitle': '点击查看详情 · ID：$refId'}
+              : data,
+        );
       },
     );
   }
@@ -175,16 +250,81 @@ class _ResourceCard extends StatelessWidget {
     final content = Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: Theme.of(context).colorScheme.outlineVariant), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: .06), blurRadius: 8, offset: const Offset(0, 2))]),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [CircleAvatar(radius: 17, backgroundColor: accent.withValues(alpha: .16), child: Icon(icon, color: accent, size: 19)), const SizedBox(width: 10), Expanded(child: Text(data['title']?.isNotEmpty == true ? data['title']! : kind, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(color: cardTextColor, fontWeight: FontWeight.w700, fontSize: 15))), const Icon(Icons.chevron_right, size: 20)]),
-        if ((data['subtitle'] ?? '').isNotEmpty) Padding(padding: const EdgeInsets.only(left: 44, top: 4), child: Text(data['subtitle']!, style: TextStyle(color: textColor.withValues(alpha: .72)))),
-        if ((data['body'] ?? '').isNotEmpty) Padding(padding: const EdgeInsets.only(left: 44, top: 8), child: Text(data['body']!, maxLines: 3, overflow: TextOverflow.ellipsis, style: TextStyle(color: textColor.withValues(alpha: .85), height: 1.35))),
-        if ((data['meta'] ?? '').isNotEmpty) Padding(padding: const EdgeInsets.only(left: 44, top: 8), child: Text(data['meta']!, style: TextStyle(color: accent, fontSize: 12))),
-      ]),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .06),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 17,
+                backgroundColor: accent.withValues(alpha: .16),
+                child: Icon(icon, color: accent, size: 19),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  data['title']?.isNotEmpty == true ? data['title']! : kind,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: cardTextColor,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                  ),
+                ),
+              ),
+              const Icon(Icons.chevron_right, size: 20),
+            ],
+          ),
+          if ((data['subtitle'] ?? '').isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(left: 44, top: 4),
+              child: Text(
+                data['subtitle']!,
+                style: TextStyle(color: textColor.withValues(alpha: .72)),
+              ),
+            ),
+          if ((data['body'] ?? '').isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(left: 44, top: 8),
+              child: Text(
+                data['body']!,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: textColor.withValues(alpha: .85),
+                  height: 1.35,
+                ),
+              ),
+            ),
+          if ((data['meta'] ?? '').isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(left: 44, top: 8),
+              child: Text(
+                data['meta']!,
+                style: TextStyle(color: accent, fontSize: 12),
+              ),
+            ),
+        ],
+      ),
     );
     if (!valid || onTap == null) return content;
-    return InkWell(borderRadius: BorderRadius.circular(14), onTap: () => onTap!(kind, int.parse(refId)), child: content);
+    return InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: () => onTap!(kind, int.parse(refId)),
+      child: content,
+    );
   }
 }
-

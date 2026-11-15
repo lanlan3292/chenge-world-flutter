@@ -1742,12 +1742,17 @@ class SessionStore {
 
   Future<void> saveAccount(String token) async {
     final current = await readAccounts();
-    final next = <String>[token.trim(), ...current.where((item) => item != token.trim())];
+    final next = <String>[
+      token.trim(),
+      ...current.where((item) => item != token.trim()),
+    ];
     await _storage.write(key: _accountsKey, value: next.join('|'));
   }
 
   Future<void> removeAccount(String token) async {
-    final next = (await readAccounts()).where((item) => item != token).join('|');
+    final next = (await readAccounts())
+        .where((item) => item != token)
+        .join('|');
     await _storage.write(key: _accountsKey, value: next);
   }
 }

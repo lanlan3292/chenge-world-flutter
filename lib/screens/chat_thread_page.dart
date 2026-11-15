@@ -1379,8 +1379,8 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
               source: message.content,
               textColor: foreground,
               linkColor: mine ? Colors.white : null,
-               onResourceTap: _openResourceCard,
-               onResourcePreview: _previewResourceCard,
+              onResourceTap: _openResourceCard,
+              onResourcePreview: _previewResourceCard,
             )
           else
             SelectableText(
@@ -2231,16 +2231,37 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
   Future<Map<String, String>> _previewResourceCard(String kind, int id) async {
     if (kind == 'cPost') {
       final post = await widget.api.postDetail(id, token: widget.token);
-      return {'title': post.title, 'subtitle': '${post.authorName} · ${post.viewCount} 次浏览', 'body': post.summary.isNotEmpty ? post.summary : post.content, 'meta': '♥ ${post.likeCount}   💬 ${post.commentCount}   点击查看详情'};
+      return {
+        'title': post.title,
+        'subtitle': '${post.authorName} · ${post.viewCount} 次浏览',
+        'body': post.summary.isNotEmpty ? post.summary : post.content,
+        'meta': '♥ ${post.likeCount}   💬 ${post.commentCount}   点击查看详情',
+      };
     }
     if (kind == 'cShop') {
       final item = await widget.api.shopItem(id, token: widget.token);
-      return {'title': item.title, 'subtitle': '${item.type} · ${item.sellerName ?? 'Chenge 商城'}', 'body': item.summary ?? item.detail ?? '', 'meta': '${item.priceCoins.toStringAsFixed(2)} 金币   库存 ${item.stock}   点击查看详情'};
+      return {
+        'title': item.title,
+        'subtitle': '${item.type} · ${item.sellerName ?? 'Chenge 商城'}',
+        'body': item.summary ?? item.detail ?? '',
+        'meta':
+            '${item.priceCoins.toStringAsFixed(2)} 金币   库存 ${item.stock}   点击查看详情',
+      };
     }
     final data = await widget.api.currentUser(widget.token);
-    final profiles = data['profiles'] is Map ? Map<String, dynamic>.from(data['profiles'] as Map) : const <String, dynamic>{};
-    final name = (profiles['nickname'] ?? data['nickname'] ?? data['username'] ?? '用户').toString();
-    return {'title': name, 'subtitle': '用户 ID：$id', 'body': (profiles['bio'] ?? data['bio'] ?? '这个用户还没有填写个人简介').toString(), 'meta': '点击查看用户资料'};
+    final profiles =
+        data['profiles'] is Map
+            ? Map<String, dynamic>.from(data['profiles'] as Map)
+            : const <String, dynamic>{};
+    final name =
+        (profiles['nickname'] ?? data['nickname'] ?? data['username'] ?? '用户')
+            .toString();
+    return {
+      'title': name,
+      'subtitle': '用户 ID：$id',
+      'body': (profiles['bio'] ?? data['bio'] ?? '这个用户还没有填写个人简介').toString(),
+      'meta': '点击查看用户资料',
+    };
   }
 
   Future<void> _openResourceCard(String kind, int id) async {
@@ -2248,14 +2269,46 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       if (kind == 'cPost') {
         final post = await widget.api.postDetail(id, token: widget.token);
         if (!mounted) return;
-        await Navigator.of(context).push(MaterialPageRoute(builder: (_) => PostDetailPage(api: widget.api, post: post, token: widget.token)));
+        await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder:
+                (_) => PostDetailPage(
+                  api: widget.api,
+                  post: post,
+                  token: widget.token,
+                ),
+          ),
+        );
       } else if (kind == 'cShop') {
         final item = await widget.api.shopItem(id, token: widget.token);
         if (!mounted) return;
-        await Navigator.of(context).push(MaterialPageRoute(builder: (_) => ShopDetailPage(api: widget.api, item: item, token: widget.token, userId: widget.userId, onLoginRequested: () => _showShareError(AppLocalizations.of(context).signInToPurchase))));
+        await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder:
+                (_) => ShopDetailPage(
+                  api: widget.api,
+                  item: item,
+                  token: widget.token,
+                  userId: widget.userId,
+                  onLoginRequested:
+                      () => _showShareError(
+                        AppLocalizations.of(context).signInToPurchase,
+                      ),
+                ),
+          ),
+        );
       } else if (kind == '用户') {
         if (!mounted) return;
-        await Navigator.of(context).push(MaterialPageRoute(builder: (_) => UserProfilePage(api: widget.api, token: widget.token, userId: id)));
+        await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder:
+                (_) => UserProfilePage(
+                  api: widget.api,
+                  token: widget.token,
+                  userId: id,
+                ),
+          ),
+        );
       }
     } on ApiException catch (error) {
       if (mounted) _showShareError(error.message);
@@ -2715,4 +2768,3 @@ class _HistorySearchSheetState extends State<_HistorySearchSheet> {
     );
   }
 }
-
